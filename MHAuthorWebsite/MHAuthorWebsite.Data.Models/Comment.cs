@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -31,7 +31,7 @@ public class Comment
     [Required]
     [Comment("Foreign key to Product")]
     [ForeignKey(nameof(Product))]
-    public int ProductId { get; set; }
+    public Guid ProductId { get; set; }
 
     public Product Product { get; set; } = null!;
 
