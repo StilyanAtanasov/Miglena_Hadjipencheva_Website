@@ -2,7 +2,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Arial", sans-serif;
-  background: #f0f0f0; /* Change the background color as needed */
+  background: #92ed8a;
 }
 
 header {
@@ -17,12 +17,12 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  color: #fff; /* Change the text color */
+  color: #fff;
 }
 
 header.solid {
-  background-color: #fff; /* Change the background color when scrolling */
-  color: #333; /* Change the text color when scrolling */
+  background-color: #fff;
+  color: #333;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -67,7 +67,6 @@ nav a:hover::before {
 }
 
 .splash {
-  background: url("path/to/your/image.jpg") center/cover no-repeat;
   height: 100vh;
   display: flex;
   flex-direction: column;
