@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
       container.insertAdjacentHTML("beforeend", template);
 
-      $.validator.unobtrusive.parse(`#attribute-${index}`);
+      $.validator.unobtrusive.parse(`#addProductTypeForm`);
 
       index++;
     });
