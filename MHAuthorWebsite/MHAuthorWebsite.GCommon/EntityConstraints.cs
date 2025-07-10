@@ -36,6 +36,7 @@ public static class EntityConstraints
 
     public static class ProductType
     {
+        public const byte NameMinLength = 2;
         public const byte NameMaxLength = 50;
     }
 

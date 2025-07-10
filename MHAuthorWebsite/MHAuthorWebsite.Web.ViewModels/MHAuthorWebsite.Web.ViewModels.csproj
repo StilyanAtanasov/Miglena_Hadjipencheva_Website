@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MHAuthorWebsite.GCommon\MHAuthorWebsite.GCommon.csproj" />
+  </ItemGroup>
+
 </Project>
