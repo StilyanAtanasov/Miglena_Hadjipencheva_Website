@@ -26,17 +26,6 @@ builder.Services
     })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddControllersWithViews()
-    .AddMvcOptions(o =>
-    {
-        o.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(
-            _ => "Полето е задължително!");
-        o.ModelBindingMessageProvider.SetValueMustBeANumberAccessor(
-            _ => "Полето трябва да е число!");
-        o.ModelBindingMessageProvider.SetValueIsInvalidAccessor(
-            _ => "Полето е невалидно!");
-    });
-
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
 builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
@@ -60,6 +49,14 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+var supportedCultures = new[] { "bg" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("bg")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
 
 app.MapControllerRoute(
     name: "default",

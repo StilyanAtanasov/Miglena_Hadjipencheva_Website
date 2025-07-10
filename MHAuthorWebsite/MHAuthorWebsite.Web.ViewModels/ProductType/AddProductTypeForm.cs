@@ -1,15 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MHAuthorWebsite.Web.ViewModels.Localization;
+using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ProductType;
 
 namespace MHAuthorWebsite.Web.ViewModels.ProductType;
 
 public class AddProductTypeForm
 {
-    [Required]
-    [StringLength(NameMaxLength, MinimumLength = NameMinLength, ErrorMessage = "Името трябва да бъде между {2} и {1} символа!")]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    [StringLength(NameMaxLength, MinimumLength = NameMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
     public string Name { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public bool HasAdditionalProperties { get; set; }
 
     public ICollection<AttributeDefinitionForm> Attributes { get; set; } = new HashSet<AttributeDefinitionForm>();
