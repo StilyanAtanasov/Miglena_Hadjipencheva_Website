@@ -2,7 +2,7 @@
 
 namespace MHAuthorWebsite.Web.Controllers;
 
-public class ProductTypeController : Controller
+public class ProductTypeController : BaseController
 {
     [HttpGet]
     public IActionResult AddProductType()
