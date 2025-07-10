@@ -4,7 +4,9 @@ public static class EntityConstraints
 {
     public static class Product
     {
+        public const byte NameMinLength = 2;
         public const byte NameMaxLength = 100;
+        public const byte DescriptionMinLength = 15;
         public const ushort DescriptionMaxLength = 4000;
 
         public const string PriceSqlType = "decimal(18, 2)";
@@ -23,13 +25,16 @@ public static class EntityConstraints
 
     public static class ProductAttribute
     {
+        public const byte KeyMinLength = 2;
         public const byte KeyMaxLength = 50;
         public const ushort ValueMaxLength = 2000;
     }
 
     public static class ProductAttributeDefinition
     {
+        public const byte KeyMinLength = 2;
         public const byte KeyMaxLength = 50;
+        public const byte LabelMinLength = 2;
         public const byte LabelMaxLength = 100;
         public const byte DataTypeMaxLength = 30;
     }
@@ -42,11 +47,7 @@ public static class EntityConstraints
 
     public static class Comment
     {
+        public const byte TextMinLength = 2;
         public const ushort TextMaxLength = 2000;
-    }
-
-    public static class Author
-    {
-        public const byte NameMaxLength = 100;
     }
 }
