@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{D4B497E1-FF5
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MHAuthorWebsite.Core.Common", "MHAuthorWebsite.Core.Common\MHAuthorWebsite.Core.Common.csproj", "{52452C15-DB01-4ECD-B0E7-6741468E9DA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MHAuthorWebsite.Data.Common", "MHAuthorWebsite.Data.Common\MHAuthorWebsite.Data.Common.csproj", "{483C5226-8E48-B4FE-B4E7-EBC97834F2EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{52452C15-DB01-4ECD-B0E7-6741468E9DA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52452C15-DB01-4ECD-B0E7-6741468E9DA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52452C15-DB01-4ECD-B0E7-6741468E9DA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{483C5226-8E48-B4FE-B4E7-EBC97834F2EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{483C5226-8E48-B4FE-B4E7-EBC97834F2EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{483C5226-8E48-B4FE-B4E7-EBC97834F2EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{483C5226-8E48-B4FE-B4E7-EBC97834F2EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

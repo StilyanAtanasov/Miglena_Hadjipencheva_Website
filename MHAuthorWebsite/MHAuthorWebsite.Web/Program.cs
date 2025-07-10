@@ -1,7 +1,7 @@
 using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data;
-using MHAuthorWebsite.Data.Common;
+using MHAuthorWebsite.Data.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,9 +13,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// FIXME TODO FIX
+// TODO FIX
 builder.Services
-    .AddDefaultIdentity<IdentityUser>(options => 
+    .AddDefaultIdentity<IdentityUser>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
         options.Password.RequireDigit = false;
@@ -25,7 +25,17 @@ builder.Services
         options.Password.RequiredLength = 6;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+
+builder.Services.AddControllersWithViews()
+    .AddMvcOptions(o =>
+    {
+        o.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(
+            _ => "Полето е задължително!");
+        o.ModelBindingMessageProvider.SetValueMustBeANumberAccessor(
+            _ => "Полето трябва да е число!");
+        o.ModelBindingMessageProvider.SetValueIsInvalidAccessor(
+            _ => "Полето е невалидно!");
+    });
 
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 

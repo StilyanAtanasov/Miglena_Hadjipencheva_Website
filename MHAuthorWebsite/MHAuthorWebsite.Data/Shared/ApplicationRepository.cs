@@ -1,4 +1,4 @@
-﻿namespace MHAuthorWebsite.Data.Common;
+﻿namespace MHAuthorWebsite.Data.Shared;
 
 public class ApplicationRepository : EfRepository, IApplicationRepository
 {

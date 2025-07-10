@@ -36,7 +36,6 @@ public static class EntityConstraints
         public const byte KeyMaxLength = 50;
         public const byte LabelMinLength = 2;
         public const byte LabelMaxLength = 100;
-        public const byte DataTypeMaxLength = 30;
     }
 
     public static class ProductType

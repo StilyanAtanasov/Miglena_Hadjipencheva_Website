@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MHAuthorWebsite.Data.Models.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ProductAttributeDefinition;
@@ -22,9 +23,8 @@ public class ProductAttributeDefinition
     public string Label { get; set; } = null!;
 
     [Required]
-    [MaxLength(DataTypeMaxLength)]
     [Comment("UI data type (e.g., number, date)")]
-    public string DataType { get; set; } = null!;
+    public AttributeDataType DataType { get; set; }
 
     [Comment("Indicates if the attribute can choose from options")]
     public bool HasPredefinedValue { get; set; }

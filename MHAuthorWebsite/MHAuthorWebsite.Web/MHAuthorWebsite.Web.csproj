@@ -26,6 +26,9 @@
     <ProjectReference Include="..\MHAuthorWebsite.Core\MHAuthorWebsite.Core.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Data\MHAuthorWebsite.Data.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Web.ViewModels\MHAuthorWebsite.Web.ViewModels.csproj" />
+    <ProjectReference Include="..\MHAuthorWebsite.Data.Common\MHAuthorWebsite.Data.Common.csproj">
+	    <Aliases>common</Aliases>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

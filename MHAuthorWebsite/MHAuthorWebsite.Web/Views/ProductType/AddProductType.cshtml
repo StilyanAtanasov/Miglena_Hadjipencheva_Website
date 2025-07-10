@@ -1,12 +1,61 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.ProductType;
 @model AddProductTypeForm
 
+@{
+	var enumOptionsHtml = string.Join("", 
+		((IEnumerable<SelectListItem>)ViewBag.AttributeDataTypes).Select(t =>
+			$"<option value='{t.Value}'>{t.Text}</option>")
+		);
+}
+
 <h1>Добави категория</h1>
 
 <form method="POST" asp-controller="ProductType" asp-action="AddProductType">
-    <label asp-for="@Model.Name">Име:</label><br>
-    <input asp-for="@Model.Name" class="form-control" type="text" id="title" aria-required="true"><br><br>
-    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+	<label asp-for="Name">Име:</label><br>
+	<input asp-for="Name" class="form-control" /><br>
+	<span asp-validation-for="Name" class="text-danger"></span>
 
-    <button class="btn btn-primary" type="submit">Submit</button>
+	<label asp-for="HasAdditionalProperties">Допълнителни данни?</label><br>
+	<input asp-for="HasAdditionalProperties" type="checkbox" class="form-check-input" id="HasAdditionalProperties"/>
+	<span asp-validation-for="HasAdditionalProperties" class="text-danger"></span>
+
+	<div id="attributeSection" style="display:none">
+		<div id="attributeTemplates" data-attribute-index="@Model.Attributes.Count" data-enum-options="@Html.Raw(enumOptionsHtml)">
+			@for (int i = 0; i < Model.Attributes.Count; i++)
+			{
+				<div class="attribute-definition mb-3">
+					<button type="button" class="btn-close remove-attribute" aria-label="Close"></button>
+
+					<label>Ключ:</label>
+					<input name="Attributes[@i].Key" class="form-control"/>
+
+					<label>Етикет:</label>
+					<input name="Attributes[@i].Label" class="form-control"/>
+
+					<label>Тип:</label>
+					<select name="Attributes[${index}].DataType" class="form-control">
+						@foreach (var type in (IEnumerable<SelectListItem>)ViewBag.AttributeDataTypes)
+						{
+							<option value="@type.Value">@type.Text</option>
+						}
+					</select>
+
+					<label>Предефинирани стойности?</label>
+					<input type="checkbox" name="Attributes[@i].HasPredefinedValue"/>
+
+					<label>Задължително?</label>
+					<input type="checkbox" name="Attributes[@i].IsRequired"/>
+				</div>
+			}
+		</div>
+
+		<button type="button" class="btn btn-secondary" id="addAttribute">Добави още</button>
+	</div>
+
+	<br>
+	<button class="btn btn-primary" type="submit">Запази</button>
 </form>
+
+@section Scripts {
+	<script src="~/js/AddProductTypeForm.js"></script>
+}

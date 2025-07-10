@@ -8,4 +8,9 @@ public class AddProductTypeForm
     [Required]
     [StringLength(NameMaxLength, MinimumLength = NameMinLength, ErrorMessage = "Името трябва да бъде между {2} и {1} символа!")]
     public string Name { get; set; } = null!;
+
+    [Required]
+    public bool HasAdditionalProperties { get; set; }
+
+    public ICollection<AttributeDefinitionForm> Attributes { get; set; } = new HashSet<AttributeDefinitionForm>();
 }
