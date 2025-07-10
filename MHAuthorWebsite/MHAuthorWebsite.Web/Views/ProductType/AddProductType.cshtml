@@ -1,0 +1,11 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.ProductType;
+@model AddProductTypeForm
+
+<h1>Create a New Post</h1>
+
+<form method="POST" asp-controller="ProductType" asp-action="AddProductType">
+    <label for="title">Category name:</label><br>
+    <input class="form-control type="text" id="title" name="title" required asp-for="@Model.Name"><br><br>
+
+    <button class="btn btn-primary" type="submit">Submit</button>
+</form>
