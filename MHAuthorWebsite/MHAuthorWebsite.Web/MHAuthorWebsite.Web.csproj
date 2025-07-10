@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MHAuthorWebsite.Core\MHAuthorWebsite.Core.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Data\MHAuthorWebsite.Data.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Web.ViewModels\MHAuthorWebsite.Web.ViewModels.csproj" />
   </ItemGroup>

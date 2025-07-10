@@ -1,4 +1,7 @@
+using MHAuthorWebsite.Core;
+using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data;
+using MHAuthorWebsite.Data.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +16,10 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
+
+builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
 
 var app = builder.Build();
 
