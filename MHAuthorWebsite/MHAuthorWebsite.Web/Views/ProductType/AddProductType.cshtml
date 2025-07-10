@@ -10,7 +10,7 @@
 
 <h1>Добави категория</h1>
 
-<form method="POST" asp-controller="ProductType" asp-action="AddProductType">
+<form method="POST" asp-controller="ProductType" asp-action="AddProductType" id="addProductTypeForm">
 	<label asp-for="Name">Име:</label><br>
 	<input asp-for="Name" class="form-control" /><br>
 	<span asp-validation-for="Name" class="text-danger"></span>
@@ -26,19 +26,26 @@
 				<div class="attribute-definition mb-3">
 					<button type="button" class="btn-close remove-attribute" aria-label="Close"></button>
 
-					<label>Ключ:</label>
-					<input name="Attributes[@i].Key" class="form-control"/>
+					@{
+						int i1 = i;
+					}
 
-					<label>Етикет:</label>
-					<input name="Attributes[@i].Label" class="form-control"/>
+					<label asp-for="Attributes.ElementAt(i1).Key">Ключ:</label>
+					<input asp-for="Attributes.ElementAt(i1).Key" class="form-control" />
+					<span asp-validation-for="Attributes.ElementAt(i1).Key" class="text-danger"></span>
 
-					<label>Тип:</label>
-					<select name="Attributes[${index}].DataType" class="form-control">
+					<label asp-for="Attributes.ElementAt(i1).Label">Етикет:</label>
+					<input asp-for="Attributes.ElementAt(i1).Label" class="form-control" />
+					<span asp-validation-for="Attributes.ElementAt(i1).Label" class="text-danger"></span>
+
+					<label asp-for="Attributes.ElementAt(i1).DataType">Тип:</label>
+					<select asp-for="Attributes.ElementAt(i1).DataType" name="Attributes[${index}].DataType" class="form-control">
 						@foreach (var type in (IEnumerable<SelectListItem>)ViewBag.AttributeDataTypes)
 						{
 							<option value="@type.Value">@type.Text</option>
 						}
 					</select>
+					<span asp-validation-for="Attributes.ElementAt(i1).DataType" class="text-danger"></span>
 
 					<label>Предефинирани стойности?</label>
 					<input type="checkbox" name="Attributes[@i].HasPredefinedValue"/>

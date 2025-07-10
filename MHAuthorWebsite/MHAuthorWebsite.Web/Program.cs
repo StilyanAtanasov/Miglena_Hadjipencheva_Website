@@ -13,7 +13,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// TODO FIX
 builder.Services
     .AddDefaultIdentity<IdentityUser>(options =>
     {
