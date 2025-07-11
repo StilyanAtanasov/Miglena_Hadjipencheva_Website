@@ -29,6 +29,9 @@ public class ProductTypeController : BaseController
                 Text = e.GetDisplayName()
             }).ToList();
 
+        if (!f.Attributes.Any())
+            f.Attributes.Add(new());
+
         return View(f);
     }
 
