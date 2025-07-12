@@ -23,6 +23,7 @@ builder.Services
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
 builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 

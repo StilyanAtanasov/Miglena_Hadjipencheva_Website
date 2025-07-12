@@ -3,7 +3,7 @@
 
 <h1>Добави продукт</h1>
 
-<form asp-controller="Product" asp-action="AddProduct" method="post" class="needs-validation" novalidate>
+<form asp-controller="Product" asp-action="AddProduct" id="addProductForm" method="post" novalidate>
 	<div class="mb-3">
 		<label asp-for="Name" class="form-label">Име</label>
 		<input asp-for="Name" class="form-control" />
@@ -30,13 +30,16 @@
 
 	<div class="mb-3">
 		<label asp-for="ProductTypeId" class="form-label">Категория</label>
-		<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" class="form-select"></select>
+		<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" id="selectProductType" class="form-select"></select>
 		<span asp-validation-for="ProductTypeId" class="text-danger"></span>
 	</div>
+	
+	<div id="productTypeAttributesContainer"></div>
 
 	<button type="submit" class="btn btn-primary">Запази</button>
 </form>
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script src="~/js/addProductForm.js"></script>
 }

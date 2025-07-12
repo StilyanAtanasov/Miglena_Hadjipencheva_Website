@@ -1,0 +1,38 @@
+document.addEventListener("DOMContentLoaded", function () {
+  const categorySelect = document.getElementById("selectProductType");
+  const attributesContainer = document.getElementById(
+    "productTypeAttributesContainer"
+  );
+
+  categorySelect.addEventListener("change", function () {
+    const selectedId = this.value;
+
+    if (!selectedId) {
+      attributesContainer.innerHTML = "";
+      return;
+    }
+
+    fetch(`/Product/GetCategoryTypeAttributes/${selectedId}`, {
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    })
+      .then((response) => {
+        if (!response.ok)
+          throw new Error("Грешка при зареждане на атрибутите.");
+        return response.text();
+      })
+      .then((html) => {
+        attributesContainer.innerHTML = html;
+
+        const $form = $("#addProductForm");
+        $form.unbind();
+        $form.removeData("validator");
+        $form.removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse($form);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  });
+});

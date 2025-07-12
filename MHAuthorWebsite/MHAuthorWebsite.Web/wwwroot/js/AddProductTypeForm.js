@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function addDefinitionFields() {
-    let templateHtml = document.getElementById("attribute-template").innerHTML;
+    templateWrapper.innerHTML;
     templateHtml = templateHtml.replace(/__INDEX__/g, index);
     container.insertAdjacentHTML("beforeend", templateHtml);
 
