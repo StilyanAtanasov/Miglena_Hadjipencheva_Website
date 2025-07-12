@@ -1,9 +1,11 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.ProductType;
+using Microsoft.EntityFrameworkCore;
 
 namespace MHAuthorWebsite.Core;
 
@@ -48,4 +50,14 @@ public class ProductTypeService : IProductTypeService
 
         return ServiceResult.Ok();
     }
+
+    public async Task<ICollection<ProductTypeDto>> GetAllReadonlyAsync() =>
+        await _repository
+            .AllReadonly<ProductType>()
+            .Select(pt => new ProductTypeDto
+            {
+                Id = pt.Id,
+                Name = pt.Name
+            })
+            .ToArrayAsync();
 }

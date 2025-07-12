@@ -9,6 +9,12 @@ public static class EntityConstraints
         public const byte DescriptionMinLength = 15;
         public const ushort DescriptionMaxLength = 4000;
 
+        public const byte PriceMinValue = 0;
+        public const ushort PriceMaxValue = 25_000;
+
+        public const byte StockQuantityMinValue = 0;
+        public const uint StockQuantityMaxValue = 1_000_000;
+
         public const string PriceSqlType = "decimal(18, 2)";
     }
 

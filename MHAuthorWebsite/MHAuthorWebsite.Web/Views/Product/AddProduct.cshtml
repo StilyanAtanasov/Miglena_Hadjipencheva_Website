@@ -1,0 +1,42 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@model AddProductForm
+
+<h1>Добави продукт</h1>
+
+<form asp-controller="Product" asp-action="AddProduct" method="post" class="needs-validation" novalidate>
+	<div class="mb-3">
+		<label asp-for="Name" class="form-label">Име</label>
+		<input asp-for="Name" class="form-control" />
+		<span asp-validation-for="Name" class="text-danger"></span>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="Description" class="form-label">Описание</label>
+		<textarea asp-for="Description" class="form-control"></textarea>
+		<span asp-validation-for="Description" class="text-danger"></span>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="Price" class="form-label">Цена</label>
+		<input asp-for="Price" type="number" class="form-control" />
+		<span asp-validation-for="Price" class="text-danger"></span>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="StockQuantity" class="form-label">Количество</label>
+		<input asp-for="StockQuantity" type="number" class="form-control" />
+		<span asp-validation-for="StockQuantity" class="text-danger"></span>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="ProductTypeId" class="form-label">Категория</label>
+		<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" class="form-select"></select>
+		<span asp-validation-for="ProductTypeId" class="text-danger"></span>
+	</div>
+
+	<button type="submit" class="btn btn-primary">Запази</button>
+</form>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}
