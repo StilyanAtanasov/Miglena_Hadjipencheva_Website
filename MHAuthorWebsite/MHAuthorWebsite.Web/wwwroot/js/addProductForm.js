@@ -1,38 +1,41 @@
 document.addEventListener("DOMContentLoaded", function () {
   const categorySelect = document.getElementById("selectProductType");
+  RetrieveAttributes();
+
+  categorySelect.addEventListener("change", RetrieveAttributes);
+});
+
+function RetrieveAttributes() {
   const attributesContainer = document.getElementById(
     "productTypeAttributesContainer"
   );
 
-  categorySelect.addEventListener("change", function () {
-    const selectedId = this.value;
+  const selectedId = this.value;
 
-    if (!selectedId) {
-      attributesContainer.innerHTML = "";
-      return;
-    }
+  if (!selectedId) {
+    attributesContainer.innerHTML = "";
+    return;
+  }
 
-    fetch(`/Product/GetCategoryTypeAttributes/${selectedId}`, {
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
+  fetch(`/Product/GetCategoryTypeAttributes/${selectedId}`, {
+    headers: {
+      "X-Requested-With": "XMLHttpRequest",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) throw new Error("Грешка при зареждане на атрибутите.");
+      return response.text();
     })
-      .then((response) => {
-        if (!response.ok)
-          throw new Error("Грешка при зареждане на атрибутите.");
-        return response.text();
-      })
-      .then((html) => {
-        attributesContainer.innerHTML = html;
+    .then((html) => {
+      attributesContainer.innerHTML = html;
 
-        const $form = $("#addProductForm");
-        $form.unbind();
-        $form.removeData("validator");
-        $form.removeData("unobtrusiveValidation");
-        $.validator.unobtrusive.parse($form);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  });
-});
+      const $form = $("#addProductForm");
+      $form.unbind();
+      $form.removeData("validator");
+      $form.removeData("unobtrusiveValidation");
+      $.validator.unobtrusive.parse($form);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
