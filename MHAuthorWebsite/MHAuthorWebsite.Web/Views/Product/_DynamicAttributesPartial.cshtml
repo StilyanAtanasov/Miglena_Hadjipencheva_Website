@@ -1,26 +1,26 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
-@using MHAuthorWebsite.Data.Models.Enums
-@using System.ComponentModel.DataAnnotations
+@using MHAuthorWebsite.Web.Utils
 @model ICollection<AttributeValueForm>
 
 @for (int i = 0; i < Model.Count; i++)
 {
-	<div class="mb-3 attribute-field">
-		@{
-			AttributeValueForm a = Model.ElementAt(i);
-		}
+	AttributeValueForm a = Model.ElementAt(i);
+	string inputType = AttributeDataTypeMapper.HtmlInputTypes[a.DataType];
 
+	<div class="mb-3">
 		<label class="form-label">@a.Label</label>
 
-		@if (a.DataType == AttributeDataType.Text)
-		{
-			<input name="DynamicAttributes[@i].Value" class="form-control" />
-		}
-		else if (a.DataType == AttributeDataType.Number)
-		{
-			<input type="number" name="DynamicAttributes[@i].Value" class="form-control" />
-		}
+		<input 
+			type="@inputType"
+			name="DynamicAttributes[@i].Value"
+			class="form-control"
+			data-val="true"
+			data-val-required="@(a.IsRequired ? $"Полето \"{a.Label}\" е задължително." : null)"
+			style="-webkit-appearance: textarea" />
 
 		<input type="hidden" name="DynamicAttributes[@i].Key" value="@a.Key" />
+		<span class="text-danger"
+		      data-valmsg-for="DynamicAttributes[@i].Value"
+		      data-valmsg-replace="true"></span>
 	</div>
 }
