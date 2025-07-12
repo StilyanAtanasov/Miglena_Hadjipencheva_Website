@@ -1,10 +1,5 @@
-﻿@using MHAuthorWebsite.Web.ViewModels.ProductType;
+﻿@using MHAuthorWebsite.Web.ViewModels.ProductType
 @model AddProductTypeForm
-
-@{
-	var dummyAttribute = new AttributeDefinitionForm();
-	ViewData.TemplateInfo.HtmlFieldPrefix = "Attributes[0]";
-}
 
 <h1>Добави категория</h1>
 
@@ -22,7 +17,7 @@
 			@for (int i = 0; i < Model.Attributes.Count; i++)
 			{
 				var i1 = i;
-				@Html.Partial("AttributeDefinitionForm", dummyAttribute, ViewData)
+				@Html.EditorFor(x => x.Attributes[i1], "AttributeDefinitionForm")
 			}
 		</div>
 
@@ -34,11 +29,10 @@
 </form>
 
 <div id="attribute-template" class="d-none">
-	@Html.Partial("AttributeDefinitionForm", dummyAttribute, ViewData)
+	@Html.Editor("Attributes[__INDEX__]", "AttributeDefinitionForm", new { })
 </div>
-
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
-	<script src="~/js/AddProductTypeForm.js"></script>
+	<script src="~/js/addProductTypeForm.js"></script>
 }

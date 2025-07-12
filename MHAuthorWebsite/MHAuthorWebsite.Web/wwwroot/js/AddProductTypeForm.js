@@ -12,41 +12,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
     hasPropsCheckbox.addEventListener("change", function () {
       attributeSection.style.display = this.checked ? "block" : "none";
+      if (index == 0) addDefinitionFields();
     });
   }
 
   const addButton = document.getElementById("addAttribute");
-  if (addButton) {
-    addButton.addEventListener("click", function () {
-      let newTemplate = templateWrapper.innerHTML
-        .replace(/\[0\]/g, `[${index}]`)
-        .replace(/_0__/g, `_${index}__`);
+  if (addButton) addButton.addEventListener("click", addDefinitionFields);
 
-      container.insertAdjacentHTML("beforeend", newTemplate);
-      rebindValidators();
+  document.addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-attribute")) {
+      e.target.closest(".attribute-definition").remove();
+      index--;
+    }
+  });
 
-      index++;
-    });
+  $("#AddProductTypeForm").on("submit", function (e) {
+    if (!$(this).valid()) {
+      e.preventDefault();
+      return;
+    }
+  });
+
+  function rebindValidators() {
+    const $form = $("#AddProductTypeForm");
+    $form.unbind();
+    $form.removeData("validator");
+    $form.removeData("unobtrusiveValidation");
+    $.validator.unobtrusive.parse($form);
   }
-});
 
-document.addEventListener("click", function (e) {
-  if (e.target && e.target.classList.contains("remove-attribute")) {
-    e.target.closest(".attribute-definition").remove();
-  }
-});
+  function addDefinitionFields() {
+    let templateHtml = document.getElementById("attribute-template").innerHTML;
+    templateHtml = templateHtml.replace(/__INDEX__/g, index);
+    container.insertAdjacentHTML("beforeend", templateHtml);
 
-function rebindValidators() {
-  const $form = $("#AddProductTypeForm");
-  $form.unbind();
-  $form.removeData("validator");
-  $form.removeData("unobtrusiveValidation");
-  $.validator.unobtrusive.parse($form);
-}
+    rebindValidators();
 
-$("#AddProductTypeForm").on("submit", function (e) {
-  if (!$(this).valid()) {
-    e.preventDefault();
-    return;
+    index++;
   }
 });

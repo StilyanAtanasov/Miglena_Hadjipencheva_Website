@@ -8,7 +8,7 @@ public abstract class EfRepository : IRepository
 {
     private readonly DbContext _context;
 
-    public EfRepository(DbContext context) => _context = context;
+    protected EfRepository(DbContext context) => _context = context;
 
     public void Dispose() => _context.Dispose();
     public async ValueTask DisposeAsync() => await _context.DisposeAsync();
@@ -127,7 +127,7 @@ public abstract class EfRepository : IRepository
     // TRANSACTION SUPPORT
     public async Task ExecuteInTransactionAsync(Func<Task> action)
     {
-        using IDbContextTransaction? transaction = await _context.Database.BeginTransactionAsync();
+        await using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
         try
         {
             await action();

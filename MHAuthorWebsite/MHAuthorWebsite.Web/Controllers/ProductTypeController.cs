@@ -27,10 +27,8 @@ public class ProductTypeController : BaseController
             {
                 Value = ((int)e).ToString(),
                 Text = e.GetDisplayName()
-            }).ToList();
-
-        if (!f.Attributes.Any())
-            f.Attributes.Add(new());
+            })
+            .ToList();
 
         return View(f);
     }
@@ -46,7 +44,8 @@ public class ProductTypeController : BaseController
                 {
                     Value = ((int)e).ToString(),
                     Text = e.GetDisplayName()
-                }).ToList();
+                })
+                .ToList();
 
             return View(form);
         }
