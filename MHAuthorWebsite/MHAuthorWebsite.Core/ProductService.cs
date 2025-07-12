@@ -14,9 +14,42 @@ public class ProductService : IProductService
 
     public ProductService(IApplicationRepository repository) => _repository = repository;
 
-    public Task<ServiceResult> AddProductAsync(AddProductForm model)
+    public async Task<ServiceResult> AddProductAsync(AddProductForm model)
     {
-        throw new NotImplementedException();
+        try
+        {
+            Product product = new()
+            {
+                Name = model.Name,
+                Description = model.Description,
+                Price = model.Price,
+                ProductTypeId = model.ProductTypeId,
+                StockQuantity = model.StockQuantity,
+            };
+
+            await _repository.AddAsync(product);
+            await _repository.SaveChangesAsync();
+
+            if (model.Attributes.Any())
+            {
+                ICollection<ProductAttribute> attributes = model.Attributes
+                    .Select(a => new ProductAttribute
+                    {
+                        Key = a.Key,
+                        Value = a.Value,
+                        ProductId = product.Id
+                    })
+                    .ToArray();
+
+                await _repository.AddRangeAsync(attributes);
+                await _repository.SaveChangesAsync();
+            }
+            return ServiceResult.Ok();
+        }
+        catch (Exception)
+        {
+            return ServiceResult.Failure();
+        }
     }
 
     public async Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId) =>

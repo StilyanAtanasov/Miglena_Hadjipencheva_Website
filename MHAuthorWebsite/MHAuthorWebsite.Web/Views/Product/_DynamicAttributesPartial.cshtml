@@ -12,15 +12,16 @@
 
 		<input 
 			type="@inputType"
-			name="DynamicAttributes[@i].Value"
+			name="Attributes[@i].Value"
 			class="form-control"
 			data-val="true"
 			data-val-required="@(a.IsRequired ? $"Полето \"{a.Label}\" е задължително." : null)"
 			style="-webkit-appearance: textarea" />
 
-		<input type="hidden" name="DynamicAttributes[@i].Key" value="@a.Key" />
+		<input type="hidden" name="Attributes[@i].Key" value="@a.Key" />
+		<input type="hidden" name="Attributes[@i].Label" value="@a.Label" />
 		<span class="text-danger"
-		      data-valmsg-for="DynamicAttributes[@i].Value"
+		      data-valmsg-for="Attributes[@i].Value"
 		      data-valmsg-replace="true"></span>
 	</div>
 }

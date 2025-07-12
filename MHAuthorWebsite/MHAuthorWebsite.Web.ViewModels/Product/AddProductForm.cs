@@ -24,4 +24,6 @@ public class AddProductForm
 
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public int ProductTypeId { get; set; }
+
+    public ICollection<AttributeValueForm> Attributes { get; set; } = new HashSet<AttributeValueForm>();
 }

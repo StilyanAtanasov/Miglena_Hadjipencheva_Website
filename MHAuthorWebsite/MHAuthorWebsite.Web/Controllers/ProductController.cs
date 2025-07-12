@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Core.Contracts;
+﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Web.ViewModels.Product;
@@ -32,6 +33,28 @@ public class ProductController : Controller
             .ToArray();
 
         return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddProduct(AddProductForm model)
+    {
+        if (!ModelState.IsValid)
+        {
+            ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
+            ViewBag.ProductTypes = productTypes
+                .Select(pt => new SelectListItem
+                {
+                    Value = pt.Id.ToString(),
+                    Text = pt.Name
+                })
+                .ToArray();
+            return View(model);
+        }
+
+        ServiceResult result = await _productService.AddProductAsync(model);
+        if (!result.Success) return StatusCode(500);
+
+        return RedirectToAction(nameof(Index), "Home");
     }
 
     [HttpGet("Product/GetCategoryTypeAttributes/{productTypeId}")]
