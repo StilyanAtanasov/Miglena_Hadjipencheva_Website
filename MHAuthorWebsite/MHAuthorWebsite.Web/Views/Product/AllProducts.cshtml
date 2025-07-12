@@ -1,0 +1,26 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@model IEnumerable<ProductCardViewModel>
+
+@{
+	ViewData["Title"] = "Магазин";
+}
+
+<h1 class="mb-4">Магазин</h1>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+	@foreach (var product in Model)
+	{
+		<div class="col">
+			<div class="card h-100 shadow-sm">
+				<div class="card-body d-flex flex-column">
+					<h4 class="card-title">@product.Name</h4>
+					<span class="card-text">@product.ProductType</span>
+					<p class="card-text text-muted">@product.ShortDescription</p>
+					<p class="mt-auto fw-bold">@product.Price.ToString("F2") лв.</p>
+					<span class="card-text text-muted">@(product.IsAvailable ? "Налично" : "Изчерпано")</span>
+					<a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary mt-2">Виж повече</a>
+				</div>
+			</div>
+		</div>
+	}
+</div>

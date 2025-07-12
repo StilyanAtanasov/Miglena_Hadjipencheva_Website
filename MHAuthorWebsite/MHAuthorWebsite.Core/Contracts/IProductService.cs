@@ -12,7 +12,7 @@ public interface IProductService
 
     // Task<ServiceResult> DeleteProductAsync(int productId);
 
-    // Task<ServiceResult<ICollection<ProductDto>>> GetAllProductsAsync();
+    Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync();
 
     Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId);
 }

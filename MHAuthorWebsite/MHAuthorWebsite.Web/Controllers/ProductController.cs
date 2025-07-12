@@ -57,6 +57,13 @@ public class ProductController : Controller
         return RedirectToAction(nameof(Index), "Home");
     }
 
+    [HttpGet]
+    public async Task<IActionResult> AllProducts()
+    {
+        ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync();
+        return View(products);
+    }
+
     [HttpGet("Product/GetCategoryTypeAttributes/{productTypeId}")]
     public async Task<IActionResult> GetCategoryTypeAttributes([FromRoute] int productTypeId)
     {

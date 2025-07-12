@@ -52,6 +52,23 @@ public class ProductService : IProductService
         }
     }
 
+    public async Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync()
+    {
+        return await _repository
+            .AllReadonly<Product>()
+            .Include(p => p.ProductType)
+            .Select(p => new ProductCardViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                ShortDescription = p.Description.Length > 100 ? $"{p.Description.Substring(0, 100)}..." : p.Description,
+                Price = p.Price,
+                IsAvailable = p.StockQuantity > 0,
+                ProductType = p.ProductType.Name
+            })
+            .ToArrayAsync();
+    }
+
     public async Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId) =>
         await _repository
             .Where<ProductAttributeDefinition>(pad => pad.ProductTypeId == productTypeId)
