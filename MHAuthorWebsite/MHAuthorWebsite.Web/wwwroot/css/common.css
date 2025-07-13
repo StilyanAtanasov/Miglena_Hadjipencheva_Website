@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap");
+
+:root {
+  --font-primary: "Sofia Sans Condensed";
+}
+
+html {
+  font-family: var(--font-primary), sans-serif;
+  font-size: 10px;
+  min-height: 100vh;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn {
+  cursor: pointer;
+}
+
+.btn-none {
+  background-color: transparent;
+  border: none;
+}
