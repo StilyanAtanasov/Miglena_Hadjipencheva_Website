@@ -14,5 +14,7 @@ public interface IProductService
 
     Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync();
 
+    Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync();
+
     Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId);
 }

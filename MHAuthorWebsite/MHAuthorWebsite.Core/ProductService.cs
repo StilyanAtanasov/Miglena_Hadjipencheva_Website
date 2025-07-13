@@ -52,9 +52,8 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync()
-    {
-        return await _repository
+    public async Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync() =>
+        await _repository
             .AllReadonly<Product>()
             .Include(p => p.ProductType)
             .Select(p => new ProductCardViewModel
@@ -67,7 +66,19 @@ public class ProductService : IProductService
                 ProductType = p.ProductType.Name
             })
             .ToArrayAsync();
-    }
+    public async Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync() =>
+        await _repository
+            .AllReadonly<Product>()
+            .Include(p => p.ProductType)
+            .Select(p => new ProductListViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                StockQuantity = p.StockQuantity,
+                ProductTypeName = p.ProductType.Name
+            })
+            .ToArrayAsync();
 
     public async Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId) =>
         await _repository
