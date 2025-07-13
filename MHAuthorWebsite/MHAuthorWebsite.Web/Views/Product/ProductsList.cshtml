@@ -6,6 +6,7 @@
 }
 
 <h1 class="mb-4">Списък с продукти</h1>
+<a class="nav-link text-dark text-end text-primary" asp-controller="Product" asp-action="AddProduct"> + Добави продукт</a>
 
 <table class="table table-bordered table-hover align-middle">
 	<thead class="table-light">
@@ -29,7 +30,7 @@
 			foreach (var product in Model)
 			{
 				<tr>
-					<td><a asp-controller ="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></td>
+					<td><a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></td>
 					<td>@product.ProductTypeName</td>
 					<td>@product.Price.ToString("F2") лв.</td>
 					<td>@product.StockQuantity</td>

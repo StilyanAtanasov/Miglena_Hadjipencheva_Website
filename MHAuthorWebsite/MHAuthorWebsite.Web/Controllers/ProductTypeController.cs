@@ -53,6 +53,6 @@ public class ProductTypeController : BaseController
         ServiceResult result = await _productTypeService.AddProductTypeAsync(form);
         if (!result.Success) return StatusCode(500);
 
-        return RedirectToAction(nameof(Index), "Home");
+        return RedirectToAction("Dashboard", "Admin");
     }
 }

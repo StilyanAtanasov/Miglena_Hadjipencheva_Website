@@ -54,7 +54,7 @@ public class ProductController : Controller
         ServiceResult result = await _productService.AddProductAsync(model);
         if (!result.Success) return StatusCode(500);
 
-        return RedirectToAction(nameof(Index), "Home");
+        return RedirectToAction(nameof(ProductsList));
     }
 
     [HttpGet]
