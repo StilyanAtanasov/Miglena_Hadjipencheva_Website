@@ -15,6 +15,9 @@ public static class EntityConstraints
         public const byte StockQuantityMinValue = 0;
         public const uint StockQuantityMaxValue = 1_000_000;
 
+        public const bool IsPublicDefaultValue = false;
+        public const bool IsDeletedDefaultValue = false;
+
         public const string PriceSqlType = "decimal(18, 2)";
     }
 

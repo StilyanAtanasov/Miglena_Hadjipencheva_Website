@@ -48,6 +48,9 @@ public class Product
 
     public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
 
+    [Comment("Determines if the product should be visible for basic users")]
+    public bool IsPublic { get; set; }
+
     [Comment("Soft delete flag")]
     public bool IsDeleted { get; set; }
 }

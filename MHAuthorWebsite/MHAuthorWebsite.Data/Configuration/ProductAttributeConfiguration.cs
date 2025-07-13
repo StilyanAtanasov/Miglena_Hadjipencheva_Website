@@ -13,5 +13,8 @@ public class ProductAttributeConfiguration : IEntityTypeConfiguration<ProductAtt
             .WithMany(p => p.Attributes)
             .HasForeignKey(a => a.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasQueryFilter(pa => !pa.Product.IsDeleted);
     }
 }

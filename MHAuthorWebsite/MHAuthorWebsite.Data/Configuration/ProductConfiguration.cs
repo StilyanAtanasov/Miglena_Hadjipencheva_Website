@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
 
 namespace MHAuthorWebsite.Data.Configuration;
 
@@ -35,6 +36,14 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .WithMany(pt => pt.Products)
             .HasForeignKey(p => p.ProductTypeId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .Property(p => p.IsPublic)
+            .HasDefaultValue(IsPublicDefaultValue);
+
+        builder
+            .Property(p => p.IsDeleted)
+            .HasDefaultValue(IsDeletedDefaultValue);
 
         builder
             .HasQueryFilter(p => !p.IsDeleted);
