@@ -2,18 +2,33 @@
 
 :root {
   --font-primary: "Sofia Sans Condensed";
+  --color-dark: rgba(24, 23, 23, 0.879);
+  --color-grey: rgba(97, 97, 97, 0.923);
+  --color-bright: #fcfcfc;
 }
 
 html {
   font-family: var(--font-primary), sans-serif;
   font-size: 10px;
   min-height: 100vh;
+  padding: 10rem 0 7rem 0;
+}
+
+body {
+  display: flex;
 }
 
 .flex-row {
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 1rem;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   gap: 1rem;
 }
 

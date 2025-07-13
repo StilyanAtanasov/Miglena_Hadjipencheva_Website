@@ -5,11 +5,12 @@ header {
   top: 0;
   z-index: 1000;
   transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  box-shadow: none;
+  box-shadow: 0.5rem 0.5rem 1rem var(--color-grey);
   padding: 1rem 3rem;
-  background-color: #fff;
-  color: #333;
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+  background-color: var(--color-bright);
+  color: var(--color-dark);
+  height: 10rem;
+  border-radius: 0 1rem 1rem 0;
 }
 
 header nav {
@@ -22,7 +23,7 @@ header ul {
 
 nav a {
   text-decoration: none;
-  color: #333;
+  color: var(--color-dark);
   margin-right: 1.5rem;
   position: relative;
   transition: color 0.3s ease-in-out;
@@ -52,10 +53,11 @@ footer {
   bottom: 0;
   z-index: 1000;
   transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  box-shadow: none;
   padding: 2rem 3rem;
-  color: #fff;
-  background-color: #333;
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+  color: var(--color-bright);
+  background-color: var(--color-dark);
+  box-shadow: 0 0 2rem var(--color-grey);
   text-align: center;
+  height: 7rem;
+  border-radius: 0 1rem 1rem 0;
 }
