@@ -58,7 +58,7 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Image", b =>
@@ -87,7 +87,7 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Order", b =>
@@ -118,7 +118,7 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Product", b =>
@@ -168,7 +168,7 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.HasIndex("ProductTypeId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductAttribute", b =>
@@ -205,7 +205,7 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductAttributes");
+                    b.ToTable("ProductAttributes", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductAttributeDefinition", b =>
@@ -249,7 +249,7 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.HasIndex("ProductTypeId");
 
-                    b.ToTable("ProductAttributeDefinitions");
+                    b.ToTable("ProductAttributeDefinitions", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductAttributeOption", b =>
@@ -274,7 +274,7 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.HasIndex("AttributeDefinitionId");
 
-                    b.ToTable("ProductAttributeOptions");
+                    b.ToTable("ProductAttributeOptions", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductType", b =>
@@ -294,7 +294,7 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductTypes");
+                    b.ToTable("ProductTypes", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

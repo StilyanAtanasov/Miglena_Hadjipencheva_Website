@@ -15,6 +15,6 @@ public class ProductAttributeConfiguration : IEntityTypeConfiguration<ProductAtt
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
-            .HasQueryFilter(pa => !pa.Product.IsDeleted);
+            .HasQueryFilter(pa => !pa.Product.IsDeleted && pa.Product.IsPublic);
     }
 }

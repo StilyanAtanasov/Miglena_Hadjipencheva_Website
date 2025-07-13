@@ -46,6 +46,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasDefaultValue(IsDeletedDefaultValue);
 
         builder
-            .HasQueryFilter(p => !p.IsDeleted);
+            .HasQueryFilter(p => !p.IsDeleted && p.IsPublic);
     }
 }

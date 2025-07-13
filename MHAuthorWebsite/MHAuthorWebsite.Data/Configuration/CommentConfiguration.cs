@@ -9,6 +9,6 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
         builder
-            .HasQueryFilter(c => !c.Product.IsDeleted);
+            .HasQueryFilter(c => !c.Product.IsDeleted && c.Product.IsPublic);
     }
 }

@@ -9,6 +9,6 @@ public class ImageConfiguration : IEntityTypeConfiguration<Image>
     public void Configure(EntityTypeBuilder<Image> builder)
     {
         builder
-            .HasQueryFilter(i => !i.Product.IsDeleted);
+            .HasQueryFilter(i => !i.Product.IsDeleted && i.Product.IsPublic);
     }
 }
