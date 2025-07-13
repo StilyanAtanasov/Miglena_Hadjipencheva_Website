@@ -90,4 +90,14 @@ public class ProductController : Controller
 
         return PartialView("_DynamicAttributesPartial", attributes);
     }
+
+    [HttpPost("/Product/DeleteProduct/{productId}")]
+    public async Task<IActionResult> DeleteProduct([FromRoute] Guid productId)
+    {
+        ServiceResult result = await _productService.DeleteProductAsync(productId);
+        if (!result.Found) return NotFound();
+        if (!result.Success) return StatusCode(500);
+
+        return RedirectToAction(nameof(ProductsList));
+    }
 }

@@ -10,7 +10,7 @@ public interface IProductService
 
     // Task<ServiceResult> UpdateProductAsync(UpdateProductForm model);
 
-    // Task<ServiceResult> DeleteProductAsync(int productId);
+    Task<ServiceResult> DeleteProductAsync(Guid productId);
 
     Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync();
 

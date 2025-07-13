@@ -92,4 +92,21 @@ public class ProductService : IProductService
                 IsRequired = pad.IsRequired
             })
             .ToArrayAsync();
+
+    public async Task<ServiceResult> DeleteProductAsync(Guid productId)
+    {
+        try
+        {
+            Product? product = await _repository.GetByIdAsync<Product>(productId);
+            if (product is null) return ServiceResult.NotFound();
+
+            product.IsDeleted = true;
+            await _repository.SaveChangesAsync();
+            return ServiceResult.Ok();
+        }
+        catch (Exception)
+        {
+            return ServiceResult.Failure();
+        }
+    }
 }
