@@ -10,5 +10,7 @@ public class ProductListViewModel
 
     public int StockQuantity { get; set; }
 
+    public bool IsPublic { get; set; }
+
     public string ProductTypeName { get; set; } = null!;
 }

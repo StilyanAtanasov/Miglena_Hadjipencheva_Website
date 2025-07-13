@@ -17,4 +17,6 @@ public interface IProductService
     Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync();
 
     Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId);
+
+    Task<ServiceResult> ToggleProductPublicityAsync(Guid productId);
 }

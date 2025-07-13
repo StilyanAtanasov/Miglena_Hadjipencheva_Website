@@ -100,4 +100,14 @@ public class ProductController : Controller
 
         return RedirectToAction(nameof(ProductsList));
     }
+
+    [HttpPost("/Product/TogglePublicity/{productId}")]
+    public async Task<IActionResult> TogglePublicity([FromRoute] Guid productId)
+    {
+        ServiceResult result = await _productService.ToggleProductPublicityAsync(productId);
+        if (!result.Found) return NotFound();
+        if (!result.Success) return StatusCode(500);
+
+        return RedirectToAction(nameof(ProductsList));
+    }
 }

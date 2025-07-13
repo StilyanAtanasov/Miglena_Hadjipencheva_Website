@@ -34,6 +34,9 @@
 					<td>@product.Price.ToString("F2") лв.</td>
 					<td>@product.StockQuantity</td>
 					<td class="text-end">
+						<form asp-controller="Product" asp-action="TogglePublicity" asp-route-id="@product.Id" method="post" class="d-inline">
+							<button type="submit" class="btn btn-sm btn-primary">@(product.IsPublic ? "Скрий" : "Публикувай")</button>
+						</form>
 						<a asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning me-2">Редактирай</a>
 						<form asp-controller="Product" asp-action="DeleteProduct" asp-route-id="@product.Id" method="post" class="d-inline">
 							<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Сигурни ли сте, че искате да изтриете продукта?')">Изтрий</button>
