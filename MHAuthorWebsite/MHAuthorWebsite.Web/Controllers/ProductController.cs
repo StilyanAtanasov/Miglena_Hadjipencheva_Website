@@ -57,6 +57,16 @@ public class ProductController : Controller
         return RedirectToAction(nameof(ProductsList));
     }
 
+    [HttpGet("Product/Details/{productId}")]
+    public async Task<IActionResult> Details(Guid productId)
+    {
+        ServiceResult<ProductDetailsViewModel> result = await _productService.GetProductDetailsReadonlyAsync(productId);
+        if (!result.Found) return NotFound();
+        if (!result.Success) return StatusCode(500);
+
+        return View(result.Result);
+    }
+
     [HttpGet]
     public async Task<IActionResult> AllProducts()
     {

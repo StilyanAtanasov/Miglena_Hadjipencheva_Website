@@ -1,0 +1,58 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@model ProductDetailsViewModel
+
+@{
+    ViewData["Title"] = @Model.Name;
+}
+
+<h1 class="mb-4">@Model.Name</h1>
+<p><strong>Категория:</strong> @Model.ProductTypeName</p>
+
+<div class="row">
+    <!-- Details Section -->
+    <div class="col-md-6">
+        <h4>Информация за продукта</h4>
+        <p style="line-break: anywhere">@Model.Description</p>
+    </div>
+
+    <!-- Pricing & Order Section -->
+    <div class="col-md-6">
+        <h4>Наличност и поръчка</h4>
+        <p><strong>Цена:</strong> @Model.Price лв.</p>
+        <p>@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
+
+        @if (Model.IsInStock)
+        {
+            <form method="post" asp-action="Order" asp-controller="Product">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <div class="mb-2">
+                    <label for="quantity">Количество:</label>
+                    <input type="number" name="quantity" value="1" min="1" max="10" class="form-control w-25" />
+                </div>
+                <button type="submit" class="btn btn-success">Поръчай</button>
+            </form>
+        }
+    </div>
+</div>
+
+<hr class="my-4" />
+
+<!-- Additional Attributes Section -->
+@if (Model.Attributes.Any())
+{
+	<div>
+		<h4>Допълнителна информация</h4>
+
+		<table class="table table-bordered w-75">
+			<tbody>
+			@foreach (var a in Model.Attributes)
+			{
+				<tr>
+					<td>@a.Label</td>
+					<td>@a.Value</td>
+				</tr>
+			}
+			</tbody>
+		</table>
+	</div>
+}

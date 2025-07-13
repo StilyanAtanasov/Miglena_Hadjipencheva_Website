@@ -1,0 +1,18 @@
+﻿namespace MHAuthorWebsite.Web.ViewModels.Product;
+
+public class ProductDetailsViewModel
+{
+    public Guid Id { get; set; }
+
+    public string Name { get; set; } = null!;
+
+    public string Description { get; set; } = null!;
+
+    public string ProductTypeName { get; set; } = null!;
+
+    public decimal Price { get; set; }
+
+    public bool IsInStock { get; set; }
+
+    public ICollection<ProductAttributeDetailsViewModel> Attributes { get; set; } = new List<ProductAttributeDetailsViewModel>();
+}

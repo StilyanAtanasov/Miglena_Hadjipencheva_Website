@@ -52,6 +52,43 @@ public class ProductService : IProductService
         }
     }
 
+    public async Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId)
+    {
+        try
+        {
+            Product? product = await _repository
+                .AllReadonly<Product>()
+                .Include(p => p.ProductType)
+                .Include(p => p.Attributes)
+                .FirstOrDefaultAsync(p => !p.IsDeleted && p.Id == productId);
+
+            if (product is null) return ServiceResult<ProductDetailsViewModel>.NotFound();
+
+            ProductDetailsViewModel viewModel = new()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                IsInStock = product.StockQuantity > 0,
+                ProductTypeName = product.ProductType.Name,
+                Attributes = product.Attributes
+                    .Select(a => new ProductAttributeDetailsViewModel
+                    {
+                        Label = a.Key,
+                        Value = a.Value ?? _repository.FindByExpressionAsync<ProductAttributeOption>(pao => pao.Id == a.ProductAttributeOptionsId).Result!.Value // TODO : experiment when ProductAttributeOptionsId is used
+                    })
+                    .ToArray()
+            };
+
+            return ServiceResult<ProductDetailsViewModel>.Ok(viewModel);
+        }
+        catch (Exception)
+        {
+            return ServiceResult<ProductDetailsViewModel>.Failure();
+        }
+    }
+
     public async Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync() =>
         await _repository
             .AllReadonly<Product>()
@@ -66,6 +103,7 @@ public class ProductService : IProductService
                 ProductType = p.ProductType.Name
             })
             .ToArrayAsync();
+
     public async Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync() =>
         await _repository
             .AllReadonly<Product>()
