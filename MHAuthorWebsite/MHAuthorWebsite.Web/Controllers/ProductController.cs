@@ -121,14 +121,15 @@ public class ProductController : BaseController
         return RedirectToAction(nameof(ProductsList));
     }
 
-    [HttpPost("/Product/Like/{productId}")]
-    public async Task<IActionResult> Like([FromRoute] Guid productId)
+    [HttpPost("/Product/ToggleLike/{productId}")]
+    public async Task<IActionResult> ToggleLike([FromRoute] Guid productId)
     {
         string? userId = GetUserId();
         if (userId is null) return Unauthorized();
 
-        ServiceResult result = await _productService.LikeProduct(userId, productId);
+        ServiceResult result = await _productService.ToggleLikeProduct(userId, productId);
         if (!result.Found) return NotFound();
+        if (!result.HasPermission) return Unauthorized();
 
         string referer = Request.Headers["Referer"].ToString();
         if (!string.IsNullOrEmpty(referer)) return Redirect(referer);

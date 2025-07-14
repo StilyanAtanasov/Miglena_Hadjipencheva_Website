@@ -163,7 +163,7 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<ServiceResult> LikeProduct(string userId, Guid productId)
+    public async Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId)
     {
         Product? product = await _repository
             .All<Product>()
@@ -172,12 +172,13 @@ public class ProductService : IProductService
 
         if (product is null) return ServiceResult.NotFound();
 
-        if (product.Likes.All(u => u.Id != userId))
-        {
-            product.Likes.Add((await _userManager.FindByIdAsync(userId))!);
-            await _repository.SaveChangesAsync();
-        }
+        IdentityUser? user = await _userManager.FindByIdAsync(userId);
+        if (user is null) return ServiceResult.Forbidden();
 
+        if (product.Likes.All(u => u.Id != userId)) product.Likes.Add(user);
+        else product.Likes.Remove(user);
+
+        await _repository.SaveChangesAsync();
         return ServiceResult.Ok();
     }
 

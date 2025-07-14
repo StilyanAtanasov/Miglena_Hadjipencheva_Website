@@ -22,5 +22,5 @@ public interface IProductService
 
     Task<ServiceResult> ToggleProductPublicityAsync(Guid productId);
 
-    Task<ServiceResult> LikeProduct(string userId, Guid productId);
+    Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId);
 }
