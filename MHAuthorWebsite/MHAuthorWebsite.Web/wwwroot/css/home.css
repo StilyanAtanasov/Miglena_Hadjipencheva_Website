@@ -1,4 +1,5 @@
 .splash {
+  align-items: center;
   width: 100vw;
   height: calc(100vh - 10rem);
   color: #fff;
@@ -8,12 +9,21 @@
   background-image: url(../img/splash.webp);
 }
 
-.splash .title {
+.splash-text {
   position: absolute;
   top: 45vh;
   left: 65vw;
   transform: translate(-50%, -50%);
+}
+
+.splash-text .title {
   font-size: 7rem;
+}
+
+.splash-text .subtitle {
+  font-size: 3.8rem;
+  letter-spacing: 0.4rem;
+  text-decoration: overline;
 }
 
 @keyframes fadeIn {

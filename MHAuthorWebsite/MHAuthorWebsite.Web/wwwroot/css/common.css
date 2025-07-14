@@ -66,6 +66,12 @@ body {
   color: var(--color-secondary);
 }
 
+.subtitle {
+  font-size: 3rem;
+  letter-spacing: 0.07rem;
+  color: var(--color-secondary-ligth);
+}
+
 .text-error {
   color: var(--color-error);
 }
