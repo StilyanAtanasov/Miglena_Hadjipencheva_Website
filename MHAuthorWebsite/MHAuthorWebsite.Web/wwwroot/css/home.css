@@ -5,7 +5,6 @@
   color: #fff;
   text-align: center;
   padding: 10rem 4rem;
-  animation: fadeIn 1s ease-in-out;
   background-image: url(../img/splash.webp);
   background-repeat: no-repeat;
   background-size: cover;
@@ -41,11 +40,48 @@
   border-radius: 2rem;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.about {
+  height: 100vh;
+  font-size: 2rem;
+  position: relative;
+  justify-content: center;
+}
+
+.about::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 35%;
+  height: 100%;
+  background-color: var(--color-secondary);
+}
+
+.about-content {
+  position: relative;
+  z-index: 10;
+  justify-content: center;
+  gap: 8rem;
+}
+
+.about-image-wrapper {
+  background-color: var(--color-primary);
+  width: 30%;
+  padding: 0.8rem;
+  border-radius: 2rem;
+}
+
+.about-image-wrapper img {
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
+  border-radius: 1.5rem;
+}
+
+.about-text {
+  width: 35%;
+}
+
+.about-text .name {
+  font-size: 4rem;
 }

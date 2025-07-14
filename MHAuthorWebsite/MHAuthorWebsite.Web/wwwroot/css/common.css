@@ -29,6 +29,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 10rem);
+  animation: fadeIn 1s ease-in-out;
 }
 
 .flex-row {
@@ -74,4 +75,13 @@ body {
 
 .text-error {
   color: var(--color-error);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
