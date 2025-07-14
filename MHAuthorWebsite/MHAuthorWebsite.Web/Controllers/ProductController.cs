@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MHAuthorWebsite.Web.Controllers;
 
-public class ProductController : Controller
+public class ProductController : BaseController
 {
     private readonly IProductTypeService _productTypeService;
     private readonly IProductService _productService;
@@ -119,5 +119,20 @@ public class ProductController : Controller
         if (!result.Success) return StatusCode(500);
 
         return RedirectToAction(nameof(ProductsList));
+    }
+
+    [HttpPost("/Product/Like/{productId}")]
+    public async Task<IActionResult> Like([FromRoute] Guid productId)
+    {
+        string? userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
+        ServiceResult result = await _productService.LikeProduct(userId, productId);
+        if (!result.Found) return NotFound();
+
+        string referer = Request.Headers["Referer"].ToString();
+        if (!string.IsNullOrEmpty(referer)) return Redirect(referer);
+
+        return RedirectToAction(nameof(Index), "Home");
     }
 }

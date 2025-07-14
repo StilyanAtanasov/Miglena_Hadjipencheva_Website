@@ -4,6 +4,7 @@ using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Product;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace MHAuthorWebsite.Core;
@@ -11,8 +12,13 @@ namespace MHAuthorWebsite.Core;
 public class ProductService : IProductService
 {
     private readonly IApplicationRepository _repository;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public ProductService(IApplicationRepository repository) => _repository = repository;
+    public ProductService(IApplicationRepository repository, UserManager<IdentityUser> userManager)
+    {
+        _repository = repository;
+        _userManager = userManager;
+    }
 
     public async Task<ServiceResult> AddProductAsync(AddProductForm model)
     {
@@ -154,6 +160,24 @@ public class ProductService : IProductService
         {
             return ServiceResult.Failure();
         }
+    }
+
+    public async Task<ServiceResult> LikeProduct(string userId, Guid productId)
+    {
+        Product? product = await _repository
+            .All<Product>()
+            .Include(p => p.Likes)
+            .FirstOrDefaultAsync(p => p.Id == productId);
+
+        if (product is null) return ServiceResult.NotFound();
+
+        if (product.Likes.All(u => u.Id != userId))
+        {
+            product.Likes.Add((await _userManager.FindByIdAsync(userId))!);
+            await _repository.SaveChangesAsync();
+        }
+
+        return ServiceResult.Ok();
     }
 
     public async Task<ServiceResult> DeleteProductAsync(Guid productId)

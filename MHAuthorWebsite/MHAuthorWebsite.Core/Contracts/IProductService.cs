@@ -21,4 +21,6 @@ public interface IProductService
     Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId);
 
     Task<ServiceResult> ToggleProductPublicityAsync(Guid productId);
+
+    Task<ServiceResult> LikeProduct(string userId, Guid productId);
 }
