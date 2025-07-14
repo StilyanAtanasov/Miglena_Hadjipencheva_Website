@@ -7,23 +7,38 @@
   padding: 10rem 4rem;
   animation: fadeIn 1s ease-in-out;
   background-image: url(../img/splash.webp);
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .splash-text {
   position: absolute;
-  top: 45vh;
-  left: 65vw;
+  top: 51vh;
+  left: 68vw;
   transform: translate(-50%, -50%);
+  width: max-content;
 }
 
 .splash-text .title {
+  letter-spacing: 0.3rem;
   font-size: 7rem;
 }
 
 .splash-text .subtitle {
   font-size: 3.8rem;
   letter-spacing: 0.4rem;
-  text-decoration: overline;
+  position: relative;
+}
+
+.splash-text .subtitle::before {
+  content: "";
+  position: absolute;
+  top: -0.35rem;
+  left: 15%;
+  width: 70%;
+  height: 0.35rem;
+  background-color: var(--color-secondary-ligth);
+  border-radius: 2rem;
 }
 
 @keyframes fadeIn {
