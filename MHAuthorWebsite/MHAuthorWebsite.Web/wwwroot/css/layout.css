@@ -54,11 +54,20 @@ footer {
   font-size: 2.2rem;
   width: 100vw;
   transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  padding: 2rem 3rem;
+  padding: 2rem 15rem 2rem 12rem;
   color: var(--color-primary);
   background-color: var(--color-secondary);
   box-shadow: 0 0 2rem var(--color-grey);
-  text-align: center;
   height: 7rem;
   margin-top: auto;
+  justify-content: space-between;
+}
+
+footer .social-media {
+  gap: 2rem;
+  list-style-type: none;
+}
+
+footer .social-media li a {
+  color: var(--color-secondary-light);
 }
