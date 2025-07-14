@@ -70,7 +70,7 @@ public class ProductController : BaseController
     [HttpGet]
     public async Task<IActionResult> AllProducts()
     {
-        ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync();
+        ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId());
         return View(products);
     }
 

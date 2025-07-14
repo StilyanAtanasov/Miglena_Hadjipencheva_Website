@@ -95,7 +95,7 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync() =>
+    public async Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId) =>
         await _repository
             .AllReadonly<Product>()
             .Include(p => p.ProductType)
@@ -106,7 +106,8 @@ public class ProductService : IProductService
                 ShortDescription = p.Description.Length > 100 ? $"{p.Description.Substring(0, 100)}..." : p.Description,
                 Price = p.Price,
                 IsAvailable = p.StockQuantity > 0,
-                ProductType = p.ProductType.Name
+                ProductType = p.ProductType.Name,
+                IsLiked = userId != null && p.Likes.Any(u => u.Id == userId)
             })
             .ToArrayAsync();
 

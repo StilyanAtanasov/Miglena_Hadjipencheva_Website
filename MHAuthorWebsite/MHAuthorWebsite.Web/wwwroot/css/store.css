@@ -82,6 +82,8 @@
   font-size: 1.25rem;
 }
 
+/* When not liked*/
+
 .product .action-btns .btn.like .fa-regular.fa-heart {
   color: var(--color-secondary);
   visibility: visible;
@@ -100,6 +102,28 @@
 .product .action-btns .btn.like:hover .fa-solid.fa-heart {
   color: var(--color-secondary);
   visibility: visible;
+}
+
+/* When liked*/
+
+.product .action-btns .btn.like.liked .fa-regular.fa-heart {
+  color: transparent;
+  visibility: hidden;
+}
+
+.product .action-btns .btn.like.liked .fa-solid.fa-heart {
+  color: var(--color-secondary);
+  visibility: visible;
+}
+
+.product .action-btns .btn.like.liked:hover .fa-regular.fa-heart {
+  color: var(--color-secondary);
+  visibility: visible;
+}
+
+.product .action-btns .btn.like.liked:hover .fa-solid.fa-heart {
+  color: transparent;
+  visibility: hidden;
 }
 
 .product .action-btns .btn.order:hover {

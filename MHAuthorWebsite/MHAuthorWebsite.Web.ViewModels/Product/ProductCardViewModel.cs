@@ -17,4 +17,6 @@ public class ProductCardViewModel
     public decimal Price { get; set; }
 
     public bool IsAvailable { get; set; }
+
+    public bool IsLiked { get; set; }
 }

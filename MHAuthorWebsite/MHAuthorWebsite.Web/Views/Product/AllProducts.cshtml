@@ -25,7 +25,7 @@
 				</div>
 				<div class="action-btns flex-row">
 					<form asp-controller="Product" asp-action="Like" asp-route-id="@product.Id">
-						<button type="submit" class="btn like">
+						<button type="submit" class="btn like @(product.IsLiked ? "liked" : "")">
 							<span class="fa-stack">
 								<i class="fa-regular fa-heart fa-stack-2x"></i>
 								<i class="fa-solid fa-heart fa-stack-2x"></i>

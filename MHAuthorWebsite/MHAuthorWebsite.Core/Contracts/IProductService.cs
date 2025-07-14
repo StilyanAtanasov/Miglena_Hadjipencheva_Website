@@ -12,7 +12,7 @@ public interface IProductService
 
     Task<ServiceResult> DeleteProductAsync(Guid productId);
 
-    Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync();
+    Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId);
 
     Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId);
 
