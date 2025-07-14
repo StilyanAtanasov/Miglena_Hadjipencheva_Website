@@ -1,7 +1,7 @@
 header {
   font-size: 2.2rem;
   position: fixed;
-  width: 100%;
+  width: 100vw;
   top: 0;
   z-index: 1000;
   transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -10,7 +10,6 @@ header {
   background-color: var(--color-primary);
   color: var(--color-dark);
   height: 10rem;
-  border-radius: 0 1rem 1rem 0;
 }
 
 header nav {
@@ -53,10 +52,7 @@ nav a:hover::before {
 
 footer {
   font-size: 2.2rem;
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-  z-index: 1000;
+  width: 100vw;
   transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   padding: 2rem 3rem;
   color: var(--color-primary);
@@ -64,5 +60,5 @@ footer {
   box-shadow: 0 0 2rem var(--color-grey);
   text-align: center;
   height: 7rem;
-  border-radius: 0 1rem 1rem 0;
+  margin-top: auto;
 }

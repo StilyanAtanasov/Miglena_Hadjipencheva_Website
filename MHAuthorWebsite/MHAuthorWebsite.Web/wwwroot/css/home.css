@@ -1,16 +1,26 @@
 .splash {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  width: 100vw;
+  height: calc(100vh - 10rem);
   color: #fff;
   text-align: center;
-  padding: 80px 20px;
-  box-sizing: border-box;
+  padding: 10rem 4rem;
   animation: fadeIn 1s ease-in-out;
+  background-image: url(../img/splash.webp);
 }
 
-.splash h2 {
-  font-size: 3em;
-  margin: 20px 0;
+.splash .title {
+  position: absolute;
+  top: 45vh;
+  left: 65vw;
+  transform: translate(-50%, -50%);
+  font-size: 7rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
