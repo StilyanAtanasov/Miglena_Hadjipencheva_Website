@@ -4,7 +4,15 @@
   --font-primary: "Sofia Sans Condensed";
   --color-dark: rgba(24, 23, 23, 0.879);
   --color-grey: rgba(97, 97, 97, 0.923);
-  --color-bright: #fcfcfc;
+  --color-primary: #fcfcfc;
+  --color-secondary: rgb(66, 12, 66);
+  --color-secondary-ligth: rgb(251, 229, 251);
+  --color-error: rgb(255, 73, 73);
+  --color-success: rgb(56, 210, 56);
+}
+
+* {
+  transition: all linear 300ms;
 }
 
 html {
@@ -39,4 +47,20 @@ body {
 .btn-none {
   background-color: transparent;
   border: none;
+}
+
+.title {
+  font-size: 4.5rem;
+  letter-spacing: 0.07rem;
+  color: var(--color-secondary);
+}
+
+.title-small {
+  font-size: 2.8rem;
+  letter-spacing: 0.07rem;
+  color: var(--color-secondary);
+}
+
+.text-error {
+  color: var(--color-error);
 }

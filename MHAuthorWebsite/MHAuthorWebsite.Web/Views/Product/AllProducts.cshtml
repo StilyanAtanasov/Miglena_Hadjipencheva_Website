@@ -9,18 +9,35 @@
 	ViewData["Title"] = "Магазин";
 }
 
-<h1>Магазин</h1>
+<section class="container flex-column">
+	<h1 class="title">Магазин</h1>
 
-<section class="products">
-	@foreach (var product in Model)
-	{
-		<div class="product flex-column">
-			<h4 class="name">@product.Name</h4>
-			<span class="category">@product.ProductType</span>
-			<p class="description">@product.ShortDescription</p>
-			<p>@product.Price.ToString("F2") лв.</p>
-			<span>@(product.IsAvailable ? "Налично" : "Изчерпано")</span>
-			<a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">Виж повече</a>
-		</div>
-	}
+	<section class="products">
+		@foreach (var product in Model)
+		{
+			<div class="product flex-column">
+				<h4><a class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
+				<span class="category">@product.ProductType</span>
+				<p class="description">@product.ShortDescription</p>
+				<div class="price-box flex-row">
+					<p class="price">@product.Price.ToString("F2") лв.</p>
+					<span class="price-text @(product.IsAvailable ? "available" : "unavailable")">@(product.IsAvailable ? "В наличност" : "Изчерпана наличност")</span>
+				</div>
+				<div class="action-btns flex-row">
+					<form asp-controller="Product" asp-action="Like" asp-route-id="@product.Id">
+						<button type="submit" class="btn like">
+							<span class="fa-stack">
+								<i class="fa-regular fa-heart fa-stack-2x"></i>
+								<i class="fa-solid fa-heart fa-stack-2x"></i>
+							</span>
+						</button>
+					</form>
+					<form asp-controller="Product" asp-action="Order" asp-route-id="@product.Id">
+						<input type="hidden" name="quanity" value="1" />
+						<button type="submit" class="btn order flex-row"><i class="fa-solid fa-cart-shopping-fast"></i> Купи</button>
+					</form>
+				</div>
+			</div>
+		}
+	</section>
 </section>

@@ -2,11 +2,6 @@ body {
   background: #92ed8a;
 }
 
-nav a:hover::before {
-  visibility: visible;
-  transform: scaleX(1);
-}
-
 .splash {
   height: 100vh;
   display: flex;

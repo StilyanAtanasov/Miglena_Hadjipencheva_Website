@@ -1,19 +1,39 @@
+.container {
+  align-items: center;
+  width: 100vw;
+  padding: 3rem 2rem;
+}
+
 .products {
   font-size: 1.8rem;
   display: grid;
   grid-template-columns: repeat(4, 20vw);
+  grid-template-rows: 35vh;
 }
 
 .product {
-  padding: 1.5rem 2.5rem;
+  padding: 2rem 4rem;
   gap: 0.1rem;
+  justify-content: space-around;
   border: 0.1rem solid var(--color-dark);
   margin: 2rem;
-  border-radius: 1.5rem;
+  border-radius: 3rem;
+  box-shadow: 0.4rem 0.4rem 0.7rem var(--color-grey);
+  transition: all linear 200ms;
+}
+
+.product:hover {
+  scale: 1.03;
 }
 
 .product .name {
-  font-size: 2.5rem;
+  font-size: 2.7rem;
+  text-decoration: none;
+  color: var(--color-dark);
+}
+
+.product .name:hover {
+  color: var(--color-secondary);
 }
 
 .product .category {
@@ -22,4 +42,67 @@
 
 .product .description {
   line-break: anywhere;
+  height: 25%;
+}
+
+.product .price-box {
+  gap: 0.5rem;
+  height: 20%;
+  gap: 2rem;
+}
+
+.product .price-box .price {
+  font-size: 2.2rem;
+}
+
+.product .price-box .price-text {
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--color-success);
+}
+
+.product .price-box .price-text.unavailable {
+  color: var(--color-error);
+}
+
+.product .action-btns {
+  justify-content: end;
+  font-size: 1.8rem;
+}
+
+.product .action-btns .btn {
+  border: 0.16rem solid var(--color-secondary);
+  background-color: var(--color-secondary-ligth);
+  border-radius: 0.6rem;
+  padding: 0.5rem 1rem;
+}
+
+.product .action-btns .btn.like {
+  font-size: 1.25rem;
+}
+
+.product .action-btns .btn.like .fa-regular.fa-heart {
+  color: var(--color-secondary);
+  visibility: visible;
+}
+
+.product .action-btns .btn.like .fa-solid.fa-heart {
+  color: transparent;
+  visibility: hidden;
+}
+
+.product .action-btns .btn.like:hover .fa-regular.fa-heart {
+  color: transparent;
+  visibility: hidden;
+}
+
+.product .action-btns .btn.like:hover .fa-solid.fa-heart {
+  color: var(--color-secondary);
+  visibility: visible;
+}
+
+.product .action-btns .btn.order:hover {
+  background-color: var(--color-success);
+  color: var(--color-primary);
+  border-color: var(--color-dark);
 }
