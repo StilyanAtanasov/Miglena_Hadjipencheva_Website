@@ -15,7 +15,7 @@
 	<section class="products">
 		@foreach (var product in Model)
 		{
-			<div class="product flex-column">
+			<div class="product flex-column" data-details-url="@Url.Action("Details", "Product", new { productId = product.Id })">
 				<h4><a class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
 				<span class="category">@product.ProductType</span>
 				<p class="description">@product.ShortDescription</p>
@@ -41,3 +41,7 @@
 		}
 	</section>
 </section>
+
+@section Scripts {
+	<script src="~/js/store.js"></script>
+}
