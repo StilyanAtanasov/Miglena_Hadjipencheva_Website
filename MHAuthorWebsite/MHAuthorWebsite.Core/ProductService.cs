@@ -58,7 +58,7 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId)
+    public async Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId, string? userId)
     {
         try
         {
@@ -77,6 +77,7 @@ public class ProductService : IProductService
                 Description = product.Description,
                 Price = product.Price,
                 IsInStock = product.StockQuantity > 0,
+                IsLiked = userId != null && product.Likes.Any(u => u.Id == userId),
                 ProductTypeName = product.ProductType.Name,
                 Attributes = product.Attributes
                     .Select(a => new ProductAttributeDetailsViewModel

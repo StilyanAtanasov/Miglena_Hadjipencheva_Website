@@ -17,7 +17,7 @@
 		{
 			<div class="product flex-column clickable" data-details-url="@Url.Action("Details", "Product", new { productId = product.Id })">
 				<h4><a class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
-				<span class="category">@product.ProductType</span>
+				<span class="text-faded">@product.ProductType</span>
 				<p class="description">@product.ShortDescription</p>
 				<div class="price-box flex-row">
 					<p class="price">@product.Price.ToString("F2") лв.</p>

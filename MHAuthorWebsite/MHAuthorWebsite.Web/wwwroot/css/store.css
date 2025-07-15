@@ -36,10 +36,6 @@
   color: var(--color-secondary);
 }
 
-.product .category {
-  opacity: 0.7;
-}
-
 .product .description {
   line-break: anywhere;
   height: 25%;
@@ -68,52 +64,4 @@
 .product .action-btns {
   justify-content: end;
   font-size: 1.8rem;
-}
-
-.product .action-btns .btn.like {
-  font-size: 1.25rem;
-}
-
-/* When not liked*/
-
-.product .action-btns .btn.like .fa-regular.fa-heart {
-  color: var(--color-secondary);
-  visibility: visible;
-}
-
-.product .action-btns .btn.like .fa-solid.fa-heart {
-  color: transparent;
-  visibility: hidden;
-}
-
-.product .action-btns .btn.like:hover .fa-regular.fa-heart {
-  color: transparent;
-  visibility: hidden;
-}
-
-.product .action-btns .btn.like:hover .fa-solid.fa-heart {
-  color: var(--color-secondary);
-  visibility: visible;
-}
-
-/* When liked*/
-
-.product .action-btns .btn.like.liked .fa-regular.fa-heart {
-  color: transparent;
-  visibility: hidden;
-}
-
-.product .action-btns .btn.like.liked .fa-solid.fa-heart {
-  color: var(--color-secondary);
-  visibility: visible;
-}
-
-.product .action-btns .btn.like.liked:hover .fa-regular.fa-heart {
-  color: var(--color-secondary);
-  visibility: visible;
-}
-
-.product .action-btns .btn.like.liked:hover .fa-solid.fa-heart {
-  color: transparent;
-  visibility: hidden;
 }

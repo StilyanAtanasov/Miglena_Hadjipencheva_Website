@@ -2,57 +2,76 @@
 @model ProductDetailsViewModel
 
 @{
-    ViewData["Title"] = @Model.Name;
+	ViewData["Title"] = @Model.Name;
 }
 
-<h1 class="mb-4">@Model.Name</h1>
-<p><strong>Категория:</strong> @Model.ProductTypeName</p>
-
-<div class="row">
-    <!-- Details Section -->
-    <div class="col-md-6">
-        <h4>Информация за продукта</h4>
-        <p style="line-break: anywhere">@Model.Description</p>
-    </div>
-
-    <!-- Pricing & Order Section -->
-    <div class="col-md-6">
-        <h4>Наличност и поръчка</h4>
-        <p><strong>Цена:</strong> @Model.Price лв.</p>
-        <p>@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
-
-        @if (Model.IsInStock)
-        {
-            <form method="post" asp-action="Order" asp-controller="Product">
-                <input type="hidden" name="productId" value="@Model.Id" />
-                <div class="mb-2">
-                    <label for="quantity">Количество:</label>
-                    <input type="number" name="quantity" value="1" min="1" max="10" class="form-control w-25" />
-                </div>
-                <button type="submit" class="btn btn-success">Поръчай</button>
-            </form>
-        }
-    </div>
-</div>
-
-<hr class="my-4" />
-
-<!-- Additional Attributes Section -->
-@if (Model.Attributes.Any())
-{
-	<div>
-		<h4>Допълнителна информация</h4>
-
-		<table class="table table-bordered w-75">
-			<tbody>
-			@foreach (var a in Model.Attributes)
-			{
-				<tr>
-					<td>@a.Label</td>
-					<td>@a.Value</td>
-				</tr>
-			}
-			</tbody>
-		</table>
-	</div>
+@section Styles {
+	<link rel="stylesheet" href="~/css/product-details.css" />
 }
+
+<section class="wrapper flex-column">
+	<section class="hero-info flex-row">
+		<section class="main-info flex-column">
+			<h1 class="title">@Model.Name</h1>
+			<p class="category text-faded"><strong>Категория:</strong> @Model.ProductTypeName</p>
+		</section>
+
+		<!-- Pricing & Order Section -->
+		<section class="order-info flex-column">
+			<h4 class="heading">Наличност и поръчка</h4>
+			<p><strong>Цена:</strong> @Model.Price лв.</p>
+			<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
+
+			<form asp-controller="Product" asp-action="ToggleLike" asp-route-id="@Model.Id">
+				<button type="submit" class="btn like @(Model.IsLiked ? "liked" : "")">
+					<span class="fa-stack">
+						<i class="fa-regular fa-heart fa-stack-2x"></i>
+						<i class="fa-solid fa-heart fa-stack-2x"></i>
+					</span>
+				</button>
+			</form>
+			<form method="post" asp-action="Order" asp-controller="Product" asp-route-id="@Model.Id">
+				<div>
+					<label for="quantity">Количество:</label>
+					<input type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
+				</div>
+				<button type="submit" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled")>
+					<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
+				</button>
+			</form>
+		</section>
+	</section>
+
+	<hr />
+
+	<!-- Details Section -->
+	<section class="details-info flex-column">
+		<h4 class="heading">Информация за продукта</h4>
+		<article class="info-article flex-column">
+			<h5 class="subheading">Описание:</h5>
+			<p class="description">@Model.Description</p>
+		</article>
+	</section>
+
+	<hr />
+
+	<!-- Additional Attributes Section -->
+	@if (Model.Attributes.Any())
+	{
+		<section class="additional-info flex-column">
+			<h4 class="heading">Допълнителна информация</h4>
+
+			<table>
+				<tbody>
+					@foreach (var a in Model.Attributes)
+					{
+						<tr>
+							<td>@a.Label</td>
+							<td>@a.Value</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</section>
+	}
+</section>

@@ -98,6 +98,58 @@ hr {
   cursor: pointer;
 }
 
+.text-faded {
+  opacity: 0.75;
+}
+
+.btn.like {
+  font-size: 1.25rem;
+}
+
+/* When not liked*/
+
+.btn.like .fa-regular.fa-heart {
+  color: var(--color-secondary);
+  visibility: visible;
+}
+
+.btn.like .fa-solid.fa-heart {
+  color: transparent;
+  visibility: hidden;
+}
+
+.btn.like:hover .fa-regular.fa-heart {
+  color: transparent;
+  visibility: hidden;
+}
+
+.btn.like:hover .fa-solid.fa-heart {
+  color: var(--color-secondary);
+  visibility: visible;
+}
+
+/* When liked*/
+
+.btn.like.liked .fa-regular.fa-heart {
+  color: transparent;
+  visibility: hidden;
+}
+
+.btn.like.liked .fa-solid.fa-heart {
+  color: var(--color-secondary);
+  visibility: visible;
+}
+
+.btn.like.liked:hover .fa-regular.fa-heart {
+  color: var(--color-secondary);
+  visibility: visible;
+}
+
+.btn.like.liked:hover .fa-solid.fa-heart {
+  color: transparent;
+  visibility: hidden;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

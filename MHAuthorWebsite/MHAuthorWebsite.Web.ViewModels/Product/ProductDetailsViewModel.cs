@@ -14,5 +14,7 @@ public class ProductDetailsViewModel
 
     public bool IsInStock { get; set; }
 
+    public bool IsLiked { get; set; }
+
     public ICollection<ProductAttributeDetailsViewModel> Attributes { get; set; } = new List<ProductAttributeDetailsViewModel>();
 }

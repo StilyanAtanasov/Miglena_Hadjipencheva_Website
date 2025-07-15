@@ -60,7 +60,7 @@ public class ProductController : BaseController
     [HttpGet("Product/Details/{productId}")]
     public async Task<IActionResult> Details(Guid productId)
     {
-        ServiceResult<ProductDetailsViewModel> result = await _productService.GetProductDetailsReadonlyAsync(productId);
+        ServiceResult<ProductDetailsViewModel> result = await _productService.GetProductDetailsReadonlyAsync(productId, GetUserId());
         if (!result.Found) return NotFound();
         if (!result.Success) return StatusCode(500);
 

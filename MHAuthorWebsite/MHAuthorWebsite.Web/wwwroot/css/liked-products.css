@@ -35,10 +35,6 @@
   font-weight: 800;
 }
 
-.liked-products .product-card .description {
-  opacity: 0.7;
-}
-
 .liked-products .product-card .order-form {
   align-self: flex-end;
 }
