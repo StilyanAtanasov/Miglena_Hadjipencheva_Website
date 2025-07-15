@@ -25,7 +25,9 @@
 						<span class="price-text @(product.IsInStock ? "available" : "unavailable")">@(product.IsInStock ? "В наличност" : "Изчерпана наличност")</span>
 					</div>
 					<form asp-controller="Product" asp-action="Order" asp-route-id="@product.Id" method="post" class="order-form">
-						<button type="submit" class="btn order flex-row"><i class="fa-solid fa-cart-shopping-fast"></i> Поръчай</button>
+						<button type="submit" class="btn order flex-row" @(product.IsInStock ? "" : "disabled")>
+							<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
+						</button>
 					</form>
 					<form asp-controller="Product" asp-action="ToggleLike" asp-route-id="@product.Id" method="post" class="remove">
 						<button type="submit" class="btn btn-none"><i class="fa-solid fa-trash-can"></i></button>

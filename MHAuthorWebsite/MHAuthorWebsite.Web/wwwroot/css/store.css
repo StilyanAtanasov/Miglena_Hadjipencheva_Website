@@ -117,9 +117,3 @@
   color: transparent;
   visibility: hidden;
 }
-
-.product .action-btns .btn.order:hover {
-  background-color: var(--color-success);
-  color: var(--color-primary);
-  border-color: var(--color-dark);
-}

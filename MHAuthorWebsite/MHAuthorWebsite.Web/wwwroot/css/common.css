@@ -54,7 +54,7 @@ body {
   padding: 0.5rem 1rem;
 }
 
-.btn.order:hover {
+.btn.order:not(:disabled):hover {
   background-color: var(--color-success);
   color: var(--color-primary);
   border-color: var(--color-dark);
