@@ -5,29 +5,38 @@
 	ViewBag.Title = "Любими продукти";
 }
 
-<h1 class="title">Любими продукти</h1>
+@section Styles {
+	<link rel="stylesheet" href="~/css/liked-products.css" />
+}
 
-<section class="liked-products">
-	@if (Model.Any())
-	{
-		@foreach (LikedProductViewModel product in Model)
+<div class="page-wrapper flex-column">
+	<h1 class="title">Любими продукти</h1>
+
+	<section class="liked-products flex-column">
+		@if (Model.Any())
 		{
-			<div class="product-card">
-				<h2>@product.Name</h2>
-				<p>@product.ShortDescription</p>
-				<p>Price: @product.Price лв.</p>
-				<a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary">Виж повече</a>
-				<form asp-controller="Product" asp-action="ToggleLike" asp-route-id="@product.Id" method="post" class="remove-liked-product-form">
-					<button type="submit" class="btn">Премахни от любими</button>
-				</form>
-				<form asp-controller="Product" asp-action="Order" asp-route-id="@product.Id" method="post" class="remove-liked-product-form">
-					<button type="submit" class="btn">Поръчай</button>
-				</form>
-			</div>
+			@foreach (LikedProductViewModel product in Model)
+			{
+				<div class="product-card flex-row">
+					<div>
+						<h2><a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="name">@product.Name</a></h2>
+						<p class="description">@product.ShortDescription</p>
+						<p class="price">@product.Price.ToString("F2") лв.</p>
+						<span class="price-text @(product.IsInStock ? "available" : "unavailable")">@(product.IsInStock ? "В наличност" : "Изчерпана наличност")</span>
+					</div>
+					<form asp-controller="Product" asp-action="Order" asp-route-id="@product.Id" method="post" class="order-form">
+						<button type="submit" class="btn order flex-row"><i class="fa-solid fa-cart-shopping-fast"></i> Поръчай</button>
+					</form>
+					<form asp-controller="Product" asp-action="ToggleLike" asp-route-id="@product.Id" method="post" class="remove">
+						<button type="submit" class="btn btn-none"><i class="fa-solid fa-trash-can"></i></button>
+					</form>
+				</div>
+				<hr />
+			}
 		}
-	}
-	else
-	{
-		<p>No liked products found.</p>
-	}
-</section>
+		else
+		{
+			<p class="zero-liked flex-column"><i class="fa-solid fa-heart-circle-xmark"></i> Все още не сте харесали продукт!</p>
+		}
+	</section>
+</div>

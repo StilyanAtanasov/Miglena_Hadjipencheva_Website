@@ -71,13 +71,6 @@
   font-size: 1.8rem;
 }
 
-.product .action-btns .btn {
-  border: 0.16rem solid var(--color-secondary);
-  background-color: var(--color-secondary-ligth);
-  border-radius: 0.6rem;
-  padding: 0.5rem 1rem;
-}
-
 .product .action-btns .btn.like {
   font-size: 1.25rem;
 }

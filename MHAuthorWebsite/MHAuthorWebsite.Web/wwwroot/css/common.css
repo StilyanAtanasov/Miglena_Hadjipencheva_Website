@@ -6,7 +6,7 @@
   --color-grey: rgba(97, 97, 97, 0.923);
   --color-primary: #fcfcfc;
   --color-secondary: rgb(66, 12, 66);
-  --color-secondary-ligth: rgb(251, 229, 251);
+  --color-secondary-light: rgb(251, 229, 251);
   --color-error: rgb(255, 73, 73);
   --color-success: rgb(56, 210, 56);
 }
@@ -48,6 +48,16 @@ body {
 
 .btn {
   cursor: pointer;
+  border: 0.16rem solid var(--color-secondary);
+  background-color: var(--color-secondary-light);
+  border-radius: 0.6rem;
+  padding: 0.5rem 1rem;
+}
+
+.btn.order:hover {
+  background-color: var(--color-success);
+  color: var(--color-primary);
+  border-color: var(--color-dark);
 }
 
 .btn-none {
@@ -70,11 +80,18 @@ body {
 .subtitle {
   font-size: 3rem;
   letter-spacing: 0.07rem;
-  color: var(--color-secondary-ligth);
+  color: var(--color-secondary-light);
 }
 
 .text-error {
   color: var(--color-error);
+}
+
+hr {
+  border: 0.15rem solid var(--color-secondary-light);
+  border-radius: 1rem;
+  height: 0;
+  width: 100%;
 }
 
 @keyframes fadeIn {
@@ -82,6 +99,21 @@ body {
     opacity: 0;
   }
   to {
+    opacity: 1;
+  }
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
     opacity: 1;
   }
 }

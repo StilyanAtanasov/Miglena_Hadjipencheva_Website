@@ -1,0 +1,71 @@
+.page-wrapper {
+  width: 100vw;
+  align-items: center;
+  padding: 3rem 5rem;
+}
+
+.liked-products {
+  align-items: center;
+  width: 70%;
+  margin-top: 3rem;
+  padding: 3rem 4rem;
+  border: 0.15rem solid var(--color-secondary);
+  border-radius: 1.5rem;
+  font-size: 1.6rem;
+}
+
+.liked-products .product-card {
+  width: 100%;
+  justify-content: space-between;
+  position: relative;
+}
+
+.liked-products .product-card .name {
+  text-decoration: none;
+  color: var(--color-secondary);
+}
+
+.liked-products .product-card .price {
+  font-weight: 800;
+}
+
+.liked-products .product-card .description {
+  opacity: 0.7;
+}
+
+.liked-products .product-card .order-form {
+  align-self: flex-end;
+}
+
+.liked-products .product-card .remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 2rem;
+}
+
+.liked-products .product-card .remove:hover {
+  transform: scale(1.1);
+  color: var(--color-secondary);
+}
+
+.liked-products .available {
+  color: var(--color-success);
+}
+
+.liked-products .unavailable {
+  color: var(--color-error);
+}
+
+.zero-liked {
+  font-size: 2.2rem;
+  align-items: center;
+  gap: 2rem;
+}
+
+.zero-liked i {
+  font-size: 5rem;
+  color: var(--color-secondary);
+  animation: blink 4s ease-in-out;
+  animation-iteration-count: infinite;
+}
