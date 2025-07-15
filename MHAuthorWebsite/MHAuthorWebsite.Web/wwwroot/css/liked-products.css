@@ -18,6 +18,12 @@
   width: 100%;
   justify-content: space-between;
   position: relative;
+  border-radius: 1.5rem;
+  padding: 2rem 3rem;
+}
+
+.liked-products .product-card:hover {
+  background-color: var(--color-secondary-light);
 }
 
 .liked-products .product-card .name {
@@ -39,8 +45,8 @@
 
 .liked-products .product-card .remove {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 1rem;
+  right: 1.5rem;
   font-size: 2rem;
 }
 

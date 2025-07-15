@@ -94,6 +94,10 @@ hr {
   width: 100%;
 }
 
+.clickable:hover {
+  cursor: pointer;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
