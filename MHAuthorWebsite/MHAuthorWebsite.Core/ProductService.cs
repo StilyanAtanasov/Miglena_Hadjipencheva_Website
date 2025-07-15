@@ -95,6 +95,19 @@ public class ProductService : IProductService
         }
     }
 
+    public async Task<ICollection<LikedProductViewModel>> GetLikedProductsReadonlyAsync(string userId) =>
+        await _repository
+            .WhereReadonly<Product>(p => p.Likes.Any(u => u.Id == userId))
+            .Select(p => new LikedProductViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                ShortDescription = p.Description.Length > 100 ? $"{p.Description.Substring(0, 100)}..." : p.Description,
+                IsInStock = p.StockQuantity > 0,
+            })
+            .ToArrayAsync();
+
     public async Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId) =>
         await _repository
             .AllReadonly<Product>()

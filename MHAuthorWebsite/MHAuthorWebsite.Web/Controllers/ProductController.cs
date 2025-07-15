@@ -121,6 +121,16 @@ public class ProductController : BaseController
         return RedirectToAction(nameof(ProductsList));
     }
 
+    [HttpGet]
+    public async Task<IActionResult> LikedProducts()
+    {
+        string? userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
+        ICollection<LikedProductViewModel> products = await _productService.GetLikedProductsReadonlyAsync(userId);
+        return View(products);
+    }
+
     [HttpPost("/Product/ToggleLike/{productId}")]
     public async Task<IActionResult> ToggleLike([FromRoute] Guid productId)
     {

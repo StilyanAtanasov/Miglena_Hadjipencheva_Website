@@ -1,0 +1,33 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@model ICollection<LikedProductViewModel>
+
+@{
+	ViewBag.Title = "Любими продукти";
+}
+
+<h1 class="title">Любими продукти</h1>
+
+<section class="liked-products">
+	@if (Model.Any())
+	{
+		@foreach (LikedProductViewModel product in Model)
+		{
+			<div class="product-card">
+				<h2>@product.Name</h2>
+				<p>@product.ShortDescription</p>
+				<p>Price: @product.Price лв.</p>
+				<a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary">Виж повече</a>
+				<form asp-controller="Product" asp-action="ToggleLike" asp-route-id="@product.Id" method="post" class="remove-liked-product-form">
+					<button type="submit" class="btn">Премахни от любими</button>
+				</form>
+				<form asp-controller="Product" asp-action="Order" asp-route-id="@product.Id" method="post" class="remove-liked-product-form">
+					<button type="submit" class="btn">Поръчай</button>
+				</form>
+			</div>
+		}
+	}
+	else
+	{
+		<p>No liked products found.</p>
+	}
+</section>

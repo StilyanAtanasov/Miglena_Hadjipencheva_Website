@@ -16,6 +16,8 @@ public interface IProductService
 
     Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId);
 
+    Task<ICollection<LikedProductViewModel>> GetLikedProductsReadonlyAsync(string userId);
+
     Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync();
 
     Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId);

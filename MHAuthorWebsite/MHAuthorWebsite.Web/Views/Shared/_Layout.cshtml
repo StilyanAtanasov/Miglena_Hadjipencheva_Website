@@ -14,16 +14,19 @@
 <body>
 	<header>
 		<nav class="flex-row">
-			<h4><a asp-area="" asp-controller="Home" asp-action="Index" class="title-small">Миглена Хаджипенчева</a></h4>
+			<h4><a asp-controller="Home" asp-action="Index" class="title-small">Миглена Хаджипенчева</a></h4>
 			<ul class="flex-row">
 				<li>
-					<a asp-area="" asp-controller="Home" asp-action="Index">Начало</a>
+					<a asp-controller="Home" asp-action="Index">Начало</a>
 				</li>
 				<li>
-					<a asp-area="" asp-controller="Product" asp-action="AllProducts">Магазин</a>
+					<a asp-controller="Product" asp-action="AllProducts">Магазин</a>
 				</li>
 				<li>
-					<a asp-area="" asp-controller="Admin" asp-action="Dashboard">Админ</a>
+					<a asp-controller="Product" asp-action="LikedProducts">Любими</a>
+				</li>
+				<li>
+					<a asp-controller="Admin" asp-action="Dashboard">Админ</a>
 				</li>
 			</ul>
 			<partial name="_LoginPartial" />
