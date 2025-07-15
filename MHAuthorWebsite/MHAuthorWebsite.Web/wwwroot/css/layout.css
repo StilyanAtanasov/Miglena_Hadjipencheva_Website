@@ -71,3 +71,15 @@ footer .social-media {
 footer .social-media li a {
   color: var(--color-secondary-light);
 }
+
+footer .social-media li.left {
+  transform: translateX(-1rem);
+}
+
+footer .social-media li.right {
+  transform: translateX(1rem);
+}
+
+footer .social-media li:hover {
+  transform: scale(1.4);
+}
