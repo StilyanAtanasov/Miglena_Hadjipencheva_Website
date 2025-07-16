@@ -17,10 +17,13 @@ document.addEventListener(`DOMContentLoaded`, function () {
         const data = await response.json();
 
         data.lineTotal != null &&
-          (document.querySelector(`#line-total-${itemId}`).textContent =
-            data.lineTotal);
+          (document.querySelector(
+            `#line-total-${itemId}`
+          ).textContent = `${data.lineTotal} лв.`);
         data.cartTotal != null &&
-          (document.querySelector(`#price-sum`).textContent = data.cartTotal);
+          (document.querySelector(
+            `#price-sum`
+          ).textContent = `${data.cartTotal} лв.`);
       } else alert(`Грешка при обновяване на количеството.`);
     })
   );
