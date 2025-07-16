@@ -74,4 +74,9 @@
   font-weight: 600;
   border-radius: 1.5rem;
   padding: 1rem 1.5rem;
+  justify-content: center;
+}
+
+.btn-order i {
+  font-size: 1.9rem;
 }
