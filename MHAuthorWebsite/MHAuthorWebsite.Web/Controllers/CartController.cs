@@ -45,4 +45,20 @@ public class CartController : BaseController
 
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpPost("Cart/UpdateQuantity")]
+    public async Task<IActionResult> UpdateQuantity([FromBody] UpdateItemQuantityViewModel model)
+    {
+        if (!IsUserAuthenticated()) return Unauthorized();
+
+        ServiceResult<UpdatedItemQuantityViewModel> sr = await _cartService
+            .UpdateItemQuantityAsync(GetUserId()!, model.ItemId, model.Quantity);
+        if (sr.IsBadRequest) return BadRequest(sr.Errors);
+
+        return Json(new
+        {
+            lineTotal = sr.Result!.LineTotal.ToString("F2"),
+            cartTotal = sr.Result.Total.ToString("F2")
+        });
+    }
 }

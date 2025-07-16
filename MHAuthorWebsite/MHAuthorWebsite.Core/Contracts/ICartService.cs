@@ -33,4 +33,15 @@ public interface ICartService
     /// <returns>A <see cref="ServiceResult"/> indicating the success or failure of the operation.  The result contains additional
     /// details if the operation fails.</returns>
     Task<ServiceResult> RemoveFromCartAsync(string userId, Guid itemId);
+
+    /// <summary>
+    /// Updates the quantity of a specific item in the user's inventory.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user whose inventory is being updated. Cannot be null or empty.</param>
+    /// <param name="itemId">The unique identifier of the item to update. Must be a valid <see cref="Guid"/>.</param>
+    /// <param name="quantity">The new quantity to set for the specified item. Must be a non-negative integer.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResult{T}"/> 
+    /// with an <see cref="UpdatedItemQuantityViewModel"/> indicating the updated item details if the operation
+    /// succeeds.</returns>
+    Task<ServiceResult<UpdatedItemQuantityViewModel>> UpdateItemQuantityAsync(string userId, Guid itemId, int quantity);
 }

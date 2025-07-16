@@ -118,4 +118,29 @@ public class CartService : ICartService
 
         return ServiceResult.Ok();
     }
+
+    public async Task<ServiceResult<UpdatedItemQuantityViewModel>> UpdateItemQuantityAsync(string userId, Guid itemId, int quantity)
+    {
+        Cart? cart = await _repository.FindByExpressionAsync<Cart>(c => c.UserId == userId, false, c => c.CartItems);
+
+        if (cart == null) return ServiceResult<UpdatedItemQuantityViewModel>
+            .BadRequest(new() { ["cart"] = "User has nothing in cart!" });
+
+        CartItem? cartItem = _repository
+            .All<CartItem>()
+            .IgnoreQueryFilters()
+            .FirstOrDefault(c => c.CartId == cart.Id && c.Id == itemId);
+
+        if (cartItem == null) return ServiceResult<UpdatedItemQuantityViewModel>
+            .BadRequest(new() { ["product"] = "User does not have the specified product in their cart!" });
+
+        cartItem.Quantity = quantity;
+        await _repository.SaveChangesAsync();
+
+        return ServiceResult<UpdatedItemQuantityViewModel>.Ok(new()
+        {
+            LineTotal = cartItem.Quantity * cartItem.Price,
+            Total = cart.CartItems.Sum(ci => ci.Quantity * ci.Price)
+        });
+    }
 }
