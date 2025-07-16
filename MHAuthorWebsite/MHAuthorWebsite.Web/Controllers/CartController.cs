@@ -10,6 +10,15 @@ public class CartController : BaseController
     private readonly ICartService _cartService;
     public CartController(ICartService cartService) => _cartService = cartService;
 
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        if (!IsUserAuthenticated()) return Unauthorized();
+
+        CartViewModel cart = await _cartService.GetCartReadonlyAsync(GetUserId()!);
+        return View(cart);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Add([FromForm] AddCartItemViewModel model)
     {
@@ -23,12 +32,6 @@ public class CartController : BaseController
         string referer = Request.Headers["Referer"].ToString();
         if (!string.IsNullOrEmpty(referer)) return Redirect(referer);
 
-        return RedirectToAction(nameof(GetCart));
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetCart()
-    {
-        throw new NotImplementedException();
+        return RedirectToAction(nameof(Index));
     }
 }

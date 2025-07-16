@@ -9,85 +9,90 @@
 	<link rel="stylesheet" href="~/css/cart.css" />
 }
 
-<h1>Моята количка</h1>
+<div class="page-wrapper flex-column">
+	<h1 class="title">Моята количка</h1>
 
-<form method="post" asp-controller="Order" asp-action="Index">
-
-	<section aria-labelledby="valid-items">
-		<h2 id="valid-items">Избрани продукти</h2>
-		@if (Model.Items.Any(i => i.IsAvailable))
-		{
-			<table class="cart-table">
-				<thead>
-					<tr>
-						<th><input type="checkbox" id="select-all" /> Избери</th>
-						<th>Име</th>
-						<th>Категория</th>
-						<th>Ед. цена</th>
-						<th>Количество</th>
-						<th>Сума</th>
-						<th>Изтрий</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var item in Model.Items.Where(i => i.IsAvailable))
-					{
-						<tr>
-							<td><input type="checkbox" name="selectedItems" value="@item.ItemId" checked /></td>
-							<td>@item.Name</td>
-							<td>@item.Category</td>
-							<td>@item.UnitPrice.ToString("F2") лв.</td>
-							<td>
-								<input type="number" name="Quantities[@item.ItemId]" value="@item.Quantity" min="1" />
-							</td>
-							<td>@item.LineTotal.ToString("F2") лв.</td>
-							<td>
-								<button type="submit" formaction="@Url.Action("Remove", "Cart", new { itemId = item.ItemId })" class="btn-small btn-delete" aria-label="Изтрий">
-									×
-								</button>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-
-			<aside class="cart-summary">
-				<h2>Общо</h2>
-				<p><strong>Обща стойност:</strong> @Model.Total.ToString("F2") лв.</p>
-				<button type="submit" class="btn-primary">Завърши поръчка</button>
-			</aside>
-		}
-		else
-		{
-			<p>Нямате добавени продукти в количката.</p>
-		}
-	</section>
-
-	<section aria-labelledby="discontinued-items">
-		<h2 id="discontinued-items">Прекратени продукти</h2>
-		@foreach (var item in Model.Items.Where(i => i.IsDiscontinued))
-		{
-			<div class="cart-warning">
-				„@item.Name“ е прекратен и е премахнат от поръчката.
-				<form method="post" asp-action="Remove" asp-controller="Cart">
-					<input type="hidden" name="itemId" value="@item.ItemId" />
-					<button type="submit" class="btn-small">Изтрий</button>
-				</form>
-			</div>
-		}
-	</section>
-
-	<section aria-labelledby="unavailable-items">
-		<h2 id="unavailable-items">Неналични продукти</h2>
-		@foreach (var item in Model.Items.Where(i => i.IsAvailable))
-		{
-			<div class="cart-warning">
-				„@item.Name“ в момента е изчерпан.
-				<form method="post" asp-action="Remove" asp-controller="Cart">
-					<input type="hidden" name="itemId" value="@item.ItemId" />
-					<button type="submit" class="btn-small">Изтрий</button>
-				</form>
-			</div>
-		}
-	</section>
-</form>
+	<div class="all-products flex-row">
+		<section class="products-sections flex-column">
+			<section class="products-section flex-column" aria-labelledby="valid-items">
+				<h2 id="valid-items" class="heading">Избрани продукти</h2>
+				@if (Model.Items.Any(i => i.IsAvailable))
+				{
+					<form id="cart-form" method="post" asp-controller="Order" asp-action="Index">
+						<table class="cart-table">
+							<thead>
+								<tr>
+									<th></th>
+									<th>Продукт</th>
+									<th>Ед. цена</th>
+									<th>Количество</th>
+									<th>Сума</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model.Items.Where(i => i.IsAvailable))
+								{
+									<tr>
+										<td><input type="checkbox" name="selectedItems" value="@item.ItemId" checked /></td>
+										<td class="product-info flex-column">
+											<h4>@item.Name</h4>
+											<span><strong>Категория: </strong> @item.Category</span>
+										</td>
+										<td>@item.UnitPrice.ToString("F2") лв.</td>
+										<td>
+											<input class="input" type="number" name="Quantities[@item.ItemId]" value="@item.Quantity" min="1" max="10" />
+										</td>
+										<td>@item.LineTotal.ToString("F2") лв.</td>
+										<td>
+											<form method="post" asp-action="Remove" asp-controller="Cart" asp-route-id="@item.ItemId">
+												<button type="submit" class="btn-small btn-delete btn-none" aria-label="Изтрий">
+												×
+											</button>
+											</form>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</form>
+				}
+				else
+				{
+					<p>Нямате добавени продукти в количката.</p>
+				}
+			</section>
+			<section class="products-section flex-column" aria-labelledby="unavailable-items">
+				<h2 id="unavailable-items" class="heading">Неналични продукти</h2>
+				@foreach (var item in Model.Items.Where(i => i is { IsAvailable: false, IsDiscontinued: false }))
+				{
+					<div class="cart-warning flex-row">
+						Продуктът „@item.Name“ в момента е изчерпан!
+						<form method="post" asp-action="Remove" asp-controller="Cart">
+							<input type="hidden" name="itemId" value="@item.ItemId" />
+							<button type="submit" class="btn-small">Изтрий</button>
+						</form>
+					</div>
+				}
+			</section>
+			<section class="products-section flex-column" aria-labelledby="discontinued-items">
+				<h2 id="discontinued-items" class="heading">Прекратени продукти</h2>
+				@foreach (var item in Model.Items.Where(i => i.IsDiscontinued))
+				{
+					<div class="cart-warning flex-row">
+						Продуктът „@item.Name“ вече не се предлага!
+						<form method="post" asp-action="Remove" asp-controller="Cart">
+							<input type="hidden" name="itemId" value="@item.ItemId" />
+							<button type="submit" class="btn-small">Изтрий</button>
+						</form>
+					</div>
+				}
+			</section>
+		</section>
+		<aside class="cart-summary flex-column">
+			<h2 class="heading">Общо</h2>
+			<p><strong>Обща стойност:</strong> @Model.Total.ToString("F2") лв.</p>
+			<button form="cart-form" type="submit" class="btn btn-order order">Завърши поръчка</button>
+		</aside>
+	</div>
+</div>

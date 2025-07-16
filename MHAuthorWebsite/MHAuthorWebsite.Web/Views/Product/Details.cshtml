@@ -34,7 +34,7 @@
 				<input type="hidden" name="productId" value="@Model.Id" />
 				<div>
 					<label for="quantity">Количество:</label>
-					<input type="number" id="quantity" name="quantity" value="1" min="1" max="10"/>
+					<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10"/>
 				</div>
 				<button type="submit" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled")>
 					<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай

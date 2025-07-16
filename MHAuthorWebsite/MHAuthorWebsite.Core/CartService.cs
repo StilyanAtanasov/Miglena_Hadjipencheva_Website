@@ -2,7 +2,9 @@
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
+using MHAuthorWebsite.Web.ViewModels.Cart;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace MHAuthorWebsite.Core;
 
@@ -68,5 +70,31 @@ public class CartService : ICartService
         {
             return ServiceResult.Failure();
         }
+    }
+
+    public async Task<CartViewModel> GetCartReadonlyAsync(string userId)
+    {
+        Cart? cart = await _repository.FindByExpressionAsync<Cart>(c => c.UserId == userId);
+        if (cart is null) return new CartViewModel();
+
+        ICollection<CartItemViewModel> cartItems = await _repository
+            .WhereReadonly<CartItem>(ci => ci.CartId == cart.Id)
+            .IgnoreQueryFilters()
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.ProductType)
+            .Select(ci => new CartItemViewModel
+            {
+                ItemId = ci.Id,
+                ProductId = ci.ProductId,
+                Name = ci.Product.Name,
+                Category = ci.Product.ProductType.Name,
+                Quantity = ci.Quantity,
+                UnitPrice = ci.Price,
+                IsDiscontinued = ci.Product.IsDeleted || !ci.Product.IsPublic,
+                IsAvailable = ci.Product.StockQuantity > 0 && !ci.Product.IsDeleted && ci.Product.IsPublic,
+            })
+            .ToArrayAsync();
+
+        return new CartViewModel() { Items = cartItems };
     }
 }

@@ -1,11 +1,4 @@
-.container {
-  align-items: center;
-  width: 100vw;
-  padding: 3rem 2rem;
-}
-
 .products {
-  font-size: 1.8rem;
   display: grid;
   grid-template-columns: repeat(4, 20vw);
   grid-template-rows: 35vh;
@@ -38,7 +31,7 @@
 
 .product .description {
   line-break: anywhere;
-  height: 25%;
+  height: 20%;
 }
 
 .product .price-box {
@@ -52,7 +45,7 @@
 }
 
 .product .price-box .price-text {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 500;
   color: var(--color-success);
 }
