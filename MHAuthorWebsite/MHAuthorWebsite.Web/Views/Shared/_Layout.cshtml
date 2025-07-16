@@ -17,19 +17,27 @@
 			<h4><a asp-controller="Home" asp-action="Index" class="title-small">Миглена Хаджипенчева</a></h4>
 			<ul class="flex-row">
 				<li>
-					<a asp-controller="Home" asp-action="Index">Начало</a>
+					<a class="flex-row" asp-controller="Home" asp-action="Index">
+						<i class="fa-regular fa-house"></i> Начало
+					</a>
 				</li>
 				<li>
-					<a asp-controller="Product" asp-action="AllProducts">Магазин</a>
+					<a class="flex-row" asp-controller="Product" asp-action="AllProducts">
+						<i class="fa-regular fa-shop"></i> Магазин
+					</a>
 				</li>
 				<li>
-					<a asp-controller="Product" asp-action="LikedProducts">Любими</a>
+					<a class="flex-row" asp-controller="Product" asp-action="LikedProducts">
+						<i class="fa-regular fa-heart-circle-check"></i> Любими
+					</a>
 				</li>
 				<li>
-					<a asp-controller="cart" asp-action="Index">Количка</a>
+					<a class="flex-row" asp-controller="cart" asp-action="Index">
+						<i class="fa-regular fa-cart-shopping"></i> Количка
+					</a>
 				</li>
 				<li>
-					<a asp-controller="Admin" asp-action="Dashboard">Админ</a>
+					<a class="flex-row" asp-controller="Admin" asp-action="Dashboard">Админ</a>
 				</li>
 			</ul>
 			<partial name="_LoginPartial" />
