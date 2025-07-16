@@ -32,6 +32,11 @@ body {
   animation: fadeIn 1s ease-in-out;
 }
 
+.link {
+  text-decoration: none;
+  color: var(--color-secondary);
+}
+
 .flex-row {
   display: flex;
   flex-direction: row;

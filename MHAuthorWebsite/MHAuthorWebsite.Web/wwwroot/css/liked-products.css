@@ -19,11 +19,6 @@
   background-color: var(--color-secondary-light);
 }
 
-.liked-products .product-card .name {
-  text-decoration: none;
-  color: var(--color-secondary);
-}
-
 .liked-products .product-card .price {
   font-weight: 800;
 }
