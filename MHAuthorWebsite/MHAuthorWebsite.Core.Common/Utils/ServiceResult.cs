@@ -8,6 +8,8 @@ public class ServiceResult
 
     public bool Found { get; set; } = true;
 
+    public bool IsBadRequest { get; set; } = false;
+
     public Dictionary<string, string> Errors { get; set; } = new(); // Key -> propertyName | Value -> customErrorMessage
 
     public static ServiceResult Ok() => new();
@@ -28,6 +30,13 @@ public class ServiceResult
     {
         Success = false,
         HasPermission = false
+    };
+
+    public static ServiceResult BadRequest(Dictionary<string, string>? errors = null) => new()
+    {
+        Success = false,
+        IsBadRequest = true,
+        Errors = errors ?? new()
     };
 }
 
@@ -59,5 +68,12 @@ public class ServiceResult<TResult> : ServiceResult
     {
         Success = false,
         HasPermission = false
+    };
+
+    public new static ServiceResult<TResult> BadRequest(Dictionary<string, string>? errors = null) => new()
+    {
+        Success = false,
+        IsBadRequest = true,
+        Errors = errors ?? new()
     };
 }
