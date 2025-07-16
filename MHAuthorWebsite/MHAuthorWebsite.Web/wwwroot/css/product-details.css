@@ -21,6 +21,11 @@
   color: var(--color-error);
 }
 
+.details-info {
+  white-space-collapse: preserve;
+  line-break: anywhere;
+}
+
 .details-info,
 .additional-info {
   align-items: center;
