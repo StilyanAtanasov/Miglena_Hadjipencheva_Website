@@ -32,8 +32,9 @@
 							</span>
 						</button>
 					</form>
-					<form asp-controller="Product" asp-action="Order" asp-route-id="@product.Id">
-						<input type="hidden" name="quanity" value="1" />
+					<form asp-controller="Cart" asp-action="Add">
+						<input type="hidden" name="productId" value="@product.Id" />
+						<input type="hidden" name="quantity" value="1"/>
 						<button type="submit" class="btn order flex-row" @(product.IsAvailable ? "" : "disabled")>
 							<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
 						</button>
