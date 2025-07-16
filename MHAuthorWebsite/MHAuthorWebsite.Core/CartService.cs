@@ -46,7 +46,6 @@ public class CartService : ICartService
                 existingCartItem.Quantity += quantity;
                 existingCartItem.Price = product.Price;
 
-                product.StockQuantity -= quantity;
                 _repository.Update(existingCartItem);
 
                 await _repository.SaveChangesAsync();
@@ -60,7 +59,6 @@ public class CartService : ICartService
                 CartId = cart.Id,
                 Price = product.Price,
             });
-            product.StockQuantity -= quantity;
 
             await _repository.SaveChangesAsync();
 
