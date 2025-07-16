@@ -5,7 +5,7 @@ public static class EntityConstraints
     public static class Product
     {
         public const byte NameMinLength = 2;
-        public const byte NameMaxLength = 100;
+        public const byte NameMaxLength = 50;
         public const byte DescriptionMinLength = 15;
         public const ushort DescriptionMaxLength = 4000;
 

@@ -95,6 +95,27 @@ public class CartService : ICartService
             })
             .ToArrayAsync();
 
-        return new CartViewModel() { Items = cartItems };
+        return new CartViewModel { Items = cartItems };
+    }
+
+    public async Task<ServiceResult> RemoveFromCartAsync(string userId, Guid itemId)
+    {
+        Cart? cart = await _repository.FindByExpressionAsync<Cart>(c => c.UserId == userId, true, c => c.CartItems);
+
+        if (cart == null) return ServiceResult.BadRequest(new() { ["cart"] = "User has nothing in cart!" });
+
+        CartItem? cartItem = _repository
+            .All<CartItem>()
+            .IgnoreQueryFilters()
+            .FirstOrDefault(c => c.CartId == cart.Id && c.Id == itemId);
+
+        if (cartItem == null) return ServiceResult.BadRequest(new() { ["product"] = "User does not have the specified product in their cart!" });
+
+        _repository.Delete(cartItem);
+        if (cart.CartItems.Count == 1) _repository.Delete(cart);
+
+        await _repository.SaveChangesAsync();
+
+        return ServiceResult.Ok();
     }
 }

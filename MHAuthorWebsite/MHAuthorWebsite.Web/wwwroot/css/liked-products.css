@@ -39,11 +39,6 @@
   font-size: 2rem;
 }
 
-.liked-products .product-card .remove:hover {
-  transform: scale(1.1);
-  color: var(--color-secondary);
-}
-
 .liked-products .available {
   color: var(--color-success);
 }

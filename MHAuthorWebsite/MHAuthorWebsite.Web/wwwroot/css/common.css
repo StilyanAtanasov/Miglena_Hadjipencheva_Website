@@ -60,6 +60,11 @@ body {
   border-color: var(--color-dark);
 }
 
+button.btn.remove:hover {
+  transform: scale(1.1);
+  color: var(--color-secondary);
+}
+
 .btn-none {
   background-color: transparent;
   border: none;
@@ -100,6 +105,7 @@ body {
   border: 0.1rem solid var(--color-secondary);
   border-radius: 1.5rem;
   padding-left: 1.2rem;
+  padding-right: 0.5rem;
   margin: 1rem;
 }
 

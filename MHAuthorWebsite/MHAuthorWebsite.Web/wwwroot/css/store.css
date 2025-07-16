@@ -1,7 +1,7 @@
 .products {
   display: grid;
   grid-template-columns: repeat(4, 20vw);
-  grid-template-rows: 35vh;
+  grid-template-rows: 38vh;
 }
 
 .product {
@@ -13,6 +13,7 @@
   border-radius: 3rem;
   box-shadow: 0.4rem 0.4rem 0.7rem var(--color-grey);
   transition: all linear 200ms;
+  line-break: anywhere;
 }
 
 .product:hover {
@@ -20,9 +21,10 @@
 }
 
 .product .name {
-  font-size: 2.7rem;
+  font-size: 2.6rem;
   text-decoration: none;
   color: var(--color-dark);
+  height: 30%;
 }
 
 .product .name:hover {
@@ -30,7 +32,6 @@
 }
 
 .product .description {
-  line-break: anywhere;
   height: 20%;
 }
 

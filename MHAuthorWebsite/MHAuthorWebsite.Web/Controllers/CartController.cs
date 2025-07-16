@@ -34,4 +34,15 @@ public class CartController : BaseController
 
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpPost("Cart/Remove/{itemId}")]
+    public async Task<IActionResult> Remove([FromRoute] Guid itemId)
+    {
+        if (!IsUserAuthenticated()) return Unauthorized();
+
+        ServiceResult r = await _cartService.RemoveFromCartAsync(GetUserId()!, itemId);
+        if (r.IsBadRequest) return BadRequest(r.Errors);
+
+        return RedirectToAction(nameof(Index));
+    }
 }

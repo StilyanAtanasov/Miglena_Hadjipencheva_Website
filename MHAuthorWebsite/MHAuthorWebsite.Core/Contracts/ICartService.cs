@@ -22,4 +22,15 @@ public interface ICartService
     /// cref="CartViewModel"/> objects representing the items in the user's cart. Returns an empty collection if the
     /// cart is empty.</returns>
     Task<CartViewModel> GetCartReadonlyAsync(string userId);
+
+    /// <summary>
+    /// Removes a specified CartItem from the user's shopping cart.
+    /// </summary>
+    /// <remarks>This method is asynchronous and should be awaited to ensure the operation completes before
+    /// proceeding.</remarks>
+    /// <param name="userId">The unique identifier of the user whose cart is being modified. Cannot be null or empty.</param>
+    /// <param name="itemId">The unique identifier of the item to remove from the cart.</param>
+    /// <returns>A <see cref="ServiceResult"/> indicating the success or failure of the operation.  The result contains additional
+    /// details if the operation fails.</returns>
+    Task<ServiceResult> RemoveFromCartAsync(string userId, Guid itemId);
 }

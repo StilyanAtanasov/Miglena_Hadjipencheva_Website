@@ -35,11 +35,14 @@ public abstract class EfRepository : IRepository
 
     public async Task<T?> FindByExpressionAsync<T>(
         Expression<Func<T, bool>> expression,
+        bool ignoreFilters = false,
         params Expression<Func<T, object>>[] includes) where T : class
     {
         IQueryable<T> query = DbSet<T>();
         foreach (var include in includes)
             query = query.Include(include);
+
+        if (ignoreFilters) query = query.IgnoreQueryFilters();
 
         return await query.FirstOrDefaultAsync(expression);
     }

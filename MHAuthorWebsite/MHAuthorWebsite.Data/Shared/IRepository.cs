@@ -14,8 +14,10 @@ public interface IRepository : IDisposable, IAsyncDisposable
 
     // Fetching single entity
     Task<T?> GetByIdAsync<T>(object id) where T : class;
+
     Task<T?> FindByExpressionAsync<T>(
         Expression<Func<T, bool>> expression,
+        bool ignoreFilters = false,
         params Expression<Func<T, object>>[] includes) where T : class;
 
     // Fetching multiple entities
