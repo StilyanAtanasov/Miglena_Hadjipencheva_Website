@@ -14,30 +14,30 @@
 <body>
 	<header>
 		<nav class="flex-row">
-			<h4><a asp-controller="Home" asp-action="Index" class="title-small">Миглена Хаджипенчева</a></h4>
+			<h4><a asp-controller="Home" asp-action="Index" class="title-small active">Миглена Хаджипенчева</a></h4>
 			<ul class="flex-row">
 				<li>
-					<a class="flex-row" asp-controller="Home" asp-action="Index">
+					<a class="active flex-row" asp-controller="Home" asp-action="Index">
 						<i class="fa-regular fa-house"></i> Начало
 					</a>
 				</li>
 				<li>
-					<a class="flex-row" asp-controller="Product" asp-action="AllProducts">
+					<a class="active flex-row" asp-controller="Product" asp-action="AllProducts">
 						<i class="fa-regular fa-shop"></i> Магазин
 					</a>
 				</li>
 				<li>
-					<a class="flex-row" asp-controller="Product" asp-action="LikedProducts">
+					<a class="active flex-row" asp-controller="Product" asp-action="LikedProducts">
 						<i class="fa-regular fa-heart-circle-check"></i> Любими
 					</a>
 				</li>
 				<li>
-					<a class="flex-row" asp-controller="cart" asp-action="Index">
+					<a class="active flex-row" asp-controller="cart" asp-action="Index">
 						<i class="fa-regular fa-cart-shopping"></i> Количка
 					</a>
 				</li>
 				<li>
-					<a class="flex-row" asp-controller="Admin" asp-action="Dashboard">Админ</a>
+					<a class="active flex-row" asp-controller="Admin" asp-action="Dashboard">Админ</a>
 				</li>
 			</ul>
 			<partial name="_LoginPartial" />

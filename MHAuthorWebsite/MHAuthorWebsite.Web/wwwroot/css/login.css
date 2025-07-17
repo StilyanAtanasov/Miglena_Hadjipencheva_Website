@@ -1,0 +1,14 @@
+.page-wrapper {
+  height: calc(100vh - 17rem);
+  justify-content: center;
+}
+
+.login-modal {
+  border: 0.2rem solid var(--color-secondary);
+  border-radius: 2rem;
+  padding: 5rem 6rem;
+  width: 35%;
+  max-width: 50%;
+  align-items: center;
+  box-shadow: 0.4rem 0.4rem 0.7rem var(--color-grey);
+}

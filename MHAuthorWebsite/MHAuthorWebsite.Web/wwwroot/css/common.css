@@ -6,7 +6,7 @@
   --color-grey: rgba(97, 97, 97, 0.923);
   --color-primary: #fcfcfc;
   --color-secondary: rgb(66, 12, 66);
-  --color-secondary-light: rgb(251, 229, 251);
+  --color-secondary-light: rgb(250, 234, 250);
   --color-error: rgb(255, 73, 73);
   --color-success: rgb(56, 210, 56);
 }
@@ -35,6 +35,36 @@ body {
 .link {
   text-decoration: none;
   color: var(--color-secondary);
+}
+
+.link.active,
+nav.active,
+a.active {
+  position: relative;
+}
+
+.link.active::before,
+nav.active::before,
+a.active::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 0;
+  bottom: 0;
+  left: 0;
+  margin-top: 0.1rem;
+  border: 0.15rem solid var(--color-secondary);
+  border-radius: 1rem;
+  visibility: hidden;
+  transform: scaleX(0);
+  transition: all 0.3s ease-in-out;
+}
+
+.link.active:hover::before,
+nav.active:hover::before,
+a.active:hover::before {
+  visibility: visible;
+  transform: scaleX(1);
 }
 
 .flex-row {

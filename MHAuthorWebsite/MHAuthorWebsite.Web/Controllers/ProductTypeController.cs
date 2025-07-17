@@ -1,12 +1,10 @@
-﻿extern alias common;
-
-using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Data.Common.Extensions;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Web.ViewModels.ProductType;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using static common::MHAuthorWebsite.Data.Common.Extensions.EnumExtensions;
 
 namespace MHAuthorWebsite.Web.Controllers;
 

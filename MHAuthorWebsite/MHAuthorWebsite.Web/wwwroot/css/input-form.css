@@ -1,0 +1,40 @@
+.input-form {
+  font-size: 1.9rem;
+  align-items: center;
+  width: 95%;
+}
+
+.input-form .form-input {
+  border-radius: 1.5rem;
+  padding: 0.5rem 1.5rem;
+  border: 0.15rem solid var(--color-secondary);
+  background-color: var(--color-primary);
+}
+
+.input-form .form-input:focus {
+  background-color: var(--color-secondary-light);
+}
+
+.input-form .form-input-box {
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.input-form .input-error {
+  color: var(--color-error);
+}
+
+.submit-btn {
+  border-radius: 1.5rem;
+  padding: 0.6rem 1.5rem;
+  font-size: 2.1rem;
+}
+
+.submit-btn:hover {
+  transform: scale(1.1);
+}
+
+.actions {
+  text-align: center;
+  gap: 1.2rem;
+}
