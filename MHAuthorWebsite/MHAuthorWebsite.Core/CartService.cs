@@ -11,13 +11,8 @@ namespace MHAuthorWebsite.Core;
 public class CartService : ICartService
 {
     private readonly IApplicationRepository _repository;
-    private readonly UserManager<IdentityUser> _userManager;
 
-    public CartService(IApplicationRepository repository, UserManager<IdentityUser> userManager)
-    {
-        _repository = repository;
-        _userManager = userManager;
-    }
+    public CartService(IApplicationRepository repository) => _repository = repository;
 
     public async Task<ServiceResult> AddItemToCartAsync(string userId, Guid productId, int quantity)
     {
