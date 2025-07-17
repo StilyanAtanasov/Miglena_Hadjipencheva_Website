@@ -1,43 +1,48 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @model AddProductForm
 
-<h1>Добави продукт</h1>
 
-<form asp-controller="Product" asp-action="AddProduct" id="addProductForm" method="post" novalidate>
-	<div class="mb-3">
-		<label asp-for="Name" class="form-label">Име</label>
-		<input asp-for="Name" class="form-control" />
-		<span asp-validation-for="Name" class="text-danger"></span>
-	</div>
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+}
 
-	<div class="mb-3">
-		<label asp-for="Description" class="form-label">Описание</label>
-		<textarea asp-for="Description" class="form-control"></textarea>
-		<span asp-validation-for="Description" class="text-danger"></span>
-	</div>
+<div class="page-wrapper flex-column">
+	<section class="modal-invisible large flex-column">
+		<h1 class="title">Добави продукт</h1>
 
-	<div class="mb-3">
-		<label asp-for="Price" class="form-label">Цена</label>
-		<input asp-for="Price" type="number" class="form-control" />
-		<span asp-validation-for="Price" class="text-danger"></span>
-	</div>
+		<form class="input-form flex-column" asp-controller="Product" asp-action="AddProduct" id="addProductForm" method="post">
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Name">Име:</label>
+				<input class="form-input" asp-for="Name" />
+				<span class="input-error" asp-validation-for="Name" class="text-danger"></span>
+			</div>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Description">Описание:</label>
+				<textarea class="form-input" asp-for="Description"></textarea>
+				<span class="input-error" asp-validation-for="Description" class="text-danger"></span>
+			</div>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Price">Цена:</label>
+				<input class="form-input" asp-for="Price" type="number" />
+				<span class="input-error" asp-validation-for="Price" class="text-danger"></span>
+			</div>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="StockQuantity">Количество:</label>
+				<input class="form-input" asp-for="StockQuantity" type="number" />
+				<span class="input-error" asp-validation-for="StockQuantity" class="text-danger"></span>
+			</div>
+			<div class="form-input-box flex-column select-list">
+				<label class ="form-label"  asp-for="ProductTypeId">Категория:</label>
+				<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" id="selectProductType" class="form-select"></select>
+				<span class="input-error" asp-validation-for="ProductTypeId" class="text-danger"></span>
+			</div>
 
-	<div class="mb-3">
-		<label asp-for="StockQuantity" class="form-label">Количество</label>
-		<input asp-for="StockQuantity" type="number" class="form-control" />
-		<span asp-validation-for="StockQuantity" class="text-danger"></span>
-	</div>
+			<div id="productTypeAttributesContainer" class="form-input-box flex-column"></div>
 
-	<div class="mb-3">
-		<label asp-for="ProductTypeId" class="form-label">Категория</label>
-		<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" id="selectProductType" class="form-select"></select>
-		<span asp-validation-for="ProductTypeId" class="text-danger"></span>
-	</div>
-	
-	<div id="productTypeAttributesContainer"></div>
-
-	<button type="submit" class="btn btn-primary">Запази</button>
-</form>
+			<button type="submit" class="btn submit-btn flex-row">Запази</button>
+		</form>
+	</section>
+</div>
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />

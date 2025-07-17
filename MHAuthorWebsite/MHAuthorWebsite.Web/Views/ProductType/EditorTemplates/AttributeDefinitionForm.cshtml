@@ -5,17 +5,17 @@
 	<button type="button" class="btn-close remove-attribute" aria-label="Close"></button>
 
 	<label asp-for="Key">Поле:</label>
-	<input asp-for="Key" class="form-control" />
+	<input asp-for="Key" />
 	<span asp-validation-for="Key" class="text-danger"></span>
 
 	<label asp-for="Label">Етикет:</label>
-	<input asp-for="Label" class="form-control" />
+	<input asp-for="Label" />
 	<span asp-validation-for="Label" class="text-danger"></span>
 
 	<label asp-for="DataType">Тип данни:</label>
 	<select asp-for="DataType"
 	        asp-items="ViewBag.AttributeDataTypes"
-	        class="form-control"></select>
+	       ></select>
 	<span asp-validation-for="DataType" class="text-danger"></span>
 
 	<label asp-for="HasPredefinedValue">Има ли зададени стойности?</label>

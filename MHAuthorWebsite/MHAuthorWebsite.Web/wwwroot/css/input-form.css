@@ -1,3 +1,26 @@
+.page-wrapper {
+  justify-content: center;
+}
+
+.modal-invisible,
+.modal {
+  padding: 5rem 6rem;
+  width: 35%;
+  max-width: 50%;
+  align-items: center;
+}
+
+.modal {
+  border: 0.2rem solid var(--color-secondary);
+  border-radius: 2rem;
+  box-shadow: 0.4rem 0.4rem 0.7rem var(--color-grey);
+}
+
+.modal.large,
+.modal-invisible.large {
+  width: 50%;
+}
+
 .input-form {
   font-size: 1.9rem;
   align-items: center;
@@ -11,13 +34,57 @@
   background-color: var(--color-primary);
 }
 
+.input-form textarea.form-input {
+  animation: width, height linear 0s;
+  max-width: 100%;
+  min-width: 100%;
+}
+
 .input-form .form-input:focus {
   background-color: var(--color-secondary-light);
 }
 
+.input-form .form-label {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.15rem;
+}
+
 .input-form .form-input-box {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   width: 100%;
+}
+
+.input-form .form-input-box.select-list,
+.input-form .form-input-box.boolean {
+  flex-direction: row;
+  gap: 1.5rem;
+  justify-content: start;
+  align-items: center;
+}
+
+.input-form .form-input-box.select-list select {
+  width: 30%;
+  border-radius: 1.5rem;
+  padding: 0.5rem 1.2rem;
+  border: 0.15rem solid var(--color-secondary);
+}
+
+.input-form .form-input-box.select-list select > option {
+  padding: 0.5rem 1.2rem;
+  border-bottom: 0.15rem solid var(--color-secondary);
+}
+
+.input-form .form-input-box.select-list select > option:first-of-type {
+  border-radius: 1.5rem 1.5rem 0 0;
+}
+
+.input-form .form-input-box.select-list select > option:last-of-type {
+  border-radius: 0 0 1.5rem 1.5rem;
+}
+
+.input-form .form-input-box.boolean input {
+  transform: scale(1.3);
 }
 
 .input-form .input-error {

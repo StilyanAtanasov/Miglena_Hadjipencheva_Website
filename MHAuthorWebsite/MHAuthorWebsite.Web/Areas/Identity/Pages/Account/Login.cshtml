@@ -7,26 +7,25 @@
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
-	<section class="login-modal flex-column">
+	<section class="modal flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 		<form id="account" method="post" class="input-form flex-column">
 			<div asp-validation-summary="ModelOnly" role="alert"></div>
 			<div class="form-input-box flex-column">
-				<label asp-for="Input.Email">Имейл адрес</label>
+				<label class="form-label" asp-for="Input.Email">Имейл адрес</label>
 				<input class="form-input" asp-for="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
 				<span class="input-error" asp-validation-for="Input.Email"></span>
 			</div>
 			<div class="form-input-box flex-column">
-				<label asp-for="Input.Password">Парола</label>
+				<label class="form-label" asp-for="Input.Password">Парола</label>
 				<input class="form-input" asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="password" />
 				<span class="input-error" asp-validation-for="Input.Password"></span>
 			</div>
 			<div>
-				<label asp-for="Input.RememberMe">
+				<label class="form-label" asp-for="Input.RememberMe">
 					<input asp-for="Input.RememberMe" />
 					Запомни ме?
 				</label>

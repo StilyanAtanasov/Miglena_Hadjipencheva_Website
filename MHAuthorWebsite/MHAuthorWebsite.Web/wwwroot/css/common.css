@@ -212,6 +212,7 @@ hr {
   align-items: center;
   padding: 3rem 5rem;
   font-size: 1.6rem;
+  min-height: calc(100vh - 17rem);
 }
 
 @keyframes fadeIn {
