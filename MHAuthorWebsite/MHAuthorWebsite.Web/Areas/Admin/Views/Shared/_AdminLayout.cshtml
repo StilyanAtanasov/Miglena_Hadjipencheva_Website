@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html lang="bg">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - Миглена Хаджипенчева</title>
+	<link rel="stylesheet" href="~/css/reset.css" asp-append-version="true" />
+	<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.7.2/css/all.css" />
+	<link rel="stylesheet" href="~/css/admin/common.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/loading.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/layout.css" asp-append-version="true" />
+	@await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+	<div>
+		<main role="main">
+			@RenderBody()
+		</main>
+	</div>
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
