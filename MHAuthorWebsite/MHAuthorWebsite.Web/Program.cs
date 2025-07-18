@@ -112,10 +112,9 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.MapAreaControllerRoute(
+app.MapControllerRoute(
     name: "areas",
-    areaName: "Admin",
-    pattern: "Admin/{controller=Admin}/{action=Dashboard}/{id?}");
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
 
