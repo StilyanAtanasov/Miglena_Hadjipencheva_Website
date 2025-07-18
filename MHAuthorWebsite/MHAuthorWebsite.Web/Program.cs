@@ -1,4 +1,6 @@
 using MHAuthorWebsite.Core;
+using MHAuthorWebsite.Core.Admin;
+using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
@@ -23,7 +25,9 @@ builder.Services
 
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
-builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
+builder.Services.AddScoped<IAdminProductTypeService, AdminProductTypeService>();
+builder.Services.AddScoped<IAdminProductService, AdminProductService>();
+
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 
@@ -107,6 +111,12 @@ app.UseRequestLocalization(localizationOptions);
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapAreaControllerRoute(
+    name: "areas",
+    areaName: "Admin",
+    pattern: "Admin/{controller=Admin}/{action=Dashboard}/{id?}");
+
 app.MapRazorPages();
 
 app.Run();

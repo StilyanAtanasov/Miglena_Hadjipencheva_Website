@@ -6,7 +6,7 @@
 }
 
 <h1 class="mb-4">Списък с продукти</h1>
-<a class="nav-link text-dark text-end text-primary" asp-controller="Product" asp-action="AddProduct"> + Добави продукт</a>
+<a class="nav-link text-dark text-end text-primary" asp-area="Admin" asp-controller="AdminProduct" asp-action="AddProduct"> + Добави продукт</a>
 
 <table class="table table-bordered table-hover align-middle">
 	<thead class="table-light">
@@ -44,11 +44,11 @@
 					<td>@product.Price.ToString("F2") лв.</td>
 					<td>@product.StockQuantity</td>
 					<td class="text-end">
-						<form asp-controller="Product" asp-action="TogglePublicity" asp-route-id="@product.Id" method="post" class="d-inline">
+						<form asp-area="Admin" asp-controller="AdminProduct" asp-action="TogglePublicity" asp-route-id="@product.Id" method="post" class="d-inline">
 							<button type="submit" class="btn btn-sm btn-primary">@(product.IsPublic ? "Скрий" : "Публикувай")</button>
 						</form>
-						<a asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning me-2">Редактирай</a>
-						<form asp-controller="Product" asp-action="DeleteProduct" asp-route-id="@product.Id" method="post" class="d-inline">
+						<a asp-area="Admin" asp-controller="AdminProduct" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning me-2">Редактирай</a>
+						<form asp-area="Admin" asp-controller="AdminProduct" asp-action="DeleteProduct" asp-route-id="@product.Id" method="post" class="d-inline">
 							<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Сигурни ли сте, че искате да изтриете продукта?')">Изтрий</button>
 						</form>
 					</td>

@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace MHAuthorWebsite.Web.ViewModels.Product;
+﻿namespace MHAuthorWebsite.Web.ViewModels.Product;
 
 public class ProductCardViewModel
 {

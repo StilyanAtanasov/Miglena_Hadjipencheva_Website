@@ -1,5 +1,5 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Contracts;
+﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
@@ -7,14 +7,13 @@ using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.ProductType;
 using Microsoft.EntityFrameworkCore;
 
-namespace MHAuthorWebsite.Core;
+namespace MHAuthorWebsite.Core.Admin;
 
-public class ProductTypeService : IProductTypeService
+public class AdminProductTypeService : IAdminProductTypeService
 {
     private readonly IApplicationRepository _repository;
 
-    public ProductTypeService(IApplicationRepository repository) => _repository = repository;
-
+    public AdminProductTypeService(IApplicationRepository repository) => _repository = repository;
 
     public async Task<ServiceResult> AddProductTypeAsync(AddProductTypeForm model)
     {

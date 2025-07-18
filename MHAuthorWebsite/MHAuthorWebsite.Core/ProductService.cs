@@ -20,44 +20,6 @@ public class ProductService : IProductService
         _userManager = userManager;
     }
 
-    public async Task<ServiceResult> AddProductAsync(AddProductForm model)
-    {
-        try
-        {
-            Product product = new()
-            {
-                Name = model.Name,
-                Description = model.Description,
-                Price = model.Price,
-                ProductTypeId = model.ProductTypeId,
-                StockQuantity = model.StockQuantity,
-            };
-
-            await _repository.AddAsync(product);
-            await _repository.SaveChangesAsync();
-
-            if (model.Attributes.Any())
-            {
-                ICollection<ProductAttribute> attributes = model.Attributes
-                    .Select(a => new ProductAttribute
-                    {
-                        Key = a.Key,
-                        Value = a.Value,
-                        ProductId = product.Id
-                    })
-                    .ToArray();
-
-                await _repository.AddRangeAsync(attributes);
-                await _repository.SaveChangesAsync();
-            }
-            return ServiceResult.Ok();
-        }
-        catch (Exception)
-        {
-            return ServiceResult.Failure();
-        }
-    }
-
     public async Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId, string? userId)
     {
         try
@@ -194,22 +156,5 @@ public class ProductService : IProductService
 
         await _repository.SaveChangesAsync();
         return ServiceResult.Ok();
-    }
-
-    public async Task<ServiceResult> DeleteProductAsync(Guid productId)
-    {
-        try
-        {
-            Product? product = await _repository.GetByIdAsync<Product>(productId);
-            if (product is null) return ServiceResult.NotFound();
-
-            product.IsDeleted = true;
-            await _repository.SaveChangesAsync();
-            return ServiceResult.Ok();
-        }
-        catch (Exception)
-        {
-            return ServiceResult.Failure();
-        }
     }
 }

@@ -3,7 +3,7 @@
 
 <h1>Добави категория</h1>
 
-<form method="POST" asp-controller="ProductType" asp-action="AddProductType" id="AddProductTypeForm">
+<form method="POST" asp-area="Admin" asp-controller="AdminProductType" asp-action="AddProductType" id="AddProductTypeForm">
 	<label asp-for="Name">Име:</label><br>
 	<input asp-for="Name" /><br>
 	<span asp-validation-for="Name" class="text-danger"></span>

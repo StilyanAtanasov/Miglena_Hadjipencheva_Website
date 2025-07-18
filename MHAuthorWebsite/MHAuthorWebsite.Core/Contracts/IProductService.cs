@@ -6,12 +6,6 @@ namespace MHAuthorWebsite.Core.Contracts;
 
 public interface IProductService
 {
-    Task<ServiceResult> AddProductAsync(AddProductForm model);
-
-    // Task<ServiceResult> UpdateProductAsync(UpdateProductForm model);
-
-    Task<ServiceResult> DeleteProductAsync(Guid productId);
-
     Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId);
 
     Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId, string? userId);

@@ -1,11 +1,11 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Web.ViewModels.ProductType;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace MHAuthorWebsite.Core.Contracts;
+namespace MHAuthorWebsite.Core.Admin.Contracts;
 
-public interface IProductTypeService
+public interface IAdminProductTypeService
 {
     Task<ServiceResult> AddProductTypeAsync(AddProductTypeForm model);
 

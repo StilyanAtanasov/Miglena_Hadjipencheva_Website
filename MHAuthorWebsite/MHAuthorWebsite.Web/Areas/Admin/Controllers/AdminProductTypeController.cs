@@ -1,18 +1,18 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Contracts;
+﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Data.Common.Extensions;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Web.ViewModels.ProductType;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace MHAuthorWebsite.Web.Controllers;
+namespace MHAuthorWebsite.Web.Areas.Admin.Controllers;
 
-public class ProductTypeController : BaseController
+public class AdminProductTypeController : AdminBaseController
 {
-    private readonly IProductTypeService _productTypeService;
+    private readonly IAdminProductTypeService _productTypeService;
 
-    public ProductTypeController(IProductTypeService productTypeService) => _productTypeService = productTypeService;
+    public AdminProductTypeController(IAdminProductTypeService productTypeService) => _productTypeService = productTypeService;
 
     [HttpGet]
     public IActionResult AddProductType()
