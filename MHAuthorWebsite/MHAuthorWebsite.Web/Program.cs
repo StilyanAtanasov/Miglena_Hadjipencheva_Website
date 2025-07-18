@@ -3,6 +3,7 @@ using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data;
+using MHAuthorWebsite.Data.Seeding;
 using MHAuthorWebsite.Data.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,7 @@ builder.Services
     {
         options.SignIn.RequireConfirmedAccount = false;
     })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
@@ -117,5 +119,11 @@ app.MapControllerRoute(
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+{
+    IServiceProvider services = scope.ServiceProvider;
+    await AdminSeeder.SeedAsync(services);
+}
 
 app.Run();
