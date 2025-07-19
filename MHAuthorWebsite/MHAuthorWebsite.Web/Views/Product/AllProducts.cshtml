@@ -1,5 +1,6 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
-@model IEnumerable<ProductCardViewModel>
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination
+@model ICollection<ProductCardViewModel>
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/store.css" />
@@ -7,6 +8,8 @@
 
 @{
 	ViewData["Title"] = "Магазин";
+	int currentPage = int.TryParse(Context.Request.Query["page"].ToString(), out int page) ? page : 1;
+	int productsCount = ViewBag.ProductsCount ?? Model.Count;
 }
 
 <section class="page-wrapper flex-column">
@@ -46,11 +49,42 @@
 	</section>
 	<div class="pagination-box flex-row">
 		<ul role="list" class="pagination-btns flex-row">
-			<li class="pagination-btn"><a class="link"><i class="fa-solid fa-arrow-left"></i></a></li>
-			<li class="pagination-btn"><a class="link current">1</a></li>
-			<li class="pagination-btn"><a class="link">2</a></li>
-			<li class="pagination-btn"><a class="link">3</a></li>
-			<li class="pagination-btn"><a class="link"><i class="fa-solid fa-arrow-right"></i></a></li>
+			@{
+				int totalPages = (int)Math.Ceiling((double)productsCount / PageSize);
+				int firstPage = currentPage > 2 ? currentPage : 1;
+				int lastPage = currentPage + 1 < totalPages ? currentPage + 1 :
+				currentPage == totalPages ? totalPages : currentPage + 1;
+
+				if (lastPage - firstPage < 2)
+				{
+					lastPage = lastPage == totalPages ? lastPage : firstPage + 2;
+					firstPage = totalPages > 2 ? lastPage - 2 : firstPage;
+				}
+			}
+			@if (currentPage != firstPage)
+			{
+				<li title="Предишна страница" class="pagination-btn">
+					<a asp-controller="Product" asp-action="AllProducts" asp-route-page="@(currentPage - 1)" class="link"><i class="fa-solid fa-arrow-left"></i></a>
+				</li>
+			}
+			@for (int i = firstPage; i <= lastPage; i++)
+			{
+				<li class="pagination-btn">
+
+					@{
+						var i1 = i;
+					}
+
+					<a asp-controller="Product" asp-action="AllProducts" asp-route-page="@i1" class="link @(i1 == currentPage ? "current" : "")">@i1</a>
+				</li>
+			}
+
+			@if (currentPage != totalPages)
+			{
+				<li title="Следваща страница" class="pagination-btn">
+					<a asp-controller="Product" asp-action="AllProducts" asp-route-page="@(currentPage + 1)" class="link"><i class="fa-solid fa-arrow-right"></i></a>
+				</li>
+			}
 		</ul>
 	</div>
 </section>

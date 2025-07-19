@@ -48,8 +48,10 @@ public interface IRepository : IDisposable, IAsyncDisposable
     Task<int> SaveChangesAsync();
 
     // Pagination
-    Task<List<T>> GetPagedAsync<T>(
-        int page, int pageSize,
+    IQueryable<T> GetPagedAsync<T>(
+        int page,
+        int pageSize,
+        bool isReadonly = true,
         Expression<Func<T, bool>>? filter = null,
         Expression<Func<T, object>>? orderBy = null,
         bool descending = false) where T : class;

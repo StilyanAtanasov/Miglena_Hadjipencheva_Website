@@ -6,6 +6,7 @@ using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
 
 namespace MHAuthorWebsite.Core;
 
@@ -19,6 +20,8 @@ public class ProductService : IProductService
         _repository = repository;
         _userManager = userManager;
     }
+
+    public async Task<int> GetAllProductsCountAsync() => await _repository.CountAsync<Product>();
 
     public async Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId, string? userId)
     {
@@ -71,9 +74,9 @@ public class ProductService : IProductService
             })
             .ToArrayAsync();
 
-    public async Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId) =>
+    public async Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId, int page) =>
         await _repository
-            .AllReadonly<Product>()
+            .GetPagedAsync<Product>(page, PageSize)
             .Include(p => p.ProductType)
             .Select(p => new ProductCardViewModel
             {

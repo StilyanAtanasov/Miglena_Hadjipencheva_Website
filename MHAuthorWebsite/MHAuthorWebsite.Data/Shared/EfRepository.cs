@@ -105,26 +105,23 @@ public abstract class EfRepository : IRepository
         await _context.SaveChangesAsync();
 
     // PAGINATION
-    public async Task<List<T>> GetPagedAsync<T>(
-        int page, int pageSize,
+    public IQueryable<T> GetPagedAsync<T>(
+        int page,
+        int pageSize,
+        bool isReadonly = true,
         Expression<Func<T, bool>>? filter = null,
         Expression<Func<T, object>>? orderBy = null,
         bool descending = false) where T : class
     {
         IQueryable<T> query = DbSet<T>();
 
-        if (filter != null)
-            query = query.Where(filter);
+        if (isReadonly) query = query.AsNoTracking();
+        if (filter != null) query = query.Where(filter);
+        if (orderBy != null) query = descending ? query.OrderByDescending(orderBy) : query.OrderBy(orderBy);
 
-        if (orderBy != null)
-            query = descending
-                ? query.OrderByDescending(orderBy)
-                : query.OrderBy(orderBy);
-
-        return await query
+        return query
             .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+            .Take(pageSize);
     }
 
     // TRANSACTION SUPPORT

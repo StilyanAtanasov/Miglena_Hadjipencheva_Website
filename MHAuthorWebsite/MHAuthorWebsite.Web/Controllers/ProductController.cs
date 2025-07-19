@@ -22,9 +22,14 @@ public class ProductController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> AllProducts()
+    public async Task<IActionResult> AllProducts([FromQuery] int page = 1)
     {
-        ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId());
+        ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page);
+        int productsCount = await _productService.GetAllProductsCountAsync();
+        if (!products.Any()) return NotFound();
+
+        ViewBag.ProductsCount = productsCount;
+
         return View(products);
     }
 

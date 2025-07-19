@@ -6,7 +6,9 @@ namespace MHAuthorWebsite.Core.Contracts;
 
 public interface IProductService
 {
-    Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId);
+    Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId, int page);
+
+    Task<int> GetAllProductsCountAsync();
 
     Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId, string? userId);
 
