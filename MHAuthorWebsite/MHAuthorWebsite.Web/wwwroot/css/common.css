@@ -77,7 +77,7 @@ a.active:hover::before {
 .flex-column {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
   gap: 1rem;
 }
 
