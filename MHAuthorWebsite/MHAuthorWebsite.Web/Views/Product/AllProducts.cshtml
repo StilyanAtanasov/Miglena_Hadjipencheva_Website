@@ -51,15 +51,10 @@
 		<ul role="list" class="pagination-btns flex-row">
 			@{
 				int totalPages = (int)Math.Ceiling((double)productsCount / PageSize);
-				int firstPage = currentPage > 2 ? currentPage : 1;
-				int lastPage = currentPage + 1 < totalPages ? currentPage + 1 :
-				currentPage == totalPages ? totalPages : currentPage + 1;
+				int firstPage = Math.Max(1, currentPage - 1);
+				int lastPage = Math.Min(totalPages, firstPage + 2);
 
-				if (lastPage - firstPage < 2)
-				{
-					lastPage = lastPage == totalPages ? lastPage : firstPage + 2;
-					firstPage = totalPages > 2 ? lastPage - 2 : firstPage;
-				}
+				firstPage = Math.Max(1, lastPage - 2);
 			}
 			@if (currentPage != firstPage)
 			{
@@ -78,7 +73,6 @@
 					<a asp-controller="Product" asp-action="AllProducts" asp-route-page="@i1" class="link @(i1 == currentPage ? "current" : "")">@i1</a>
 				</li>
 			}
-
 			@if (currentPage != totalPages)
 			{
 				<li title="Следваща страница" class="pagination-btn">
