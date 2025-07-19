@@ -9,6 +9,9 @@ document.addEventListener(`DOMContentLoaded`, function () {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          RequestVerificationToken: document.querySelector(
+            'input[name="__RequestVerificationToken"]'
+          ).value,
         },
         body: JSON.stringify({ itemId, quantity }),
       });

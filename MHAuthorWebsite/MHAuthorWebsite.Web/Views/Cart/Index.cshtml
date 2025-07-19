@@ -19,43 +19,44 @@
 				<section class="products-section flex-column" aria-labelledby="valid-items">
 					<h2 id="valid-items" class="heading">Избрани продукти</h2>
 					<form id="cart-form" method="post" asp-controller="Order" asp-action="Index">
+						@Html.AntiForgeryToken()
 						<table class="cart-table">
 							<thead>
-								<tr>
-									<th></th>
-									<th>Продукт</th>
-									<th>Ед. цена</th>
-									<th>Количество</th>
-									<th>Сума</th>
-									<th></th>
-								</tr>
+							<tr>
+								<th></th>
+								<th>Продукт</th>
+								<th>Ед. цена</th>
+								<th>Количество</th>
+								<th>Сума</th>
+								<th></th>
+							</tr>
 							</thead>
 							<tbody>
-								@foreach (var item in Model.Items.Where(i => i.IsAvailable))
-								{
-									<tr class="clickable" data-details-url="@Url.Action("Details", "Product", new { productId = item.ProductId })">
-										<td><input type="checkbox" name="selectedItems" value="@item.ItemId" checked /></td>
-										<td class="product-info flex-column">
-											<h4>
-												<a class="link" asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">
-													@item.Name
-												</a>
-											</h4>
-											<span><strong>Категория: </strong> @item.Category</span>
-										</td>
-										<td>@item.UnitPrice.ToString("F2") лв.</td>
-										<td>
-											<input class="input quantity-input" type="number" data-item-id="@item.ItemId" name="Quantities[@item.ItemId]" value="@item.Quantity" min="1" max="10" />
-										</td>
-										<td id="line-total-@item.ItemId">@item.LineTotal.ToString("F2") лв.</td>
-										<td>
-											<button formaction="/Cart/Remove/@item.ItemId" formmethod="post"
-													type="submit" class="btn remove btn-none" aria-label="Изтрий">
-												<i class="fa-solid fa-trash-can"></i>
-											</button>
-										</td>
-									</tr>
-								}
+							@foreach (var item in Model.Items.Where(i => i.IsAvailable))
+							{
+								<tr class="clickable" data-details-url="@Url.Action("Details", "Product", new { productId = item.ProductId })">
+									<td><input type="checkbox" name="selectedItems" value="@item.ItemId" checked/></td>
+									<td class="product-info flex-column">
+										<h4>
+											<a class="link" asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">
+												@item.Name
+											</a>
+										</h4>
+										<span><strong>Категория: </strong> @item.Category</span>
+									</td>
+									<td>@item.UnitPrice.ToString("F2") лв.</td>
+									<td>
+										<input class="input quantity-input" type="number" data-item-id="@item.ItemId" name="Quantities[@item.ItemId]" value="@item.Quantity" min="1" max="10"/>
+									</td>
+									<td id="line-total-@item.ItemId">@item.LineTotal.ToString("F2") лв.</td>
+									<td>
+										<button formaction="/Cart/Remove/@item.ItemId" formmethod="post"
+										        type="submit" class="btn remove btn-none" aria-label="Изтрий">
+											<i class="fa-solid fa-trash-can"></i>
+										</button>
+									</td>
+								</tr>
+							}
 							</tbody>
 						</table>
 					</form>
