@@ -84,13 +84,20 @@ public class AdminProductController : AdminBaseController
         return PartialView("_DynamicAttributesPartial", attributes);
     }
 
-    [HttpGet("/AdminProduct/EditProduct/{productId}")]
-    public async Task<IActionResult> EditProduct([FromRoute] Guid productId)
+    public async Task<IActionResult> EditProductForm(Guid id)
     {
-        ServiceResult<EditProductFormViewModel> result = await _productService.GetProductForEditAsync(productId);
+        ServiceResult<EditProductFormViewModel> result = await _productService.GetProductForEditAsync(id);
         if (!result.Found) return NotFound();
 
         return View(result.Result);
+    }
+
+    public async Task<IActionResult> EditProduct([FromForm] EditProductFormViewModel model)
+    {
+        ServiceResult result = await _productService.UpdateProductAsync(model);
+        if (!result.Found) return NotFound();
+
+        return RedirectToAction("Details", "Product");
     }
 
     [HttpPost("/AdminProduct/DeleteProduct/{productId}")]

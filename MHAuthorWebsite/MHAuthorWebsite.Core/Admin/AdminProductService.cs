@@ -86,9 +86,27 @@ public class AdminProductService : ProductService, IAdminProductService
         return ServiceResult<EditProductFormViewModel>.Ok(model);
     }
 
-    public Task<ServiceResult> UpdateProductAsync(EditProductFormViewModel model)
+    public async Task<ServiceResult> UpdateProductAsync(EditProductFormViewModel model)
     {
-        throw new NotImplementedException();
+        Product? product = await _repository
+            .All<Product>()
+            .Include(p => p.Attributes)
+            .Include(p => p.ProductType)
+            .FirstOrDefaultAsync(p => p.Id == model.Id);
+
+        if (product is null) return ServiceResult<EditProductFormViewModel>.NotFound();
+
+        product.Name = model.Name;
+        product.Description = model.Description;
+        product.Price = model.Price;
+        product.StockQuantity = model.StockQuantity;
+
+        for (int i = 0; i < model.Attributes.Count; i++)
+            product.Attributes.ElementAt(i).Value = model.Attributes.ElementAt(i).Value;
+
+        await _repository.SaveChangesAsync();
+
+        return ServiceResult.Ok();
     }
 
     public async Task<ServiceResult> DeleteProductAsync(Guid productId)
