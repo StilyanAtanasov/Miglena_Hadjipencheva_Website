@@ -59,3 +59,33 @@
   justify-content: end;
   font-size: 1.8rem;
 }
+
+.pagination-box {
+  width: 100%;
+  justify-content: center;
+  margin-top: auto;
+  font-size: 2rem;
+}
+
+.pagination-box .pagination-btns {
+  gap: 0.5rem;
+}
+
+.pagination-box .pagination-btns .pagination-btn {
+  cursor: pointer;
+}
+
+.pagination-box .pagination-btns .pagination-btn .link {
+  padding: 0.6rem 1.2rem;
+  border: 0.16rem solid transparent;
+  border-radius: 0.8rem;
+}
+
+.pagination-box .pagination-btns .pagination-btn:hover .link {
+  border-color: var(--color-secondary);
+}
+
+.pagination-box .pagination-btns .pagination-btn .link.current {
+  background-color: var(--color-secondary);
+  color: var(--color-secondary-light);
+}

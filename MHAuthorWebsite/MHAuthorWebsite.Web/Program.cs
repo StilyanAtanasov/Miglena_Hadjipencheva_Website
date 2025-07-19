@@ -8,6 +8,7 @@ using MHAuthorWebsite.Data.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +88,7 @@ app.Use(async (context, next) =>
     context.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=()";
     context.Response.Headers["Content-Security-Policy"] =
         "default-src 'self'; " +
+        "connect-src 'self' ws: wss: http://localhost:* https://localhost:*" +
         "script-src 'self' https://site-assets.fontawesome.com; " +
         "style-src 'self' https://fonts.googleapis.com https://site-assets.fontawesome.com; " +
         "font-src 'self' https://fonts.gstatic.com https://site-assets.fontawesome.com; " +

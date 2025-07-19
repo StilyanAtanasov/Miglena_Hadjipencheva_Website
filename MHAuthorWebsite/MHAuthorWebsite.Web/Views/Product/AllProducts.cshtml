@@ -34,7 +34,7 @@
 					</form>
 					<form asp-controller="Cart" asp-action="Add">
 						<input type="hidden" name="productId" value="@product.Id" />
-						<input type="hidden" name="quantity" value="1"/>
+						<input type="hidden" name="quantity" value="1" />
 						<button type="submit" class="btn order flex-row" @(product.IsAvailable ? "" : "disabled")>
 							<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
 						</button>
@@ -42,7 +42,17 @@
 				</div>
 			</div>
 		}
+
 	</section>
+	<div class="pagination-box flex-row">
+		<ul role="list" class="pagination-btns flex-row">
+			<li class="pagination-btn"><a class="link"><i class="fa-solid fa-arrow-left"></i></a></li>
+			<li class="pagination-btn"><a class="link current">1</a></li>
+			<li class="pagination-btn"><a class="link">2</a></li>
+			<li class="pagination-btn"><a class="link">3</a></li>
+			<li class="pagination-btn"><a class="link"><i class="fa-solid fa-arrow-right"></i></a></li>
+		</ul>
+	</div>
 </section>
 
 @section Scripts {
