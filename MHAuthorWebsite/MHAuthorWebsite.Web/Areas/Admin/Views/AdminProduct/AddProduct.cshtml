@@ -17,27 +17,27 @@
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Name">Име:</label>
 				<input class="form-input" asp-for="Name" />
-				<span class="input-error" asp-validation-for="Name" class="text-danger"></span>
+				<span class="input-error" asp-validation-for="Name" ></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Description">Описание:</label>
 				<textarea class="form-input" asp-for="Description"></textarea>
-				<span class="input-error" asp-validation-for="Description" class="text-danger"></span>
+				<span class="input-error" asp-validation-for="Description" ></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Price">Цена:</label>
 				<input class="form-input" asp-for="Price" type="number" />
-				<span class="input-error" asp-validation-for="Price" class="text-danger"></span>
+				<span class="input-error" asp-validation-for="Price" ></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="StockQuantity">Количество:</label>
 				<input class="form-input" asp-for="StockQuantity" type="number" />
-				<span class="input-error" asp-validation-for="StockQuantity" class="text-danger"></span>
+				<span class="input-error" asp-validation-for="StockQuantity" ></span>
 			</div>
 			<div class="form-input-box flex-column select-list">
 				<label class ="form-label"  asp-for="ProductTypeId">Категория:</label>
 				<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" id="selectProductType" class="form-select"></select>
-				<span class="input-error" asp-validation-for="ProductTypeId" class="text-danger"></span>
+				<span class="input-error" asp-validation-for="ProductTypeId" ></span>
 			</div>
 
 			<div id="productTypeAttributesContainer" class="form-input-box flex-column"></div>

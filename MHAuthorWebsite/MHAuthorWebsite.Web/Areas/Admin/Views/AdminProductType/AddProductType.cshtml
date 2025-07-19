@@ -1,35 +1,51 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.ProductType
 @model AddProductTypeForm
 
-<h1>Добави категория</h1>
+@{
+	ViewData["Title"] = "Добави категория";
+}
 
-<form method="POST" asp-area="Admin" asp-controller="AdminProductType" asp-action="AddProductType" id="AddProductTypeForm">
-	<label asp-for="Name">Име:</label><br>
-	<input asp-for="Name" /><br>
-	<span asp-validation-for="Name" class="text-danger"></span>
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+}
 
-	<label asp-for="HasAdditionalProperties">Допълнителни данни?</label><br>
-	<input asp-for="HasAdditionalProperties" type="checkbox" class="form-check-input" id="HasAdditionalProperties"/>
-	<span asp-validation-for="HasAdditionalProperties" class="text-danger"></span>
+<div class="page-wrapper flex-column">
+	<section class="modal-invisible large flex-column">
+		<h1 class="title">Добави категория</h1>
 
-	<div id="attributeSection" style="display:none">
-		<div id="attributeTemplates" data-attribute-index="@Model.Attributes.Count">
-			@for (int i = 0; i < Model.Attributes.Count; i++)
-			{
-				var i1 = i;
-				@Html.EditorFor(x => x.Attributes[i1], "AttributeDefinitionForm")
-			}
+		<form class="input-form flex-column" method="POST" asp-area="Admin" asp-controller="AdminProductType" asp-action="AddProductType" id="AddProductTypeForm">
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Name">Име:</label><br>
+				<input class="form-input" asp-for="Name"/><br>
+				<span class="input-error" asp-validation-for="Name"></span>
+			</div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="HasAdditionalProperties">Допълнителни данни?</label><br>
+				<input class="form-input" asp-for="HasAdditionalProperties" type="checkbox" id="HasAdditionalProperties" />
+				<span class="input-error" asp-validation-for="HasAdditionalProperties"></span>
+			</div>
+
+			<div id="attributeSection">
+				<div id="attributeTemplates" data-attribute-index="@Model.Attributes.Count">
+					@for (int i = 0; i < Model.Attributes.Count; i++)
+					{
+						var i1 = i;
+						@Html.EditorFor(x => x.Attributes[i1], "AttributeDefinitionForm")
+					}
+				</div>
+
+				<button class="btn submit-btn flex-row" type="button" id="addAttribute">Добави още</button>
+			</div>
+
+			<br>
+			<button type="submit" class="btn submit-btn flex-row">Запази</button>
+		</form>
+
+		<div id="attribute-template" class="hidden">
+			@Html.Editor("Attributes[__INDEX__]", "AttributeDefinitionForm", new { })
 		</div>
-
-		<button type="button" class="btn btn-secondary" id="addAttribute">Добави още</button>
-	</div>
-
-	<br>
-	<button class="btn btn-primary" type="submit">Запази</button>
-</form>
-
-<div id="attribute-template" class="d-none">
-	@Html.Editor("Attributes[__INDEX__]", "AttributeDefinitionForm", new { })
+	</section>
 </div>
 
 @section Scripts {

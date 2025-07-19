@@ -1,26 +1,34 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.ProductType
 @model AttributeDefinitionForm
 
-<div class="attribute-definition mb-3">
-	<button type="button" class="btn-close remove-attribute" aria-label="Close"></button>
+<div class="form-input-box flex-column isolate attribute-definition">
+	<button type="button" class="btn btn-none button-remove remove-attribute" aria-label="Close"><i class="fa-solid fa-xmark remove-attribute"></i></button>
 
-	<label asp-for="Key">Поле:</label>
-	<input asp-for="Key" />
-	<span asp-validation-for="Key" class="text-danger"></span>
+	<div class ="form-input-box flex-column">
+		<label class="form-label" asp-for="Key">Поле:</label>
+		<input class="form-input" asp-for="Key" />
+		<span class="input-error" asp-validation-for="Key"></span>
+	</div>
 
-	<label asp-for="Label">Етикет:</label>
-	<input asp-for="Label" />
-	<span asp-validation-for="Label" class="text-danger"></span>
+	<div class="form-input-box flex-column">
+		<label class="form-label" asp-for="Label">Етикет:</label>
+		<input class="form-input" asp-for="Label" />
+		<span class="input-error" asp-validation-for="Label"></span>
+	</div>
 
-	<label asp-for="DataType">Тип данни:</label>
-	<select asp-for="DataType"
-	        asp-items="ViewBag.AttributeDataTypes"
-	       ></select>
-	<span asp-validation-for="DataType" class="text-danger"></span>
+	<div class="form-input-box flex-column select-list">
+		<label class="form-label" asp-for="DataType">Тип данни:</label>
+		<select class="form-select" asp-for="DataType" asp-items="ViewBag.AttributeDataTypes"></select>
+		<span class="input-error" asp-validation-for="DataType"></span>
+	</div>
 
-	<label asp-for="HasPredefinedValue">Има ли зададени стойности?</label>
-	<input asp-for="HasPredefinedValue" type="checkbox" />
+	<div class="form-input-box flex-column boolean">
+		<label class="form-label" asp-for="HasPredefinedValue">Има ли зададени стойности?</label>
+		<input class="input-error" class="form-input" asp-for="HasPredefinedValue" type="checkbox" />
+	</div>
 
-	<label asp-for="IsRequired">Задължително?</label>
-	<input asp-for="IsRequired" type="checkbox" />
+	<div class="form-input-box flex-column boolean">
+		<label class="form-label" asp-for="IsRequired">Задължително?</label>
+		<input class="input-error" class="form-input" asp-for="IsRequired" type="checkbox" />
+	</div>
 </div>

@@ -53,10 +53,19 @@
 .input-form .form-box {
   margin-top: 1rem;
   width: 100%;
+  position: relative;
 }
 
 .input-form .form-input-box {
   align-items: flex-start;
+}
+
+.input-form .form-input-box.isolate,
+.input-form .form-box.isolate {
+  border: 0.15rem solid var(--color-secondary);
+  border-radius: 1.5rem;
+  padding: 3rem 2rem;
+  margin: 2rem 1rem;
 }
 
 .input-form .form-input-box.select-list,
@@ -111,4 +120,18 @@
 .actions {
   text-align: center;
   gap: 1.2rem;
+}
+
+.button-remove {
+  position: absolute;
+  top: 2%;
+  right: 1%;
+  color: var(--color-secondary);
+  cursor: pointer;
+  transform: scale(1);
+  z-index: 5;
+}
+
+.button-remove:hover {
+  transform: scale(1.2);
 }
