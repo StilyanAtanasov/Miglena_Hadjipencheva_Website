@@ -107,19 +107,6 @@ public class ProductService : IProductService
             })
             .ToArrayAsync();
 
-    public async Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId) =>
-        await _repository
-            .Where<ProductAttributeDefinition>(pad => pad.ProductTypeId == productTypeId)
-            .Select(pad => new ProductTypeAttributesDto
-            {
-                Key = pad.Key,
-                Label = pad.Label,
-                DataType = (int)pad.DataType,
-                HasPredefinedValue = pad.HasPredefinedValue,
-                IsRequired = pad.IsRequired
-            })
-            .ToArrayAsync();
-
     public async Task<ServiceResult> ToggleProductPublicityAsync(Guid productId)
     {
         try

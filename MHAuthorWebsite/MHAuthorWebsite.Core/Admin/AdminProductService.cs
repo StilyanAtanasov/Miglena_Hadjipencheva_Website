@@ -1,9 +1,11 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace MHAuthorWebsite.Core.Admin;
 
@@ -53,6 +55,42 @@ public class AdminProductService : ProductService, IAdminProductService
         }
     }
 
+    public async Task<ServiceResult<EditProductFormViewModel>> GetProductForEditAsync(Guid productId)
+    {
+        Product? product = await _repository
+            .AllReadonly<Product>()
+            .Include(p => p.Attributes)
+            .Include(p => p.ProductType)
+            .FirstOrDefaultAsync(p => p.Id == productId);
+
+        if (product is null) return ServiceResult<EditProductFormViewModel>.NotFound();
+
+        EditProductFormViewModel model = new()
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            StockQuantity = product.StockQuantity,
+            ProductTypeName = product.ProductType.Name,
+            Attributes = product.Attributes
+                .Select(a => new AttributeValueForm
+                {
+                    Label = a.Key,
+                    Key = a.Key,
+                    Value = a.Value
+                })
+                .ToArray()
+        };
+
+        return ServiceResult<EditProductFormViewModel>.Ok(model);
+    }
+
+    public Task<ServiceResult> UpdateProductAsync(EditProductFormViewModel model)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<ServiceResult> DeleteProductAsync(Guid productId)
     {
         try
@@ -69,4 +107,17 @@ public class AdminProductService : ProductService, IAdminProductService
             return ServiceResult.Failure();
         }
     }
+
+    public async Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId) =>
+        await _repository
+            .Where<ProductAttributeDefinition>(pad => pad.ProductTypeId == productTypeId)
+            .Select(pad => new ProductTypeAttributesDto
+            {
+                Key = pad.Key,
+                Label = pad.Label,
+                DataType = (int)pad.DataType,
+                HasPredefinedValue = pad.HasPredefinedValue,
+                IsRequired = pad.IsRequired
+            })
+            .ToArrayAsync();
 }

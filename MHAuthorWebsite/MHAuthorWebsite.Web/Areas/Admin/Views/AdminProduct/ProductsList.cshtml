@@ -47,7 +47,7 @@
 						<form asp-area="Admin" asp-controller="AdminProduct" asp-action="TogglePublicity" asp-route-id="@product.Id" method="post" class="d-inline">
 							<button type="submit" class="btn btn-sm btn-primary">@(product.IsPublic ? "Скрий" : "Публикувай")</button>
 						</form>
-						<a asp-area="Admin" asp-controller="AdminProduct" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning me-2">Редактирай</a>
+						<a asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-id="@product.Id" class="btn btn-sm btn-warning me-2">Редактирай</a>
 						<form asp-area="Admin" asp-controller="AdminProduct" asp-action="DeleteProduct" asp-route-id="@product.Id" method="post" class="d-inline">
 							<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Сигурни ли сте, че искате да изтриете продукта?')">Изтрий</button>
 						</form>

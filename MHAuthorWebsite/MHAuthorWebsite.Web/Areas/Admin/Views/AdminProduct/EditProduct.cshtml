@@ -1,8 +1,11 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
-@model AddProductForm
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MHAuthorWebsite.Web.Utils
+@model EditProductFormViewModel
+
 
 @{
-	ViewData["Title"] = "Добави продукт";
+	ViewData["Title"] = "Редактирай продукт";
 }
 
 @section Styles {
@@ -11,9 +14,9 @@
 
 <div class="page-wrapper flex-column">
 	<section class="modal-invisible large flex-column">
-		<h1 class="title">Добави продукт</h1>
+		<h1 class="title">@ViewData["Title"]</h1>
 
-		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="AddProduct" id="addProductForm" method="post">
+		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-id="@Model.Id" id="addProductForm" method="post">
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Name">Име:</label>
 				<input class="form-input" asp-for="Name" />
@@ -35,19 +38,38 @@
 				<span class="input-error" asp-validation-for="StockQuantity" class="text-danger"></span>
 			</div>
 			<div class="form-input-box flex-column select-list">
-				<label class ="form-label"  asp-for="ProductTypeId">Категория:</label>
-				<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" id="selectProductType" class="form-select"></select>
-				<span class="input-error" asp-validation-for="ProductTypeId" class="text-danger"></span>
+				<label class="form-label">Категория:</label>
+				<p>@Model.ProductTypeName</p>
+				<span class="input-error" class="text-danger"></span>
 			</div>
 
-			<div id="productTypeAttributesContainer" class="form-input-box flex-column"></div>
+			<div id="productTypeAttributesContainer" class="form-input-box flex-column">
+				@foreach (AttributeValueForm a in Model.Attributes)
+				{
+					string inputType = AttributeDataTypeMapper.HtmlInputTypes[a.DataType];
+					string containerClass = AttributeDataTypeMapper.CssContainerClass[a.DataType];
+
+					<div class="form-input-box flex-column @containerClass">
+						<label class="form-label">@a.Label:</label>
+
+						<input type="@inputType"
+							   name="@a.Value"
+							   class="form-input"
+							   data-val="true"
+							   data-val-required="@(a.IsRequired ? $"Полето \"{a.Label}\" е задължително." : null)"
+							   style="-webkit-appearance: textarea"
+							   value="@a.Value" />
+
+						<input type="hidden" name="@a.Key" value="@a.Key" />
+						<input type="hidden" name="@a.Label" value="@a.Label" />
+						<span class="input-error"
+							  data-valmsg-for="@a.Value"
+							  data-valmsg-replace="true"></span>
+					</div>
+				}
+			</div>
 
 			<button type="submit" class="btn submit-btn flex-row">Запази</button>
 		</form>
 	</section>
 </div>
-
-@section Scripts {
-	<partial name="_ValidationScriptsPartial" />
-	<script src="~/js/addProductForm.js"></script>
-}
