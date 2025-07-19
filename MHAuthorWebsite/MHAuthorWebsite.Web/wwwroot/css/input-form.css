@@ -100,6 +100,8 @@
   padding: 0.6rem 1.5rem;
   font-size: 2.1rem;
   margin-top: 1.5rem;
+  width: max-content;
+  align-self: center;
 }
 
 .submit-btn:hover {

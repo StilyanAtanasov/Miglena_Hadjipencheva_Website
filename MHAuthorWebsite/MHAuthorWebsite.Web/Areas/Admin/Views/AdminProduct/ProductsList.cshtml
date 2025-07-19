@@ -44,11 +44,11 @@
 					<td>@product.Price.ToString("F2") лв.</td>
 					<td>@product.StockQuantity</td>
 					<td class="text-end">
-						<form asp-area="Admin" asp-controller="AdminProduct" asp-action="TogglePublicity" asp-route-id="@product.Id" method="post" class="d-inline">
+						<form asp-area="Admin" asp-controller="AdminProduct" asp-action="TogglePublicity" asp-route-productId="@product.Id" method="post" class="d-inline">
 							<button type="submit" class="btn btn-sm btn-primary">@(product.IsPublic ? "Скрий" : "Публикувай")</button>
 						</form>
-						<a asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProductForm" asp-route-id="@product.Id" class="btn btn-sm btn-warning me-2">Редактирай</a>
-						<form asp-area="Admin" asp-controller="AdminProduct" asp-action="DeleteProduct" asp-route-id="@product.Id" method="post" class="d-inline">
+						<a asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="@product.Id" class="btn btn-sm btn-warning me-2">Редактирай</a>
+						<form asp-area="Admin" asp-controller="AdminProduct" asp-action="DeleteProduct" asp-route-productId="@product.Id" method="post" class="d-inline">
 							<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Сигурни ли сте, че искате да изтриете продукта?')">Изтрий</button>
 						</form>
 					</td>

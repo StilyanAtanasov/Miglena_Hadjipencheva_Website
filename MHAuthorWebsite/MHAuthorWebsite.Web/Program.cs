@@ -120,6 +120,11 @@ app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
+app.MapAreaControllerRoute(
+    name: "Admin",
+    areaName: "Admin",
+    pattern: "Admin/{controller=Admin}/{action=Dashboard}/{id?}");
+
 app.MapRazorPages();
 
 using (var scope = app.Services.CreateScope())
