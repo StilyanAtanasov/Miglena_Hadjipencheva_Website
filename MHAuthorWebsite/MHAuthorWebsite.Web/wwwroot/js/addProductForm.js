@@ -17,7 +17,7 @@ function RetrieveAttributes() {
     return;
   }
 
-  fetch(`/Product/GetCategoryTypeAttributes/${selectedId}`, {
+  fetch(`/AdminProduct/GetCategoryTypeAttributes/${selectedId}`, {
     headers: {
       "X-Requested-With": "XMLHttpRequest",
     },

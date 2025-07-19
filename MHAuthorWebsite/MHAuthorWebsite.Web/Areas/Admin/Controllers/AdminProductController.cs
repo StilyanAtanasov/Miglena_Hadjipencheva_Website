@@ -64,7 +64,7 @@ public class AdminProductController : AdminBaseController
         return View(products);
     }
 
-    [HttpGet("Product/GetCategoryTypeAttributes/{productTypeId}")]
+    [HttpGet("/AdminProduct/GetCategoryTypeAttributes/{productTypeId}")]
     public async Task<IActionResult> GetCategoryTypeAttributes([FromRoute] int productTypeId)
     {
         if (HttpContext.Request.Headers["X-Requested-With"] != "XMLHttpRequest") return Forbid();
