@@ -88,9 +88,10 @@ app.Use(async (context, next) =>
     context.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=()";
     context.Response.Headers["Content-Security-Policy"] =
         "default-src 'self'; " +
-        "connect-src 'self' ws: wss: http://localhost:* https://localhost:*" +
-        "script-src 'self' https://site-assets.fontawesome.com; " +
-        "style-src 'self' https://fonts.googleapis.com https://site-assets.fontawesome.com; " +
+        "connect-src 'self' ws: wss: http://localhost:* https://localhost:*;" +
+        "script-src 'self' https://site-assets.fontawesome.com https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js;" +
+        "script-src-elem 'self' https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js;" +
+        "style-src 'self' https://fonts.googleapis.com https://site-assets.fontawesome.com https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css;" +
         "font-src 'self' https://fonts.gstatic.com https://site-assets.fontawesome.com; " +
         "img-src 'self' data:;";
 

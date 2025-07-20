@@ -4,6 +4,7 @@
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/store.css" />
+	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
 }
 
 @{
@@ -15,6 +16,18 @@
 
 <section class="page-wrapper flex-column">
 	<h1 class="title">Магазин</h1>
+	
+	<div class="shop-action-btns flex-row">
+		<div class="shop-action-btn flex-row">
+			<label>Подреди по:</label>
+			<select id="order-by-select" autocomplete="off">
+				<option>Предложени</option>
+				<option>Цена: низходящо</option>
+				<option>Цена: възходящо</option>
+				<option>Харесвания</option>
+			</select>
+		</div>
+	</div>
 
 	<section class="products">
 		@foreach (var product in Model)
@@ -87,5 +100,7 @@
 </section>
 
 @section Scripts {
-	<script src="~/js/click.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+	<script src="~/js/click.js" asp-append-version="true"></script>
+	<script src="~/js/store.js" asp-append-version="true"></script>
 }
