@@ -4,6 +4,13 @@ document.addEventListener("DOMContentLoaded", function () {
   RetrieveAttributes();
 
   categorySelect.addEventListener("change", RetrieveAttributes);
+
+  document
+    .querySelector("#addProductForm")
+    .addEventListener("submit", function (e) {
+      const quillContent = quill.root.innerHTML.trim();
+      document.querySelector(`#descriptionInput`).value = quillContent;
+    });
 });
 
 function RetrieveAttributes() {

@@ -1,8 +1,16 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ganss.Xss
+@using System.Net
+
 @model ProductDetailsViewModel
 
 @{
 	ViewData["Title"] = @Model.Name;
+
+	string rawHtml = WebUtility.HtmlDecode(Model.Description);
+	HtmlSanitizer sanitizer = new();
+	string cleanHtml = sanitizer.Sanitize(rawHtml);
 }
 
 @section Styles {
@@ -34,7 +42,7 @@
 				<input type="hidden" name="productId" value="@Model.Id" />
 				<div>
 					<label for="quantity">Количество:</label>
-					<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10"/>
+					<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
 				</div>
 				<button type="submit" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled")>
 					<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
@@ -50,7 +58,7 @@
 		<h4 class="heading">Информация за продукта</h4>
 		<article class="info-article flex-column">
 			<h5 class="subheading">Описание:</h5>
-			<p class="description">@Model.Description</p>
+			<p id="product-description" class="description">@Html.Raw(cleanHtml)</p>
 		</article>
 	</section>
 
