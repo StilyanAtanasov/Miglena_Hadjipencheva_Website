@@ -51,12 +51,12 @@
 .products {
   display: grid;
   grid-template-columns: repeat(4, 20vw);
-  grid-template-rows: 38vh;
+  gap: 1rem;
 }
 
 .product {
-  padding: 2rem 4rem;
-  gap: 0.1rem;
+  padding: 4rem 5rem 3rem 5rem;
+  gap: 2rem;
   justify-content: space-around;
   border: 0.1rem solid var(--color-dark);
   margin: 2rem;
