@@ -28,16 +28,12 @@ public class ProductController : BaseController
     public async Task<IActionResult> AllProducts([FromQuery] int page = 1, [FromQuery] string? orderType = null)
     {
         if (page < 1) page = 1;
-        orderType ??= "recommended";
-
-        (bool descending, Expression<Func<Product, object>>? expression) sortType = (false, null);
+        if (orderType is null) return RedirectToAction(nameof(AllProducts), new { page = 1, orderType = "recommended" });
 
         bool result = SortValueMapper.SortMap.TryGetValue(orderType, out var sortValue);
-        if (result)
-        {
-            sortType.descending = sortValue.descending;
-            sortType.expression = sortValue.expression;
-        }
+        if (!result) return RedirectToAction(nameof(AllProducts), new { page = 1, orderType = "recommended" });
+
+        (bool descending, Expression<Func<Product, object>>? expression) sortType = (sortValue.descending, sortValue.expression);
 
         ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page, sortType);
         int productsCount = await _productService.GetAllProductsCountAsync();
