@@ -12,6 +12,9 @@
 	int currentPage = int.TryParse(Context.Request.Query["page"].ToString(), out int page) ? page : 1;
 	int productsCount = ViewBag.ProductsCount ?? Model.Count;
 	int totalPages = (int)Math.Ceiling((double)productsCount / PageSize);
+
+	string orderType = Context.Request.Query["orderType"].ToString();
+
 }
 
 <section class="page-wrapper flex-column">
@@ -20,11 +23,11 @@
 	<div class="shop-action-btns flex-row">
 		<div class="shop-action-btn flex-row">
 			<label>Подреди по:</label>
-			<select id="order-by-select" autocomplete="off">
-				<option>Предложени</option>
-				<option>Цена: низходящо</option>
-				<option>Цена: възходящо</option>
-				<option>Харесвания</option>
+			<select id="order-by-select" autocomplete="off" name="orderType">
+				<!option value="recommended" @(orderType == "recommended" ? "selected" : "")>Предложени</!option>
+				<!option value="price_asc" @(orderType == "price_asc" ? "selected" : "")>Цена: възходящо</!option>
+				<!option value="price_desc" @(orderType == "price_desc" ? "selected" : "")>Цена: низходящо</!option>
+				<!option value="likes" @(orderType == "likes" ? "selected" : "")>Харесвания</!option>
 			</select>
 		</div>
 	</div>

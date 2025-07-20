@@ -1,12 +1,13 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Dto;
+using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Web.ViewModels.Product;
+using System.Linq.Expressions;
 
 namespace MHAuthorWebsite.Core.Contracts;
 
 public interface IProductService
 {
-    Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId, int page);
+    Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId, int page, (bool descending, Expression<Func<Product, object>>? expression) sortType);
 
     Task<int> GetAllProductsCountAsync();
 

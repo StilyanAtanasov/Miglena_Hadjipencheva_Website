@@ -1,7 +1,10 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Web.Utils;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace MHAuthorWebsite.Web.Controllers;
 
@@ -22,9 +25,21 @@ public class ProductController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> AllProducts([FromQuery] int page = 1)
+    public async Task<IActionResult> AllProducts([FromQuery] int page = 1, [FromQuery] string? orderType = null)
     {
-        ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page);
+        if (page < 1) page = 1;
+        orderType ??= "recommended";
+
+        (bool descending, Expression<Func<Product, object>>? expression) sortType = (false, null);
+
+        bool result = SortValueMapper.SortMap.TryGetValue(orderType, out var sortValue);
+        if (result)
+        {
+            sortType.descending = sortValue.descending;
+            sortType.expression = sortValue.expression;
+        }
+
+        ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page, sortType);
         int productsCount = await _productService.GetAllProductsCountAsync();
         if (!products.Any()) return NotFound();
 
