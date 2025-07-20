@@ -6,6 +6,7 @@
 }
 
 @section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 }
 
@@ -21,7 +22,7 @@
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Description">Описание:</label>
-				<textarea class="form-input" asp-for="Description"></textarea>
+				<div id="description-editor" class="form-input" asp-for="Description"></div>
 				<span class="input-error" asp-validation-for="Description" ></span>
 			</div>
 			<div class="form-input-box flex-column">
@@ -49,5 +50,6 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 	<script src="~/js/addProductForm.js"></script>
 }

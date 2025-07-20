@@ -1,3 +1,4 @@
+// --- Form logic ---
 document.addEventListener("DOMContentLoaded", function () {
   const categorySelect = document.getElementById("selectProductType");
   RetrieveAttributes();
@@ -39,3 +40,8 @@ function RetrieveAttributes() {
       console.error("Error:", error);
     });
 }
+
+// --- Editor logic ---
+const quill = new Quill("#description-editor", {
+  theme: "snow",
+});

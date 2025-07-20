@@ -135,3 +135,12 @@
 .button-remove:hover {
   transform: scale(1.2);
 }
+
+/* Editor styles */
+.ql-toolbar.ql-snow,
+.ql-toolbar.ql-snow + .ql-container.ql-snow {
+  border-radius: 1.5rem;
+  padding: 0.5rem 1.5rem;
+  border: 0.15rem solid var(--color-secondary);
+  background-color: var(--color-primary);
+}
