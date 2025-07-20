@@ -1,5 +1,6 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination
+@using MHAuthorWebsite.GCommon
 @model ICollection<ProductCardViewModel>
 
 @section Styles {
@@ -14,7 +15,12 @@
 	int totalPages = (int)Math.Ceiling((double)productsCount / PageSize);
 
 	string orderType = Context.Request.Query["orderType"].ToString();
-
+	SelectList selectItems = new (
+		ApplicationRules.SortTypes.DisplayNames.Select(kvp =>
+			new SelectListItem(kvp.Value, kvp.Key)),
+		"Value",
+		"Text",
+		orderType);
 }
 
 <section class="page-wrapper flex-column">
@@ -23,12 +29,7 @@
 	<div class="shop-action-btns flex-row">
 		<div class="shop-action-btn flex-row">
 			<label>Подреди по:</label>
-			<select id="order-by-select" autocomplete="off" name="orderType">
-				<!option value="recommended" @(orderType == "recommended" ? "selected" : "")>Предложени</!option>
-				<!option value="price_asc" @(orderType == "price_asc" ? "selected" : "")>Цена: възходящо</!option>
-				<!option value="price_desc" @(orderType == "price_desc" ? "selected" : "")>Цена: низходящо</!option>
-				<!option value="likes" @(orderType == "likes" ? "selected" : "")>Харесвания</!option>
-			</select>
+			<select id="order-by-select" autocomplete="off" name="orderType" asp-items="@selectItems"></select>
 		</div>
 	</div>
 
