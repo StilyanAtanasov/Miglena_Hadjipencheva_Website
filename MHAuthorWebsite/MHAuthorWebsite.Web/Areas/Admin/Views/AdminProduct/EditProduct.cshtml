@@ -23,7 +23,7 @@
 	<section class="modal-invisible large flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 
-		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="" id="updateProductForm" method="post">
+		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="@Model.Id" id="updateProductForm" method="post">
 			<input type="hidden" asp-for="Id" />
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Name">Име:</label>

@@ -59,6 +59,8 @@ public class AdminProductService : ProductService, IAdminProductService
     {
         Product? product = await _repository
             .AllReadonly<Product>()
+            .IgnoreQueryFilters()
+            .Where(p => !p.IsDeleted)
             .Include(p => p.Attributes)
             .Include(p => p.ProductType)
             .FirstOrDefaultAsync(p => p.Id == productId);
@@ -90,6 +92,8 @@ public class AdminProductService : ProductService, IAdminProductService
     {
         Product? product = await _repository
             .All<Product>()
+            .IgnoreQueryFilters()
+            .Where(p => !p.IsDeleted)
             .Include(p => p.Attributes)
             .Include(p => p.ProductType)
             .FirstOrDefaultAsync(p => p.Id == model.Id);

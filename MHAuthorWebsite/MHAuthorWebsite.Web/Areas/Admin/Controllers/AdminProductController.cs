@@ -93,8 +93,8 @@ public class AdminProductController : AdminBaseController
         return View(result.Result);
     }
 
-    [HttpPost("/Admin/AdminProduct/EditProduct")]
-    public async Task<IActionResult> EditProduct([FromForm] EditProductFormViewModel model)
+    [HttpPost("/Admin/AdminProduct/EditProduct/{productId}")]
+    public async Task<IActionResult> EditProduct([FromRoute] Guid productId, [FromForm] EditProductFormViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
 
