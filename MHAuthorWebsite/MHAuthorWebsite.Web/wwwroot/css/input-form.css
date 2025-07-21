@@ -136,6 +136,11 @@
   transform: scale(1.2);
 }
 
+#counter {
+  width: 98%;
+  text-align: end;
+}
+
 /* Editor styles */
 .ql-toolbar.ql-snow,
 .ql-toolbar.ql-snow + .ql-container.ql-snow {

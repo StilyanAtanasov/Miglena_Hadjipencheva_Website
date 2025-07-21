@@ -29,6 +29,20 @@ const quill = new Quill("#description-editor", {
   },
 });
 
+quill.on(Quill.events.TEXT_CHANGE, () => {
+  const plainText = quill.getText().trim();
+  const descriptionInput = document.querySelector(`#descriptionInput`);
+  const descriptionError = document.querySelector(`#description-input-error`);
+  const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
+
+  if (plainText.length > maxLength) {
+    descriptionError.textContent = `Описанието не може да е повече от ${maxLength} символа.`;
+    return;
+  } else {
+    descriptionError.textContent = ``;
+  }
+});
+
 // --- Form logic ---
 document.addEventListener("DOMContentLoaded", function () {
   const categorySelect = document.getElementById("selectProductType");
@@ -43,17 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("submit", function (e) {
       const plainText = quill.getText().trim();
       const descriptionInput = document.querySelector(`#descriptionInput`);
-      const descriptionError = document.querySelector(
-        `#description-input-error`
-      );
       const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
 
       if (plainText.length > maxLength) {
         e.preventDefault();
-        descriptionError.textContent = `Описанието не може да е повече от ${maxLength} символа.`;
         return;
-      } else {
-        descriptionError.textContent = ``;
       }
 
       const quillContent = quill.root.innerHTML.trim();
