@@ -13,7 +13,7 @@ public class EditProductFormViewModel
     public string Name { get; set; } = null!;
 
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
-    [StringLength(DescriptionMaxLength, MinimumLength = DescriptionMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
+    [StringLength(DescriptionHtmlMaxLength, MinimumLength = DescriptionHtmlMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
     public string Description { get; set; } = null!;
 
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
