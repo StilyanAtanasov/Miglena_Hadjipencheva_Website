@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Ganss.Xss
 @using System.Net
+@using MHAuthorWebsite.Web.Utils
 
 @model ProductDetailsViewModel
 
@@ -9,7 +10,7 @@
 	ViewData["Title"] = @Model.Name;
 
 	string rawHtml = WebUtility.HtmlDecode(Model.Description);
-	HtmlSanitizer sanitizer = new();
+	HtmlSanitizer sanitizer = QuillConfigurator.GetQuillHtmlSanitizer();
 	string cleanHtml = sanitizer.Sanitize(rawHtml);
 }
 
