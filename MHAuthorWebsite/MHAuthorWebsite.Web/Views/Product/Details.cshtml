@@ -15,6 +15,7 @@
 }
 
 @section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/product-details.css" />
 }
 
@@ -57,9 +58,9 @@
 	<!-- Details Section -->
 	<section class="details-info flex-column">
 		<h4 class="heading">Информация за продукта</h4>
-		<article class="info-article flex-column">
+		<article class="info-article flex-column ql-editor">
 			<h5 class="subheading">Описание:</h5>
-			<p id="product-description" class="description">@Html.Raw(cleanHtml)</p>
+			@Html.Raw(cleanHtml)
 		</article>
 	</section>
 

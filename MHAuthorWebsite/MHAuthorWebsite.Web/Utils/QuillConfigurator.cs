@@ -9,6 +9,12 @@ public static class QuillConfigurator
         return new HtmlSanitizer
         {
             AllowDataAttributes = true,
+            AllowCssCustomProperties = true,
+
+            AllowedAttributes =
+            {
+                "class", "style", "id", "href", "src", "alt", "title", "data-*"
+            }
         };
     }
 }

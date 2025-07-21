@@ -5,6 +5,8 @@ using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.RegularExpressions;
+using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
 
 namespace MHAuthorWebsite.Web.Areas.Admin.Controllers;
 
@@ -97,6 +99,21 @@ public class AdminProductController : AdminBaseController
     public async Task<IActionResult> EditProduct([FromRoute] Guid productId, [FromForm] EditProductFormViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
+
+        string html = model.Description;
+        string plainText = Regex.Replace(html, "<.*?>", string.Empty);
+
+        if (plainText.Length > DescriptionTextMaxLength)
+        {
+            ModelState.AddModelError(nameof(model.Description), "Описание не трябва да надвишава 4000 символа текст.");
+            return View(model);
+        }
+
+        if (html.Length > DescriptionHtmlMaxLength)
+        {
+            ModelState.AddModelError(nameof(model.Description), "HTML съдържанието е прекалено голямо.");
+            return View(model);
+        }
 
         ServiceResult result = await _productService.UpdateProductAsync(model);
         if (!result.Found) return NotFound();
