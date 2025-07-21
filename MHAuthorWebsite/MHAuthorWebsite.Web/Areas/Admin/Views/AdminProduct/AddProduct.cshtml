@@ -23,6 +23,7 @@
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Description">Описание:</label>
 				<div id="description-editor" class="form-input"></div>
+				<div id="counter">0</div>
 				<input type="hidden" asp-for="Description" id="descriptionInput"/>
 				<span class="input-error" asp-validation-for="Description" ></span>
 			</div>
@@ -52,5 +53,5 @@
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-	<script src="~/js/addProductForm.js"></script>
+	<script src="~/js/addProductForm.js" asp-append-version="true"></script>
 }

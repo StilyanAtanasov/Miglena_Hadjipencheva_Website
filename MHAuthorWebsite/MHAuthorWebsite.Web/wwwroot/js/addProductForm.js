@@ -1,6 +1,32 @@
 // --- Editor logic ---
+class Counter {
+  constructor(quill, options) {
+    const container = document.querySelector(options.container);
+    quill.on(Quill.events.TEXT_CHANGE, () => {
+      container.innerText = this.calculate();
+    });
+  }
+
+  calculate() {
+    const text = quill.getText().trim();
+    const words = text.split(/\s+/).length;
+    const chars = text.length;
+
+    return `${words} дум${words === 1 ? "а" : "и"}, ${chars} символ${
+      chars === 1 ? "" : "а"
+    }!`;
+  }
+}
+
+Quill.register("modules/counter", Counter);
+
 const quill = new Quill("#description-editor", {
   theme: "snow",
+  modules: {
+    counter: {
+      container: "#counter",
+    },
+  },
 });
 
 // --- Form logic ---
