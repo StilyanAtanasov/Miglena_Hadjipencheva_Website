@@ -36,11 +36,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   categorySelect.addEventListener("change", RetrieveAttributes);
 
+  quill.root.innerHTML = descriptionInput.value;
+
   document
     .querySelector("#addProductForm")
-    .addEventListener("submit", function () {
+    .addEventListener("submit", function (e) {
+      const plainText = quill.getText().trim();
+      const descriptionInput = document.querySelector(`#descriptionInput`);
+      const descriptionError = document.querySelector(
+        `#description-input-error`
+      );
+      const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
+
+      if (plainText.length > maxLength) {
+        e.preventDefault();
+        descriptionError.textContent = `Описанието не може да е повече от ${maxLength} символа.`;
+        return;
+      } else {
+        descriptionError.textContent = ``;
+      }
+
       const quillContent = quill.root.innerHTML.trim();
-      document.querySelector(`#descriptionInput`).value = quillContent;
+      descriptionInput.value = quillContent;
     });
 });
 

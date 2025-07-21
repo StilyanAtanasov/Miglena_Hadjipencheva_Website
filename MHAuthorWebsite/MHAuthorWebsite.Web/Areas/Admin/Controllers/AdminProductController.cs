@@ -53,6 +53,37 @@ public class AdminProductController : AdminBaseController
             return View(model);
         }
 
+        string html = model.Description;
+        string plainText = Regex.Replace(html, "<.*?>", string.Empty);
+
+        if (plainText.Length > DescriptionTextMaxLength)
+        {
+            ModelState.AddModelError(nameof(model.Description), "Описанието не трябва да надвишава 4000 символа текст.");
+            ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
+            ViewBag.ProductTypes = productTypes
+                .Select(pt => new SelectListItem
+                {
+                    Value = pt.Id.ToString(),
+                    Text = pt.Name
+                })
+                .ToArray();
+            return View(model);
+        }
+
+        if (html.Length > DescriptionHtmlMaxLength)
+        {
+            ModelState.AddModelError(nameof(model.Description), "HTML съдържанието е прекалено голямо.");
+            ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
+            ViewBag.ProductTypes = productTypes
+                .Select(pt => new SelectListItem
+                {
+                    Value = pt.Id.ToString(),
+                    Text = pt.Name
+                })
+                .ToArray();
+            return View(model);
+        }
+
         ServiceResult result = await _productService.AddProductAsync(model);
         if (!result.Success) return StatusCode(500);
 

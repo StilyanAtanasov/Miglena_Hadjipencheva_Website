@@ -3,6 +3,7 @@
 @using MHAuthorWebsite.Web.Utils
 @using System.Net
 @using Ganss.Xss
+@using static MHAuthorWebsite.GCommon.EntityConstraints.Product
 @model EditProductFormViewModel
 
 
@@ -33,8 +34,9 @@
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Description">Описание:</label>
 				<div id="description-editor" class="form-input"></div>
-				<input type="hidden" asp-for="Description" id="descriptionInput" value="@rawHtml"/>
-				<span class="input-error" asp-validation-for="Description" ></span>
+				<div id="counter"></div>
+				<input type="hidden" asp-for="Description" id="descriptionInput" value="@rawHtml" data-text-max-length="@DescriptionTextMaxLength" />
+				<span id="description-input-error" class="input-error" asp-validation-for="Description"></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Price">Цена:</label>
@@ -87,5 +89,5 @@
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-	<script src="~/js/update-product.js"></script>
+	<script src="~/js/update-product.js" asp-append-version="true"></script>
 }

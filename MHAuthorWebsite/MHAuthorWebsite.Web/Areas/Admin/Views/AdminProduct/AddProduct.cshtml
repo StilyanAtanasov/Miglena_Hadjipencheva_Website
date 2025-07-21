@@ -1,8 +1,16 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Net
+@using Ganss.Xss
+@using MHAuthorWebsite.Web.Utils
+@using static MHAuthorWebsite.GCommon.EntityConstraints.Product
 @model AddProductForm
 
 @{
 	ViewData["Title"] = "Добави продукт";
+	string rawHtml = WebUtility.HtmlDecode(Model.Description);
+	HtmlSanitizer sanitizer = QuillConfigurator.GetQuillHtmlSanitizer();
+	string cleanHtml = sanitizer.Sanitize(rawHtml);
 }
 
 @section Styles {
@@ -23,14 +31,14 @@
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Description">Описание:</label>
 				<div id="description-editor" class="form-input"></div>
-				<div id="counter">0</div>
-				<input type="hidden" asp-for="Description" id="descriptionInput"/>
-				<span class="input-error" asp-validation-for="Description" ></span>
+				<div id="counter"></div>
+				<input type="hidden" asp-for="Description" id="descriptionInput" value="@rawHtml" data-text-max-length="@DescriptionTextMaxLength"/> <!-- TODO FIX This is the raw HTML input for the editor -->
+				<span id="description-input-error" class="input-error" asp-validation-for="Description"></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Price">Цена:</label>
 				<input class="form-input" asp-for="Price" type="number" />
-				<span class="input-error" asp-validation-for="Price" ></span>
+				<span class="input-error" asp-validation-for="Price"></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="StockQuantity">Количество:</label>
