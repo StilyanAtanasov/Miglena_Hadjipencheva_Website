@@ -1,3 +1,8 @@
+// --- Editor logic ---
+const quill = new Quill("#description-editor", {
+  theme: "snow",
+});
+
 // --- Form logic ---
 document.addEventListener("DOMContentLoaded", function () {
   const categorySelect = document.getElementById("selectProductType");
@@ -7,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document
     .querySelector("#addProductForm")
-    .addEventListener("submit", function (e) {
+    .addEventListener("submit", function () {
       const quillContent = quill.root.innerHTML.trim();
       document.querySelector(`#descriptionInput`).value = quillContent;
     });
@@ -47,8 +52,3 @@ function RetrieveAttributes() {
       console.error("Error:", error);
     });
 }
-
-// --- Editor logic ---
-const quill = new Quill("#description-editor", {
-  theme: "snow",
-});

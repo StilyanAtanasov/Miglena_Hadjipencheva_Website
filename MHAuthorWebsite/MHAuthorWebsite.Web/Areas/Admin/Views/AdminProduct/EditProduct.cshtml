@@ -1,14 +1,21 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MHAuthorWebsite.Web.Utils
+@using System.Net
+@using Ganss.Xss
 @model EditProductFormViewModel
 
 
 @{
 	ViewData["Title"] = "Редактирай продукт";
+
+	string rawHtml = WebUtility.HtmlDecode(Model.Description);
+	HtmlSanitizer sanitizer = new();
+	string cleanHtml = sanitizer.Sanitize(rawHtml);
 }
 
 @section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 }
 
@@ -16,7 +23,7 @@
 	<section class="modal-invisible large flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 
-		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct"  id="addProductForm" method="post">
+		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="" id="updateProductForm" method="post">
 			<input type="hidden" asp-for="Id" />
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Name">Име:</label>
@@ -25,7 +32,8 @@
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Description">Описание:</label>
-				<textarea class="form-input" asp-for="Description"></textarea>
+				<div id="description-editor" class="form-input"></div>
+				<input type="hidden" asp-for="Description" id="descriptionInput" value="@cleanHtml"/>
 				<span class="input-error" asp-validation-for="Description" ></span>
 			</div>
 			<div class="form-input-box flex-column">
@@ -41,7 +49,7 @@
 			<div class="form-input-box flex-column select-list">
 				<label class="form-label">Категория:</label>
 				<p>@Model.ProductTypeName</p>
-				<span class="input-error" ></span>
+				<input type="hidden" asp-for="ProductTypeName" value="@Model.ProductTypeName"/>
 			</div>
 
 			<div id="productTypeAttributesContainer" class="form-input-box flex-column">
@@ -54,18 +62,19 @@
 						<label class="form-label">@a.Label:</label>
 
 						<input type="@inputType"
-							   name="@a.Value"
-							   class="form-input"
-							   data-val="true"
-							   data-val-required="@(a.IsRequired ? $"Полето \"{a.Label}\" е задължително." : null)"
-							   style="-webkit-appearance: textarea"
-							   value="@a.Value" />
+						       name="@a.Value"
+						       class="form-input"
+						       data-val="true"
+						       data-val-required="@(a.IsRequired ? $"Полето \"{a.Label}\" е задължително." : null)"
+						       style="-webkit-appearance: textarea"
+						       value="@a.Value" />
 
+						<input type="hidden" name="@a.Key" value="@a.Key" />
 						<input type="hidden" name="@a.Key" value="@a.Key" />
 						<input type="hidden" name="@a.Label" value="@a.Label" />
 						<span class="input-error"
-							  data-valmsg-for="@a.Value"
-							  data-valmsg-replace="true"></span>
+						      data-valmsg-for="@a.Value"
+						      data-valmsg-replace="true"></span>
 					</div>
 				}
 			</div>
@@ -74,3 +83,9 @@
 		</form>
 	</section>
 </div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+	<script src="~/js/update-product.js"></script>
+}
