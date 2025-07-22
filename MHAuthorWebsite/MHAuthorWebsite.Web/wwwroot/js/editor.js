@@ -27,11 +27,11 @@ class Counter {
   }
 }
 
-export async function initQuill(isEnabled = false) {
+export async function initQuill(isEnabled = false, counter = false) {
   return new Promise(resolve => {
     const descriptionInput = document.querySelector(`#descriptionInput`);
 
-    Quill.register("modules/counter", Counter);
+    counter && Quill.register("modules/counter", Counter);
 
     const Font = Quill.import("formats/font");
     Font.whitelist = ["sofia-sans-condensed", "sans-serif", "serif", "monospace"];
@@ -42,9 +42,11 @@ export async function initQuill(isEnabled = false) {
       modules: {
         syntax: true,
         toolbar: isEnabled ? "#toolbar-container" : false,
-        counter: {
-          container: "#counter",
-        },
+        ...(counter && {
+          counter: {
+            container: "#counter",
+          },
+        }),
       },
     });
 

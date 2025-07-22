@@ -3,7 +3,7 @@
 import { initQuill } from "./editor.js";
 
 document.addEventListener(`DOMContentLoaded`, async function () {
-  const quill = await initQuill(true);
+  const quill = await initQuill(true, true);
 
   document.querySelector("#updateProductForm").addEventListener("submit", function (e) {
     const plainText = quill.getText().trim();

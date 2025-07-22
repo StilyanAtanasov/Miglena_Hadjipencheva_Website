@@ -4,7 +4,7 @@ import { initQuill } from "./editor.js";
 
 document.addEventListener("DOMContentLoaded", async function (e) {
   const categorySelect = document.getElementById("selectProductType");
-  const quill = await initQuill(true);
+  const quill = await initQuill(true, true);
 
   RetrieveAttributes(e);
   categorySelect.addEventListener("change", RetrieveAttributes);
