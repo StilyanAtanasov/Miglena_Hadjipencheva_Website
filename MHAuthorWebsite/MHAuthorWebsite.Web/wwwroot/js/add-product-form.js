@@ -1,56 +1,13 @@
-// --- Editor logic ---
-class Counter {
-  constructor(quill, options) {
-    const container = document.querySelector(options.container);
-    quill.on(Quill.events.TEXT_CHANGE, () => {
-      container.innerText = this.calculate();
-    });
-  }
+"use strict";
 
-  calculate() {
-    const text = quill.getText().trim();
-    const words = text.split(/\s+/).length;
-    const chars = text.length;
+import { initQuill } from "./editor.js";
 
-    return `${words} дум${words === 1 ? "а" : "и"}, ${chars} символ${
-      chars === 1 ? "" : "а"
-    }!`;
-  }
-}
-
-Quill.register("modules/counter", Counter);
-
-const quill = new Quill("#description-editor", {
-  theme: "snow",
-  modules: {
-    counter: {
-      container: "#counter",
-    },
-  },
-});
-
-quill.on(Quill.events.TEXT_CHANGE, () => {
-  const plainText = quill.getText().trim();
-  const descriptionInput = document.querySelector(`#descriptionInput`);
-  const descriptionError = document.querySelector(`#description-input-error`);
-  const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
-
-  if (plainText.length > maxLength) {
-    descriptionError.textContent = `Описанието не може да е повече от ${maxLength} символа.`;
-    return;
-  } else {
-    descriptionError.textContent = ``;
-  }
-});
-
-// --- Form logic ---
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function (e) {
   const categorySelect = document.getElementById("selectProductType");
-  RetrieveAttributes();
+  const quill = await initQuill();
+  RetrieveAttributes(e);
 
   categorySelect.addEventListener("change", RetrieveAttributes);
-
-  quill.root.innerHTML = descriptionInput.value;
 
   document
     .querySelector("#addProductForm")
@@ -69,12 +26,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function RetrieveAttributes() {
+function RetrieveAttributes(e) {
   const attributesContainer = document.getElementById(
     "productTypeAttributesContainer"
   );
 
-  const selectedId = this.value;
+  const selectedId = e.target.value;
 
   if (!selectedId) {
     attributesContainer.innerHTML = "";

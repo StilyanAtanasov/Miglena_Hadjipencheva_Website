@@ -1,3 +1,5 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".clickable").forEach(function (div) {
     div.addEventListener("click", function (e) {

@@ -34,7 +34,7 @@ public class AdminProductController : AdminBaseController
             })
             .ToArray();
 
-        return View();
+        return View(new AddProductForm());
     }
 
     [HttpPost]

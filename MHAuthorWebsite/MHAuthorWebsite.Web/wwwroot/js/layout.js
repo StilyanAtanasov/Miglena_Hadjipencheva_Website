@@ -1,3 +1,5 @@
+"use strict";
+
 const items = document.querySelectorAll(".social-media li");
 
 items.forEach((item, i) => {

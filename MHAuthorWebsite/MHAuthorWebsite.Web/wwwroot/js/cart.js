@@ -1,3 +1,5 @@
+"use strict";
+
 document.addEventListener(`DOMContentLoaded`, function () {
   const inputs = document.querySelectorAll(`.quantity-input`);
   inputs.forEach((i) =>

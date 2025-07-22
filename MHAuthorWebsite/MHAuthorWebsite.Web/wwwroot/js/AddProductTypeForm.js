@@ -1,3 +1,5 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", function () {
   const hasPropsCheckbox = document.getElementById("HasAdditionalProperties");
   const attributeSection = document.getElementById("attributeSection");

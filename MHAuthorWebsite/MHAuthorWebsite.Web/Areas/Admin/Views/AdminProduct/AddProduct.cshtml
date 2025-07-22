@@ -8,7 +8,7 @@
 
 @{
 	ViewData["Title"] = "Добави продукт";
-	string rawHtml = WebUtility.HtmlDecode(Model.Description);
+	string rawHtml = WebUtility.HtmlDecode(Model.Description) ;
 	HtmlSanitizer sanitizer = QuillConfigurator.GetQuillHtmlSanitizer();
 	string cleanHtml = sanitizer.Sanitize(rawHtml);
 }
@@ -61,5 +61,6 @@
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-	<script src="~/js/addProductForm.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/editor.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/add-product-form.js" asp-append-version="true"></script>
 }
