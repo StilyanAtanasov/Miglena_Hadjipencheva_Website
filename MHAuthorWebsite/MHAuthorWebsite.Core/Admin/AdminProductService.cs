@@ -117,7 +117,12 @@ public class AdminProductService : ProductService, IAdminProductService
     {
         try
         {
-            Product? product = await _repository.GetByIdAsync<Product>(productId);
+            Product? product = await _repository
+                .All<Product>()
+                .IgnoreQueryFilters()
+                .Where(p => !p.IsDeleted)
+                .FirstOrDefaultAsync(p => p.Id == productId);
+
             if (product is null) return ServiceResult.NotFound();
 
             product.IsDeleted = true;
