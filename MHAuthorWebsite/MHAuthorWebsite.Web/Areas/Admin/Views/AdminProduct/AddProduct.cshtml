@@ -11,6 +11,7 @@
 	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link rel="stylesheet" href="~/css/editor.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 }
 
@@ -28,7 +29,12 @@
 				<label class="form-label" asp-for="Description">Описание:</label>
 				<div id="toolbar-container">
 					<span class="ql-formats">
-						<select class="ql-font"></select>
+						<select class="ql-font">
+							<option selected>Sofia Sans Condensed</option>
+							<option value="sans-serif">Sans Serif</option>
+							<option value="serif">Serif</option>
+							<option value="monospace">Monospace</option>
+						</select>
 						<select class="ql-size"></select>
 					</span>
 					<span class="ql-formats">

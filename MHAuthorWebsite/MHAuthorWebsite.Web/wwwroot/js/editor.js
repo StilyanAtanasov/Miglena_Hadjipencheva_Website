@@ -13,9 +13,7 @@ class Counter {
     const words = text.length === 0 ? 0 : text.split(/\s+/).length;
     const chars = text.length;
 
-    container.innerText = `${words} дум${
-      words === 1 ? "а" : "и"
-    }, ${chars} символ${chars === 1 ? "" : "а"}!`;
+    container.innerText = `${words} дум${words === 1 ? "а" : "и"}, ${chars} символ${chars === 1 ? "" : "а"}!`;
 
     const descriptionInput = document.querySelector(`#descriptionInput`);
     const descriptionError = document.querySelector(`#description-input-error`);
@@ -30,16 +28,20 @@ class Counter {
 }
 
 export async function initQuill(isEnabled = false) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const descriptionInput = document.querySelector(`#descriptionInput`);
 
     Quill.register("modules/counter", Counter);
+
+    const Font = Quill.import("formats/font");
+    Font.whitelist = ["sofia-sans-condensed", "sans-serif", "serif", "monospace"];
+    Quill.register(Font, true);
 
     const quill = new Quill("#description-editor", {
       theme: "snow",
       modules: {
         syntax: true,
-        toolbar: "#toolbar-container",
+        toolbar: isEnabled ? "#toolbar-container" : false,
         counter: {
           container: "#counter",
         },
@@ -48,8 +50,7 @@ export async function initQuill(isEnabled = false) {
 
     quill.enable(isEnabled);
     const description = descriptionInput.value;
-    if (description != undefined && description != null && description !== "")
-      quill.setContents(JSON.parse(descriptionInput.value));
+    if (description != undefined && description != null && description !== "") quill.setContents(JSON.parse(descriptionInput.value));
 
     resolve(quill);
   });

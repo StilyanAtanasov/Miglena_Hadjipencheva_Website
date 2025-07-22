@@ -1,0 +1,22 @@
+#description-editor {
+  font-family: var(--font-primary);
+}
+
+/* Set dropdown font-families */
+#toolbar .ql-font span[data-label="Sofia Sans Condensed"]::before {
+  font-family: var(--font-primary);
+}
+#toolbar .ql-font span[data-label="Sans Serif"]::before {
+  font-family: "Sans Serif";
+}
+#toolbar .ql-font span[data-label="Serif"]::before {
+  font-family: "Serif";
+}
+
+/* Set content font-families */
+.ql-font-serif {
+  font-family: "Serif";
+}
+.ql-font-sans-serif {
+  font-family: "sans-serif";
+}

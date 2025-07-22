@@ -9,28 +9,24 @@ document.addEventListener("DOMContentLoaded", async function (e) {
   RetrieveAttributes(e);
   categorySelect.addEventListener("change", RetrieveAttributes);
 
-  document
-    .querySelector("#addProductForm")
-    .addEventListener("submit", function (e) {
-      const plainText = quill.getText().trim();
+  document.querySelector("#addProductForm").addEventListener("submit", function (e) {
+    const plainText = quill.getText().trim();
 
-      const descriptionInput = document.querySelector(`#descriptionInput`);
-      const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
+    const descriptionInput = document.querySelector(`#descriptionInput`);
+    const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
 
-      if (plainText.length > maxLength) {
-        e.preventDefault();
-        return;
-      }
+    if (plainText.length > maxLength) {
+      e.preventDefault();
+      return;
+    }
 
-      const delta = quill.getContents();
-      descriptionInput.value = JSON.stringify(delta);
-    });
+    const delta = quill.getContents();
+    descriptionInput.value = JSON.stringify(delta);
+  });
 });
 
 function RetrieveAttributes(e) {
-  const attributesContainer = document.getElementById(
-    "productTypeAttributesContainer"
-  );
+  const attributesContainer = document.getElementById("productTypeAttributesContainer");
 
   const selectedId = e.target.value;
 
@@ -44,11 +40,11 @@ function RetrieveAttributes(e) {
       "X-Requested-With": "XMLHttpRequest",
     },
   })
-    .then((response) => {
+    .then(response => {
       if (!response.ok) throw new Error("Грешка при зареждане на атрибутите.");
       return response.text();
     })
-    .then((html) => {
+    .then(html => {
       attributesContainer.innerHTML = html;
 
       const $form = $("#addProductForm");
@@ -57,7 +53,7 @@ function RetrieveAttributes(e) {
       $form.removeData("unobtrusiveValidation");
       $.validator.unobtrusive.parse($form);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error("Error:", error);
     });
 }
