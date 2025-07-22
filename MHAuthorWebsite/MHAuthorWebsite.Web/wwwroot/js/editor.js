@@ -38,6 +38,8 @@ export async function initQuill() {
     const quill = new Quill("#description-editor", {
       theme: "snow",
       modules: {
+        syntax: true,
+        toolbar: "#toolbar-container",
         counter: {
           container: "#counter",
         },
