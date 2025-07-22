@@ -10,8 +10,8 @@ public static class EntityConstraints
         public const byte DescriptionTextMinLength = 10;
         public const ushort DescriptionTextMaxLength = 4000;
 
-        public const byte DescriptionHtmlMinLength = 10;
-        public const ushort DescriptionHtmlMaxLength = 20000;
+        public const byte DescriptionDeltaMinLength = 10;
+        public const ushort DescriptionDeltaMaxLength = 20000;
 
         public const byte PriceMinValue = 0;
         public const ushort PriceMaxValue = 25_000;

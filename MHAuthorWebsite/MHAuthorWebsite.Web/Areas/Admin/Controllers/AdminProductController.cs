@@ -34,7 +34,7 @@ public class AdminProductController : AdminBaseController
             })
             .ToArray();
 
-        return View(new AddProductForm());
+        return View();
     }
 
     [HttpPost]
@@ -53,8 +53,8 @@ public class AdminProductController : AdminBaseController
             return View(model);
         }
 
-        string html = model.Description;
-        string plainText = Regex.Replace(html, "<.*?>", string.Empty);
+        string delta = model.Description;
+        string plainText = Regex.Replace(delta, "<.*?>", string.Empty);
 
         if (plainText.Length > DescriptionTextMaxLength)
         {
@@ -70,7 +70,7 @@ public class AdminProductController : AdminBaseController
             return View(model);
         }
 
-        if (html.Length > DescriptionHtmlMaxLength)
+        if (delta.Length > DescriptionDeltaMaxLength)
         {
             ModelState.AddModelError(nameof(model.Description), "HTML съдържанието е прекалено голямо.");
             ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
@@ -131,8 +131,8 @@ public class AdminProductController : AdminBaseController
     {
         if (!ModelState.IsValid) return View(model);
 
-        string html = model.Description;
-        string plainText = Regex.Replace(html, "<.*?>", string.Empty);
+        string delta = model.Description;
+        string plainText = Regex.Replace(delta, "<.*?>", string.Empty);
 
         if (plainText.Length > DescriptionTextMaxLength)
         {
@@ -140,7 +140,7 @@ public class AdminProductController : AdminBaseController
             return View(model);
         }
 
-        if (html.Length > DescriptionHtmlMaxLength)
+        if (delta.Length > DescriptionDeltaMaxLength)
         {
             ModelState.AddModelError(nameof(model.Description), "HTML съдържанието е прекалено голямо.");
             return View(model);

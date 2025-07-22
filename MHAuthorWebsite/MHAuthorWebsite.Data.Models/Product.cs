@@ -18,7 +18,7 @@ public class Product
     public string Name { get; set; } = null!;
 
     [Required]
-    [MaxLength(DescriptionHtmlMaxLength)]
+    [MaxLength(DescriptionDeltaMaxLength)]
     [Comment("Product description")]
     public string Description { get; set; } = null!;
 

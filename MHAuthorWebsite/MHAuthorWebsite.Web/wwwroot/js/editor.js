@@ -29,7 +29,7 @@ class Counter {
   }
 }
 
-export async function initQuill() {
+export async function initQuill(isEnabled = false) {
   return new Promise((resolve) => {
     const descriptionInput = document.querySelector(`#descriptionInput`);
 
@@ -46,7 +46,11 @@ export async function initQuill() {
       },
     });
 
-    quill.root.innerHTML = descriptionInput.value;
+    quill.enable(isEnabled);
+    const description = descriptionInput.value;
+    if (description != undefined && description != null && description !== "")
+      quill.setContents(JSON.parse(descriptionInput.value));
+
     resolve(quill);
   });
 }

@@ -83,3 +83,20 @@ table tr:last-child td:first-child {
 table tr:last-child td:last-child {
   border-bottom-right-radius: 1rem;
 }
+
+/* --- Quill editor --- */
+#description-editor {
+  border: none;
+
+  blockquote {
+    border-left: 0.5rem solid var(--color-secondary);
+  }
+
+  select {
+    pointer-events: none;
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0 1rem;
+    border-radius: 1rem;
+  }
+}

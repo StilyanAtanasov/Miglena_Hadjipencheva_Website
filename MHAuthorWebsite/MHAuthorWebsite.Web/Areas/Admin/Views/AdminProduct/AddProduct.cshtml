@@ -1,16 +1,10 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using System.Net
-@using Ganss.Xss
-@using MHAuthorWebsite.Web.Utils
 @using static MHAuthorWebsite.GCommon.EntityConstraints.Product
 @model AddProductForm
 
 @{
 	ViewData["Title"] = "Добави продукт";
-	string rawHtml = WebUtility.HtmlDecode(Model.Description) ;
-	HtmlSanitizer sanitizer = QuillConfigurator.GetQuillHtmlSanitizer();
-	string cleanHtml = sanitizer.Sanitize(rawHtml);
 }
 
 @section Styles {
@@ -79,7 +73,7 @@
 				</div>
 				<div id="description-editor" class="form-input"></div>
 				<p id="counter"></p>
-				<input type="hidden" asp-for="Description" id="descriptionInput" value="@rawHtml" data-text-max-length="@DescriptionTextMaxLength"/> <!-- TODO FIX This is the raw HTML input for the editor -->
+				<input type="hidden" asp-for="Description" id="descriptionInput" data-text-max-length="@DescriptionTextMaxLength"/>
 				<span id="description-input-error" class="input-error" asp-validation-for="Description"></span>
 			</div>
 			<div class="form-input-box flex-column">

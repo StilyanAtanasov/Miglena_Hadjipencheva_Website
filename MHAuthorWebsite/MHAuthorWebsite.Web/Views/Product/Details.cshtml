@@ -1,21 +1,16 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using Ganss.Xss
-@using System.Net
-@using MHAuthorWebsite.Web.Utils
 
 @model ProductDetailsViewModel
 
 @{
 	ViewData["Title"] = @Model.Name;
-
-	string rawHtml = WebUtility.HtmlDecode(Model.Description);
-	HtmlSanitizer sanitizer = QuillConfigurator.GetQuillHtmlSanitizer();
-	string cleanHtml = sanitizer.Sanitize(rawHtml);
 }
 
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
 	<link rel="stylesheet" href="~/css/product-details.css" />
 }
 
@@ -58,9 +53,10 @@
 	<!-- Details Section -->
 	<section class="details-info flex-column">
 		<h4 class="heading">Информация за продукта</h4>
-		<article class="info-article flex-column ql-editor">
+		<article class="info-article flex-column">
 			<h5 class="subheading">Описание:</h5>
-			@Html.Raw(cleanHtml)
+			<div id="description-editor" class="form-input"></div>
+			<input type="hidden" asp-for="Description" id="descriptionInput" />
 		</article>
 	</section>
 
@@ -86,3 +82,10 @@
 		</section>
 	}
 </section>
+
+@section Scripts {
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+	<script type="module" src="~/js/product-details.js" asp-append-version="true"></script>
+}

@@ -3,7 +3,7 @@
 import { initQuill } from "./editor.js";
 
 document.addEventListener(`DOMContentLoaded`, async function () {
-  const quill = await initQuill();
+  const quill = await initQuill(true);
 
   document
     .querySelector("#updateProductForm")
@@ -17,7 +17,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
         return;
       }
 
-      const quillContent = quill.root.innerHTML.trim();
-      descriptionInput.value = quillContent;
+      const delta = quill.getContents();
+      descriptionInput.value = JSON.stringify(delta);
     });
 });

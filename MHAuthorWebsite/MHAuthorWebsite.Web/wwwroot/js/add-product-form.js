@@ -4,15 +4,16 @@ import { initQuill } from "./editor.js";
 
 document.addEventListener("DOMContentLoaded", async function (e) {
   const categorySelect = document.getElementById("selectProductType");
-  const quill = await initQuill();
-  RetrieveAttributes(e);
+  const quill = await initQuill(true);
 
+  RetrieveAttributes(e);
   categorySelect.addEventListener("change", RetrieveAttributes);
 
   document
     .querySelector("#addProductForm")
     .addEventListener("submit", function (e) {
       const plainText = quill.getText().trim();
+
       const descriptionInput = document.querySelector(`#descriptionInput`);
       const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
 
@@ -21,8 +22,8 @@ document.addEventListener("DOMContentLoaded", async function (e) {
         return;
       }
 
-      const quillContent = quill.root.innerHTML.trim();
-      descriptionInput.value = quillContent;
+      const delta = quill.getContents();
+      descriptionInput.value = JSON.stringify(delta);
     });
 });
 

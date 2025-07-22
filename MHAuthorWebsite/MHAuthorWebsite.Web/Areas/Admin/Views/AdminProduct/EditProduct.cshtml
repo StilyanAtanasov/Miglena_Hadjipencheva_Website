@@ -1,22 +1,18 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MHAuthorWebsite.Web.Utils
-@using System.Net
-@using Ganss.Xss
 @using static MHAuthorWebsite.GCommon.EntityConstraints.Product
 @model EditProductFormViewModel
 
 
 @{
 	ViewData["Title"] = "Редактирай продукт";
-
-	string rawHtml = WebUtility.HtmlDecode(Model.Description);
-	HtmlSanitizer sanitizer = QuillConfigurator.GetQuillHtmlSanitizer();
-	string cleanHtml = sanitizer.Sanitize(rawHtml);
 }
 
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 }
 
@@ -33,9 +29,54 @@
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Description">Описание:</label>
+				<div id="toolbar-container">
+					<span class="ql-formats">
+						<select class="ql-font"></select>
+						<select class="ql-size"></select>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-bold"></button>
+						<button class="ql-italic"></button>
+						<button class="ql-underline"></button>
+						<button class="ql-strike"></button>
+					</span>
+					<span class="ql-formats">
+						<select class="ql-color"></select>
+						<select class="ql-background"></select>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-script" value="sub"></button>
+						<button class="ql-script" value="super"></button>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-header" value="1"></button>
+						<button class="ql-header" value="2"></button>
+						<button class="ql-blockquote"></button>
+						<button class="ql-code-block"></button>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-list" value="ordered"></button>
+						<button class="ql-list" value="bullet"></button>
+						<button class="ql-indent" value="-1"></button>
+						<button class="ql-indent" value="+1"></button>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-direction" value="rtl"></button>
+						<select class="ql-align"></select>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-link"></button>
+						<button class="ql-image"></button>
+						<button class="ql-video"></button>
+						<button class="ql-formula"></button>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-clean"></button>
+					</span>
+				</div>
 				<div id="description-editor" class="form-input"></div>
 				<p id="counter"></p>
-				<input type="hidden" asp-for="Description" id="descriptionInput" value="@rawHtml" data-text-max-length="@DescriptionTextMaxLength" />
+				<input type="hidden" asp-for="Description" id="descriptionInput" data-text-max-length="@DescriptionTextMaxLength" />
 				<span id="description-input-error" class="input-error" asp-validation-for="Description"></span>
 			</div>
 			<div class="form-input-box flex-column">
@@ -88,7 +129,9 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 	<script type="module" src="~/js/editor.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/update-product.js" asp-append-version="true"></script>
 }

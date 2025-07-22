@@ -11,7 +11,7 @@ public class AddProductForm
     public string Name { get; set; } = null!;
 
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
-    [StringLength(DescriptionHtmlMaxLength, MinimumLength = DescriptionHtmlMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
+    [StringLength(DescriptionDeltaMaxLength, MinimumLength = DescriptionDeltaMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
     public string Description { get; set; } = null!;
 
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
