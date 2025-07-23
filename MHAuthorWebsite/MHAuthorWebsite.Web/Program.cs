@@ -1,3 +1,4 @@
+using CloudinaryDotNet;
 using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
@@ -8,7 +9,6 @@ using MHAuthorWebsite.Data.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +27,8 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
+
+builder.Services.AddScoped<IImageService, CloudinaryImageService>();
 
 builder.Services.AddScoped<IAdminProductTypeService, AdminProductTypeService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
@@ -54,6 +56,15 @@ builder.Services.AddCors(options =>
         p.DisallowCredentials();
     });
 });
+
+string? cloudName = builder.Configuration["Cloudinary:CloudName"];
+string? apiKey = builder.Configuration["Cloudinary:ApiKey"];
+string? apiSecret = builder.Configuration["Cloudinary:ApiSecret"];
+
+if (new[] { cloudName, apiKey, apiSecret }.Any(string.IsNullOrWhiteSpace))
+    throw new ArgumentException("Please specify Cloudinary account details!");
+
+builder.Services.AddSingleton(new Cloudinary(new Account(cloudName, apiKey, apiSecret)));
 
 var app = builder.Build();
 

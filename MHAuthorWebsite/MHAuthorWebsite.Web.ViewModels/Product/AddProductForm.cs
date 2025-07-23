@@ -1,4 +1,5 @@
 ﻿using MHAuthorWebsite.Web.ViewModels.Localization;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
 
@@ -24,6 +25,9 @@ public class AddProductForm
 
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public int ProductTypeId { get; set; }
+
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    public ICollection<IFormFile> Images { get; set; } = new HashSet<IFormFile>();
 
     public ICollection<AttributeValueForm> Attributes { get; set; } = new HashSet<AttributeValueForm>();
 }

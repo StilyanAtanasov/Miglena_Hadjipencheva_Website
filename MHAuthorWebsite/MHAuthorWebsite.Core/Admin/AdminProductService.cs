@@ -1,6 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Product;
@@ -17,7 +17,7 @@ public class AdminProductService : ProductService, IAdminProductService
     : base(repository, userManager)
         => _repository = repository;
 
-    public async Task<ServiceResult> AddProductAsync(AddProductForm model)
+    public async Task<ServiceResult> AddProductAsync(AddProductDto model)
     {
         try
         {
@@ -31,6 +31,20 @@ public class AdminProductService : ProductService, IAdminProductService
             };
 
             await _repository.AddAsync(product);
+            await _repository.SaveChangesAsync();
+
+            foreach (string imageUrl in model.ImageUrls)
+            {
+                Image image = new()
+                {
+                    ProductId = product.Id,
+                    AltText = product.Name, // TODO Probably use the image title
+                    ImageUrl = imageUrl
+                };
+
+                await _repository.AddAsync(image);
+            }
+
             await _repository.SaveChangesAsync();
 
             if (model.Attributes.Any())
@@ -47,6 +61,7 @@ public class AdminProductService : ProductService, IAdminProductService
                 await _repository.AddRangeAsync(attributes);
                 await _repository.SaveChangesAsync();
             }
+
             return ServiceResult.Ok();
         }
         catch (Exception)

@@ -1,4 +1,4 @@
-﻿namespace MHAuthorWebsite.Core.Dto;
+﻿namespace MHAuthorWebsite.Core.Admin.Dto;
 
 public class ProductTypeDto
 {

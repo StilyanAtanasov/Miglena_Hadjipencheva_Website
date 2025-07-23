@@ -1,6 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +14,14 @@ public class AdminProductController : AdminBaseController
 {
     private readonly IAdminProductTypeService _productTypeService;
     private readonly IAdminProductService _productService;
+    private readonly IImageService _imageService;
 
-    public AdminProductController(IAdminProductTypeService productTypeService, IAdminProductService productService)
+    public AdminProductController
+        (IAdminProductTypeService productTypeService, IAdminProductService productService, IImageService imageService)
     {
         _productTypeService = productTypeService;
         _productService = productService;
+        _imageService = imageService;
     }
 
     [HttpGet]
@@ -81,11 +84,26 @@ public class AdminProductController : AdminBaseController
                     Text = pt.Name
                 })
                 .ToArray();
-            return View(model);
+            return View(model); // TODO: DRY 
         }
 
-        ServiceResult result = await _productService.AddProductAsync(model);
-        if (!result.Success) return StatusCode(500);
+        ServiceResult<string[]> imageResult = await _imageService.UploadImagesAsync(model.Images);
+        if (!imageResult.Success) return StatusCode(500);
+        if (imageResult.Result is null || !imageResult.Result.Any()) return StatusCode(500);
+
+        AddProductDto dto = new AddProductDto
+        {
+            Name = model.Name,
+            Description = model.Description,
+            Price = model.Price,
+            StockQuantity = model.StockQuantity,
+            ProductTypeId = model.ProductTypeId,
+            ImageUrls = imageResult.Result,
+            Attributes = model.Attributes
+        };
+
+        ServiceResult productResult = await _productService.AddProductAsync(dto);
+        if (!productResult.Success) return StatusCode(500);
 
         return RedirectToAction(nameof(ProductsList));
     }

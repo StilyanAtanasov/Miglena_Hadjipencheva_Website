@@ -9,7 +9,7 @@
 
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
 	<link rel="stylesheet" href="~/css/editor.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
@@ -19,16 +19,16 @@
 	<section class="modal-invisible large flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 
-		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="AddProduct" id="addProductForm" method="post">
+		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="AddProduct" id="addProductForm" method="post" enctype="multipart/form-data">
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Name">Име:</label>
 				<input class="form-input" asp-for="Name" />
-				<span class="input-error" asp-validation-for="Name" ></span>
+				<span class="input-error" asp-validation-for="Name"></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Description">Описание:</label>
 				<partial name="_QuillToolbar" />
-				<input type="hidden" asp-for="Description" id="descriptionInput" data-text-max-length="@DescriptionTextMaxLength"/>
+				<input type="hidden" asp-for="Description" id="descriptionInput" data-text-max-length="@DescriptionTextMaxLength" />
 				<span id="description-input-error" class="input-error" asp-validation-for="Description"></span>
 			</div>
 			<div class="form-input-box flex-column">
@@ -39,12 +39,17 @@
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="StockQuantity">Количество:</label>
 				<input class="form-input" asp-for="StockQuantity" type="number" />
-				<span class="input-error" asp-validation-for="StockQuantity" ></span>
+				<span class="input-error" asp-validation-for="StockQuantity"></span>
+			</div>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Images">Изображения:</label>
+				<input class="form-input" asp-for="Images" type="file" multiple />
+				<span class="input-error" asp-validation-for="Images"></span>
 			</div>
 			<div class="form-input-box flex-column select-list">
-				<label class ="form-label"  asp-for="ProductTypeId">Категория:</label>
+				<label class="form-label" asp-for="ProductTypeId">Категория:</label>
 				<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" id="selectProductType" class="form-select"></select>
-				<span class="input-error" asp-validation-for="ProductTypeId" ></span>
+				<span class="input-error" asp-validation-for="ProductTypeId"></span>
 			</div>
 
 			<div id="productTypeAttributesContainer" class="form-input-box flex-column"></div>

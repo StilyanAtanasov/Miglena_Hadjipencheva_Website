@@ -1,13 +1,13 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Web.ViewModels.Product;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 
 public interface IAdminProductService : IProductService
 {
-    Task<ServiceResult> AddProductAsync(AddProductForm model);
+    Task<ServiceResult> AddProductAsync(AddProductDto model);
 
     Task<ServiceResult<EditProductFormViewModel>> GetProductForEditAsync(Guid productId);
 
