@@ -1,14 +1,10 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Data;
-using MHAuthorWebsite.Data.Shared;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Globalization;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 
 namespace MHAuthorWebsite.Core.Admin;
 
@@ -18,25 +14,68 @@ public class CloudinaryImageService : IImageService
 
     public CloudinaryImageService(Cloudinary cloudinary) => _cloudinary = cloudinary;
 
-    public async Task<ServiceResult<string[]>> UploadImagesAsync(ICollection<IFormFile> images)
+    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images)
     {
         if (images.Count == 0 || images.Any(i => i.Length == 0))
-            return ServiceResult<string[]>.Failure();
+            return ServiceResult<ICollection<ImageUploadResultDto>>.Failure();
 
-        string[] imageUrls = new string[images.Count];
+        List<ImageUploadResultDto> results = new();
 
-        for (int i = 0; i < images.Count; i++)
+        foreach (IFormFile image in images)
         {
-            IFormFile image = images.ElementAt(i);
-            ImageUploadResult uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
-            {
-                File = new FileDescription(image.FileName, image.OpenReadStream())
-            });
+            await using Stream input = image.OpenReadStream();
+            using MemoryStream fullStream = new();
+            using MemoryStream previewStream = new();
 
-            imageUrls[i] = uploadResult.SecureUrl.AbsoluteUri;
+            await input.CopyToAsync(fullStream);
+            fullStream.Position = 0;
+            previewStream.Write(fullStream.ToArray());
+            previewStream.Position = 0;
+
+            string fileName = Path.GetFileNameWithoutExtension(image.FileName);
+            string timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+
+            // FULL image - max width, AVIF, aspect preserved
+            ImageUploadParams fullUploadParams = new()
+            {
+                File = new FileDescription(image.FileName, fullStream),
+                Folder = ImageFolder,
+                PublicId = $"{fileName}_{timestamp}",
+                Format = "avif",
+                Type = "private",
+                Transformation = new Transformation()
+                    .Width(1200)
+                    .Crop("limit") // Resize down, preserve aspect
+                    .FetchFormat("avif")
+            };
+
+            ImageUploadResult fullUpload = await _cloudinary.UploadAsync(fullUploadParams);
+
+            // Thumbnail image - small thumbnail, AVIF
+            ImageUploadParams previewUploadParams = new()
+            {
+                File = new FileDescription(image.FileName, previewStream),
+                Folder = ThumbnailFolder,
+                PublicId = $"{fileName}_thumb_{timestamp}",
+                Format = "avif",
+                Type = "private",
+                Transformation = new Transformation()
+                    .Width(250)
+                    .Crop("scale") // Shrink, preserve ratio
+                    .FetchFormat("avif")
+            };
+
+            ImageUploadResult previewUpload = await _cloudinary.UploadAsync(previewUploadParams);
+
+            results.Add(new ImageUploadResultDto
+            {
+                OriginalUrl = fullUpload.SecureUrl.AbsoluteUri,
+                PreviewUrl = previewUpload.SecureUrl.AbsoluteUri,
+                PublicId = fullUpload.PublicId
+            });
         }
 
-        return ServiceResult<string[]>.Ok(imageUrls);
+        return ServiceResult<ICollection<ImageUploadResultDto>>.Ok(results.ToArray());
     }
 
     public async Task DeleteImageAsync(string imagePath)

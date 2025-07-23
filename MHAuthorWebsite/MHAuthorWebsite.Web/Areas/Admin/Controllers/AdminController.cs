@@ -1,5 +1,4 @@
-﻿using MHAuthorWebsite.Web.Controllers;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace MHAuthorWebsite.Web.Areas.Admin.Controllers;
 

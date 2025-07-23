@@ -87,7 +87,7 @@ public class AdminProductController : AdminBaseController
             return View(model); // TODO: DRY 
         }
 
-        ServiceResult<string[]> imageResult = await _imageService.UploadImagesAsync(model.Images);
+        ServiceResult<ICollection<ImageUploadResultDto>> imageResult = await _imageService.UploadImageWithPreviewAsync(model.Images);
         if (!imageResult.Success) return StatusCode(500);
         if (imageResult.Result is null || !imageResult.Result.Any()) return StatusCode(500);
 

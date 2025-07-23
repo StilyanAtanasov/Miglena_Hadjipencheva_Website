@@ -33,13 +33,15 @@ public class AdminProductService : ProductService, IAdminProductService
             await _repository.AddAsync(product);
             await _repository.SaveChangesAsync();
 
-            foreach (string imageUrl in model.ImageUrls)
+            foreach (ImageUploadResultDto imageResult in model.ImageUrls)
             {
                 Image image = new()
                 {
                     ProductId = product.Id,
                     AltText = product.Name, // TODO Probably use the image title
-                    ImageUrl = imageUrl
+                    ImageUrl = imageResult.OriginalUrl,
+                    ThumbnailUrl = imageResult.PreviewUrl,
+                    PublicId = imageResult.PublicId
                 };
 
                 await _repository.AddAsync(image);

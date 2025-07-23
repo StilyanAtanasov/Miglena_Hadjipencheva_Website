@@ -15,6 +15,15 @@ public class Image
     [Comment("URL path to the image")]
     public string ImageUrl { get; set; } = null!;
 
+    [Required]
+    [MaxLength(UrlMaxLength)]
+    [Comment("URL path to the thumbnail")]
+    public string ThumbnailUrl { get; set; } = null!;
+
+    [Required]
+    [Comment("The publicId in Cloudinary")]
+    public string PublicId { get; set; } = null!;
+
     [MaxLength(AltTextMaxLength)]
     [Comment("Alternative text for accessibility")]
     public string? AltText { get; set; }
