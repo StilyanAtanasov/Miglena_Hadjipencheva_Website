@@ -64,6 +64,7 @@ public class ProductService : IProductService
     public async Task<ICollection<LikedProductViewModel>> GetLikedProductsReadonlyAsync(string userId) =>
         await _repository
             .WhereReadonly<Product>(p => p.Likes.Any(u => u.Id == userId))
+            .Include(p => p.Images)
             .Select(p => new LikedProductViewModel
             {
                 Id = p.Id,
@@ -71,6 +72,12 @@ public class ProductService : IProductService
                 Price = p.Price,
                 ShortDescription = p.Description.Length > 100 ? $"{p.Description.Substring(0, 100)}..." : p.Description,
                 IsInStock = p.StockQuantity > 0,
+                ThumbnailUrl = p.Images.FirstOrDefault() != null
+                    ? p.Images.FirstOrDefault()!.ThumbnailUrl
+                    : null,
+                ThumbnailAlt = p.Images.FirstOrDefault() != null
+                    ? p.Images.FirstOrDefault()!.AltText
+                    : null,
             })
             .ToArrayAsync();
 

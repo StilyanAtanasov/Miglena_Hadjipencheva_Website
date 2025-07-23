@@ -38,7 +38,7 @@
 										<td><input type="checkbox" name="selectedItems" value="@item.ItemId" checked /></td>
 										<td class="product-info flex-row">
 											<div class="product-image-container flex-row">
-												<img class="product-image" src="@item.ThumbnailUrl" alt="@(item.ThumbnailAlt ?? @item.Name)" />
+												<img class="product-image" src="@item.ThumbnailUrl" alt="@(item.ThumbnailAlt ?? item.Name)" />
 											</div>
 											<div class="product-info-general flex-column">
 												<h4>

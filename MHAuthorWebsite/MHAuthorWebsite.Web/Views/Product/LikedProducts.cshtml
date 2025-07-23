@@ -6,7 +6,7 @@
 }
 
 @section Styles {
-	<link rel="stylesheet" href="~/css/liked-products.css" />
+	<link rel="stylesheet" href="~/css/liked-products.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
@@ -18,11 +18,16 @@
 			@foreach (LikedProductViewModel product in Model)
 			{
 				<div class="product-card flex-row clickable" data-details-url="@Url.Action("Details", "Product", new { productId = product.Id })">
-					<div>
-						<h2><a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="link">@product.Name</a></h2>
-						<p class="text-faded">@product.ShortDescription</p>
-						<p class="price">@product.Price.ToString("F2") лв.</p>
-						<span class="price-text @(product.IsInStock ? "available" : "unavailable")">@(product.IsInStock ? "В наличност" : "Изчерпана наличност")</span>
+					<div class="product-info flex-row">
+						<div class="product-image-container flex-row">
+							<img class="product-image" src="@product.ThumbnailUrl" alt="@(product.ThumbnailAlt ?? product.Name)" />
+						</div>
+						<div>
+							<h2><a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="link">@product.Name</a></h2>
+							<p class="text-faded">@product.ShortDescription</p>
+							<p class="price">@product.Price.ToString("F2") лв.</p>
+							<span class="price-text @(product.IsInStock ? "available" : "unavailable")">@(product.IsInStock ? "В наличност" : "Изчерпана наличност")</span>
+						</div>
 					</div>
 					<form method="post" asp-controller="Cart" asp-action="Add" class="order-form">
 						<input type="hidden" name="productId" value="@product.Id" />
@@ -46,5 +51,5 @@
 </div>
 
 @section Scripts {
-	<script src="~/js/click.js"></script>
+	<script src="~/js/click.js" asp-append-version="true"></script>
 }
