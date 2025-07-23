@@ -6,6 +6,10 @@ public class CartItemViewModel
 
     public Guid ProductId { get; set; }
 
+    public string? ThumbnailUrl { get; set; } = null!; // TODO Remove nullable once images are mandatory
+
+    public string? ThumbnailAlt { get; set; } = null!;
+
     public string Name { get; set; } = null!;
 
     public string Category { get; set; } = null!;

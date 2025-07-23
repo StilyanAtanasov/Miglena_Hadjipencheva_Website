@@ -76,6 +76,8 @@ public class CartService : ICartService
             .IgnoreQueryFilters()
             .Include(ci => ci.Product)
                 .ThenInclude(p => p.ProductType)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Images)
             .Select(ci => new CartItemViewModel
             {
                 ItemId = ci.Id,
@@ -86,6 +88,12 @@ public class CartService : ICartService
                 UnitPrice = ci.Price,
                 IsDiscontinued = ci.Product.IsDeleted || !ci.Product.IsPublic,
                 IsAvailable = ci.Product.StockQuantity > 0 && !ci.Product.IsDeleted && ci.Product.IsPublic,
+                ThumbnailUrl = ci.Product.Images.FirstOrDefault() != null
+                    ? ci.Product.Images.FirstOrDefault()!.ThumbnailUrl
+                    : null,
+                ThumbnailAlt = ci.Product.Images.FirstOrDefault() != null
+                    ? ci.Product.Images.FirstOrDefault()!.AltText
+                    : null,
             })
             .ToArrayAsync();
 

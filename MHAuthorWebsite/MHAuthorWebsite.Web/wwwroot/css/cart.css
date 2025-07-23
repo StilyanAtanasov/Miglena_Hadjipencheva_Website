@@ -39,17 +39,35 @@
 }
 
 .product-info {
-  gap: 0.5rem;
-  font-size: 1.55;
+  gap: 1.7rem;
+  align-items: center;
 }
 
-.product-info h4 {
+.product-info-general {
+  gap: 0.1rem;
+}
+
+.product-info-general h4 {
   font-size: 1.9rem;
 }
 
-.product-info span strong {
+.product-info-general span strong {
   font-weight: 600;
   font-size: 1.6;
+}
+
+.product-image-container {
+  justify-content: center;
+  align-items: center;
+  width: 10rem;
+  height: 10rem;
+}
+
+.product-image {
+  max-width: 10rem;
+  max-height: 10rem;
+  object-fit: contain;
+  border-radius: 1rem;
 }
 
 .cart-warning {

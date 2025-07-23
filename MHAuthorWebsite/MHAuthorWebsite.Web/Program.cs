@@ -117,7 +117,8 @@ app.Use(async (context, next) =>
                 "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css; " +
         "font-src 'self' " +
                 "https://fonts.gstatic.com https://site-assets.fontawesome.com; " +
-        "img-src 'self' data:;";
+        "img-src 'self' data: " +
+                "https://res.cloudinary.com;";
 
     await next();
 });
