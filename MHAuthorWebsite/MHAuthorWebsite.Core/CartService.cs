@@ -88,12 +88,8 @@ public class CartService : ICartService
                 UnitPrice = ci.Price,
                 IsDiscontinued = ci.Product.IsDeleted || !ci.Product.IsPublic,
                 IsAvailable = ci.Product.StockQuantity > 0 && !ci.Product.IsDeleted && ci.Product.IsPublic,
-                ThumbnailUrl = ci.Product.Images.FirstOrDefault() != null
-                    ? ci.Product.Images.FirstOrDefault()!.ThumbnailUrl
-                    : null,
-                ThumbnailAlt = ci.Product.Images.FirstOrDefault() != null
-                    ? ci.Product.Images.FirstOrDefault()!.AltText
-                    : null,
+                ThumbnailUrl = ci.Product.Images.First().ThumbnailUrl, // TODO 
+                ThumbnailAlt = ci.Product.Images.First().AltText,
             })
             .ToArrayAsync();
 

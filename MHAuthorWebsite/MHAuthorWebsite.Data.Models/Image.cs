@@ -18,15 +18,16 @@ public class Image
     [Required]
     [MaxLength(UrlMaxLength)]
     [Comment("URL path to the thumbnail")]
-    public string? ThumbnailUrl { get; set; } = null!;
+    public string ThumbnailUrl { get; set; } = null!; //TODO make it nullable
 
     [Required]
     [Comment("The publicId in Cloudinary")]
     public string PublicId { get; set; } = null!;
 
+    [Required]
     [MaxLength(AltTextMaxLength)]
     [Comment("Alternative text for accessibility")]
-    public string? AltText { get; set; }
+    public string AltText { get; set; }
 
     [Required]
     [Comment("Foreign key to Product")]

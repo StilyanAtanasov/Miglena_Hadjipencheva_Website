@@ -2,7 +2,7 @@
 
 public class ProductDetailsImage
 {
-    public string? ImageUrl { get; set; } // TODO Use non-nullable type when the database is updated
+    public string ImageUrl { get; set; } = null!;
 
-    public string? AltText { get; set; }
+    public string AltText { get; set; } = null!;
 }

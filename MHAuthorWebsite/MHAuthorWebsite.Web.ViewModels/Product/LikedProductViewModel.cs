@@ -4,9 +4,9 @@ public class LikedProductViewModel
 {
     public Guid Id { get; set; }
 
-    public string? ThumbnailUrl { get; set; } = null!; // TODO remove nullability when not needed
+    public string ThumbnailUrl { get; set; } = null!;
 
-    public string? ThumbnailAlt { get; set; } = null!;
+    public string ThumbnailAlt { get; set; } = null!;
 
     public string Name { get; set; } = null!;
 

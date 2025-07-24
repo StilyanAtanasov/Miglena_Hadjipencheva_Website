@@ -14,7 +14,7 @@ public class ProductCardViewModel
 
     public bool IsLiked { get; set; }
 
-    public string? ImageUrl { get; set; } = null!; // TODO remove nullability when not needed
+    public string ImageUrl { get; set; } = null!;
 
-    public string? ImageAlt { get; set; } = null!;
+    public string ImageAlt { get; set; } = null!;
 }

@@ -82,12 +82,8 @@ public class ProductService : IProductService
                 Price = p.Price,
                 CategoryName = p.ProductType.Name,
                 IsInStock = p.StockQuantity > 0,
-                ThumbnailUrl = p.Images.FirstOrDefault() != null
-                    ? p.Images.FirstOrDefault()!.ThumbnailUrl
-                    : null,
-                ThumbnailAlt = p.Images.FirstOrDefault() != null
-                    ? p.Images.FirstOrDefault()!.AltText
-                    : null,
+                ThumbnailUrl = p.Images.First().ThumbnailUrl,// TODO 
+                ThumbnailAlt = p.Images.First().AltText,
             })
             .ToArrayAsync();
 
@@ -104,12 +100,8 @@ public class ProductService : IProductService
                 IsAvailable = p.StockQuantity > 0,
                 ProductType = p.ProductType.Name,
                 IsLiked = userId != null && p.Likes.Any(u => u.Id == userId),
-                ImageUrl = p.Images.FirstOrDefault() != null
-                    ? p.Images.FirstOrDefault()!.ImageUrl
-                    : null,
-                ImageAlt = p.Images.FirstOrDefault() != null
-                    ? p.Images.FirstOrDefault()!.AltText
-                    : null,
+                ImageUrl = p.Images.First().ImageUrl, // TODO
+                ImageAlt = p.Images.First().AltText
             })
             .ToArrayAsync();
 

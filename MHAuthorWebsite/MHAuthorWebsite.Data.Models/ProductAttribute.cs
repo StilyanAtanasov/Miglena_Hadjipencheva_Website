@@ -32,4 +32,10 @@ public class ProductAttribute
     public int? ProductAttributeOptionsId { get; set; }
 
     public ProductAttributeOption ProductAttributeOptions { get; set; } = null!;
+
+    [Comment("Foreign key to Product Attribute Definition")]
+    [ForeignKey(nameof(AttributeDefinition))]
+    public int AttributeDefinitionId { get; set; }
+
+    public ProductAttributeDefinition AttributeDefinition { get; set; } = null!;
 }
