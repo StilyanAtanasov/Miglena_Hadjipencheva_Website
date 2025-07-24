@@ -33,20 +33,22 @@ public class AdminProductService : ProductService, IAdminProductService
             await _repository.AddAsync(product);
             await _repository.SaveChangesAsync();
 
-            foreach (ImageUploadResultDto imageResult in model.ImageUrls)
+            for (int i = 0; i < model.ImageUrls.Count; i++)
             {
+                ImageUploadResultDto imageResult = model.ImageUrls.ElementAt(i);
+
                 Image image = new()
                 {
                     ProductId = product.Id,
                     AltText = product.Name, // TODO Probably use the image title
                     ImageUrl = imageResult.OriginalUrl,
                     ThumbnailUrl = imageResult.PreviewUrl,
-                    PublicId = imageResult.PublicId
+                    PublicId = imageResult.PublicId,
+                    IsThumbnail = i == 0, // First image is the thumbnail
                 };
 
                 await _repository.AddAsync(image);
             }
-
             await _repository.SaveChangesAsync();
 
             if (model.Attributes.Any())

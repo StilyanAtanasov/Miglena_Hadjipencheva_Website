@@ -27,7 +27,11 @@ public class Image
     [Required]
     [MaxLength(AltTextMaxLength)]
     [Comment("Alternative text for accessibility")]
-    public string AltText { get; set; }
+    public string AltText { get; set; } = null!;
+
+    [Required]
+    [Comment("Defines whether the image is a thumbnail (the image will be used for product listings)")]
+    public bool IsThumbnail { get; set; }
 
     [Required]
     [Comment("Foreign key to Product")]
