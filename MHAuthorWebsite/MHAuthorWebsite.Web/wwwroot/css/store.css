@@ -158,3 +158,10 @@
   background-color: var(--color-secondary);
   color: var(--color-secondary-light);
 }
+
+.no-products-message {
+  font-size: 2rem;
+  grid-column: 3;
+  text-align: center;
+  margin-top: 5rem;
+}

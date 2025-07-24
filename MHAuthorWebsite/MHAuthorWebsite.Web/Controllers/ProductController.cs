@@ -37,7 +37,6 @@ public class ProductController : BaseController
 
         ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page, sortType);
         int productsCount = await _productService.GetAllProductsCountAsync();
-        if (!products.Any()) return NotFound();
 
         ViewBag.ProductsCount = productsCount;
 
