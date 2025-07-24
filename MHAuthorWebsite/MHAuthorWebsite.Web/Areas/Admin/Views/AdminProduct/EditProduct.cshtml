@@ -65,11 +65,11 @@
 						       data-val="true"
 						       data-val-required="@(a.IsRequired ? $"Полето \"{a.Label}\" е задължително." : null)"
 						       style="-webkit-appearance: textarea"
-						       value="@a.Value" />
+						       value="@a.Value"/>
 
-						<input type="hidden" name="@a.Key" value="@a.Key" />
-						<input type="hidden" name="@a.Key" value="@a.Key" />
-						<input type="hidden" name="@a.Label" value="@a.Label" />
+						<input type="hidden" name="@a.AttributeDefinitionId" value="@a.AttributeDefinitionId"/>
+						<input type="hidden" name="@a.Key" value="@a.Key"/>
+						<input type="hidden" name="@a.Label" value="@a.Label"/>
 						<span class="input-error"
 						      data-valmsg-for="@a.Value"
 						      data-valmsg-replace="true"></span>

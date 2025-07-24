@@ -5,6 +5,8 @@ namespace MHAuthorWebsite.Web.ViewModels.Product;
 
 public class AttributeValueForm : IValidatableObject
 {
+    public int AttributeDefinitionId { get; set; }
+
     public string Key { get; set; } = null!;
 
     public string Label { get; set; } = null!;

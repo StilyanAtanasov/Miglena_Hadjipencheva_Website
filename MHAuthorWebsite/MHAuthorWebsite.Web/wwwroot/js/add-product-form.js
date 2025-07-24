@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async function (e) {
   const categorySelect = document.getElementById("selectProductType");
   const quill = await initQuill(true, true);
 
-  RetrieveAttributes(e);
+  RetrieveAttributes();
   categorySelect.addEventListener("change", RetrieveAttributes);
 
   document.querySelector("#addProductForm").addEventListener("submit", function (e) {
@@ -25,10 +25,11 @@ document.addEventListener("DOMContentLoaded", async function (e) {
   });
 });
 
-function RetrieveAttributes(e) {
+function RetrieveAttributes() {
   const attributesContainer = document.getElementById("productTypeAttributesContainer");
+  const selectElement = document.getElementById(`selectProductType`);
 
-  const selectedId = e.target.value;
+  const selectedId = selectElement.value;
 
   if (!selectedId) {
     attributesContainer.innerHTML = "";

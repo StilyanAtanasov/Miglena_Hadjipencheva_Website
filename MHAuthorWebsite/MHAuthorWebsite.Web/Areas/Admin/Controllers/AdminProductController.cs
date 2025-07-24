@@ -141,6 +141,7 @@ public class AdminProductController : AdminBaseController
         ICollection<AttributeValueForm> attributes = attributesDto
             .Select(a => new AttributeValueForm
             {
+                AttributeDefinitionId = a.AttributeDefinitionId,
                 Key = a.Key,
                 Label = a.Label,
                 DataType = (AttributeDataType)a.DataType,

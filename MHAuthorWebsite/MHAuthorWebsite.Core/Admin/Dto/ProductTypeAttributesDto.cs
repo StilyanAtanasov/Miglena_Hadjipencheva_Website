@@ -2,6 +2,8 @@
 
 public class ProductTypeAttributesDto
 {
+    public int AttributeDefinitionId { get; set; }
+
     public string Key { get; set; } = null!;
 
     public string Label { get; set; } = null!;

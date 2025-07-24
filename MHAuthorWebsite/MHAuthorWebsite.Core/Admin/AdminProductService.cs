@@ -56,7 +56,8 @@ public class AdminProductService : ProductService, IAdminProductService
                     {
                         Key = a.Key,
                         Value = a.Value,
-                        ProductId = product.Id
+                        ProductId = product.Id,
+                        AttributeDefinitionId = a.AttributeDefinitionId
                     })
                     .ToArray();
 
@@ -79,6 +80,7 @@ public class AdminProductService : ProductService, IAdminProductService
             .IgnoreQueryFilters()
             .Where(p => !p.IsDeleted)
             .Include(p => p.Attributes)
+                .ThenInclude(a => a.AttributeDefinition)
             .Include(p => p.ProductType)
             .FirstOrDefaultAsync(p => p.Id == productId);
 
@@ -95,9 +97,13 @@ public class AdminProductService : ProductService, IAdminProductService
             Attributes = product.Attributes
                 .Select(a => new AttributeValueForm
                 {
-                    Label = a.Key,
+                    AttributeDefinitionId = a.AttributeDefinitionId,
+                    Label = a.AttributeDefinition.Label,
                     Key = a.Key,
-                    Value = a.Value
+                    Value = a.Value,
+                    DataType = a.AttributeDefinition.DataType,
+                    // HasPredefinedValue = a.AttributeDefinition.HasPredefinedValue, TODO implement predefined values
+                    IsRequired = a.AttributeDefinition.IsRequired, // TODO Use this to validate the form
                 })
                 .ToArray()
         };
@@ -157,6 +163,7 @@ public class AdminProductService : ProductService, IAdminProductService
             .Where<ProductAttributeDefinition>(pad => pad.ProductTypeId == productTypeId)
             .Select(pad => new ProductTypeAttributesDto
             {
+                AttributeDefinitionId = pad.Id,
                 Key = pad.Key,
                 Label = pad.Label,
                 DataType = (int)pad.DataType,

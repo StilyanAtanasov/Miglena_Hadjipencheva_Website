@@ -9,19 +9,20 @@
 	string containerClass = AttributeDataTypeMapper.CssContainerClass[a.DataType];
 
 	<div class="form-input-box flex-column @containerClass">
+		<input type="hidden" name="Attributes[@i].AttributeDefinitionId" value="@a.AttributeDefinitionId" />
 		<label class="form-label">@a.Label:</label>
 
 		<input type="@inputType"
 			   name="Attributes[@i].Value"
-			   class="form-input"
-			   data-val="true"
-			   data-val-required="@(a.IsRequired ? $"Полето \"{a.Label}\" е задължително." : null)"
-			   style="-webkit-appearance: textarea" />
+		       class="form-input"
+		       data-val="true"
+		       data-val-required="@(a.IsRequired ? $"Полето \"{a.Label}\" е задължително." : null)"
+		       style="-webkit-appearance: textarea"/>
 
-		<input type="hidden" name="Attributes[@i].Key" value="@a.Key" />
-		<input type="hidden" name="Attributes[@i].Label" value="@a.Label" />
+		<input type="hidden" name="Attributes[@i].Key" value="@a.Key"/>
+		<input type="hidden" name="Attributes[@i].Label" value="@a.Label"/>
 		<span class="input-error"
-			  data-valmsg-for="Attributes[@i].Value"
-			  data-valmsg-replace="true"></span>
+		      data-valmsg-for="Attributes[@i].Value"
+		      data-valmsg-replace="true"></span>
 	</div>
 }
