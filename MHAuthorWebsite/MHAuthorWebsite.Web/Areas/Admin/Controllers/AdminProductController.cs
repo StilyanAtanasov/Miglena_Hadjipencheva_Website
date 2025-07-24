@@ -6,6 +6,7 @@ using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Product;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
 
 namespace MHAuthorWebsite.Web.Areas.Admin.Controllers;
@@ -45,6 +46,21 @@ public class AdminProductController : AdminBaseController
     {
         if (!ModelState.IsValid)
         {
+            ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
+            ViewBag.ProductTypes = productTypes
+                .Select(pt => new SelectListItem
+                {
+                    Value = pt.Id.ToString(),
+                    Text = pt.Name
+                })
+                .ToArray();
+            return View(model);
+        }
+
+        if (model.Images.Count > MaxImages)
+        {
+            ModelState.AddModelError(nameof(model.Images), $"Можете да качите максимум {MaxImages} снимки.");
+            ModelState.AddModelError(nameof(model.Description), "Описанието не трябва да надвишава 4000 символа текст.");
             ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
             ViewBag.ProductTypes = productTypes
                 .Select(pt => new SelectListItem

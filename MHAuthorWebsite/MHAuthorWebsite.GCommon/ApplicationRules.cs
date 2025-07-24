@@ -13,6 +13,11 @@ public static class ApplicationRules
         public const byte PageSize = 10;
     }
 
+    public static class Product
+    {
+        public const byte MaxImages = 10;
+    }
+
     public static class SortTypes
     {
         public const string Recommended = "recommended";
