@@ -1,7 +1,7 @@
 .shop-action-btns {
   width: 80%;
   justify-content: flex-end;
-  font-size: 2rem;
+  font-size: 1.8rem;
 
   .shop-action-btn {
     gap: 1.2rem;
@@ -50,16 +50,17 @@
 
 .products {
   display: grid;
-  grid-template-columns: repeat(4, 20vw);
+  grid-template-columns: repeat(5, 17.5vw);
   gap: 1rem;
+  margin-bottom: 5rem;
 }
 
 .product {
   padding: 4rem 5rem 3rem 5rem;
-  gap: 2rem;
+  gap: 1.2rem;
   justify-content: space-around;
   border: 0.1rem solid var(--color-dark);
-  margin: 2rem;
+  margin: 1rem;
   border-radius: 3rem;
   box-shadow: 0.4rem 0.4rem 0.7rem var(--color-grey);
   transition: all linear 200ms;
@@ -70,8 +71,23 @@
   scale: 1.03;
 }
 
+.product-image-container {
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  width: 100%;
+  height: 16rem;
+}
+
+.product-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 1rem;
+}
+
 .product .name {
-  font-size: 2.6rem;
+  font-size: 2.2rem;
   text-decoration: none;
   color: var(--color-dark);
   height: 30%;
@@ -81,22 +97,19 @@
   color: var(--color-secondary);
 }
 
-.product .description {
-  height: 20%;
-}
-
 .product .price-box {
   gap: 0.5rem;
   height: 20%;
-  gap: 2rem;
+  gap: 0.1rem;
 }
 
 .product .price-box .price {
-  font-size: 2.2rem;
+  font-size: 2rem;
+  font-weight: 600;
 }
 
 .product .price-box .price-text {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 500;
   color: var(--color-success);
 }
@@ -107,14 +120,20 @@
 
 .product .action-btns {
   justify-content: end;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
+  margin-right: -1rem;
+  margin-top: 1rem;
+}
+
+.btn.like {
+  font-size: 1.12rem;
 }
 
 .pagination-box {
   width: 100%;
   justify-content: center;
   margin-top: auto;
-  font-size: 2rem;
+  font-size: 1.7rem;
 }
 
 .pagination-box .pagination-btns {

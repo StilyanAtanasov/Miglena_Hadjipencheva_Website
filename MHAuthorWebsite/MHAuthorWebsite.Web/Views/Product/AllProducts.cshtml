@@ -37,10 +37,14 @@
 		@foreach (var product in Model)
 		{
 			<div class="product flex-column clickable" data-details-url="@Url.Action("Details", "Product", new { productId = product.Id })">
-				<h4><a class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
-				<span class="text-faded">@product.ProductType</span>
-				<p class="description">@product.ShortDescription</p>
-				<div class="price-box flex-row">
+				<div class="product-image-container flex-row">
+					<img class="product-image" src="@product.ImageUrl" alt="@(product.ImageAlt ?? product.Name)" />
+				</div>
+				<div>
+					<h4><a class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
+					<span class="text-faded">@product.ProductType</span>
+				</div>
+				<div class="price-box flex-column">
 					<p class="price">@product.Price.ToString("F2") лв.</p>
 					<span class="price-text @(product.IsAvailable ? "available" : "unavailable")">@(product.IsAvailable ? "В наличност" : "Изчерпана наличност")</span>
 				</div>
@@ -54,8 +58,8 @@
 						</button>
 					</form>
 					<form asp-controller="Cart" asp-action="Add">
-						<input type="hidden" name="productId" value="@product.Id" />
-						<input type="hidden" name="quantity" value="1" />
+						<input type="hidden" name="productId" value="@product.Id"/>
+						<input type="hidden" name="quantity" value="1"/>
 						<button type="submit" class="btn order flex-row" @(product.IsAvailable ? "" : "disabled")>
 							<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
 						</button>

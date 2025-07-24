@@ -6,8 +6,6 @@ public class ProductCardViewModel
 
     public string Name { get; set; } = null!;
 
-    public string ShortDescription { get; set; } = null!;
-
     public string ProductType { get; set; } = null!;
 
     public decimal Price { get; set; }
@@ -15,4 +13,8 @@ public class ProductCardViewModel
     public bool IsAvailable { get; set; }
 
     public bool IsLiked { get; set; }
+
+    public string? ImageUrl { get; set; } = null!; // TODO remove nullability when not needed
+
+    public string? ImageAlt { get; set; } = null!;
 }

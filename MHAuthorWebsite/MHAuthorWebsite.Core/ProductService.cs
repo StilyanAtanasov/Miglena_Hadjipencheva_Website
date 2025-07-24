@@ -91,11 +91,16 @@ public class ProductService : IProductService
             {
                 Id = p.Id,
                 Name = p.Name,
-                ShortDescription = p.Description.Length > 100 ? $"{p.Description.Substring(0, 100)}..." : p.Description,
                 Price = p.Price,
                 IsAvailable = p.StockQuantity > 0,
                 ProductType = p.ProductType.Name,
-                IsLiked = userId != null && p.Likes.Any(u => u.Id == userId)
+                IsLiked = userId != null && p.Likes.Any(u => u.Id == userId),
+                ImageUrl = p.Images.FirstOrDefault() != null
+                    ? p.Images.FirstOrDefault()!.ImageUrl
+                    : null,
+                ImageAlt = p.Images.FirstOrDefault() != null
+                    ? p.Images.FirstOrDefault()!.AltText
+                    : null,
             })
             .ToArrayAsync();
 
