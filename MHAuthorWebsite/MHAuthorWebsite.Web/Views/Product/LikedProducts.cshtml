@@ -24,7 +24,7 @@
 						</div>
 						<div>
 							<h2><a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="link">@product.Name</a></h2>
-							<p class="text-faded">@product.ShortDescription</p>
+							<p class="text-faded">@product.CategoryName</p>
 							<p class="price">@product.Price.ToString("F2") лв.</p>
 							<span class="price-text @(product.IsInStock ? "available" : "unavailable")">@(product.IsInStock ? "В наличност" : "Изчерпана наличност")</span>
 						</div>

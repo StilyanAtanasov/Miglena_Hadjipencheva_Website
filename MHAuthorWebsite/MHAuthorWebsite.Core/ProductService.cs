@@ -65,12 +65,13 @@ public class ProductService : IProductService
         await _repository
             .WhereReadonly<Product>(p => p.Likes.Any(u => u.Id == userId))
             .Include(p => p.Images)
+            .Include(p => p.ProductType)
             .Select(p => new LikedProductViewModel
             {
                 Id = p.Id,
                 Name = p.Name,
                 Price = p.Price,
-                ShortDescription = p.Description.Length > 100 ? $"{p.Description.Substring(0, 100)}..." : p.Description,
+                CategoryName = p.ProductType.Name,
                 IsInStock = p.StockQuantity > 0,
                 ThumbnailUrl = p.Images.FirstOrDefault() != null
                     ? p.Images.FirstOrDefault()!.ThumbnailUrl
