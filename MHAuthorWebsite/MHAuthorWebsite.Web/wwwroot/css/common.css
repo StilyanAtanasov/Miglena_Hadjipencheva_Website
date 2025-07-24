@@ -7,6 +7,7 @@
   --color-primary: #fcfcfc;
   --color-secondary: rgb(66, 12, 66);
   --color-secondary-light: rgb(250, 234, 250);
+  --color-secondary-lighter: rgb(255, 241, 255);
   --color-error: rgb(255, 73, 73);
   --color-success: rgb(56, 210, 56);
 }

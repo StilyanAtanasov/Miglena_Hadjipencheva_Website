@@ -4,7 +4,7 @@
 @model ProductDetailsViewModel
 
 @{
-	ViewData["Title"] = @Model.Name;
+	ViewData["Title"] = Model.Name;
 }
 
 @section Styles {
@@ -12,14 +12,34 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
 	<link rel="stylesheet" href="~/css/editor.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/product-details.css" />
+	<link rel="stylesheet" href="~/css/product-details.css" asp-append-version="true" />
 }
-
-<section class="wrapper flex-column">
-	<section class="hero-info flex-row">
-		<section class="main-info flex-column">
-			<h1 class="title">@Model.Name</h1>
-			<p class="category text-faded"><strong>Категория:</strong> @Model.ProductTypeName</p>
+<div class="page-wrapper">
+	<section class="main flex-row">
+		<section class="hero-info flex-row">
+			<section id="images-container" class="slider flex-row" data-images-count="@Model.Images.Count">
+				@foreach (ProductDetailsImage image in Model.Images)
+				{
+					<div class="slide flex-row">
+						<img class="product-image" src="@image.ImageUrl" alt="@(image.AltText ?? Model.Name)" />
+					</div>
+				}
+				@if (Model.Images.Count > 1)
+				{
+					<button id="slider__btn--left" class="slider__btn"><i class="fa-solid fa-arrow-left"></i></button>
+					<button id="slider__btn--right" class="slider__btn "><i class="fa-solid fa-arrow-right"></i></button>
+					<div id="dots-box" class="dots flex-row">
+						@for (int i = 1; i <= Model.Images.Count; i++)
+						{
+							<button class="dots__dot @(i == 1 ? "dots__dot--active" : "")" data-slide="@i"></button>
+						}
+					</div>
+				}
+			</section>
+			<section class="flex-column">
+				<h1 class="title">@Model.Name</h1>
+				<p class="text-faded"><strong>Категория:</strong> @Model.ProductTypeName</p>
+			</section>
 		</section>
 
 		<!-- Pricing & Order Section -->
@@ -28,23 +48,24 @@
 			<p><strong>Цена:</strong> @Model.Price лв.</p>
 			<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
 
-			<form asp-controller="Product" asp-action="ToggleLike" asp-route-id="@Model.Id">
-				<button type="submit" class="btn like @(Model.IsLiked ? "liked" : "")">
+			<form id="like-form" asp-controller="Product" asp-action="ToggleLike" asp-route-id="@Model.Id" class="hidden"></form>
+			<form method="post" asp-controller="Cart" asp-action="Add">
+				<input type="hidden" name="productId" value="@Model.Id" />
+				<div class="quantity">
+					<label for="quantity">Количество:</label>
+					<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
+				</div>
+				<div class="flex-row">
+				<button form="like-form" type="submit" class="btn like @(Model.IsLiked ? "liked" : "")">
 					<span class="fa-stack">
 						<i class="fa-regular fa-heart fa-stack-2x"></i>
 						<i class="fa-solid fa-heart fa-stack-2x"></i>
 					</span>
 				</button>
-			</form>
-			<form method="post" asp-controller="Cart" asp-action="Add">
-				<input type="hidden" name="productId" value="@Model.Id" />
-				<div>
-					<label for="quantity">Количество:</label>
-					<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
-				</div>
 				<button type="submit" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled")>
 					<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
 				</button>
+				</div>
 			</form>
 		</section>
 	</section>
@@ -82,7 +103,7 @@
 			</table>
 		</section>
 	}
-</section>
+</div>
 
 @section Scripts {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>

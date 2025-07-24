@@ -16,5 +16,7 @@ public class ProductDetailsViewModel
 
     public bool IsLiked { get; set; }
 
+    public ICollection<ProductDetailsImage> Images { get; set; } = new HashSet<ProductDetailsImage>();
+
     public ICollection<ProductAttributeDetailsViewModel> Attributes { get; set; } = new List<ProductAttributeDetailsViewModel>();
 }

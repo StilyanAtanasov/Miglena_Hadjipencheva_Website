@@ -31,6 +31,8 @@ public class ProductService : IProductService
                 .AllReadonly<Product>()
                 .Include(p => p.ProductType)
                 .Include(p => p.Attributes)
+                .Include(p => p.Images)
+                .Include(p => p.Likes)
                 .FirstOrDefaultAsync(p => !p.IsDeleted && p.Id == productId);
 
             if (product is null) return ServiceResult<ProductDetailsViewModel>.NotFound();
@@ -44,6 +46,13 @@ public class ProductService : IProductService
                 IsInStock = product.StockQuantity > 0,
                 IsLiked = userId != null && product.Likes.Any(u => u.Id == userId),
                 ProductTypeName = product.ProductType.Name,
+                Images = product.Images
+                    .Select(i => new ProductDetailsImage
+                    {
+                        ImageUrl = i.ImageUrl,
+                        AltText = i.AltText
+                    })
+                    .ToHashSet(),
                 Attributes = product.Attributes
                     .Select(a => new ProductAttributeDetailsViewModel
                     {
