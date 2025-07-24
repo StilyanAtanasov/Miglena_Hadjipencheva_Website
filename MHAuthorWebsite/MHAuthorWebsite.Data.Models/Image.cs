@@ -15,10 +15,9 @@ public class Image
     [Comment("URL path to the image")]
     public string ImageUrl { get; set; } = null!;
 
-    [Required]
     [MaxLength(UrlMaxLength)]
     [Comment("URL path to the thumbnail")]
-    public string ThumbnailUrl { get; set; } = null!; //TODO make it nullable
+    public string? ThumbnailUrl { get; set; } = null!;
 
     [Required]
     [Comment("The publicId in Cloudinary")]

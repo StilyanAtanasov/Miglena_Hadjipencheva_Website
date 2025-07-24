@@ -21,8 +21,10 @@ public class CloudinaryImageService : IImageService
 
         List<ImageUploadResultDto> results = new();
 
-        foreach (IFormFile image in images)
+        for (int i = 0; i < images.Count; i++)
         {
+            IFormFile image = images.ElementAt(i);
+
             await using Stream input = image.OpenReadStream();
             using MemoryStream fullStream = new();
             using MemoryStream previewStream = new();
@@ -34,6 +36,7 @@ public class CloudinaryImageService : IImageService
 
             string fileName = Path.GetFileNameWithoutExtension(image.FileName);
             string timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+            bool isThumbnail = i == 0; // First image is the thumbnail
 
             // FULL image - max width, AVIF, aspect preserved
             ImageUploadParams fullUploadParams = new()
@@ -51,27 +54,32 @@ public class CloudinaryImageService : IImageService
 
             ImageUploadResult fullUpload = await _cloudinary.UploadAsync(fullUploadParams);
 
-            // Thumbnail image - small thumbnail, AVIF
-            ImageUploadParams previewUploadParams = new()
+            ImageUploadResult? previewUpload = null;
+            if (isThumbnail)
             {
-                File = new FileDescription(image.FileName, previewStream),
-                Folder = ThumbnailFolder,
-                PublicId = $"{fileName}_thumb_{timestamp}",
-                Format = "avif",
-                Type = "private",
-                Transformation = new Transformation()
-                    .Width(250)
-                    .Crop("scale") // Shrink, preserve ratio
-                    .FetchFormat("avif")
-            };
+                // Thumbnail image - small thumbnail, AVIF
+                ImageUploadParams previewUploadParams = new()
+                {
+                    File = new FileDescription(image.FileName, previewStream),
+                    Folder = ThumbnailFolder,
+                    PublicId = $"{fileName}_thumb_{timestamp}",
+                    Format = "avif",
+                    Type = "private",
+                    Transformation = new Transformation()
+                        .Width(250)
+                        .Crop("scale") // Shrink, preserve ratio
+                        .FetchFormat("avif")
+                };
 
-            ImageUploadResult previewUpload = await _cloudinary.UploadAsync(previewUploadParams);
+                previewUpload = await _cloudinary.UploadAsync(previewUploadParams);
+            }
 
             results.Add(new ImageUploadResultDto
             {
                 OriginalUrl = fullUpload.SecureUrl.AbsoluteUri,
-                PreviewUrl = previewUpload.SecureUrl.AbsoluteUri,
-                PublicId = fullUpload.PublicId
+                PreviewUrl = previewUpload?.SecureUrl.AbsoluteUri ?? null,
+                PublicId = fullUpload.PublicId,
+                IsThumbnail = isThumbnail
             });
         }
 

@@ -44,7 +44,7 @@ public class AdminProductService : ProductService, IAdminProductService
                     ImageUrl = imageResult.OriginalUrl,
                     ThumbnailUrl = imageResult.PreviewUrl,
                     PublicId = imageResult.PublicId,
-                    IsThumbnail = i == 0, // First image is the thumbnail
+                    IsThumbnail = imageResult.IsThumbnail
                 };
 
                 await _repository.AddAsync(image);
