@@ -39,7 +39,7 @@ public class CartService : ICartService
             CartItem? existingCartItem = await _repository.FindByExpressionAsync<CartItem>(ci => ci.CartId == cart.Id && ci.ProductId == productId);
             if (existingCartItem is not null)
             {
-                existingCartItem.Quantity += quantity;
+                existingCartItem.Quantity += quantity; // TODO Add validation for maximum quantity
                 existingCartItem.Price = product.Price;
 
                 _repository.Update(existingCartItem);

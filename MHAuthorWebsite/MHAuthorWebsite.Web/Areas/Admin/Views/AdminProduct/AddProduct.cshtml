@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
 	<link rel="stylesheet" href="~/css/editor.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/image-preview.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
@@ -43,9 +44,11 @@
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Images">Изображения:</label>
-				<input class="form-input" asp-for="Images" type="file" multiple />
+				<input class="form-input" id="imageInput" asp-for="Images" type="file" multiple accept="image/*" />
 				<span class="input-error" asp-validation-for="Images"></span>
 			</div>
+			<div id="previewContainer" class="form-box preview-container flex-row"></div>
+
 			<div class="form-input-box flex-column select-list">
 				<label class="form-label" asp-for="ProductTypeId">Категория:</label>
 				<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" id="selectProductType" class="form-select"></select>

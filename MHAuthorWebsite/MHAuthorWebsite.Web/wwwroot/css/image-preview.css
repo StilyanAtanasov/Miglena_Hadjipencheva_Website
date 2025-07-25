@@ -1,0 +1,47 @@
+.preview-container {
+  height: 20rem;
+  overflow-x: scroll;
+  gap: 3rem;
+}
+
+.preview-container:empty {
+  display: none;
+}
+
+.preview-container .image-container {
+  justify-content: center;
+  align-items: center;
+  height: 90%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.preview-container .image-container img {
+  height: 100%;
+  object-fit: contain;
+  border-radius: 1.5rem;
+}
+
+.preview-container .image-container .removeBtn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  background-color: transparent;
+  border: none;
+  font-size: 2rem;
+  border-radius: 1.5rem;
+  cursor: pointer;
+}
+
+.preview-container .image-container .removeBtn:hover {
+  opacity: 1;
+  color: var(--color-secondary);
+  background-color: var(--color-secondary-lighter-transparent);
+}
+
+.preview-container .image-container .removeBtn:hover i {
+  transform: scale(1.2);
+}
