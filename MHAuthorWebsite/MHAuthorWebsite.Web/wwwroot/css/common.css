@@ -246,3 +246,40 @@ hr {
     opacity: 1;
   }
 }
+
+/* --- Responsive --- */
+@media (max-width: 1920px) {
+  html {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 1450px) {
+  html {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 1250px) {
+  html {
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 1250px) {
+  html {
+    font-size: 6px;
+  }
+}
+
+@media (max-width: 900px) {
+  html {
+    font-size: 5px;
+  }
+}
+
+@media (max-width: 700px) {
+  html {
+    font-size: 4px;
+  }
+}
