@@ -1,7 +1,8 @@
 .preview-container {
-  height: 20rem;
+  height: 25rem;
   overflow-x: scroll;
   gap: 3rem;
+  padding: 1rem 5.5rem;
 }
 
 .preview-container:empty {
@@ -11,7 +12,7 @@
 .preview-container .image-container {
   justify-content: center;
   align-items: center;
-  height: 90%;
+  height: 80%;
   position: relative;
   flex-shrink: 0;
 }
@@ -57,4 +58,18 @@
 .preview-container .image-container .removeBtn:hover i,
 .preview-container .image-container .makeTitleBtn:hover i {
   transform: scale(1.2);
+}
+
+/* Title image */
+.preview-container .image-container .title-img {
+  box-shadow: 0.15rem 0.15rem 1rem var(--color-secondary);
+}
+
+.preview-container .image-container.title-img-container::before {
+  content: "Заглавно изображение";
+  position: absolute;
+  top: -3.3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
 }

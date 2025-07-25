@@ -65,8 +65,13 @@ const previewContainer = document.getElementById(`previewContainer`);
 const imageErrorField = document.getElementById(`image-error`);
 const maxImages = imageErrorField.dataset.maxImages;
 
-const currentTitleImageIdField = document.getElementById(`title-image-id`);
+const TitleImageIdField = document.getElementById(`title-image-id`);
 let nextIndex = 0;
+let currentTitleImage;
+
+const imgContainerClassName = `image-container`;
+const titleImgClassName = `title-img`;
+const titleImgContainerClassName = `title-img-container`;
 
 let selectedFiles = [];
 
@@ -86,11 +91,16 @@ imageInput.addEventListener(`change`, function () {
     const reader = new FileReader();
     reader.onload = function (e) {
       const imgWrapper = document.createElement(`div`);
-      imgWrapper.classList.add(`image-container`);
+      imgWrapper.classList.add(imgContainerClassName);
 
       const img = document.createElement(`img`);
       img.src = e.target.result;
       img.dataset.index = nextIndex++;
+
+      if (nextIndex === 1) {
+        img.classList.add(titleImgClassName);
+        currentTitleImage = img;
+      }
 
       const removeBtn = document.createElement(`button`);
       removeBtn.type = `button`;
@@ -129,22 +139,33 @@ function remove() {
     const index = selectedFiles.indexOf(file);
     if (index > -1) {
       selectedFiles.splice(index, 1);
-      nextIndex--;
+      nextIndex--; // FIX
     }
+
     imgWrapper.remove();
     updateFileInput();
   } catch {
-    return; //TODO
+    return console.log(`error`); // TODO
   }
 }
 
 function makeTitle(e) {
   try {
-    const newIndex = e.target.closest(`.image-container`).querySelector(`img`).dataset.index;
+    const clicked = e.target.closest(`.image-container`).querySelector(`img`);
+    if (clicked === null || clicked === undefined) return;
 
+    const newIndex = clicked.dataset.index;
     if (newIndex === null || newIndex === undefined || newIndex > nextIndex - 1) return;
-    currentTitleImageIdField.value = newIndex;
+    TitleImageIdField.value = newIndex;
+
+    currentTitleImage.classList.remove(titleImgClassName);
+    currentTitleImage.closest(`.${imgContainerClassName}`).classList.remove(titleImgContainerClassName);
+
+    currentTitleImage = clicked;
+
+    currentTitleImage.classList.add(titleImgClassName);
+    currentTitleImage.closest(`.${imgContainerClassName}`).classList.add(titleImgContainerClassName);
   } catch {
-    return; // TODO return a message
+    return console.log(`error`); // TODO return a message
   }
 }
