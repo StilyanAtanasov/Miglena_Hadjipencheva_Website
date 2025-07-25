@@ -26,6 +26,8 @@ public class AddProductForm
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public int ProductTypeId { get; set; }
 
+    public int TitleImageId { get; set; } = 0; // Default is 0, meaning the first (if not only) image will have a thumbnail.
+
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public ICollection<IFormFile> Images { get; set; } = new HashSet<IFormFile>();
 

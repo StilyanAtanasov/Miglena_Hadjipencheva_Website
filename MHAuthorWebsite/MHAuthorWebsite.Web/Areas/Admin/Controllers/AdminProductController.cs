@@ -103,7 +103,10 @@ public class AdminProductController : AdminBaseController
             return View(model); // TODO: DRY 
         }
 
-        ServiceResult<ICollection<ImageUploadResultDto>> imageResult = await _imageService.UploadImageWithPreviewAsync(model.Images);
+        if (model.TitleImageId > model.Images.Count - 1)
+            return BadRequest("Invalid title image id!");
+
+        ServiceResult<ICollection<ImageUploadResultDto>> imageResult = await _imageService.UploadImageWithPreviewAsync(model.Images, model.TitleImageId);
         if (!imageResult.Success) return StatusCode(500);
         if (imageResult.Result is null || !imageResult.Result.Any()) return StatusCode(500);
 

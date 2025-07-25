@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static MHAuthorWebsite.GCommon.EntityConstraints.Product
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Product
-@model AddProductForm
+@model AddProductForm?
 
 @{
 	ViewData["Title"] = "Добави продукт";
@@ -49,6 +49,7 @@
 				<span id="image-error" class="input-error" asp-validation-for="Images" data-max-images="@MaxImages"></span>
 			</div>
 			<div id="previewContainer" class="form-box preview-container flex-row"></div>
+			<input id="title-image-id" type="hidden" asp-for="TitleImageId" value="@(Model?.TitleImageId ?? 0)"/>
 
 			<div class="form-input-box flex-column select-list">
 				<label class="form-label" asp-for="ProductTypeId">Категория:</label>

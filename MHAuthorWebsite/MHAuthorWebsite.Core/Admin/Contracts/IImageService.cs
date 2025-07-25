@@ -11,7 +11,7 @@ public interface IImageService
     /// </summary>
     /// <param name="images">The image files to upload.</param>
     /// <returns>The URL of the uploaded image.</returns>
-    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images);
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images, int titleImageId);
 
     /// <summary>
     ///     Deletes an image from the specified path.

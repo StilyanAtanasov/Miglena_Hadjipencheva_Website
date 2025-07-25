@@ -14,9 +14,9 @@ public class CloudinaryImageService : IImageService
 
     public CloudinaryImageService(Cloudinary cloudinary) => _cloudinary = cloudinary;
 
-    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images)
+    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images, int titleImageId)
     {
-        if (images.Count == 0 || images.Any(i => i.Length == 0))
+        if (images.Count == 0 || images.Any(i => i.Length == 0) || titleImageId > images.Count - 1)
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure();
 
         List<ImageUploadResultDto> results = new();
@@ -36,7 +36,7 @@ public class CloudinaryImageService : IImageService
 
             string fileName = Path.GetFileNameWithoutExtension(image.FileName);
             string timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
-            bool isThumbnail = i == 0; // First image is the thumbnail
+            bool isThumbnail = i == titleImageId;
 
             // FULL image - max width, AVIF, aspect preserved
             ImageUploadParams fullUploadParams = new()

@@ -65,6 +65,9 @@ const previewContainer = document.getElementById(`previewContainer`);
 const imageErrorField = document.getElementById(`image-error`);
 const maxImages = imageErrorField.dataset.maxImages;
 
+const currentTitleImageIdField = document.getElementById(`title-image-id`);
+let nextIndex = 0;
+
 let selectedFiles = [];
 
 imageInput.addEventListener(`change`, function () {
@@ -87,20 +90,23 @@ imageInput.addEventListener(`change`, function () {
 
       const img = document.createElement(`img`);
       img.src = e.target.result;
+      img.dataset.index = nextIndex++;
 
       const removeBtn = document.createElement(`button`);
       removeBtn.type = `button`;
       removeBtn.classList = `removeBtn`;
       removeBtn.innerHTML = `<i class="fa-solid fa-file-slash"></i>`;
-      removeBtn.addEventListener(`click`, () => {
-        const index = selectedFiles.indexOf(file);
-        if (index > -1) selectedFiles.splice(index, 1);
-        imgWrapper.remove();
-        updateFileInput();
-      });
+      removeBtn.addEventListener(`click`, remove);
+
+      const makeTitleBtn = document.createElement(`button`);
+      makeTitleBtn.type = `button`;
+      makeTitleBtn.classList = `makeTitleBtn`;
+      makeTitleBtn.innerHTML = `<i class="fa-solid fa-star-sharp"></i>`;
+      makeTitleBtn.addEventListener(`click`, makeTitle);
 
       imgWrapper.appendChild(img);
       imgWrapper.appendChild(removeBtn);
+      imgWrapper.appendChild(makeTitleBtn);
       previewContainer.appendChild(imgWrapper);
     };
 
@@ -116,4 +122,29 @@ function updateFileInput() {
   const dataTransfer = new DataTransfer();
   selectedFiles.forEach(f => dataTransfer.items.add(f));
   imageInput.files = dataTransfer.files;
+}
+
+function remove() {
+  try {
+    const index = selectedFiles.indexOf(file);
+    if (index > -1) {
+      selectedFiles.splice(index, 1);
+      nextIndex--;
+    }
+    imgWrapper.remove();
+    updateFileInput();
+  } catch {
+    return; //TODO
+  }
+}
+
+function makeTitle(e) {
+  try {
+    const newIndex = e.target.closest(`.image-container`).querySelector(`img`).dataset.index;
+
+    if (newIndex === null || newIndex === undefined || newIndex > nextIndex - 1) return;
+    currentTitleImageIdField.value = newIndex;
+  } catch {
+    return; // TODO return a message
+  }
 }

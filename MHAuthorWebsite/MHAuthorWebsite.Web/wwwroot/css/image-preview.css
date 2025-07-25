@@ -22,26 +22,39 @@
   border-radius: 1.5rem;
 }
 
-.preview-container .image-container .removeBtn {
+.preview-container .image-container .removeBtn,
+.preview-container .image-container .makeTitleBtn {
   position: absolute;
-  top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 50%;
   opacity: 0;
   background-color: transparent;
-  border: none;
+  border: 0.1rem solid transparent;
   font-size: 2rem;
-  border-radius: 1.5rem;
   cursor: pointer;
 }
 
-.preview-container .image-container .removeBtn:hover {
+.preview-container .image-container .removeBtn {
+  top: 0;
+  border-radius: 1.5rem 1.5rem 0 0;
+  border-bottom: 0.1rem solid var(--color-secondary);
+}
+
+.preview-container .image-container .makeTitleBtn {
+  bottom: 0;
+  border-radius: 0 0 1.5rem 1.5rem;
+  border-top: 0.1rem solid var(--color-secondary);
+}
+
+.preview-container .image-container:hover .removeBtn,
+.preview-container .image-container:hover .makeTitleBtn {
   opacity: 1;
   color: var(--color-secondary);
   background-color: var(--color-secondary-lighter-transparent);
 }
 
-.preview-container .image-container .removeBtn:hover i {
+.preview-container .image-container .removeBtn:hover i,
+.preview-container .image-container .makeTitleBtn:hover i {
   transform: scale(1.2);
 }
