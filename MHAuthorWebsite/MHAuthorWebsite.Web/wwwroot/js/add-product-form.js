@@ -97,27 +97,31 @@ imageInput.addEventListener(`change`, function () {
       img.src = e.target.result;
       img.dataset.index = nextIndex++;
 
-      if (nextIndex === 1) {
-        img.classList.add(titleImgClassName);
-        currentTitleImage = img;
-      }
-
       const removeBtn = document.createElement(`button`);
       removeBtn.type = `button`;
       removeBtn.classList = `removeBtn`;
       removeBtn.innerHTML = `<i class="fa-solid fa-file-slash"></i>`;
-      removeBtn.addEventListener(`click`, remove);
+      removeBtn.addEventListener(`click`, () => remove(file, imgWrapper));
 
       const makeTitleBtn = document.createElement(`button`);
       makeTitleBtn.type = `button`;
       makeTitleBtn.classList = `makeTitleBtn`;
       makeTitleBtn.innerHTML = `<i class="fa-solid fa-star-sharp"></i>`;
-      makeTitleBtn.addEventListener(`click`, makeTitle);
+      makeTitleBtn.addEventListener(`click`, e => {
+        const clicked = e.target.closest(`.${imgContainerClassName}`).querySelector(`img`);
+        makeTitle(clicked);
+      });
 
       imgWrapper.appendChild(img);
       imgWrapper.appendChild(removeBtn);
       imgWrapper.appendChild(makeTitleBtn);
       previewContainer.appendChild(imgWrapper);
+
+      if (nextIndex === 1) {
+        currentTitleImage = img;
+        currentTitleImage.classList.add(titleImgClassName);
+        currentTitleImage.closest(`.${imgContainerClassName}`).classList.add(titleImgContainerClassName);
+      }
     };
 
     selectedFiles.push(file);
@@ -134,34 +138,43 @@ function updateFileInput() {
   imageInput.files = dataTransfer.files;
 }
 
-function remove() {
+function remove(file, imgWrapper) {
   try {
     const index = selectedFiles.indexOf(file);
     if (index > -1) {
       selectedFiles.splice(index, 1);
-      nextIndex--; // FIX
-    }
 
-    imgWrapper.remove();
-    updateFileInput();
+      imgWrapper.remove();
+      updateFileInput();
+
+      if (parseInt(currentTitleImage.dataset.index) === index && selectedFiles.length >= 1) {
+        const firstImage = document.querySelector(`.${imgContainerClassName} img`);
+        makeTitle(firstImage);
+      }
+
+      const images = document.querySelectorAll(`.${imgContainerClassName} img`);
+      for (let i = 0; i < images.length; i++) images[i].dataset.index = i;
+      TitleImageIdField.value = currentTitleImage.dataset.index;
+
+      nextIndex = selectedFiles.length;
+    }
   } catch {
     return console.log(`error`); // TODO
   }
 }
 
-function makeTitle(e) {
+function makeTitle(newImage) {
   try {
-    const clicked = e.target.closest(`.image-container`).querySelector(`img`);
-    if (clicked === null || clicked === undefined) return;
+    if (newImage === null || newImage === undefined) return;
 
-    const newIndex = clicked.dataset.index;
+    const newIndex = newImage.dataset.index;
     if (newIndex === null || newIndex === undefined || newIndex > nextIndex - 1) return;
     TitleImageIdField.value = newIndex;
 
     currentTitleImage.classList.remove(titleImgClassName);
     currentTitleImage.closest(`.${imgContainerClassName}`).classList.remove(titleImgContainerClassName);
 
-    currentTitleImage = clicked;
+    currentTitleImage = newImage;
 
     currentTitleImage.classList.add(titleImgClassName);
     currentTitleImage.closest(`.${imgContainerClassName}`).classList.add(titleImgContainerClassName);
