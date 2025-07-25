@@ -62,11 +62,20 @@ function RetrieveAttributes() {
 // --- Image preview ---
 const imageInput = document.getElementById(`imageInput`);
 const previewContainer = document.getElementById(`previewContainer`);
+const imageErrorField = document.getElementById(`image-error`);
+const maxImages = imageErrorField.dataset.maxImages;
 
 let selectedFiles = [];
 
 imageInput.addEventListener(`change`, function () {
   const files = Array.from(this.files);
+
+  if (selectedFiles.length + files.length > maxImages) {
+    imageErrorField.innerText = `Можете да качите максимум ${maxImages} снимки!`;
+    this.value = ``; // Allow re-selecting same files
+    updateFileInput();
+    return;
+  }
 
   files.forEach(file => {
     if (!file.type.startsWith(`image/`)) return;

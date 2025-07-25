@@ -1,6 +1,7 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static MHAuthorWebsite.GCommon.EntityConstraints.Product
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Product
 @model AddProductForm
 
 @{
@@ -45,7 +46,7 @@
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Images">Изображения:</label>
 				<input class="form-input" id="imageInput" asp-for="Images" type="file" multiple accept="image/*" />
-				<span class="input-error" asp-validation-for="Images"></span>
+				<span id="image-error" class="input-error" asp-validation-for="Images" data-max-images="@MaxImages"></span>
 			</div>
 			<div id="previewContainer" class="form-box preview-container flex-row"></div>
 
