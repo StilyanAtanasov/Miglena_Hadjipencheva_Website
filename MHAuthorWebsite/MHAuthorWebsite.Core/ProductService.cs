@@ -47,6 +47,7 @@ public class ProductService : IProductService
                 IsLiked = userId != null && product.Likes.Any(u => u.Id == userId),
                 ProductTypeName = product.ProductType.Name,
                 Images = product.Images
+                    .OrderByDescending(i => i.IsThumbnail)
                     .Select(i => new ProductDetailsImage
                     {
                         ImageUrl = i.ImageUrl,
@@ -82,7 +83,7 @@ public class ProductService : IProductService
                 Price = p.Price,
                 CategoryName = p.ProductType.Name,
                 IsInStock = p.StockQuantity > 0,
-                ThumbnailUrl = p.Images.First(i => i.IsThumbnail).ThumbnailUrl,
+                ThumbnailUrl = p.Images.First(i => i.IsThumbnail).ThumbnailUrl!,
                 ThumbnailAlt = p.Images.First(i => i.IsThumbnail).AltText,
             })
             .ToArrayAsync();
