@@ -65,12 +65,13 @@ document.addEventListener(`DOMContentLoaded`, async () => {
     const image = new ExistingImage(imageElement.dataset.id, imageElement.src, imageElement.dataset.isTitle.toLowerCase() === `true`);
     imageState.existing.push(image);
 
-    if (imageElement.dataset.isTitle) {
+    if (image.isTitle) {
       currentTitleImage = image;
       currentTitleImageElement = imageElement;
     }
 
     ic.querySelector(`.removeBtn`).addEventListener(`click`, () => deleteImage(image, ic));
+    ic.querySelector(`.makeTitleBtn`).addEventListener(`click`, () => makeTitle(image, imageElement));
   });
 });
 
@@ -104,6 +105,7 @@ function makeTitle(newImage, newImageElement, oldImageRemoved = false) {
     if (!newImage || !newImageElement) return;
 
     if (!oldImageRemoved) {
+      currentTitleImage.isTitle = false;
       currentTitleImageElement.classList.remove(titleImgClassName);
       currentTitleImageElement.closest(`.${imgContainerClassName}`).classList.remove(titleImgContainerClassName);
     }
