@@ -80,7 +80,7 @@ document.addEventListener(`DOMContentLoaded`, async () => {
   imageInput.addEventListener(`change`, function () {
     const files = Array.from(this.files);
 
-    if (imageState.added.length + files.length > maxImages) {
+    if (imageState.added.length + files.length + imageState.existing.length > maxImages) {
       imageErrorField.innerText = `Можете да качите максимум ${maxImages} снимки!`;
       this.value = ``; // Allow re-selecting same files
       updateFileInput();
