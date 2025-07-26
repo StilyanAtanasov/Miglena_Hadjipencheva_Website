@@ -56,7 +56,10 @@ const imgContainerClassName = `image-container`;
 const titleImgClassName = `title-img`;
 const titleImgContainerClassName = `title-img-container`;
 
-const previewContainer = document.querySelector(`#previewContainer`);
+const imageInput = document.getElementById(`imageInput`);
+const previewContainer = document.getElementById(`previewContainer`);
+const imageErrorField = document.getElementById(`image-error`);
+const maxImages = imageErrorField.dataset.maxImages;
 
 document.addEventListener(`DOMContentLoaded`, async () => {
   const imageContainers = previewContainer.querySelectorAll(`.${imgContainerClassName}`);
@@ -73,7 +76,66 @@ document.addEventListener(`DOMContentLoaded`, async () => {
     ic.querySelector(`.removeBtn`).addEventListener(`click`, () => deleteImage(image, ic));
     ic.querySelector(`.makeTitleBtn`).addEventListener(`click`, () => makeTitle(image, imageElement));
   });
+
+  imageInput.addEventListener(`change`, function () {
+    const files = Array.from(this.files);
+
+    if (imageState.added.length + files.length > maxImages) {
+      imageErrorField.innerText = `Можете да качите максимум ${maxImages} снимки!`;
+      this.value = ``; // Allow re-selecting same files
+      updateFileInput();
+      return;
+    }
+
+    files.forEach(file => {
+      if (!file.type.startsWith(`image/`)) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const previewUrl = e.target.result;
+        const image = new AddedImage(file, previewUrl);
+        imageState.added.push(image);
+
+        const imgWrapper = document.createElement(`div`);
+        imgWrapper.classList.add(imgContainerClassName);
+
+        const img = document.createElement(`img`);
+        img.src = previewUrl;
+
+        const removeBtn = document.createElement(`button`);
+        removeBtn.type = `button`;
+        removeBtn.classList = `removeBtn`;
+        removeBtn.innerHTML = `<i class="fa-solid fa-file-slash"></i>`;
+        removeBtn.addEventListener(`click`, () => deleteImage(image, imgWrapper));
+
+        const makeTitleBtn = document.createElement(`button`);
+        makeTitleBtn.type = `button`;
+        makeTitleBtn.classList = `makeTitleBtn`;
+        makeTitleBtn.innerHTML = `<i class="fa-solid fa-star-sharp"></i>`;
+        makeTitleBtn.addEventListener(`click`, () => makeTitle(image, img));
+
+        imgWrapper.appendChild(img);
+        imgWrapper.appendChild(removeBtn);
+        imgWrapper.appendChild(makeTitleBtn);
+        previewContainer.appendChild(imgWrapper);
+
+        if (imageState.added.length + imageState.existing.length === 1) makeTitle(image, img, true);
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    this.value = ``; // Allow re-selecting same files
+    updateFileInput();
+    console.log(imageState);
+  });
 });
+
+function updateFileInput() {
+  const dataTransfer = new DataTransfer();
+  imageState.added.forEach(i => dataTransfer.items.add(i.file));
+  imageInput.files = dataTransfer.files;
+}
 
 function deleteImage(image, imageContainerElement) {
   try {
@@ -102,7 +164,7 @@ function deleteImage(image, imageContainerElement) {
 
 function makeTitle(newImage, newImageElement, oldImageRemoved = false) {
   try {
-    if (!newImage || !newImageElement) return;
+    if (!newImage || !newImageElement || currentTitleImage === newImage) return;
 
     if (!oldImageRemoved) {
       currentTitleImage.isTitle = false;
