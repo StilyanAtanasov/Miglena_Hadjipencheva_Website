@@ -28,6 +28,8 @@ public class EditProductFormViewModel
     public string ProductTypeName { get; set; } = null!;
 
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    public ICollection<IFormFile> NewImages { get; set; } = new HashSet<IFormFile>();
+
     public ICollection<ProductImageViewModel> Images { get; set; } = new HashSet<ProductImageViewModel>();
 
     public string ImagesJson { get; set; } = null!;

@@ -46,16 +46,17 @@
 				<input class="form-input" asp-for="StockQuantity" type="number" />
 				<span class="input-error" asp-validation-for="StockQuantity" ></span>
 			</div>
+
 			<div class="form-input-box flex-column">
-				<label class="form-label" asp-for="Images">Изображения:</label>
-				<input class="form-input" id="imageInput" asp-for="Images" type="file" multiple accept="image/*" />
-				<span id="image-error" class="input-error" asp-validation-for="Images" data-max-images="@MaxImages"></span>
+				<label class="form-label" asp-for="NewImages">Изображения:</label>
+				<input class="form-input" id="imageInput" asp-for="NewImages" type="file" multiple accept="image/*" />
+				<span id="image-error" class="input-error" asp-validation-for="NewImages" data-max-images="@MaxImages"></span>
 			</div>
 			<div id="previewContainer" class="form-box preview-container flex-row">
 				@foreach (ProductImageViewModel image in Model.Images)
 				{
 					<div class="image-container @(image.IsTitle ? "title-img-container" : "")">
-						<img src="@image.Url" alt="Product Image" class="@(image.IsTitle ? "title-img" : "")" />
+						<img src="@image.Url" alt="Product Image" class="@(image.IsTitle ? "title-img" : "")" data-id="@image.Id" data-is-title="@image.IsTitle"/>
 						<button type="button" class="removeBtn"><i class="fa-solid fa-file-slash"></i></button>
 						<button type="button" class="makeTitleBtn"><i class="fa-solid fa-star-sharp"></i></button>
 					</div>
