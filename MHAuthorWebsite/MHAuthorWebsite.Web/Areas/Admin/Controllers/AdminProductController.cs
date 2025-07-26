@@ -103,7 +103,7 @@ public class AdminProductController : AdminBaseController
             return View(model); // TODO: DRY 
         }
 
-        if (model.TitleImageId > model.Images.Count - 1)
+        if (model.TitleImageId > model.Images.Count - 1 || model.TitleImageId < 0)
             return BadRequest("Invalid title image id!");
 
         ServiceResult<ICollection<ImageUploadResultDto>> imageResult = await _imageService.UploadImageWithPreviewAsync(model.Images, model.TitleImageId);
