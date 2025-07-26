@@ -84,6 +84,7 @@ public class AdminProductService : ProductService, IAdminProductService
             .Include(p => p.Attributes)
                 .ThenInclude(a => a.AttributeDefinition)
             .Include(p => p.ProductType)
+            .Include(p => p.Images)
             .FirstOrDefaultAsync(p => p.Id == productId);
 
         if (product is null) return ServiceResult<EditProductFormViewModel>.NotFound();
@@ -96,6 +97,14 @@ public class AdminProductService : ProductService, IAdminProductService
             Price = product.Price,
             StockQuantity = product.StockQuantity,
             ProductTypeName = product.ProductType.Name,
+            Images = product.Images
+                .Select(i => new ProductImageViewModel
+                {
+                    Id = i.Id,
+                    Url = i.ImageUrl,
+                    IsTitle = i.IsThumbnail,
+                })
+                .ToArray(),
             Attributes = product.Attributes
                 .Select(a => new AttributeValueForm
                 {

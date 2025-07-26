@@ -1,4 +1,5 @@
 ﻿using MHAuthorWebsite.Web.ViewModels.Localization;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
 
@@ -25,6 +26,11 @@ public class EditProductFormViewModel
     public int StockQuantity { get; set; }
 
     public string ProductTypeName { get; set; } = null!;
+
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    public ICollection<ProductImageViewModel> Images { get; set; } = new HashSet<ProductImageViewModel>();
+
+    public string ImagesJson { get; set; } = null!;
 
     public ICollection<AttributeValueForm> Attributes { get; set; } = new HashSet<AttributeValueForm>();
 }

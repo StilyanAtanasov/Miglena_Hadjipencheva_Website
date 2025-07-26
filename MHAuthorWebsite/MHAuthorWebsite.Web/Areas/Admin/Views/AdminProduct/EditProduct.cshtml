@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MHAuthorWebsite.Web.Utils
 @using static MHAuthorWebsite.GCommon.EntityConstraints.Product
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Product
 @model EditProductFormViewModel
 
 
@@ -15,6 +16,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
 	<link rel="stylesheet" href="~/css/editor.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/image-preview.css" asp-append-version="true"/>
 }
 
 <div class="page-wrapper flex-column">
@@ -44,6 +46,23 @@
 				<input class="form-input" asp-for="StockQuantity" type="number" />
 				<span class="input-error" asp-validation-for="StockQuantity" ></span>
 			</div>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Images">Изображения:</label>
+				<input class="form-input" id="imageInput" asp-for="Images" type="file" multiple accept="image/*" />
+				<span id="image-error" class="input-error" asp-validation-for="Images" data-max-images="@MaxImages"></span>
+			</div>
+			<div id="previewContainer" class="form-box preview-container flex-row">
+				@foreach (ProductImageViewModel image in Model.Images)
+				{
+					<div class="image-container @(image.IsTitle ? "title-img-container" : "")">
+						<img src="@image.Url" alt="Product Image" class="@(image.IsTitle ? "title-img" : "")" />
+						<button type="button" class="removeBtn"><i class="fa-solid fa-file-slash"></i></button>
+						<button type="button" class="makeTitleBtn"><i class="fa-solid fa-star-sharp"></i></button>
+					</div>
+				}
+			</div>
+			<input type="hidden" asp-for="ImagesJson" />
+
 			<div class="form-input-box flex-column select-list">
 				<label class="form-label">Категория:</label>
 				<p>@Model.ProductTypeName</p>
