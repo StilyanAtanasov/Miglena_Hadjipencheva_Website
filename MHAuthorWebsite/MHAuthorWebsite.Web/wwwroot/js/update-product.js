@@ -50,15 +50,23 @@ const imageState = {
 };
 
 let currentTitleImage;
+let currentTitleImageElement;
+
+const imgContainerClassName = `image-container`;
+const titleImgClassName = `title-img`;
+const titleImgContainerClassName = `title-img-container`;
 
 document.addEventListener(`DOMContentLoaded`, async () => {
-  const imageContainers = document.querySelectorAll(`#previewContainer .image-container`);
+  const imageContainers = document.querySelectorAll(`#previewContainer .${imgContainerClassName}`);
   imageContainers.forEach(ic => {
     const imageElement = ic.querySelector(`img`);
-    const image = new ExistingImage(imageElement.dataset.id, imageElement.src, imageElement.dataset.isTitle);
+    const image = new ExistingImage(imageElement.dataset.id, imageElement.src, imageElement.dataset.isTitle.toLowerCase() === `true`);
     imageState.existing.push(image);
 
-    if (imageElement.dataset.isTitle) currentTitleImage = image;
+    if (imageElement.dataset.isTitle) {
+      currentTitleImage = image;
+      currentTitleImageElement = imageElement;
+    }
 
     ic.querySelector(`.removeBtn`).addEventListener(`click`, () => deleteImage(image, ic));
   });
@@ -80,8 +88,36 @@ function deleteImage(image, imageContainerElement) {
 
     imageContainerElement.remove();
 
+    console.log(imageState); // TODO remove
+    debugger;
+
+    if (image.isTitle && imageState.added.length + imageState.existing.length > 0) {
+      const newTitleImage = imageState.existing.length > 0 ? imageState.existing[0] : imageState.added[0];
+      const newTitleImageElement = document.querySelector(`#previewContainer img[data-id="${newTitleImage.id}"]`);
+      makeTitle(newTitleImage, newTitleImageElement, true);
+    }
+  } catch {
+    return console.log("delete error"); // FIX
+  }
+}
+
+function makeTitle(newImage, newImageElement, oldImageRemoved = false) {
+  try {
+    if (!newImage || !newImageElement) return;
+
+    if (!oldImageRemoved) {
+      currentTitleImageElement.classList.remove(titleImgClassName);
+      currentTitleImageElement.closest(`.${imgContainerClassName}`).classList.remove(titleImgContainerClassName);
+    }
+
+    currentTitleImage = newImage;
+    currentTitleImageElement = newImageElement;
+
+    currentTitleImage.isTitle = true;
+    currentTitleImageElement.classList.add(titleImgClassName);
+    currentTitleImageElement.closest(`.${imgContainerClassName}`).classList.add(titleImgContainerClassName);
     console.log(imageState);
   } catch {
-    console.log("delete error"); // FIX
+    return console.log(`error`); // TODO return a message
   }
 }
