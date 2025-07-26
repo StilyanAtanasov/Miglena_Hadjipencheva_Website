@@ -56,8 +56,10 @@ const imgContainerClassName = `image-container`;
 const titleImgClassName = `title-img`;
 const titleImgContainerClassName = `title-img-container`;
 
+const previewContainer = document.querySelector(`#previewContainer`);
+
 document.addEventListener(`DOMContentLoaded`, async () => {
-  const imageContainers = document.querySelectorAll(`#previewContainer .${imgContainerClassName}`);
+  const imageContainers = previewContainer.querySelectorAll(`.${imgContainerClassName}`);
   imageContainers.forEach(ic => {
     const imageElement = ic.querySelector(`img`);
     const image = new ExistingImage(imageElement.dataset.id, imageElement.src, imageElement.dataset.isTitle.toLowerCase() === `true`);
@@ -71,8 +73,6 @@ document.addEventListener(`DOMContentLoaded`, async () => {
     ic.querySelector(`.removeBtn`).addEventListener(`click`, () => deleteImage(image, ic));
   });
 });
-
-console.log(imageState);
 
 function deleteImage(image, imageContainerElement) {
   try {
@@ -88,14 +88,12 @@ function deleteImage(image, imageContainerElement) {
 
     imageContainerElement.remove();
 
-    console.log(imageState); // TODO remove
-    debugger;
-
-    if (image.isTitle && imageState.added.length + imageState.existing.length > 0) {
+    const imagesLeft = imageState.added.length + imageState.existing.length;
+    if (image.isTitle && imagesLeft > 0) {
       const newTitleImage = imageState.existing.length > 0 ? imageState.existing[0] : imageState.added[0];
       const newTitleImageElement = document.querySelector(`#previewContainer img[data-id="${newTitleImage.id}"]`);
       makeTitle(newTitleImage, newTitleImageElement, true);
-    }
+    } else if (imagesLeft === 0) previewContainer.innerHTML = ``;
   } catch {
     return console.log("delete error"); // FIX
   }
@@ -116,7 +114,6 @@ function makeTitle(newImage, newImageElement, oldImageRemoved = false) {
     currentTitleImage.isTitle = true;
     currentTitleImageElement.classList.add(titleImgClassName);
     currentTitleImageElement.closest(`.${imgContainerClassName}`).classList.add(titleImgContainerClassName);
-    console.log(imageState);
   } catch {
     return console.log(`error`); // TODO return a message
   }
