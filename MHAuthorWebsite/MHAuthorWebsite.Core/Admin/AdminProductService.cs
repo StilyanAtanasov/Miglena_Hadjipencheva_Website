@@ -44,6 +44,7 @@ public class AdminProductService : ProductService, IAdminProductService
                     ImageUrl = imageResult.OriginalUrl,
                     ThumbnailUrl = imageResult.PreviewUrl,
                     PublicId = imageResult.PublicId,
+                    ThumbnailPublicId = imageResult.ThumbnailPublicId,
                     IsThumbnail = imageResult.IsThumbnail
                 };
 
@@ -182,4 +183,6 @@ public class AdminProductService : ProductService, IAdminProductService
                 IsRequired = pad.IsRequired
             })
             .ToArrayAsync();
+
+
 }

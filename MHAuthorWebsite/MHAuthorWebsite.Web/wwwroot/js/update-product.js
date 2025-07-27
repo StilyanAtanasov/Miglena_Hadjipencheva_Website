@@ -2,24 +2,6 @@
 
 import { initQuill } from "./editor.js";
 
-document.addEventListener(`DOMContentLoaded`, async function () {
-  const quill = await initQuill(true, true);
-
-  document.querySelector("#updateProductForm").addEventListener("submit", function (e) {
-    const plainText = quill.getText().trim();
-    const descriptionInput = document.querySelector(`#descriptionInput`);
-    const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
-
-    if (plainText.length > maxLength) {
-      e.preventDefault();
-      return;
-    }
-
-    const delta = quill.getContents();
-    descriptionInput.value = JSON.stringify(delta);
-  });
-});
-
 // --- Images ---
 class Image {
   constructor(isTitle = false) {
@@ -87,7 +69,7 @@ document.addEventListener(`DOMContentLoaded`, async () => {
       return;
     }
 
-    const filePromises = files.map(async file => {
+    for (const file of files) {
       const previewUrl = await readFileAsync(file);
       const image = new AddedImage(file, previewUrl);
       imageState.added.push(image);
@@ -116,9 +98,7 @@ document.addEventListener(`DOMContentLoaded`, async () => {
       previewContainer.appendChild(imgWrapper);
 
       if (imageState.added.length + imageState.existing.length === 1) makeTitle(image, img, true);
-    });
-
-    await Promise.all(filePromises);
+    }
 
     this.value = ``; // Allow re-selecting same files
     updateFileInput();
@@ -135,7 +115,6 @@ function readFileAsync(file) {
 }
 
 function updateFileInput() {
-  debugger;
   const dataTransfer = new DataTransfer();
   imageState.added.forEach(i => dataTransfer.items.add(i.file));
   imageInput.files = dataTransfer.files;
@@ -144,8 +123,10 @@ function updateFileInput() {
 function deleteImage(image, imageContainerElement) {
   try {
     let index = imageState.added.indexOf(image);
-    if (index !== -1) imageState.added.splice(index, 1);
-    else {
+    if (index !== -1) {
+      imageState.added.splice(index, 1);
+      updateFileInput();
+    } else {
       index = imageState.existing.indexOf(image);
       if (index !== -1) {
         const deleted = imageState.existing.splice(index, 1)[0];
@@ -186,3 +167,32 @@ function makeTitle(newImage, newImageElement, oldImageRemoved = false) {
     return console.log(`error`); // TODO return a message
   }
 }
+
+// --- Form submission ---
+document.addEventListener(`DOMContentLoaded`, async function () {
+  // --- Quill editor ---
+  const quill = await initQuill(true, true);
+
+  document.querySelector("#updateProductForm").addEventListener("submit", function (e) {
+    const plainText = quill.getText().trim();
+    const descriptionInput = document.querySelector(`#descriptionInput`);
+    const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
+
+    if (plainText.length > maxLength) {
+      e.preventDefault();
+      return;
+    }
+
+    const delta = quill.getContents();
+    descriptionInput.value = JSON.stringify(delta);
+
+    // - Serialize image state as json
+    const imagesJsonField = document.getElementById(`images-json`);
+    const json = JSON.stringify(imageState, (key, value) => {
+      if (key === `added`) return value.map(i => i.isTitle);
+      return value;
+    });
+
+    imagesJsonField.value = json;
+  });
+});

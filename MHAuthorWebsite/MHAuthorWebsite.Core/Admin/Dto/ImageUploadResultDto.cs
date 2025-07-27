@@ -8,5 +8,7 @@ public class ImageUploadResultDto
 
     public string PublicId { get; set; } = null!;
 
+    public string? ThumbnailPublicId { get; set; } = null!;
+
     public bool IsThumbnail { get; set; }
 }

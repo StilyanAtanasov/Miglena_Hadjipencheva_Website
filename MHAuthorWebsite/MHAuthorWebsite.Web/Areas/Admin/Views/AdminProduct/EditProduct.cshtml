@@ -23,7 +23,7 @@
 	<section class="modal-invisible large flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 
-		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="@Model.Id" id="updateProductForm" method="post">
+		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="@Model.Id" id="updateProductForm" method="post" enctype="multipart/form-data">
 			<input type="hidden" asp-for="Id" />
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Name">Име:</label>
@@ -62,7 +62,7 @@
 					</div>
 				}
 			</div>
-			<input type="hidden" asp-for="ImagesJson" />
+			<input id="images-json" type="hidden" asp-for="ImagesJson" />
 
 			<div class="form-input-box flex-column select-list">
 				<label class="form-label">Категория:</label>

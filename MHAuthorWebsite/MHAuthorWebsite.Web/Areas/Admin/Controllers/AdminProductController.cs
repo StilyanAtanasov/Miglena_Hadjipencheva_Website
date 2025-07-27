@@ -2,9 +2,11 @@
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Data.Models.Enums;
+using MHAuthorWebsite.Web.Dto.Product;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Product;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
@@ -183,6 +185,51 @@ public class AdminProductController : AdminBaseController
             ModelState.AddModelError(nameof(model.Description), "HTML съдържанието е прекалено голямо.");
             return View(model);
         }
+
+        if (string.IsNullOrEmpty(model.ImagesJson)) return StatusCode(500);
+
+        ProductImagesJsonDto? images = JsonSerializer.Deserialize<ProductImagesJsonDto>(model.ImagesJson);
+
+        if (images is null) return StatusCode(500);
+
+        int imagesCount = images.Existing.Length + images.Added.Length;
+        if (imagesCount > MaxImages)
+        {
+            ModelState.AddModelError(nameof(model.Images), $"Можете да качите максимум {MaxImages} снимки.");
+            return View(model);
+        }
+        if (imagesCount == 0)
+        {
+            ModelState.AddModelError(nameof(model.Images), "Трябва да добавите поне една снимка.");
+            return View(model);
+        }
+
+        if (images.Added.Count(i => i) + images.Existing.Count(i => i.IsTitle) != 1)
+            return BadRequest("Невалиден брой заглавни изображения.");
+
+        Guid? newTitleImageId = null;
+        if (images.Existing.Any(i => i.IsTitle))
+            newTitleImageId = images.Existing.First(i => i.IsTitle).Id;
+
+        if (images.Added.Any())
+        {
+            ServiceResult<ICollection<ImageUploadResultDto>> imageResult = await _imageService.UploadImageWithPreviewAsync(model.NewImages!, null, productId);
+            if (!imageResult.Success) return StatusCode(500);
+        }
+
+        if (newTitleImageId is not null)
+        {
+            ServiceResult updateTitleImageResult = await _imageService.UpdateProductTitleImageAsync(productId, newTitleImageId.Value);
+            if (!updateTitleImageResult.Success) return StatusCode(500);
+        }
+
+        if (images.Deleted.Any())
+            foreach (Guid id in images.Deleted)
+            {
+                ServiceResult r = await _imageService.DeleteProductImageByIdAsync(id);
+                if (!r.Found) return NotFound();
+                if (!r.Success) return StatusCode(500);
+            }
 
         ServiceResult result = await _productService.UpdateProductAsync(model);
         if (!result.Found) return NotFound();

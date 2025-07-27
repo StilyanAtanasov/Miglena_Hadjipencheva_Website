@@ -23,6 +23,9 @@ public class Image
     [Comment("The publicId in Cloudinary")]
     public string PublicId { get; set; } = null!;
 
+    [Comment("The publicId for thumbnail in Cloudinary")]
+    public string? ThumbnailPublicId { get; set; }
+
     [Required]
     [MaxLength(AltTextMaxLength)]
     [Comment("Alternative text for accessibility")]
