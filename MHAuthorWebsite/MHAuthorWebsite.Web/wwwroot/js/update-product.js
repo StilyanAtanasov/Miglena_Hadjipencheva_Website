@@ -77,8 +77,8 @@ document.addEventListener(`DOMContentLoaded`, async () => {
     ic.querySelector(`.makeTitleBtn`).addEventListener(`click`, () => makeTitle(image, imageElement));
   });
 
-  imageInput.addEventListener(`change`, function () {
-    const files = Array.from(this.files);
+  imageInput.addEventListener(`change`, async function () {
+    const files = Array.from(this.files).filter(f => f.type.startsWith(`image/`));
 
     if (imageState.added.length + files.length + imageState.existing.length > maxImages) {
       imageErrorField.innerText = `Можете да качите максимум ${maxImages} снимки!`;
@@ -87,51 +87,55 @@ document.addEventListener(`DOMContentLoaded`, async () => {
       return;
     }
 
-    files.forEach(file => {
-      if (!file.type.startsWith(`image/`)) return;
+    const filePromises = files.map(async file => {
+      const previewUrl = await readFileAsync(file);
+      const image = new AddedImage(file, previewUrl);
+      imageState.added.push(image);
 
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const previewUrl = e.target.result;
-        const image = new AddedImage(file, previewUrl);
-        imageState.added.push(image);
+      const imgWrapper = document.createElement(`div`);
+      imgWrapper.classList.add(imgContainerClassName);
 
-        const imgWrapper = document.createElement(`div`);
-        imgWrapper.classList.add(imgContainerClassName);
+      const img = document.createElement(`img`);
+      img.src = previewUrl;
 
-        const img = document.createElement(`img`);
-        img.src = previewUrl;
+      const removeBtn = document.createElement(`button`);
+      removeBtn.type = `button`;
+      removeBtn.classList = `removeBtn`;
+      removeBtn.innerHTML = `<i class="fa-solid fa-file-slash"></i>`;
+      removeBtn.addEventListener(`click`, () => deleteImage(image, imgWrapper));
 
-        const removeBtn = document.createElement(`button`);
-        removeBtn.type = `button`;
-        removeBtn.classList = `removeBtn`;
-        removeBtn.innerHTML = `<i class="fa-solid fa-file-slash"></i>`;
-        removeBtn.addEventListener(`click`, () => deleteImage(image, imgWrapper));
+      const makeTitleBtn = document.createElement(`button`);
+      makeTitleBtn.type = `button`;
+      makeTitleBtn.classList = `makeTitleBtn`;
+      makeTitleBtn.innerHTML = `<i class="fa-solid fa-star-sharp"></i>`;
+      makeTitleBtn.addEventListener(`click`, () => makeTitle(image, img));
 
-        const makeTitleBtn = document.createElement(`button`);
-        makeTitleBtn.type = `button`;
-        makeTitleBtn.classList = `makeTitleBtn`;
-        makeTitleBtn.innerHTML = `<i class="fa-solid fa-star-sharp"></i>`;
-        makeTitleBtn.addEventListener(`click`, () => makeTitle(image, img));
+      imgWrapper.appendChild(img);
+      imgWrapper.appendChild(removeBtn);
+      imgWrapper.appendChild(makeTitleBtn);
+      previewContainer.appendChild(imgWrapper);
 
-        imgWrapper.appendChild(img);
-        imgWrapper.appendChild(removeBtn);
-        imgWrapper.appendChild(makeTitleBtn);
-        previewContainer.appendChild(imgWrapper);
-
-        if (imageState.added.length + imageState.existing.length === 1) makeTitle(image, img, true);
-      };
-
-      reader.readAsDataURL(file);
+      if (imageState.added.length + imageState.existing.length === 1) makeTitle(image, img, true);
     });
+
+    await Promise.all(filePromises);
 
     this.value = ``; // Allow re-selecting same files
     updateFileInput();
-    console.log(imageState);
   });
 });
 
+function readFileAsync(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 function updateFileInput() {
+  debugger;
   const dataTransfer = new DataTransfer();
   imageState.added.forEach(i => dataTransfer.items.add(i.file));
   imageInput.files = dataTransfer.files;
