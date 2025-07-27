@@ -6,8 +6,8 @@ using MHAuthorWebsite.Web.Dto.Product;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Product;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
 
@@ -75,7 +75,7 @@ public class AdminProductController : AdminBaseController
         }
 
         string delta = model.Description;
-        string plainText = Regex.Replace(delta, "<.*?>", string.Empty);
+        string plainText = ExtractPlainTextFromQuillDelta(delta);
 
         if (plainText.Length > DescriptionTextMaxLength)
         {
@@ -172,7 +172,7 @@ public class AdminProductController : AdminBaseController
         if (!ModelState.IsValid) return View(model);
 
         string delta = model.Description;
-        string plainText = Regex.Replace(delta, "<.*?>", string.Empty); // BUG
+        string plainText = ExtractPlainTextFromQuillDelta(delta);
 
         if (plainText.Length > DescriptionTextMaxLength)
         {
@@ -258,5 +258,19 @@ public class AdminProductController : AdminBaseController
         if (!result.Success) return StatusCode(500);
 
         return RedirectToAction(nameof(ProductsList));
+    }
+
+    private static string ExtractPlainTextFromQuillDelta(string deltaJson)
+    {
+        using JsonDocument doc = JsonDocument.Parse(deltaJson);
+        if (!doc.RootElement.TryGetProperty("ops", out JsonElement ops)) return string.Empty;
+
+        StringBuilder sb = new();
+
+        foreach (JsonElement op in ops.EnumerateArray())
+            if (op.TryGetProperty("insert", out JsonElement insert))
+                sb.Append(insert.GetString());
+
+        return sb.ToString();
     }
 }
