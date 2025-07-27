@@ -8,6 +8,7 @@ using MHAuthorWebsite.Data.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 
 namespace MHAuthorWebsite.Core.Admin;
@@ -23,7 +24,7 @@ public class CloudinaryImageService : IImageService
         _repository = repository;
     }
 
-    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images, int? titleImageId, Guid? productId = null)
+    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images, int titleImageId)
     {
         if (images.Count == 0 || images.Any(i => i.Length == 0) || titleImageId > images.Count - 1)
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure();
@@ -45,7 +46,7 @@ public class CloudinaryImageService : IImageService
 
             string fileName = Path.GetFileNameWithoutExtension(image.FileName);
             string timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
-            bool isThumbnail = titleImageId is not null && i == titleImageId;
+            bool isThumbnail = i == titleImageId;
 
             // FULL image - max width, AVIF, aspect preserved
             ImageUploadParams fullUploadParams = new()
@@ -83,43 +84,74 @@ public class CloudinaryImageService : IImageService
                 previewUpload = await _cloudinary.UploadAsync(previewUploadParams);
             }
 
-            if (productId is not null)
+            results.Add(new ImageUploadResultDto
             {
-                string? productName = await _repository
-                    .AllReadonly<Product>()
-                    .IgnoreQueryFilters()
-                    .Where(p => p.Id == productId.Value && !p.IsDeleted)
-                    .Select(p => p.Name)
-                    .FirstOrDefaultAsync();
-
-                Image dbImage = new()
-                {
-                    ProductId = productId.Value,
-                    AltText = productName ?? fileName, // TODO Probably use the image title
-                    ImageUrl = fullUpload.SecureUrl.AbsoluteUri,
-                    ThumbnailUrl = previewUpload?.SecureUrl.AbsoluteUri ?? null,
-                    PublicId = fullUpload.PublicId,
-                    ThumbnailPublicId = previewUpload?.PublicId ?? null,
-                    IsThumbnail = isThumbnail
-                };
-
-                await _repository.AddAsync(dbImage);
-                await _repository.SaveChangesAsync();
-            }
-            else
-            {
-                results.Add(new ImageUploadResultDto
-                {
-                    OriginalUrl = fullUpload.SecureUrl.AbsoluteUri,
-                    PreviewUrl = previewUpload?.SecureUrl.AbsoluteUri ?? null,
-                    PublicId = fullUpload.PublicId,
-                    ThumbnailPublicId = previewUpload?.PublicId ?? null,
-                    IsThumbnail = isThumbnail
-                });
-            }
+                OriginalUrl = fullUpload.SecureUrl.AbsoluteUri,
+                PreviewUrl = previewUpload?.SecureUrl.AbsoluteUri ?? null,
+                PublicId = fullUpload.PublicId,
+                ThumbnailPublicId = previewUpload?.PublicId ?? null,
+                IsThumbnail = isThumbnail
+            });
         }
 
         return ServiceResult<ICollection<ImageUploadResultDto>>.Ok(results.ToArray());
+    }
+
+    public async Task<ServiceResult<Guid?>> LinkImagesToProductAsync(ICollection<IFormFile> images, int? titleImageIndex, Guid productId)
+    {
+        if (images.Count == 0 || images.Any(i => i.Length == 0) || titleImageIndex > images.Count - 1)
+            return ServiceResult<Guid?>.Failure();
+
+        Image? titleImage = null;
+        for (int i = 0; i < images.Count; i++)
+        {
+            IFormFile image = images.ElementAt(i);
+
+            string fileName = Path.GetFileNameWithoutExtension(image.FileName);
+            string timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+            bool isThumbnail = i == titleImageIndex;
+
+            // FULL image - max width, AVIF, aspect preserved
+            ImageUploadParams fullUploadParams = new()
+            {
+                File = new FileDescription(image.FileName, image.OpenReadStream()),
+                Folder = ImageFolder,
+                PublicId = $"{fileName}_{timestamp}",
+                Format = "avif",
+                Type = "private",
+                Transformation = new Transformation()
+                    .Width(1200)
+                    .Crop("limit") // Resize down, preserve aspect
+                    .FetchFormat("avif")
+            };
+
+            ImageUploadResult fullUpload = await _cloudinary.UploadAsync(fullUploadParams);
+
+            string? productName = await _repository
+                .AllReadonly<Product>()
+                .IgnoreQueryFilters()
+                .Where(p => p.Id == productId && !p.IsDeleted)
+                .Select(p => p.Name)
+                .FirstOrDefaultAsync();
+
+            Image dbImage = new()
+            {
+                ProductId = productId,
+                AltText = productName ?? fileName, // TODO Probably use the image title
+                ImageUrl = fullUpload.SecureUrl.AbsoluteUri,
+                ThumbnailUrl = null,
+                PublicId = fullUpload.PublicId,
+                ThumbnailPublicId = null,
+                IsThumbnail = false
+            };
+
+            if (isThumbnail) titleImage = dbImage;
+
+            await _repository.AddAsync(dbImage);
+        }
+
+        await _repository.SaveChangesAsync();
+        return ServiceResult<Guid?>.Ok(titleImage?.Id);
     }
 
     public async Task<ServiceResult> DeleteImageAsync(string publicId)
@@ -139,7 +171,7 @@ public class CloudinaryImageService : IImageService
     public async Task<ServiceResult> DeleteProductImageByIdAsync(Guid imageId)
     {
         Image? image = await _repository
-            .AllReadonly<Image>()
+            .All<Image>()
             .IgnoreQueryFilters()
             .Include(i => i.Product)
             .Where(i => !i.Product.IsDeleted)

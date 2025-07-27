@@ -172,7 +172,7 @@ public class AdminProductController : AdminBaseController
         if (!ModelState.IsValid) return View(model);
 
         string delta = model.Description;
-        string plainText = Regex.Replace(delta, "<.*?>", string.Empty);
+        string plainText = Regex.Replace(delta, "<.*?>", string.Empty); // BUG
 
         if (plainText.Length > DescriptionTextMaxLength)
         {
@@ -213,15 +213,18 @@ public class AdminProductController : AdminBaseController
 
         if (images.Added.Any())
         {
-            ServiceResult<ICollection<ImageUploadResultDto>> imageResult = await _imageService.UploadImageWithPreviewAsync(model.NewImages!, null, productId);
+            int titleImageIndex = Array.IndexOf(images.Added, true);
+            ServiceResult<Guid?> imageResult = await _imageService.LinkImagesToProductAsync(model.NewImages!, titleImageIndex != -1 ? titleImageIndex : null, productId);
             if (!imageResult.Success) return StatusCode(500);
+
+            if ((imageResult.Result is null && newTitleImageId is null)
+                || imageResult.Result is not null && newTitleImageId is not null) return StatusCode(500);
+            if (imageResult.Result is not null)
+                newTitleImageId = imageResult.Result.Value;
         }
 
-        if (newTitleImageId is not null)
-        {
-            ServiceResult updateTitleImageResult = await _imageService.UpdateProductTitleImageAsync(productId, newTitleImageId.Value);
-            if (!updateTitleImageResult.Success) return StatusCode(500);
-        }
+        ServiceResult updateTitleImageResult = await _imageService.UpdateProductTitleImageAsync(productId, newTitleImageId!.Value);
+        if (!updateTitleImageResult.Success) return StatusCode(500);
 
         if (images.Deleted.Any())
             foreach (Guid id in images.Deleted)
