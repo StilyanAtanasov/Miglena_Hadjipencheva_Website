@@ -5,6 +5,7 @@ using MHAuthorWebsite.Web.Utils;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
 
 namespace MHAuthorWebsite.Web.Controllers;
 
@@ -28,18 +29,19 @@ public class ProductController : BaseController
     public async Task<IActionResult> AllProducts([FromQuery] int page = 1, [FromQuery] string? orderType = null)
     {
         if (page < 1) page = 1;
-        if (orderType is null) return RedirectToAction(nameof(AllProducts), new { page = 1, orderType = "recommended" });
+        if (orderType is null) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
+        int productsCount = await _productService.GetAllProductsCountAsync();
+        if (Math.Ceiling((double)productsCount / PageSize) < page) return NotFound();
 
         bool result = SortValueMapper.SortMap.TryGetValue(orderType, out var sortValue);
-        if (!result) return RedirectToAction(nameof(AllProducts), new { page = 1, orderType = "recommended" });
+        if (!result) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
 
         (bool descending, Expression<Func<Product, object>>? expression) sortType = (sortValue.descending, sortValue.expression);
 
         ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page, sortType);
-        int productsCount = await _productService.GetAllProductsCountAsync();
+
 
         ViewBag.ProductsCount = productsCount;
-
         return View(products);
     }
 
