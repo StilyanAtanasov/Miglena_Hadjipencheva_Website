@@ -71,6 +71,17 @@
   scale: 1.03;
 }
 
+.product-title-container {
+  height: 40%;
+}
+
+.product-title-container .product-title {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .product-image-container {
   justify-content: center;
   align-items: center;
@@ -164,4 +175,86 @@
   grid-column: 3;
   text-align: center;
   margin-top: 5rem;
+}
+
+/* --- Responsive ---  */
+@media (max-width: 800px) {
+  .products {
+    grid-template-columns: repeat(4, 22vw);
+  }
+}
+
+@media (max-width: 600px) {
+  .products {
+    grid-template-columns: repeat(2, 45vw);
+    font-size: 2rem;
+  }
+
+  .product-image-container {
+    height: 20rem;
+  }
+
+  .product .name {
+    font-size: 2.8rem;
+  }
+
+  .product .price-box .price {
+    font-size: 2.3rem;
+  }
+
+  .product .price-box .price-text {
+    font-size: 2rem;
+  }
+
+  .product .action-btns {
+    font-size: 2.3rem;
+  }
+
+  .btn.like {
+    font-size: 1.65rem;
+  }
+
+  .shop-action-btns {
+    font-size: 2rem;
+  }
+
+  .pagination-box {
+    font-size: 3rem;
+  }
+
+  .pagination-box .pagination-btns {
+    gap: 1rem;
+  }
+
+  .ts-control,
+  .ts-dropdown {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .products {
+    grid-template-columns: repeat(1, 80vw);
+    font-size: 1.8rem;
+  }
+
+  .product .name {
+    font-size: 2.5rem;
+  }
+
+  .product .price-box .price {
+    font-size: 2.1rem;
+  }
+
+  .product .price-box .price-text {
+    font-size: 1.8rem;
+  }
+
+  .product-image-container {
+    height: 25rem;
+  }
+
+  .shop-action-btns {
+    font-size: 2rem;
+  }
 }

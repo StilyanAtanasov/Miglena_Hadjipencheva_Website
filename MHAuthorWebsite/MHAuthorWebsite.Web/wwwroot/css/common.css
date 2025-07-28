@@ -292,6 +292,10 @@ hr {
   .page-wrapper {
     padding: 5rem 4rem;
   }
+
+  .title {
+    font-size: 5rem;
+  }
 }
 
 @media (max-width: 450px) {
