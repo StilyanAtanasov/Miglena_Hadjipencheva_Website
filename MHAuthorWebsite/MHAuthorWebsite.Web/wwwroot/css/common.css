@@ -283,3 +283,21 @@ hr {
     font-size: 4px;
   }
 }
+
+@media (max-width: 600px) {
+  html {
+    font-size: 6px;
+  }
+}
+
+@media (max-width: 450px) {
+  html {
+    font-size: 5px;
+  }
+}
+
+@media (max-width: 350px) {
+  html {
+    font-size: 4.5px;
+  }
+}

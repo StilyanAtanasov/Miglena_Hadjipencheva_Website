@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 
-<ul class="flex-row">
+<ul class="header-nav flex-row">
 	@if (SignInManager.IsSignedIn(User))
 	{
 		<li>

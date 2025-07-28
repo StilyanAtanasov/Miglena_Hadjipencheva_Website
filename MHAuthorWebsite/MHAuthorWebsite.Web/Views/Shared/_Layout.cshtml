@@ -2,7 +2,7 @@
 <html lang="bg">
 <head>
 	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
 	<title>@ViewData["Title"] - Миглена Хаджипенчева</title>
 	<link rel="stylesheet" href="~/css/reset.css" asp-append-version="true" />
 	<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.7.2/css/all.css" />
@@ -12,10 +12,10 @@
 	@await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-	<header>
+	<header class="mobile-nav-closed">
 		<nav class="flex-row">
 			<h4><a asp-controller="Home" asp-action="Index" class="title-small active">Миглена Хаджипенчева</a></h4>
-			<ul class="flex-row">
+			<ul class="header-nav flex-row">
 				<li>
 					<a class="active flex-row" asp-controller="Home" asp-action="Index">
 						<i class="fa-regular fa-house"></i> Начало
@@ -38,8 +38,16 @@
 				</li>
 			</ul>
 			<partial name="_LoginPartial" />
+			<div id="bars" class="bars flex-column hidden">
+				<span class="bar"></span>
+				<span class="bar"></span>
+				<span class="bar"></span>
+			</div>
 		</nav>
 	</header>
+
+	<nav id="navLists" class="flex-column hide"></nav>
+
 	<div>
 		<main role="main">
 			@RenderBody()
