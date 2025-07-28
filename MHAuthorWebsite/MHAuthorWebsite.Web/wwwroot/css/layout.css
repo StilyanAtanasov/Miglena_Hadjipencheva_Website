@@ -160,6 +160,7 @@ footer .social-media li:hover {
     gap: 0;
     padding: 1.5rem 5rem;
     border-radius: 0 0 2rem 2rem;
+    background-color: var(--color-primary);
   }
 
   #navLists.show {
