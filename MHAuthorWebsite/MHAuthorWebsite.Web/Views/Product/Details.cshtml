@@ -36,7 +36,7 @@
 					</div>
 				}
 			</section>
-			<section class="flex-column">
+			<section class="product-main-info flex-column">
 				<h1 class="title">@Model.Name</h1>
 				<p class="text-faded"><strong>Категория:</strong> @Model.ProductTypeName</p>
 			</section>
@@ -55,16 +55,16 @@
 					<label for="quantity">Количество:</label>
 					<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
 				</div>
-				<div class="flex-row">
-				<button form="like-form" type="submit" class="btn like @(Model.IsLiked ? "liked" : "")">
-					<span class="fa-stack">
-						<i class="fa-regular fa-heart fa-stack-2x"></i>
-						<i class="fa-solid fa-heart fa-stack-2x"></i>
-					</span>
-				</button>
-				<button type="submit" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled")>
-					<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
-				</button>
+				<div class="order-btns flex-row">
+					<button form="like-form" type="submit" class="btn like @(Model.IsLiked ? "liked" : "")">
+						<span class="fa-stack">
+							<i class="fa-regular fa-heart fa-stack-2x"></i>
+							<i class="fa-solid fa-heart fa-stack-2x"></i>
+						</span>
+					</button>
+					<button type="submit" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled")>
+						<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
+					</button>
 				</div>
 			</form>
 		</section>

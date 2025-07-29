@@ -3,20 +3,32 @@
 }
 
 .hero-info {
-  justify-content: space-around;
+  justify-content: start;
   height: calc(100vh - 10rem);
   align-items: flex-start;
-  gap: 5rem;
+  gap: 10rem;
+  margin-left: 5rem;
+  width: 70%;
 }
 
 .hero-info section {
   align-items: flex-start;
 }
 
+.product-main-info {
+  width: 45%;
+}
+
+.product-main-info p {
+  font-size: 1.8rem;
+}
+
 .main {
   align-items: flex-start;
+  justify-content: space-between;
   padding: 2rem 5rem;
-  gap: 25rem;
+  gap: 18rem;
+  width: 95%;
 }
 
 #images-container {
@@ -33,10 +45,12 @@
 }
 
 .title {
-  font-size: 4.5rem;
+  font-size: 3.5rem;
+  line-break: anywhere;
 }
 
 .order-info {
+  width: 30%;
   font-size: 1.8rem;
   padding: 3rem 4rem;
   border-radius: 1.5rem;
@@ -141,7 +155,7 @@ table tr:last-child td:last-child {
 
 /* ----- Slider ----- */
 .slider {
-  width: 35vw;
+  width: 55%;
   height: 60vh;
   position: relative;
   overflow: hidden;
@@ -215,4 +229,65 @@ table tr:last-child td:last-child {
 .dots__dot--active {
   background-color: var(--color-secondary);
   opacity: 1;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1200px) {
+  .title {
+    font-size: 3rem;
+  }
+
+  .page-wrapper {
+    padding: 8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .main,
+  .hero-info {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    height: auto;
+  }
+
+  .title {
+    font-size: 3.5rem;
+  }
+
+  .main {
+    gap: 15rem;
+    margin-bottom: 10rem;
+  }
+
+  .product-main-info,
+  .order-info,
+  .slider {
+    width: 90%;
+  }
+
+  .slider {
+    height: 70rem;
+  }
+
+  .order-btns {
+    justify-content: flex-end;
+  }
+
+  .product-main-info p {
+    font-size: 2.2rem;
+  }
+
+  .order-info {
+    font-size: 2.1rem;
+  }
+
+  .price-text {
+    font-size: 2.3rem;
+  }
+
+  .btn.like {
+    font-size: 1.6rem;
+  }
 }
