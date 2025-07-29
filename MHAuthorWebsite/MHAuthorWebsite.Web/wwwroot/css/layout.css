@@ -154,8 +154,8 @@ footer .social-media li:hover {
 
   #navLists {
     height: fit-content;
-    position: absolute;
-    z-index: 1000;
+    position: fixed;
+    z-index: 100;
     top: -50vh;
     left: 0;
     width: 100%;
