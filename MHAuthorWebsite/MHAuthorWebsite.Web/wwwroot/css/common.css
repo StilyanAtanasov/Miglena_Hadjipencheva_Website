@@ -248,6 +248,12 @@ hr {
 }
 
 /* --- Responsive --- */
+@media (min-width: 2800px) {
+  html {
+    font-size: 13px;
+  }
+}
+
 @media (max-width: 1920px) {
   html {
     font-size: 9px;

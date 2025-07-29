@@ -1,7 +1,7 @@
 .splash {
   align-items: center;
   width: 100vw;
-  height: calc(100vh - 10rem);
+  min-height: calc(100vh - 10rem);
   color: #fff;
   text-align: center;
   padding: 10rem 4rem;
@@ -21,6 +21,7 @@
 .splash-text .title {
   letter-spacing: 0.3rem;
   font-size: 7rem;
+  text-shadow: 0.1rem 0.2rem 0.5rem var(--color-secondary-lighter);
 }
 
 .splash-text .subtitle {
@@ -41,10 +42,11 @@
 }
 
 .about {
-  height: 100vh;
+  min-height: 100vh;
   font-size: 2rem;
   position: relative;
   justify-content: center;
+  padding: 10rem 5rem;
 }
 
 .about::after {
@@ -52,7 +54,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 35%;
+  width: 38%;
   height: 100%;
   background-color: var(--color-secondary);
 }
@@ -60,13 +62,14 @@
 .about-content {
   position: relative;
   z-index: 10;
-  justify-content: center;
+  justify-content: start;
   gap: 8rem;
+  margin-left: 22%;
 }
 
 .about-image-wrapper {
   background-color: var(--color-primary);
-  width: 30%;
+  width: 38%;
   padding: 0.8rem;
   border-radius: 2rem;
 }
@@ -84,4 +87,84 @@
 
 .about-text .name {
   font-size: 4rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1200px) {
+  .splash {
+    background-position: 30%;
+  }
+
+  .splash-text {
+    left: 72vw;
+  }
+}
+
+@media (max-width: 920px) {
+  .splash-text {
+    left: 50vw;
+    top: 85vh;
+  }
+
+  .splash-text .title {
+    font-size: 8rem;
+    text-shadow: 0.2rem 0.4rem 0.7rem var(--color-secondary-lighter);
+  }
+
+  .about::after {
+    width: 40%;
+  }
+
+  .about-image-wrapper {
+    width: 40%;
+  }
+}
+
+@media (max-width: 800px) {
+  .splash {
+    background-position: 40%;
+  }
+
+  .about::after {
+    width: 45%;
+  }
+
+  .about-image-wrapper {
+    width: 45%;
+  }
+}
+
+@media (max-width: 600px) {
+  .splash {
+    background-position: 20%;
+  }
+
+  .splash-text .title {
+    font-size: 6.2rem;
+  }
+
+  .about::after {
+    width: 100%;
+    height: 35%;
+  }
+
+  .about-content {
+    flex-direction: column;
+    margin: 0;
+    margin-bottom: 10rem;
+  }
+
+  .about-image-wrapper {
+    width: 80%;
+  }
+
+  .about-text {
+    width: 80%;
+  }
+}
+
+@media (max-width: 500px) {
+  .splash {
+    background-position: 30%;
+  }
 }
