@@ -88,7 +88,7 @@ public class CartService : ICartService
                 UnitPrice = ci.Price,
                 IsDiscontinued = ci.Product.IsDeleted || !ci.Product.IsPublic,
                 IsAvailable = ci.Product.StockQuantity > 0 && !ci.Product.IsDeleted && ci.Product.IsPublic,
-                ThumbnailUrl = ci.Product.Images.First(i => i.IsThumbnail).ThumbnailUrl,
+                ThumbnailUrl = ci.Product.Images.First(i => i.IsThumbnail).ThumbnailUrl!,
                 ThumbnailAlt = ci.Product.Images.First(i => i.IsThumbnail).AltText,
             })
             .ToArrayAsync();
@@ -119,18 +119,20 @@ public class CartService : ICartService
 
     public async Task<ServiceResult<UpdatedItemQuantityViewModel>> UpdateItemQuantityAsync(string userId, Guid itemId, int quantity)
     {
-        Cart? cart = await _repository.FindByExpressionAsync<Cart>(c => c.UserId == userId, false, c => c.CartItems);
+        Cart? cart = await _repository
+            .All<Cart>()
+            .Include(c => c.CartItems)
+                .ThenInclude(ci => ci.Product)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
 
         if (cart == null) return ServiceResult<UpdatedItemQuantityViewModel>
-            .BadRequest(new() { ["cart"] = "User has nothing in cart!" });
+            .BadRequest(new() { ["cart"] = "Потребителят няма нищо в количката!" });
 
-        CartItem? cartItem = _repository
-            .All<CartItem>()
-            .IgnoreQueryFilters()
+        CartItem? cartItem = cart.CartItems
             .FirstOrDefault(c => c.CartId == cart.Id && c.Id == itemId);
 
         if (cartItem == null) return ServiceResult<UpdatedItemQuantityViewModel>
-            .BadRequest(new() { ["product"] = "User does not have the specified product in their cart!" });
+            .BadRequest(new() { ["product"] = "Продуктът не е намерен в количката!" });
 
         cartItem.Quantity = quantity;
         await _repository.SaveChangesAsync();
@@ -138,7 +140,12 @@ public class CartService : ICartService
         return ServiceResult<UpdatedItemQuantityViewModel>.Ok(new()
         {
             LineTotal = cartItem.Quantity * cartItem.Price,
-            Total = cart.CartItems.Sum(ci => ci.Quantity * ci.Price)
+            Total = cart.CartItems
+                .Where(ci => ci.Product.StockQuantity > 0)
+                .Sum(ci => ci.Quantity * ci.Price)
+
+            // Total price of all items in stock in the cart
+            // (the non-public and deleted ones are excluded by default using a query filter)
         });
     }
 }
