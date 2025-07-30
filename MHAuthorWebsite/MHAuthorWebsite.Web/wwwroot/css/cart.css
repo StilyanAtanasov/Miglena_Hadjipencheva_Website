@@ -8,6 +8,7 @@
 
 .products-sections {
   gap: 3rem;
+  flex-shrink: 0;
 }
 
 .products-section {
@@ -49,6 +50,7 @@
 
 .product-info-general h4 {
   font-size: 1.9rem;
+  line-break: anywhere;
 }
 
 .product-info-general span strong {
@@ -61,6 +63,7 @@
   align-items: center;
   width: 10rem;
   height: 10rem;
+  flex-shrink: 0;
 }
 
 .product-image {
@@ -85,6 +88,7 @@
   padding: 3rem;
   position: sticky;
   font-size: 1.8rem;
+  flex-shrink: 0;
 }
 
 .btn-order {
@@ -97,4 +101,146 @@
 
 .btn-order i {
   font-size: 1.9rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1050px) {
+  html {
+    font-size: 5.5px;
+  }
+
+  .all-products {
+    padding: 3rem 0;
+  }
+}
+
+@media (max-width: 920px) {
+  html {
+    font-size: 5px;
+  }
+}
+
+@media (max-width: 850px) {
+  .all-products {
+    justify-content: space-between;
+  }
+
+  .products-sections {
+    width: 70%;
+  }
+}
+
+@media (max-width: 850px) {
+  html {
+    font-size: 4.5px;
+  }
+}
+
+@media (max-width: 600px) {
+  html {
+    font-size: 6px;
+  }
+
+  .page-wrapper {
+    padding-bottom: 10rem;
+  }
+
+  .products-sections {
+    width: 95%;
+  }
+
+  .all-products {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cart-table tr {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    position: relative;
+  }
+
+  .product-info {
+    width: 62%;
+  }
+
+  .product-info-general {
+    width: 75%;
+  }
+
+  .cart-table td {
+    padding: 1.5rem 1.4rem;
+  }
+
+  .cart-table td:first-of-type {
+    width: 10%;
+  }
+
+  .cart-table td:last-of-type {
+    width: 13%;
+  }
+
+  .cart-table td.sum-price {
+    display: none;
+  }
+
+  .cart-table td.unit-price {
+    position: absolute;
+    top: 10%;
+    left: 74%;
+    height: 50%;
+    text-align: center;
+  }
+
+  .cart-table .quantity-input {
+    height: 50%;
+    align-self: center;
+    margin-top: 2rem;
+    width: 15%;
+  }
+
+  .cart-table thead {
+    display: none;
+  }
+
+  .cart-summary {
+    position: fixed;
+    width: 90%;
+    background-color: var(--color-primary);
+    bottom: 8.5rem;
+    height: 10rem;
+    padding: 1rem 3rem;
+    gap: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cart-summary-content {
+    gap: 0.5rem;
+  }
+
+  .cart-warning {
+    font-size: 1.75rem;
+  }
+
+  .btn-order {
+    width: fit-content;
+    height: fit-content;
+  }
+}
+
+@media (max-width: 400px) {
+  html {
+    font-size: 5px;
+  }
+}
+
+@media (max-width: 300px) {
+  html {
+    font-size: 4.5px;
+  }
 }

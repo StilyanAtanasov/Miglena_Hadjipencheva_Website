@@ -49,11 +49,11 @@
 												<span><strong>Категория: </strong> @item.Category</span>
 											</div>
 										</td>
-										<td>@item.UnitPrice.ToString("F2") лв.</td>
-										<td>
-											<input class="input quantity-input" type="number" data-item-id="@item.ItemId" name="Quantities[@item.ItemId]" value="@item.Quantity" min="1" max="10" />
+										<td class="unit-price">@item.UnitPrice.ToString("F2") лв.</td>
+										<td class="quantity-input">
+											<input class="input" type="number" data-item-id="@item.ItemId" name="Quantities[@item.ItemId]" value="@item.Quantity" min="1" max="10" />
 										</td>
-										<td id="line-total-@item.ItemId">@item.LineTotal.ToString("F2") лв.</td>
+										<td class="sum-price" id="line-total-@item.ItemId">@item.LineTotal.ToString("F2") лв.</td>
 										<td>
 											<button formaction="/Cart/Remove/@item.ItemId" formmethod="post"
 													type="submit" class="btn remove btn-none" aria-label="Изтрий">
@@ -105,10 +105,12 @@
 		@if (Model.Items.Any(i => i.IsAvailable))
 		{
 			<aside class="cart-summary flex-column">
-				<h2 class="heading">Общо</h2>
-				<div class="flex-row">
-					<strong>Обща стойност:</strong>
-					<p id="price-sum"> @Model.Total.ToString("F2") лв.</p>
+				<div class="cart-summary-content flex-column">
+					<h2 class="heading">Общо</h2>
+					<div class="flex-row">
+						<strong>Обща стойност:</strong>
+						<p id="price-sum"> @Model.Total.ToString("F2") лв.</p>
+					</div>
 				</div>
 				<button form="cart-form" type="submit" class="btn btn-order order flex-row">
 					<i class="fa-solid fa-box-taped"></i> Завърши поръчка
