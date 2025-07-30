@@ -1,0 +1,45 @@
+#loader.hide {
+  animation: fadeAway linear 500ms;
+  animation-fill-mode: forwards;
+}
+
+#loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+#loader::before {
+  content: "";
+  border: 1.3rem solid var(--color-secondary);
+  border-top: 1.3rem solid var(--color-secondary-light);
+  border-radius: 50%;
+  width: 10rem;
+  height: 10rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeAway {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
