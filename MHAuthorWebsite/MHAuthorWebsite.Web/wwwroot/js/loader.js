@@ -12,3 +12,8 @@ function removeLoader() {
 }
 
 window.addEventListener(`load`, removeLoader);
+
+document.addEventListener(`DOMContentLoaded`, function () {
+  const triggerLoadingUnlimitedEls = document.querySelectorAll(`[data-trigger="load-unlimited"]`);
+  triggerLoadingUnlimitedEls.forEach(el => el.addEventListener(`click`, addLoader));
+});
