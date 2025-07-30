@@ -150,3 +150,78 @@
   border: 0.15rem solid var(--color-secondary);
   background-color: var(--color-primary);
 }
+
+/* --- Responsive --- */
+@media (max-width: 800px) {
+  html {
+    font-size: 6px;
+  }
+
+  .modal-invisible,
+  .modal {
+    width: 50%;
+    max-width: 60%;
+  }
+}
+
+@media (max-width: 600px) {
+  html {
+    font-size: 7px;
+  }
+
+  .modal-invisible,
+  .modal {
+    width: 70%;
+    max-width: 80%;
+  }
+}
+
+@media (max-width: 450px) {
+  html {
+    font-size: 6px;
+  }
+
+  .modal-invisible,
+  .modal {
+    width: 80%;
+    max-width: 85%;
+  }
+}
+
+@media (max-width: 350px) {
+  html {
+    font-size: 5px;
+  }
+
+  .modal-invisible,
+  .modal {
+    width: 90%;
+    max-width: 95%;
+  }
+}
+
+/* --- */
+
+@media (min-height: 800px) and (min-width: 800px) and (max-width: 1400px) {
+  html {
+    font-size: 7px;
+  }
+
+  .modal-invisible,
+  .modal {
+    width: 45%;
+    max-width: 55%;
+  }
+}
+
+@media (min-height: 1400px) and (min-width: 800px) and (max-width: 1200px) {
+  html {
+    font-size: 9px;
+  }
+
+  .modal-invisible,
+  .modal {
+    width: 55%;
+    max-width: 60%;
+  }
+}
