@@ -18,4 +18,6 @@ public class ErrorController : BaseController
             404 => View("404"),
             _ => View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier })
         };
+
+    /* TODO Send notification to admin */
 }

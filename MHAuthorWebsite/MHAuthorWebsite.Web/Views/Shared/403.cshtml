@@ -1,2 +1,29 @@
-﻿
-<p>Нямате разрешение да видите тази страница. Ако мислите, че това е грешка, моля свържете се с администратора.</p>
+﻿@{
+	ViewData["Title"] = "Грешка";
+}
+
+@section Styles
+{
+	<link rel="stylesheet" href="~/css/error-page.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+	<div id="error-title-container" class="flex-row">
+		<i class="fa-solid fa-circle-exclamation error-title-icon"></i>
+		<h1 class="error-title">Възникна грешка!</h1>
+	</div>
+
+	<div class="flex-row">
+		<i class="fa-solid fa-user-lock error-message-icon"></i>
+		<h3 class="error-message">Нямате разрешение да видите тази страница. Ако мислите, че това е грешка, моля свържете се с администратора!</h3>
+	</div>
+
+	<a class="link btn btn-redirect" data-trigger="load-unlimited" asp-controller="Home" asp-action="Index">
+		<i class="fa-solid fa-person-to-portal"></i> Към началната страница!
+	</a>
+</section>
+
+@section Scripts
+{
+	<script src="~/js/error-page.js" asp-append-version="true"></script>
+}

@@ -1,14 +1,42 @@
 ﻿@model ErrorViewModel
+
 @{
-    ViewData["Title"] = "Error";
+	ViewData["Title"] = "Грешка";
 }
 
-<h1 >Error.</h1>
-<h2 >An error occurred while processing your request.</h2>
-
-@if (Model.ShowRequestId)
+@section Styles
 {
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
+	<link rel="stylesheet" href="~/css/error-page.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+	<div id="error-title-container" class="flex-row">
+		<i class="fa-solid fa-circle-exclamation error-title-icon"></i>
+		<h1 class="error-title">Възникна грешка!</h1>
+	</div>
+
+	<div class="flex-row">
+		<i class="fa-solid fa-user-lock error-message-icon"></i>
+		<h3 class="error-message">
+			Докато обработвахме вашата заявка, възникна неочаквана грешка!
+			Администраторът на сайта е уведомен и ще се опита да я отстрани възможно най-скоро.
+		</h3>
+	</div>
+
+	@if (Model.ShowRequestId)
+	{
+		<p>
+			<strong>Идентификатор на грешката:</strong>
+			<code>@Model.RequestId</code>
+		</p>
+	}
+
+	<a class="link btn btn-redirect" data-trigger="load-unlimited" asp-controller="Home" asp-action="Index">
+		<i class="fa-solid fa-person-to-portal"></i> Към началната страница!
+	</a>
+</section>
+
+@section Scripts
+{
+	<script src="~/js/error-page.js" asp-append-version="true"></script>
 }
