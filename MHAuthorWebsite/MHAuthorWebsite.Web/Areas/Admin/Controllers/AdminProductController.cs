@@ -237,7 +237,7 @@ public class AdminProductController : AdminBaseController
         ServiceResult result = await _productService.UpdateProductAsync(model);
         if (!result.Found) return NotFound();
 
-        return RedirectToAction("Details", "Product", new { productId = model.Id });
+        return RedirectToAction(nameof(ProductsList));
     }
 
     [HttpPost("/AdminProduct/DeleteProduct/{productId}")]
