@@ -1,5 +1,6 @@
 ﻿using MHAuthorWebsite.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -10,15 +11,20 @@ public class ErrorController : BaseController
     [AllowAnonymous]
     [Route("Error/Error/{statusCode}")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error(int? statusCode) =>
-        statusCode switch
+    public IActionResult Error(int? statusCode)
+    {
+        string? originalPath = HttpContext.Features.Get<IStatusCodeReExecuteFeature>()?.OriginalPath;
+        if (string.IsNullOrEmpty(originalPath)) return RedirectToAction("Index", "Home");
+
+        return statusCode switch
         {
-            400 => View("400"),
+            400 => View("400", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }),
             401 => View("401"),
             403 => View("403"),
             404 => View("404"),
             _ => View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier })
         };
+    }
 
     /* TODO Send notification to admin */
 }
