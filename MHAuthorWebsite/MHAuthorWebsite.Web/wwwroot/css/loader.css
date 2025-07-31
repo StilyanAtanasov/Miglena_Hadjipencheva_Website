@@ -3,6 +3,11 @@
   animation-fill-mode: forwards;
 }
 
+#loader.show::before {
+  animation: fadeIn linear 500ms, spin 1s linear infinite;
+  animation-fill-mode: forwards;
+}
+
 #loader.hidden {
   display: none;
   visibility: hidden;
@@ -30,7 +35,7 @@
   border-radius: 50%;
   width: 10rem;
   height: 10rem;
-  animation: spin 1s linear infinite;
+  opacity: 0;
 }
 
 @keyframes spin {
@@ -48,5 +53,17 @@
   }
   100% {
     opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }

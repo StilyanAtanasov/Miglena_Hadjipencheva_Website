@@ -1,4 +1,5 @@
 const loaderElement = document.getElementById(`loader`);
+const bodyElement = document.body;
 
 function addLoader() {
   loaderElement.classList.remove(`hide`);
@@ -11,7 +12,10 @@ function removeLoader() {
   loaderElement.addEventListener(`animationend`, () => loaderElement.classList.add(`hidden`));
 }
 
-window.addEventListener(`load`, removeLoader);
+window.addEventListener(`load`, function () {
+  bodyElement.classList.add(`animate`);
+  removeLoader();
+});
 
 document.addEventListener(`DOMContentLoaded`, function () {
   const triggerLoadingUnlimitedEls = document.querySelectorAll(`[data-trigger="load-unlimited"]`);

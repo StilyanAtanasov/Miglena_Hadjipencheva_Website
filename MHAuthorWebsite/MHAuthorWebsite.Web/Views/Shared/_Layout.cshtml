@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="~/css/common.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/loader.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+
 	@await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
@@ -48,14 +49,13 @@
 
 	<nav id="navLists" class="flex-column hide"></nav>
 
-<main role="main">
-	@RenderBody()
-</main>
+	<main role="main">
+		@RenderBody()
+	</main>
 
-<div id="loader" class="show">
-</div>
+	<div id="loader" class="show"></div>
 
-<footer class="flex-row">
+	<footer class="flex-row">
 		<p>&copy; 2025 - Миглена Хаджипенчева</p>
 		<ul class="social-media flex-row">
 			<li>
@@ -76,10 +76,10 @@
 		</ul>
 	</footer>
 
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script src="~/js/layout.js" asp-append-version="true"></script>
-	<script src="~/js/loader.js" asp-append-version="true"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/layout.js" asp-append-version="true"></script>
+<script src="~/js/loader.js" asp-append-version="true"></script>
 
-	@await RenderSectionAsync("Scripts", required: false)
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
