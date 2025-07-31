@@ -4,7 +4,7 @@
 }
 
 #loader.show::before {
-  animation: fadeIn linear 500ms, spin 1s linear infinite;
+  animation: fadeIn linear 400ms, spin 1s linear infinite;
   animation-fill-mode: forwards;
 }
 

@@ -48,12 +48,11 @@
 	</header>
 
 	<nav id="navLists" class="flex-column hide"></nav>
+	<div id="loader" class="show"></div>
 
 	<main role="main">
 		@RenderBody()
 	</main>
-
-	<div id="loader" class="show"></div>
 
 	<footer class="flex-row">
 		<p>&copy; 2025 - Миглена Хаджипенчева</p>
@@ -76,10 +75,10 @@
 		</ul>
 	</footer>
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/js/layout.js" asp-append-version="true"></script>
-<script src="~/js/loader.js" asp-append-version="true"></script>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/js/layout.js" asp-append-version="true"></script>
+	<script src="~/js/loader.js" asp-append-version="true"></script>
 
-@await RenderSectionAsync("Scripts", required: false)
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -30,7 +30,6 @@ function RetrieveAttributes() {
   const selectElement = document.getElementById(`selectProductType`);
 
   const selectedId = selectElement.value;
-  console.log(selectedId);
 
   if (!selectedId) {
     attributesContainer.innerHTML = ``;

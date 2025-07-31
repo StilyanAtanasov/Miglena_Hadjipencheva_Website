@@ -28,11 +28,11 @@
 				<input class="form-input" asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="password" />
 				<span class="input-error" asp-validation-for="Input.ConfirmPassword"></span>
 			</div>
-			<button id="registerSubmit" type="submit" class="btn submit-btn flex-row"><i class="fa-solid fa-arrow-right-to-bracket"></i> Регистрирай се</button>
+			<button data-trigger="load-unlimited" id="registerSubmit" type="submit" class="btn submit-btn flex-row"><i class="fa-solid fa-arrow-right-to-bracket"></i> Регистрирай се</button>
 
 			<div class="form-box flex-column actions">
 				<p>
-					<a class="link active" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Имаш профил? Вход!</a>
+					<a data-trigger="load-unlimited" class="link active" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Имаш профил? Вход!</a>
 				</p>
 			</div>
 		</form>

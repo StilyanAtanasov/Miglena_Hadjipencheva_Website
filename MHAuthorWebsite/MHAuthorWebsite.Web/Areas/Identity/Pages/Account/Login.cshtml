@@ -30,14 +30,14 @@
 					Запомни ме?
 				</label>
 			</div>
-			<button id="login-submit" type="submit" class="btn submit-btn flex-row"><i class="fa-solid fa-arrow-right-to-bracket"></i> Влез</button>
+			<button data-trigger="load-unlimited" id="login-submit" type="submit" class="btn submit-btn flex-row"><i class="fa-solid fa-arrow-right-to-bracket"></i> Влез</button>
 
 			<div class="form-box flex-column actions">
 				<p>
-					<a class="link active" id="forgot-password" asp-page="./ForgotPassword">Забравена парола?</a>
+					<a data-trigger="load-unlimited" class="link active" id="forgot-password" asp-page="./ForgotPassword">Забравена парола?</a>
 				</p>
 				<p>
-					<a class="link active" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Нямаш профил? Регистрирай се!</a>
+					<a data-trigger="load-unlimited" class="link active" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Нямаш профил? Регистрирай се!</a>
 				</p>
 			</div>
 		</form>

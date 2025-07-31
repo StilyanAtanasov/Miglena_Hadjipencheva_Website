@@ -46,7 +46,7 @@
 						<img class="product-image" src="@product.ImageUrl" alt="@(product.ImageAlt ?? product.Name)" />
 					</div>
 					<div class="product-title-container">
-						<h4 class="product-title"><a class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
+						<h4 class="product-title"><a data-trigger="load-unlimited" class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
 						<span class="text-faded">@product.ProductType</span>
 					</div>
 					<div class="price-box flex-column">
