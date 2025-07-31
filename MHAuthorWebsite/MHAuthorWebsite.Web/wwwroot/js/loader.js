@@ -1,15 +1,15 @@
-const loaderElement = document.getElementById(`loader`);
+const loadingScreen = document.getElementById(`loading-screen`);
 const bodyElement = document.body;
 
 function addLoader() {
-  loaderElement.classList.remove(`hide`);
-  loaderElement.classList.remove(`hidden`);
+  loadingScreen.classList.remove(`hide`);
+  loadingScreen.classList.remove(`hidden`);
 }
 
 function removeLoader() {
-  loaderElement.classList.add(`hide`);
+  loadingScreen.classList.add(`hide`);
 
-  loaderElement.addEventListener(`animationend`, () => loaderElement.classList.add(`hidden`));
+  loadingScreen.addEventListener(`animationend`, () => loadingScreen.classList.add(`hidden`));
 }
 
 window.addEventListener(`load`, function () {

@@ -1,21 +1,21 @@
-#loader.hide {
+#loading-screen.hide {
   animation: fadeAway linear 500ms;
   animation-fill-mode: forwards;
 }
 
-#loader.show::before {
+#loading-screen.show #loader {
   animation: fadeIn linear 400ms, spin 1s linear infinite;
   animation-fill-mode: forwards;
 }
 
-#loader.hidden {
+#loading-screen.hidden {
   display: none;
   visibility: hidden;
   opacity: 0;
   transform: scale(1);
 }
 
-#loader {
+#loading-screen {
   position: fixed;
   top: 0;
   left: 0;
@@ -28,7 +28,7 @@
   z-index: 1000;
 }
 
-#loader::before {
+#loading-screen #loader {
   content: "";
   border: 1.3rem solid var(--color-secondary);
   border-top: 1.3rem solid var(--color-secondary-light);

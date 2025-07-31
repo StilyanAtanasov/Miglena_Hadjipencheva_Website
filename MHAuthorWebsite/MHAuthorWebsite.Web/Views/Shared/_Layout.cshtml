@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
 	<title>@ViewData["Title"] - Миглена Хаджипенчева</title>
 	<link rel="stylesheet" href="~/css/reset.css" asp-append-version="true" />
-	<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.7.2/css/all.css" />
+	<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/all.css" />
 	<link rel="stylesheet" href="~/css/common.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/loader.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
@@ -48,7 +48,9 @@
 	</header>
 
 	<nav id="navLists" class="flex-column hide"></nav>
-	<div id="loader" class="show"></div>
+	<div id="loading-screen" class="show">
+		<span id="loader"></span>
+	</div>
 
 	<main role="main">
 		@RenderBody()

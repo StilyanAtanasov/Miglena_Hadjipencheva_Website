@@ -1,0 +1,85 @@
+.page-wrapper {
+  padding: 8rem 10rem;
+  font-size: 2rem;
+  gap: 5rem;
+}
+
+#error-title-container.spin {
+  animation: buzz-out-on-hover ease-in-out 400ms infinite;
+}
+
+.error-title {
+  color: var(--color-error);
+  font-size: 2em;
+}
+
+.error-title-icon {
+  color: var(--color-error);
+  font-size: 2.5em;
+}
+
+.error-message-icon {
+  color: var(--color-secondary);
+  font-size: 1.5em;
+}
+
+.error-message {
+  color: var(--color-secondary);
+  font-size: 1.2em;
+}
+
+.btn-redirect {
+  padding: 0.4em 0.8em;
+  border-radius: 1em;
+}
+
+.btn-redirect i {
+  margin-right: 0.5em;
+}
+
+.btn-redirect:hover {
+  transform: scale(1.05);
+}
+
+@keyframes buzz-out-on-hover {
+  10% {
+    -webkit-transform: translateX(0.1em) rotate(2deg);
+    transform: translateX(0.1em) rotate(2deg);
+  }
+  20% {
+    -webkit-transform: translateX(-0.1em) rotate(-2deg);
+    transform: translateX(-0.1em) rotate(-2deg);
+  }
+  30% {
+    -webkit-transform: translateX(0.1em) rotate(2deg);
+    transform: translateX(0.1em) rotate(2deg);
+  }
+  40% {
+    -webkit-transform: translateX(-0.1em) rotate(-2deg);
+    transform: translateX(-0.1em) rotate(-2deg);
+  }
+  50% {
+    -webkit-transform: translateX(0.05em) rotate(1deg);
+    transform: translateX(0.05em) rotate(1deg);
+  }
+  60% {
+    -webkit-transform: translateX(-0.05em) rotate(-1deg);
+    transform: translateX(-0.05em) rotate(-1deg);
+  }
+  70% {
+    -webkit-transform: translateX(0.05em) rotate(1deg);
+    transform: translateX(0.05em) rotate(1deg);
+  }
+  80% {
+    -webkit-transform: translateX(-0.05em) rotate(-1deg);
+    transform: translateX(-0.05em) rotate(-1deg);
+  }
+  90% {
+    -webkit-transform: translateX(1px) rotate(0);
+    transform: translateX(1px) rotate(0);
+  }
+  100% {
+    -webkit-transform: translateX(-1px) rotate(0);
+    transform: translateX(-1px) rotate(0);
+  }
+}

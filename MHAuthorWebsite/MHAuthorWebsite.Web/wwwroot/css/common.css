@@ -5,7 +5,7 @@
   --color-dark: rgba(24, 23, 23, 0.879);
   --color-grey: rgba(97, 97, 97, 0.923);
   --color-primary: #fcfcfc;
-  --color-secondary: rgb(66, 12, 66);
+  --color-secondary: rgb(58, 5, 58);
   --color-secondary-light: rgb(250, 234, 250);
   --color-secondary-lighter: rgb(255, 241, 255);
   --color-secondary-lighter-transparent: rgba(255, 241, 255, 0.693);
@@ -225,6 +225,8 @@ hr {
   opacity: 0;
   transform: scale(0);
 }
+
+/* --- Keyframes --- */
 
 @keyframes fadeIn {
   from {
