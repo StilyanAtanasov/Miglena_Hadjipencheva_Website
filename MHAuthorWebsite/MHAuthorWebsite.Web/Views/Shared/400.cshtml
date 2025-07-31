@@ -1,0 +1,43 @@
+﻿@model ErrorViewModel
+
+@{
+	ViewData["Title"] = "Грешка";
+}
+
+@section Styles
+{
+	<link rel="stylesheet" href="~/css/error-page.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+	<div id="error-title-container" class="flex-row">
+		<i class="fa-solid fa-circle-exclamation error-title-icon"></i>
+		<h1 class="error-title">Възникна грешка!</h1>
+	</div>
+
+	<div class="flex-row">
+		<i class="fa-solid fa-ban error-message-icon"></i>
+		<h3 class="error-message">Изглежда, че заявката ви не може да бъде обработена поради неправилен формат или липсваща информация!</h3>
+	</div>
+	
+	<div class="flex-column">
+		<p class="error-message">Моля, уверете се, че всички данни са коректно попълнени и опитайте отново!</p>
+		<p class="error-message">Ако проблемът продължава, свържете се с нас и предоставете следния идентификатор:</p>
+		@if (Model.ShowRequestId)
+		{
+			<p>
+				<strong>Идентификатор на грешката:</strong>
+				<code>@Model.RequestId</code>
+			</p>
+		}
+	</div>
+
+	<a class="link btn btn-redirect" data-trigger="load-unlimited" asp-controller="Home" asp-action="Index">
+		<i class="fa-solid fa-person-to-portal"></i> Към началната страница!
+	</a>
+</section>
+
+@section Scripts
+{
+	<script src="~/js/error-page.js" asp-append-version="true"></script>
+}
