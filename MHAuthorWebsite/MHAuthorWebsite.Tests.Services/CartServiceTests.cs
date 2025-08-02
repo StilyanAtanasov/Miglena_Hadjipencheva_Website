@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MHAuthorWebsite.Tests.Services;
 
+[TestFixture]
 public class CartServiceTests
 {
     private ICartService _cartService = null!;
-
     private ApplicationDbContext _dbContext = null!;
 
     private Cart _cart = null!;

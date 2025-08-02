@@ -121,7 +121,7 @@ public class ProductService : IProductService
                 ProductTypeName = p.ProductType.Name,
                 IsPublic = p.IsPublic
             })
-            .ToArrayAsync();
+            .ToArrayAsync(); // TODO Move to admin section
 
     public async Task<ServiceResult> ToggleProductPublicityAsync(Guid productId)
     {
@@ -143,7 +143,7 @@ public class ProductService : IProductService
         {
             return ServiceResult.Failure();
         }
-    }
+    }  // TODO Move to admin section
 
     public async Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId)
     {

@@ -24,6 +24,7 @@
     <ProjectReference Include="..\MHAuthorWebsite.Core\MHAuthorWebsite.Core.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Data.Models\MHAuthorWebsite.Data.Models.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Data\MHAuthorWebsite.Data.csproj" />
+    <ProjectReference Include="..\MHAuthorWebsite.Web\MHAuthorWebsite.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
