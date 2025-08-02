@@ -16,4 +16,8 @@ public interface IAdminProductService : IProductService
     Task<ServiceResult> DeleteProductAsync(Guid productId);
 
     Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId);
+
+    Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync();
+
+    Task<ServiceResult> ToggleProductPublicityAsync(Guid productId);
 }

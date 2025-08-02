@@ -15,9 +15,5 @@ public interface IProductService
 
     Task<ICollection<LikedProductViewModel>> GetLikedProductsReadonlyAsync(string userId);
 
-    Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync();
-
-    Task<ServiceResult> ToggleProductPublicityAsync(Guid productId);
-
     Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId);
 }

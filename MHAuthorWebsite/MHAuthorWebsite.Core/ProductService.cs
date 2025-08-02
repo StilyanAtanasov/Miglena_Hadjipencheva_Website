@@ -106,45 +106,6 @@ public class ProductService : IProductService
             })
             .ToArrayAsync();
 
-    public async Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync() =>
-        await _repository
-            .AllReadonly<Product>()
-            .IgnoreQueryFilters()
-            .Include(p => p.ProductType)
-            .Where(p => !p.IsDeleted)
-            .Select(p => new ProductListViewModel
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                StockQuantity = p.StockQuantity,
-                ProductTypeName = p.ProductType.Name,
-                IsPublic = p.IsPublic
-            })
-            .ToArrayAsync(); // TODO Move to admin section
-
-    public async Task<ServiceResult> ToggleProductPublicityAsync(Guid productId)
-    {
-        try
-        {
-            Product? product = await _repository
-                .All<Product>()
-                .IgnoreQueryFilters()
-                .Where(p => !p.IsDeleted)
-                .FirstOrDefaultAsync(p => p.Id == productId);
-
-            if (product is null) return ServiceResult.NotFound();
-
-            product.IsPublic = !product.IsPublic;
-            await _repository.SaveChangesAsync();
-            return ServiceResult.Ok();
-        }
-        catch (Exception)
-        {
-            return ServiceResult.Failure();
-        }
-    }  // TODO Move to admin section
-
     public async Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId)
     {
         Product? product = await _repository
