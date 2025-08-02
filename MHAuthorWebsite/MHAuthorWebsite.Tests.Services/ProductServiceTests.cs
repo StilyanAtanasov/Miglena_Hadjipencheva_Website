@@ -27,8 +27,6 @@ public class ProductServiceTests
     [SetUp]
     public async Task Setup()
     {
-        _userManagerMock = new Mock<UserManager<IdentityUser>>(new Mock<IUserStore<IdentityUser>>().Object);
-
         DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase("ProductTestDb")
             .Options;
@@ -163,6 +161,88 @@ public class ProductServiceTests
         Assert.IsTrue(sr.Success);
         Assert.IsTrue(sr2.Success);
         Assert.That(_dbContext.Products.First().Likes.Count == 0);
+    }
+
+    [Test]
+    public async Task ToggleLikeProduct_Returns404_WhenInvalidProduct()
+    {
+        // Act
+        ServiceResult sr = await _productService
+            .ToggleLikeProduct(DefaultUserId, Guid.NewGuid());
+
+        // Assert
+        Assert.IsFalse(sr.Success);
+        Assert.IsFalse(sr.Found);
+        Assert.That(_dbContext.Products.First().Likes.Count == 0);
+    }
+
+    [Test]
+    public async Task ToggleLikeProduct_Returns403_WhenUserNotFound()
+    {
+        // Act
+        ServiceResult sr = await _productService
+            .ToggleLikeProduct("invalid-user-id", _defaultProduct.Id);
+
+        // Assert
+        Assert.IsFalse(sr.Success);
+        Assert.IsFalse(sr.HasPermission);
+        Assert.That(_dbContext.Products.First().Likes.Count == 0);
+    }
+
+    [Test]
+    public async Task GetProductDetailsReadonlyAsync_Returns404_WhenProductNotFound()
+    {
+        // Act
+        ServiceResult<ProductDetailsViewModel> sr = await _productService
+            .GetProductDetailsReadonlyAsync(new Guid(), DefaultUserId);
+
+        // Assert
+        Assert.IsFalse(sr.Success);
+        Assert.IsFalse(sr.Found);
+    }
+
+    [Test]
+    public async Task GetProductDetailsReadonlyAsync_ReturnsOk_WhenProductIsFound()
+    {
+        // Act
+        ServiceResult<ProductDetailsViewModel> sr = await _productService
+            .GetProductDetailsReadonlyAsync(_defaultProduct.Id, DefaultUserId);
+
+        // Assert
+        Assert.IsTrue(sr.Success);
+        Assert.IsTrue(sr.HasResult());
+        Assert.That(sr.Result!.Id == _defaultProduct.Id);
+    }
+
+    [Test]
+    public async Task GetProductDetailsReadonlyAsync_ReturnsFailure_OnError()
+    {
+        // Arrange
+        Mock<IApplicationRepository> repoMock = new();
+
+        repoMock
+            .Setup(r => r.AllReadonly<Product>())
+            .Throws(new Exception("Simulated failure"));
+
+        ProductService service = new ProductService(repoMock.Object, _userManagerMock.Object);
+
+        // Act
+        ServiceResult<ProductDetailsViewModel> result = await service
+            .GetProductDetailsReadonlyAsync(Guid.NewGuid(), "user-id");
+
+        // Assert
+        Assert.IsFalse(result.Success);
+    }
+
+    [Test]
+    public async Task GetAllProductsCountAsync_ReturnsCorrectAnswer()
+    {
+        // Act
+        int count = await _productService.GetAllProductsCountAsync();
+
+        // Assert
+        Assert.That(count == _dbContext.Products.Count());
+        Assert.That(count == 1);
     }
 
     private async Task<Product> SeedProductAsync()
