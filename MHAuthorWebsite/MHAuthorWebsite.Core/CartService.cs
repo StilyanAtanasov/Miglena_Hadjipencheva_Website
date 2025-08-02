@@ -24,7 +24,7 @@ public class CartService : ICartService
                 return ServiceResult.BadRequest(new()
                 {
                     ["quantity"] =
-                    $"Недостатъчно количество на продукта! Максимална поръчка от {product.StockQuantity} продукт"
+                    $"Недостатъчно количество на продукта! Максимална поръчка от {product.StockQuantity} продукта!"
                     + (product.StockQuantity > 1 ? "a" : "") + "."
                 });
 
@@ -68,16 +68,21 @@ public class CartService : ICartService
 
     public async Task<CartViewModel> GetCartReadonlyAsync(string userId)
     {
-        Cart? cart = await _repository.FindByExpressionAsync<Cart>(c => c.UserId == userId);
+        Cart? cart = await _repository
+            .AllReadonly<Cart>()
+            .Where(c => c.UserId == userId)
+            .IgnoreQueryFilters()
+            .Include(c => c.CartItems)
+                .ThenInclude(ci => ci.Product)
+                    .ThenInclude(p => p.ProductType)
+            .Include(c => c.CartItems)
+                 .ThenInclude(ci => ci.Product)
+                    .ThenInclude(p => p.Images)
+            .FirstOrDefaultAsync();
         if (cart is null) return new CartViewModel();
 
-        ICollection<CartItemViewModel> cartItems = await _repository
-            .WhereReadonly<CartItem>(ci => ci.CartId == cart.Id)
-            .IgnoreQueryFilters()
-            .Include(ci => ci.Product)
-                .ThenInclude(p => p.ProductType)
-            .Include(ci => ci.Product)
-                .ThenInclude(p => p.Images)
+        ICollection<CartItemViewModel> cartItems =
+            cart.CartItems
             .Select(ci => new CartItemViewModel
             {
                 ItemId = ci.Id,
@@ -87,11 +92,11 @@ public class CartService : ICartService
                 Quantity = ci.Quantity,
                 UnitPrice = ci.Price,
                 IsDiscontinued = ci.Product.IsDeleted || !ci.Product.IsPublic,
-                IsAvailable = ci.Product.StockQuantity > 0 && !ci.Product.IsDeleted && ci.Product.IsPublic,
+                IsAvailable = ci.Product is { StockQuantity: > 0, IsDeleted: false, IsPublic: true },
                 ThumbnailUrl = ci.Product.Images.First(i => i.IsThumbnail).ThumbnailUrl!,
                 ThumbnailAlt = ci.Product.Images.First(i => i.IsThumbnail).AltText,
             })
-            .ToArrayAsync();
+            .ToArray();
 
         return new CartViewModel { Items = cartItems };
     }
