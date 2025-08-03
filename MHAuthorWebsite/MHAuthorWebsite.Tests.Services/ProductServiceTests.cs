@@ -212,6 +212,8 @@ public class ProductServiceTests
         Assert.IsTrue(sr.Success);
         Assert.IsTrue(sr.HasResult());
         Assert.That(sr.Result!.Id == _defaultProduct.Id);
+        Assert.That(sr.Result.Images.Count == 1);
+        Assert.That(sr.Result.Attributes.Count == 1);
     }
 
     [Test]
@@ -274,7 +276,16 @@ public class ProductServiceTests
                     PublicId = "public-id",
                     ImageUrl = "image.jpg"
                 }
-            }
+            },
+            Attributes = new List<ProductAttribute>
+            {
+                new ()
+                {
+                    Id = 1,
+                    Key = "Author",
+                    Value = "John Doe"
+                }
+            },
         };
 
         _dbContext.ProductTypes.Add(productType);
