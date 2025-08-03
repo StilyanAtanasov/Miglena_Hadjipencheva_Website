@@ -249,13 +249,13 @@ public class ProductServiceTests
 
     private async Task<Product> SeedProductAsync()
     {
-        var productType = new ProductType
+        ProductType productType = new()
         {
             Id = 1,
             Name = "Books"
         };
 
-        var product = new Product
+        Product product = new()
         {
             Id = Guid.NewGuid(),
             Name = "Test Product",

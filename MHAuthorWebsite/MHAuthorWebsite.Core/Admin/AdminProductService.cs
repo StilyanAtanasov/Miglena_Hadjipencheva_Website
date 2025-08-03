@@ -50,9 +50,8 @@ public class AdminProductService : ProductService, IAdminProductService
 
                 await _repository.AddAsync(image);
             }
-            await _repository.SaveChangesAsync();
 
-            if (model.Attributes.Any())
+            if (model.Attributes.Count > 0) // ToDO Check if category has attributes
             {
                 ICollection<ProductAttribute> attributes = model.Attributes
                     .Select(a => new ProductAttribute
@@ -65,8 +64,9 @@ public class AdminProductService : ProductService, IAdminProductService
                     .ToArray();
 
                 await _repository.AddRangeAsync(attributes);
-                await _repository.SaveChangesAsync();
             }
+
+            await _repository.SaveChangesAsync();
 
             return ServiceResult.Ok();
         }
@@ -162,6 +162,7 @@ public class AdminProductService : ProductService, IAdminProductService
 
             product.IsDeleted = true;
             await _repository.SaveChangesAsync();
+
             return ServiceResult.Ok();
         }
         catch (Exception)
@@ -215,6 +216,7 @@ public class AdminProductService : ProductService, IAdminProductService
 
             product.IsPublic = !product.IsPublic;
             await _repository.SaveChangesAsync();
+
             return ServiceResult.Ok();
         }
         catch (Exception)
