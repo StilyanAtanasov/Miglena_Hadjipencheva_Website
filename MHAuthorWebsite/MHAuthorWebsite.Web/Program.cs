@@ -29,6 +29,7 @@ builder.Services
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 builder.Services.AddScoped<IAdminProductTypeService, AdminProductTypeService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();

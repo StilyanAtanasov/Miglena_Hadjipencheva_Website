@@ -13,12 +13,12 @@ namespace MHAuthorWebsite.Core.Admin;
 
 public class CloudinaryImageService : IImageService
 {
-    private readonly Cloudinary _cloudinary;
+    private readonly ICloudinaryService _cloudinaryService;
     private readonly IApplicationRepository _repository;
 
-    public CloudinaryImageService(Cloudinary cloudinary, IApplicationRepository repository)
+    public CloudinaryImageService(ICloudinaryService cloudinaryService, IApplicationRepository repository)
     {
-        _cloudinary = cloudinary;
+        _cloudinaryService = cloudinaryService;
         _repository = repository;
     }
 
@@ -60,7 +60,7 @@ public class CloudinaryImageService : IImageService
                     .FetchFormat("avif")
             };
 
-            ImageUploadResult fullUpload = await _cloudinary.UploadAsync(fullUploadParams);
+            ImageUploadResult fullUpload = await _cloudinaryService.UploadAsync(fullUploadParams);
 
             ImageUploadResult? previewUpload = null;
             if (isThumbnail)
@@ -79,7 +79,7 @@ public class CloudinaryImageService : IImageService
                         .FetchFormat("avif")
                 };
 
-                previewUpload = await _cloudinary.UploadAsync(previewUploadParams);
+                previewUpload = await _cloudinaryService.UploadAsync(previewUploadParams);
             }
 
             results.Add(new ImageUploadResultDto
@@ -123,7 +123,7 @@ public class CloudinaryImageService : IImageService
                     .FetchFormat("avif")
             };
 
-            ImageUploadResult fullUpload = await _cloudinary.UploadAsync(fullUploadParams);
+            ImageUploadResult fullUpload = await _cloudinaryService.UploadAsync(fullUploadParams);
 
             string? productName = await _repository
                 .AllReadonly<Product>()
@@ -159,7 +159,7 @@ public class CloudinaryImageService : IImageService
             Type = "private"
         };
 
-        DeletionResult result = await _cloudinary.DestroyAsync(deletionParams);
+        DeletionResult result = await _cloudinaryService.DestroyAsync(deletionParams);
 
         if (result.Result != "ok") return ServiceResult.Failure();
 
@@ -237,7 +237,7 @@ public class CloudinaryImageService : IImageService
                 .FetchFormat("avif")
         };
 
-        ImageUploadResult previewUpload = await _cloudinary.UploadAsync(previewUploadParams);
+        ImageUploadResult previewUpload = await _cloudinaryService.UploadAsync(previewUploadParams);
 
         newTitleImage.IsThumbnail = true;
         newTitleImage.ThumbnailUrl = previewUpload.SecureUrl.AbsoluteUri;
