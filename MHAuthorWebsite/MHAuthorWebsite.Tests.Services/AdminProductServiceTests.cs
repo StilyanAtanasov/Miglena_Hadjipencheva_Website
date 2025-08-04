@@ -190,6 +190,7 @@ public class AdminProductServiceTests
                 Value = "New value",
             }).ToArray()
         };
+
         // Act
         ServiceResult result = await _adminProductService.UpdateProductAsync(model);
 

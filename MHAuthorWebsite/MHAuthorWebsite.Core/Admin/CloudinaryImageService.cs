@@ -24,7 +24,7 @@ public class CloudinaryImageService : IImageService
 
     public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images, int titleImageId)
     {
-        if (images.Count == 0 || images.Any(i => i.Length == 0) || titleImageId > images.Count - 1)
+        if (images.Count == 0 || images.Any(i => i.Length == 0) || titleImageId > images.Count - 1 || titleImageId < 0)
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure();
 
         List<ImageUploadResultDto> results = new();
@@ -97,7 +97,8 @@ public class CloudinaryImageService : IImageService
 
     public async Task<ServiceResult<Guid?>> LinkImagesToProductAsync(ICollection<IFormFile> images, int? titleImageIndex, Guid productId)
     {
-        if (images.Count == 0 || images.Any(i => i.Length == 0) || titleImageIndex > images.Count - 1)
+        if (images.Count == 0 || images.Any(i => i.Length == 0)
+            || titleImageIndex > images.Count - 1 || titleImageIndex < 0)
             return ServiceResult<Guid?>.Failure();
 
         Image? titleImage = null;
@@ -125,17 +126,18 @@ public class CloudinaryImageService : IImageService
 
             ImageUploadResult fullUpload = await _cloudinaryService.UploadAsync(fullUploadParams);
 
-            string? productName = await _repository
+            Product? productName = await _repository
                 .AllReadonly<Product>()
                 .IgnoreQueryFilters()
                 .Where(p => p.Id == productId && !p.IsDeleted)
-                .Select(p => p.Name)
                 .FirstOrDefaultAsync();
+
+            if (productName is null) return ServiceResult<Guid?>.Failure();
 
             Image dbImage = new()
             {
                 ProductId = productId,
-                AltText = productName ?? fileName, // TODO Probably use the image title
+                AltText = productName.Name, // TODO Probably use the image title
                 ImageUrl = fullUpload.SecureUrl.AbsoluteUri,
                 ThumbnailUrl = null,
                 PublicId = fullUpload.PublicId,
@@ -221,6 +223,7 @@ public class CloudinaryImageService : IImageService
                 .Include(i => i.Product)
                 .Where(i => !i.Product.IsDeleted)
                 .FirstOrDefaultAsync(i => i.ProductId == productId && i.Id == newTitleImageId);
+
         if (newTitleImage is null) return ServiceResult.Failure();
 
         string timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
