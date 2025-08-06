@@ -1,0 +1,44 @@
+﻿@inject SignInManager<IdentityUser> SignInManager
+
+@{
+	bool hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+	string currentPage = ViewData["ActivePage"] as string ?? "";
+}
+
+<nav class="profile-nav">
+	<ul class="profile-nav-elements flex-column">
+		<li class="side-nav-element @(currentPage == ManageNavPages.Index ? "current" : "")">
+			<a class="link flex-row" id="profile " asp-page="./Index">
+				<i class="fa-solid fa-pencil"></i>
+				Основна информация
+			</a>
+		</li>
+		<li class="side-nav-element @(currentPage == ManageNavPages.ChangePassword ? "current" : "")">
+			<a class="link flex-row" id="change-password" asp-page="./ChangePassword">
+				<i class="fa-solid fa-key"></i>
+				Пароли
+			</a>
+		</li>
+		@if (hasExternalLogins)
+		{
+			<li id="external-logins" class="side-nav-element @(currentPage == ManageNavPages.ExternalLogins ? "current" : "")">
+				<a id="external-login" class="link flex-row" asp-page="./ExternalLogins">
+					<i class="fa-solid fa-arrow-up-right-from-square"></i>
+					Външни акаунти
+				</a>
+			</li>
+		}
+		<li class="side-nav-element  @(currentPage == ManageNavPages.TwoFactorAuthentication ? "current" : "")">
+			<a class="link flex-row" id="two-factor" asp-page="./TwoFactorAuthentication">
+				<i class="fa-solid fa-lock-keyhole"></i>
+				Двуфакторна автентикация
+			</a>
+		</li>
+		<li class="side-nav-element @(currentPage == ManageNavPages.PersonalData ? "current" : "")">
+			<a class="link flex-row" id="personal-data" asp-page="./PersonalData">
+				<i class="fa-solid fa-id-card"></i>
+				Лични данни
+			</a>
+		</li>
+	</ul>
+</nav>

@@ -1,0 +1,36 @@
+﻿@page
+@model IndexModel
+@{
+	ViewData["Heading"] = "Основна информация";
+	ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/profile-page.css" asp-append-version="true" />
+}
+
+<section class="content-body flex-column">
+	<partial name="_StatusMessage" for="StatusMessage" />
+	<form id="profile-form" class="input-form flex-column" method="post">
+		<div asp-validation-summary="ModelOnly" role="alert"></div>
+		<div class="form-input-box flex-column">
+			<label class="form-label" asp-for="Username">Потребителско име</label>
+			<input class="form-input" asp-for="Username" placeholder="Напишете вашето потребителско име..." disabled />
+		</div>
+		<div class="form-input-box flex-column">
+			<label class="form-label" asp-for="Input.PhoneNumber">Телефонен номер</label>
+			<input class="form-input" asp-for="Input.PhoneNumber" placeholder="Напишете вашият телефонен номер..." />
+			<span class="input-error" asp-validation-for="Input.PhoneNumber"></span>
+		</div>
+		<button id="update-profile-button" type="submit" class="btn submit-btn flex-row">
+			<i class="fa-solid fa-floppy-disk"></i>
+			Запази
+		</button>
+	</form>
+	<i class="fa-solid fa-pencil background-icon"></i>
+</section>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

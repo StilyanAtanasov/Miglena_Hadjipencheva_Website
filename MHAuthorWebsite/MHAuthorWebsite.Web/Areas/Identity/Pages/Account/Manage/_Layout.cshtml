@@ -1,0 +1,18 @@
+﻿@{
+	Layout = "/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "Профил";
+}
+
+<div class="page-wrapper flex-column">
+	<h1 class="title">Вашият акаунт</h1>
+
+	<div class="flex-column page-content">
+		<partial name="_ManageNav" />
+
+		<h3 class="heading">@ViewData["Heading"]</h3>
+		@RenderBody()
+	</div>
+</div>
+
+@await RenderSectionAsync("Styles", required: false)
+@await RenderSectionAsync("Scripts", required: false)
