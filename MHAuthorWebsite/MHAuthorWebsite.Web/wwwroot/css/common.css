@@ -44,13 +44,16 @@ body.animate {
 
 .link.active,
 nav.active,
-a.active {
+a.active,
+button.active {
   position: relative;
+  padding: 0;
 }
 
 .link.active::before,
 nav.active::before,
-a.active::before {
+a.active::before,
+button.active::before {
   content: "";
   position: absolute;
   width: 100%;
@@ -67,7 +70,8 @@ a.active::before {
 
 .link.active:hover::before,
 nav.active:hover::before,
-a.active:hover::before {
+a.active:hover::before,
+button.active:hover::before {
   visibility: visible;
   transform: scaleX(1);
 }

@@ -5,21 +5,29 @@
 	@if (SignInManager.IsSignedIn(User))
 	{
 		<li>
-			<a class="active" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Профил</a>
+			<a class="active flex-row" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+				<i class="fa-regular fa-user-gear"></i> Профил
+			</a>
 		</li>
 		<li>
-			<form class="active" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-				<button class="btn btn-none" type="submit" class="nav-link btn btn-link text-dark">Изход</button>
+			<form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+				<button class="btn btn-none active flex-row" type="submit">
+					<i class="fa-regular fa-arrow-left-from-bracket"></i> Изход
+				</button>
 			</form>
 		</li>
 	}
 	else
 	{
 		<li>
-			<a class="active" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
+			<a class="active flex-row" asp-area="Identity" asp-page="/Account/Register">
+				<i class="fa-regular fa-handshake"></i> Регистрация
+			</a>
 		</li>
 		<li>
-			<a class="active" asp-area="Identity" asp-page="/Account/Login">Вход</a>
+			<a class="active flex-row" asp-area="Identity" asp-page="/Account/Login">
+				<i class="fa-regular fa-arrow-right-from-bracket"></i> Вход
+			</a>
 		</li>
 	}
 </ul>

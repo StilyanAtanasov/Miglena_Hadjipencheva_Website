@@ -43,9 +43,13 @@ nav ul {
 nav a {
   text-decoration: none;
   color: var(--color-dark);
-  margin: 0 0.7rem;
   position: relative;
   transition: color 0.3s ease-in-out;
+}
+
+nav a,
+nav button {
+  margin: 0 0.7rem;
 }
 
 nav a:hover {
