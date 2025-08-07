@@ -1,15 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@{
+	string currentPage = ViewData["CurrentPage"]?.ToString() ?? "";
+}
+
+<!DOCTYPE html>
 <html lang="bg">
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>@ViewData["Title"] - Миглена Хаджипенчева</title>
-	<link rel="stylesheet" href="~/css/reset.css" asp-append-version="true" />
 	<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/all.css" />
-	@* <link rel="stylesheet" href="~/css/admin/common.css" asp-append-version="true" /> <!-- TODO: Remove this if not needed--> *@
-	<link rel="stylesheet" href="~/css/common.css" asp-append-version="true" /> <!-- TODO: Remove this if not needed-->
+	<link rel="stylesheet" href="~/css/reset.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/common.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/common.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/loader.css" asp-append-version="true" />
-	@* <link rel="stylesheet" href="~/css/admin/layout.css" asp-append-version="true" /> <!-- TODO: Remove this if not needed--> *@
+	<link rel="stylesheet" href="~/css/admin/layout.css" asp-append-version="true" />
 	@await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
@@ -17,12 +21,29 @@
 		<span id="loader"></span>
 	</div>
 
-	<main role="main">
+<main role="main">
+		<nav class="admin-nav">
+			<ul class="nav-elements flex-column">
+				<li data-url="@Url.Action("Dashboard", "Admin")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.Dashboard ? "current" : "")">
+					<i class="fa-regular fa-chart-line"></i>
+					<p class="flex-row">Табло</p>
+				</li>
+				<li data-url="@Url.Action("ProductsList", "AdminProduct")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AllProducts ? "current" : "")">
+					<i class="fa-regular fa-shelves"></i>
+					<p class="flex-row">Управление на продуктите</p>
+				</li>
+				<li data-url="@Url.Action("AddProductType", "AdminProductType")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AddProductType ? "current" : "")">
+					<i class="fa-regular fa-icons"></i>
+					<p class="flex-row">Добавяне на категория</p>
+				</li>
+			</ul>
+		</nav>
 		@RenderBody()
 	</main>
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/js/loader.js" asp-append-version="true"></script>
+	<script src="~/js/click.js" asp-append-version="true"></script>
 
 	@await RenderSectionAsync("Scripts", required: false)
 </body>

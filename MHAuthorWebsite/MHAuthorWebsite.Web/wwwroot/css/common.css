@@ -37,6 +37,14 @@ body.animate {
   animation: fadeIn 300ms ease-in-out;
 }
 
+.page-wrapper {
+  width: 100vw;
+  align-items: center;
+  padding: 3rem 5rem;
+  font-size: 1.6rem;
+  min-height: calc(100vh - 17rem);
+}
+
 .link {
   text-decoration: none;
   color: var(--color-secondary);
@@ -213,14 +221,6 @@ hr {
 .btn.like.liked:hover .fa-solid.fa-heart {
   color: transparent;
   visibility: hidden;
-}
-
-.page-wrapper {
-  width: 100vw;
-  align-items: center;
-  padding: 3rem 5rem;
-  font-size: 1.6rem;
-  min-height: calc(100vh - 17rem);
 }
 
 .hidden {

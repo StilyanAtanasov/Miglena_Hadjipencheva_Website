@@ -1,0 +1,56 @@
+.admin-nav {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  border-right: 0.15rem solid var(--color-secondary);
+  border-radius: 0 2rem 2rem 0;
+  font-size: 1.8rem;
+  padding: 3rem 0;
+  background-color: var(--color-secondary-lighter);
+  box-shadow: 0 0 1rem var(--color-secondary);
+  max-width: 10rem;
+  overflow-x: hidden;
+  transition: max-width 300ms linear;
+}
+
+.admin-nav:hover {
+  max-width: 50rem;
+}
+
+.admin-nav .nav-elements {
+  padding: 0;
+  gap: 0;
+  margin: 0;
+}
+
+.admin-nav .nav-element {
+  padding: 1.5rem 3rem;
+  gap: 4rem;
+  height: 7rem;
+}
+
+.admin-nav .nav-element:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.admin-nav .nav-element.current i {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+  border-radius: 2rem;
+}
+
+.admin-nav .nav-element i {
+  width: 4rem;
+  height: 4rem;
+  font-size: 2.1rem;
+  flex-shrink: 0;
+  padding: 1rem;
+}
+
+.admin-nav .nav-element p {
+  flex-shrink: 0;
+  margin-right: 2rem;
+}

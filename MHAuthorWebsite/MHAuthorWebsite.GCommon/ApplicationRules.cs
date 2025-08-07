@@ -8,6 +8,18 @@ public static class ApplicationRules
         public const string WebsiteName = "Миглена Хаджипенчева"; // TODO Use this for Layout and branding
     }
 
+    public static class Pages
+    {
+        public static class Admin
+        {
+            public const string Dashboard = nameof(Dashboard);
+            public const string AllProducts = nameof(AllProducts);
+            public const string AddProduct = nameof(AddProduct);
+            public const string EditProduct = nameof(EditProduct);
+            public const string AddProductType = nameof(AddProductType);
+        }
+    }
+
     public static class Pagination
     {
         public const byte PageSize = 10;

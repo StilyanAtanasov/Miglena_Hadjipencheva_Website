@@ -1,4 +1,9 @@
-﻿<h1>Табло</h1>
+﻿@{
+	ViewData["Title"] = "Табло";
+	ViewData["CurrentPage"] = Pages.Admin.Dashboard;
+}
+
+<h1>Табло</h1>
 
 <a asp-area="Admin" asp-controller="AdminProduct" asp-action="ProductsList">Управление на продукти</a>
 <a asp-area="Admin" asp-controller="AdminProductType" asp-action="AddProductType">Добави категория</a>
