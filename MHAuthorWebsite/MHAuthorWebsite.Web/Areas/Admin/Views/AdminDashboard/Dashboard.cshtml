@@ -1,0 +1,39 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Dashboard
+@model AdminDashboardViewModel
+
+@{
+	ViewData["Title"] = "Табло за управление";
+	ViewData["CurrentPage"] = Pages.Admin.Dashboard;
+}
+
+<section class="page-wrapper flex-column">
+	<h1 class="title">@ViewData["Title"]</h1>
+
+	<section class="section-users">
+		<h3 class="heading">Потребители</h3>
+		<div class="users-count-box">
+			<p>Регистрирани потребители: <strong>@Model.UsersCount</strong></p>
+		</div>
+	</section>
+
+	<section class="section-products">
+		<h3 class="heading">Топ продукти</h3>
+		<table class="products-table">
+			<thead>
+				<tr>
+					<th>sdhjsdhjsd</th>
+					<th>sdasd</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var product in Model.ProductsList)
+				{
+					<tr>
+						<td>@product.Name</td>
+						<td>@product.LikesCount</td>
+					</tr>
+				}	
+			</tbody>
+		</table>
+	</section>
+</section>

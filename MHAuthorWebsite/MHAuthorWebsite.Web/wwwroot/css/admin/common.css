@@ -1,3 +1,20 @@
+html {
+  padding-top: 0;
+  width: 100vw;
+}
+
+body {
+  min-height: 100%;
+  width: 100%;
+  margin-left: 10rem;
+}
+
 main {
   padding: 5rem 15rem;
+}
+
+.page-wrapper {
+  padding: 3rem;
+  min-height: 100%;
+  width: 100%;
 }

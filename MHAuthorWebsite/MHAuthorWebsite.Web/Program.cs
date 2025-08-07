@@ -37,6 +37,8 @@ builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 
+builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -160,7 +162,7 @@ app.MapControllerRoute(
 app.MapAreaControllerRoute(
     name: "Admin",
     areaName: "Admin",
-    pattern: "Admin/{controller=Admin}/{action=Dashboard}/{id?}");
+    pattern: "Admin/{controller=AdminDashboard}/{action=Dashboard}/{id?}");
 
 app.MapRazorPages();
 

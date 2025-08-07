@@ -51,6 +51,6 @@ public class AdminProductTypeController : AdminBaseController
         ServiceResult result = await _productTypeService.AddProductTypeAsync(form);
         if (!result.Success) return StatusCode(500);
 
-        return RedirectToAction("Dashboard", "Admin");
+        return RedirectToAction("Dashboard", "AdminDashboard");
     }
 }
