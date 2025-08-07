@@ -67,6 +67,14 @@ if (new[] { cloudName, apiKey, apiSecret }.Any(string.IsNullOrWhiteSpace))
 
 builder.Services.AddSingleton(new Cloudinary(new Account(cloudName, apiKey, apiSecret)));
 
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(p =>
+    {
+        p.Expire(TimeSpan.FromMinutes(5));
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -127,6 +135,8 @@ app.Use(async (context, next) =>
 app.UseRouting();
 
 app.UseCors("DefaultPolicy");
+
+app.UseOutputCache();
 
 app.UseAuthentication();
 app.UseAuthorization();

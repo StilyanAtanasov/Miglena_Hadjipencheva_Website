@@ -34,7 +34,7 @@ body {
 }
 
 body.animate {
-  animation: fadeIn 1s ease-in-out;
+  animation: fadeIn 300ms ease-in-out;
 }
 
 .link {
