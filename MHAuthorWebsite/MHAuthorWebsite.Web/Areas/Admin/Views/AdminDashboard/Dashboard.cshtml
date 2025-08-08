@@ -54,25 +54,25 @@
 	<section class="dashboard-section section-products flex-column">
 		<div class="title-box flex-row">
 			<h3 class="heading">Топ продукти</h3>
-			<button class="btn flex-row" asp-controller="AdminProduct" asp-action="ProductsList">Към управление на продуктите <i class="fa-solid fa-arrow-right"></i></button>
+			<a class="btn link flex-row" asp-area="Admin" asp-controller="AdminProduct" asp-action="ProductsList">Към управление на продуктите <i class="fa-solid fa-arrow-right"></i></a>
 		</div>
 		<table class="products-table table">
 			<thead>
-				<tr>
-					<th>Продукт</th>
-					<th class="likes-column">Харесвания</th>
-					<th class="sold-column">Продадени</th>
-				</tr>
+			<tr>
+				<th>Продукт</th>
+				<th class="likes-column">Харесвания</th>
+				<th class="sold-column">Продадени</th>
+			</tr>
 			</thead>
 			<tbody>
-				@foreach (var product in Model.ProductsList)
-				{
-					<tr>
-						<td><a class="link active" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></td>
-						<td class="likes-column">@product.LikesCount</td>
-						<td class="sold-column">@product.SoldCount</td>
-					</tr>
-				}
+			@foreach (var product in Model.ProductsList)
+			{
+				<tr>
+					<td><a class="link active" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></td>
+					<td class="likes-column">@product.LikesCount</td>
+					<td class="sold-column">@product.SoldCount</td>
+				</tr>
+			}
 			</tbody>
 		</table>
 	</section>

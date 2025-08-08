@@ -11,7 +11,6 @@ public class AdminDashboardController : AdminBaseController
 
     public AdminDashboardController(IAdminDashboardService adminDashboardService) => _adminDashboardService = adminDashboardService;
 
-    [OutputCache]
     public async Task<IActionResult> Dashboard()
     {
         AdminDashboardViewModel model = await _adminDashboardService.GetDashboardStatisticsAsync();
