@@ -1,0 +1,42 @@
+.page-wrapper {
+  width: 90%;
+  margin-left: 5%;
+}
+
+.btn-add-product {
+  align-self: flex-end;
+}
+
+.table {
+  width: 100%;
+}
+
+.table .action-btns {
+  justify-content: flex-end;
+}
+
+.table .action-btns .btn:hover {
+  transform: scale(1.05);
+}
+
+.table .action-btns .btn-publicity {
+  background-color: var(--color-tertiary);
+  color: var(--color-primary);
+}
+
+.table .action-btns .btn-edit {
+  background-color: var(--color-orange);
+}
+
+.table .action-btns .btn-delete {
+  background-color: var(--color-error);
+}
+
+.table .price-column,
+.table .quantity-column {
+  text-align: center;
+}
+
+.table .actions-column {
+  text-align: end;
+}
