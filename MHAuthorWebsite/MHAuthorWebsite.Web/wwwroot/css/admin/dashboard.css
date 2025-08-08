@@ -1,0 +1,71 @@
+.dashboard-section {
+  width: 100%;
+  margin: 2rem 0;
+}
+
+.dashboard-section .title-box {
+  gap: 2rem;
+}
+
+.dashboard-section .title-box button {
+  font-size: 1.7rem;
+  border-radius: 2rem;
+}
+
+.section-users {
+  width: 100%;
+}
+
+.section-users .statistics {
+  width: 100%;
+  gap: 3rem;
+}
+
+.section-users .statistics div {
+  gap: 0;
+}
+
+.dashboard-section .notice {
+  height: 3rem;
+  opacity: 0.5;
+  font-size: 1.5rem;
+}
+
+.dashboard-section .notice,
+.dashboard-section p {
+  margin-left: 0.5rem;
+}
+
+.section-users .statistics-container {
+  width: 30rem;
+  padding: 5rem;
+  padding-left: 0;
+  font-weight: 800;
+  font-size: 5rem;
+  border-radius: 5rem;
+  text-align: end;
+  margin-top: 1rem;
+}
+
+.section-users .statistics-container span {
+  margin-left: auto;
+}
+
+.section-users .statistics-container.users-count {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.section-users .statistics-container.active-users-count {
+  background-color: var(--color-tertiary);
+  color: var(--color-primary);
+}
+
+.section-users .statistics-container.new-users-count {
+  background-color: var(--color-orange);
+}
+
+.section-products .products-table .likes-column,
+.section-products .products-table .sold-column {
+  text-align: center;
+}

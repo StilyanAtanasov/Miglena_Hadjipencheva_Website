@@ -19,18 +19,22 @@ public class AdminDashboardService : IAdminDashboardService
     }
 
     public async Task<AdminDashboardViewModel> GetDashboardStatisticsAsync()
-    => new()
-    {
-        UsersCount = _userManager.Users.Count() - (await _userManager.GetUsersInRoleAsync("Admin")).Count,
-        ProductsList = _repository
+        => new()
+        {
+            UsersCount = _userManager.Users.Count() - (await _userManager.GetUsersInRoleAsync("Admin")).Count,
+            ProductsList = _repository
                 .AllReadonly<Product>()
                 .Include(p => p.Likes)
                 .Select(pr => new AdminDashboardProductsViewModel
                 {
+                    Id = pr.Id,
                     Name = pr.Name,
-                    LikesCount = pr.Likes.Count
+                    LikesCount = pr.Likes.Count,
+                    SoldCount = pr.Orders.Count(o => o.Products.Any(p => p.Id == pr.Id)) // TODO FIX
                 })
-                .OrderByDescending(pr => pr.LikesCount)
+                .OrderByDescending(pr => pr.SoldCount)
+                .ThenByDescending(pr => pr.LikesCount)
+                .Take(10)
                 .ToList()
-    };
+        };
 }

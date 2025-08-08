@@ -6,33 +6,73 @@
 	ViewData["CurrentPage"] = Pages.Admin.Dashboard;
 }
 
+@section Styles
+{
+	<link rel="stylesheet" href="~/css/admin/dashboard.css" />
+}
+
 <section class="page-wrapper flex-column">
 	<h1 class="title">@ViewData["Title"]</h1>
 
-	<section class="section-users">
+	<section class="dashboard-section section-users flex-column">
 		<h3 class="heading">Потребители</h3>
-		<div class="users-count-box">
-			<p>Регистрирани потребители: <strong>@Model.UsersCount</strong></p>
+
+		<div class="statistics flex-row">
+			<div class="flex-column">
+				<p class="subheading">Регистрирани потребители:</p>
+				<span class="notice flex-row">
+					<i class="fa-solid fa-circle-info"></i>
+					Всички потребители
+				</span>
+				<div class="statistics-container users-count">
+					<span><strong>@Model.UsersCount</strong></span>
+				</div>
+			</div>
+			<div class="flex-column">
+				<p class="subheading">Активни потребители:</p>
+				<span class="notice flex-row">
+					<i class="fa-solid fa-circle-info"></i>
+					През последните 30 дни
+				</span>
+				<div class="statistics-container active-users-count">
+					<span><strong>2</strong></span> <!-- TODO Placeholder for active users count, replace with actual logic -->
+				</div>
+			</div>
+			<div class="flex-column">
+				<p class="subheading">Нови потребители:</p>
+				<span class="notice flex-row">
+					<i class="fa-solid fa-circle-info"></i>
+					За последните 30 дни
+				</span>
+				<div class="statistics-container new-users-count">
+					<span><strong>1</strong></span> <!-- TODO Placeholder for active users count, replace with actual logic -->
+				</div>
+			</div>
 		</div>
 	</section>
 
-	<section class="section-products">
-		<h3 class="heading">Топ продукти</h3>
-		<table class="products-table">
+	<section class="dashboard-section section-products flex-column">
+		<div class="title-box flex-row">
+			<h3 class="heading">Топ продукти</h3>
+			<button class="btn flex-row" asp-controller="AdminProduct" asp-action="ProductsList">Към управление на продуктите <i class="fa-solid fa-arrow-right"></i></button>
+		</div>
+		<table class="products-table table">
 			<thead>
 				<tr>
-					<th>sdhjsdhjsd</th>
-					<th>sdasd</th>
+					<th>Продукт</th>
+					<th class="likes-column">Харесвания</th>
+					<th class="sold-column">Продадени</th>
 				</tr>
 			</thead>
 			<tbody>
 				@foreach (var product in Model.ProductsList)
 				{
 					<tr>
-						<td>@product.Name</td>
-						<td>@product.LikesCount</td>
+						<td><a class="link active" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></td>
+						<td class="likes-column">@product.LikesCount</td>
+						<td class="sold-column">@product.SoldCount</td>
 					</tr>
-				}	
+				}
 			</tbody>
 		</table>
 	</section>
