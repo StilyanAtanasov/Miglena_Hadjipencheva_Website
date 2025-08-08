@@ -20,4 +20,6 @@ public interface IAdminProductService : IProductService
     Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync();
 
     Task<ServiceResult> ToggleProductPublicityAsync(Guid productId);
+
+    Task<ICollection<Guid>> GetImagesByProductId(Guid productId);
 }

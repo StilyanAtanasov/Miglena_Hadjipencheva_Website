@@ -130,6 +130,7 @@ public class AdminProductController : AdminBaseController
     }
 
     [HttpGet]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<IActionResult> ProductsList()
     {
         ICollection<ProductListViewModel> products = await _productService.GetProductsListReadonlyAsync();
@@ -246,6 +247,13 @@ public class AdminProductController : AdminBaseController
         ServiceResult result = await _productService.DeleteProductAsync(productId);
         if (!result.Found) return NotFound();
         if (!result.Success) return StatusCode(500);
+
+        ICollection<Guid> productImageIds = await _productService.GetImagesByProductId(productId);
+        foreach (Guid id in productImageIds)
+        {
+            ServiceResult deleteImagesResult = await _imageService.DeleteProductImageByIdAsync(id);
+            if (!deleteImagesResult.Success) return StatusCode(500);
+        }
 
         return RedirectToAction(nameof(ProductsList));
     }

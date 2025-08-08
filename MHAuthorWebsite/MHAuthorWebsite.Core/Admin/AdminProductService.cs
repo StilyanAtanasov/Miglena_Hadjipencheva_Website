@@ -224,4 +224,12 @@ public class AdminProductService : ProductService, IAdminProductService
             return ServiceResult.Failure();
         }
     }
+
+    public async Task<ICollection<Guid>> GetImagesByProductId(Guid productId)
+        => await _repository
+                .WhereReadonly<Image>(i => i.ProductId == productId)
+                .IgnoreQueryFilters()
+                .Select(i => i.Id)
+                .ToArrayAsync();
+
 }

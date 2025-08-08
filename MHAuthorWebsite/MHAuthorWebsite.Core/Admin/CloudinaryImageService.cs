@@ -174,7 +174,6 @@ public class CloudinaryImageService : IImageService
             .All<Image>()
             .IgnoreQueryFilters()
             .Include(i => i.Product)
-            .Where(i => !i.Product.IsDeleted)
             .FirstOrDefaultAsync(i => i.Id == imageId);
 
         if (image is null) return ServiceResult.NotFound();
