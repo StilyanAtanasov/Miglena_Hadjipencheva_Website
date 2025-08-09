@@ -122,7 +122,7 @@ app.Use(async (context, next) =>
                 "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js " +
                 "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js " +
                 "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js " +
-                "https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.js; " +
+                "https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.esm.js; " +
         "style-src 'self' https://fonts.googleapis.com https://site-assets.fontawesome.com " +
                 "https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css " +
                 "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css " +

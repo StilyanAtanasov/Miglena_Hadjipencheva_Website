@@ -1,5 +1,7 @@
 "use strict";
 
+import { pushNotification } from "./notification.js";
+
 document.addEventListener(`DOMContentLoaded`, function () {
   const totalPriceElement = document.querySelector(`#price-sum`);
 
@@ -51,33 +53,8 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
         cartItemElement.remove();
 
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "success",
-          title: "Продуктът е премахнат от количката!",
-          showConfirmButton: false,
-          timer: 4000,
-          timerProgressBar: true,
-          didOpen: toast => {
-            toast.addEventListener("mouseenter", Swal.stopTimer);
-            toast.addEventListener("mouseleave", Swal.resumeTimer);
-          },
-        });
-      } else
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "error",
-          title: "Грешка при премахването на продукта!",
-          showConfirmButton: false,
-          timer: 4000,
-          timerProgressBar: true,
-          didOpen: toast => {
-            toast.addEventListener("mouseenter", Swal.stopTimer);
-            toast.addEventListener("mouseleave", Swal.resumeTimer);
-          },
-        });
+        pushNotification("Продуктът е премахнат от количката!", "success");
+      } else pushNotification("Грешка при премахването на продукта!", "error");
     })
   );
 });
