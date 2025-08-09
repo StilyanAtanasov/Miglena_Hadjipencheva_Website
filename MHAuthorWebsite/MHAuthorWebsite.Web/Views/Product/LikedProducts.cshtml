@@ -6,7 +6,9 @@
 }
 
 @section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/liked-products.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/notification.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
@@ -36,11 +38,9 @@
 							<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
 						</button>
 					</form>
-					<form asp-controller="Product" asp-action="ToggleLike" asp-route-id="@product.Id" method="post" class="remove">
-						<button type="submit" class="btn remove btn-none"><i class="fa-solid fa-trash-can"></i></button>
-					</form>
+					<button data-role="remove-item" data-item-id="@product.Id" class="btn remove btn-none"><i class="fa-solid fa-trash-can"></i></button>
 				</div>
-				<hr />
+				<hr id="line-@product.Id"/>
 			}
 		}
 		else
@@ -51,5 +51,7 @@
 </div>
 
 @section Scripts {
+	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/liked-products.js" asp-append-version="true"></script>
 	<script src="~/js/click.js" asp-append-version="true"></script>
 }

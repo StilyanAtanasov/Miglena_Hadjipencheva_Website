@@ -65,9 +65,6 @@ public class ProductController : BaseController
         if (!result.Found) return NotFound();
         if (!result.HasPermission) return Unauthorized();
 
-        string referer = Request.Headers["Referer"].ToString();
-        if (!string.IsNullOrEmpty(referer)) return Redirect(referer);
-
-        return RedirectToAction(nameof(Index), "Home");
+        return StatusCode(200);
     }
 }
