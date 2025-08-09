@@ -6,7 +6,9 @@
 }
 
 @section Styles {
-	<link rel="stylesheet" href="~/css/cart.css" />
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/alert.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
@@ -125,6 +127,7 @@
 </div>
 
 @section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.js"></script>
 	<script src="~/js/click.js" asp-append-version="true"></script>
 	<script src="~/js/cart.js" asp-append-version="true"></script>
 }

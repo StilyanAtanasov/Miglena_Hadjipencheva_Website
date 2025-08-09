@@ -49,7 +49,34 @@ document.addEventListener(`DOMContentLoaded`, function () {
         totalPriceElement.textContent = (+totalPriceElement.textContent.replace(`,`, `.`) - itemsSumPrice).toFixed(2).replace(`.`, `,`);
 
         cartItemElement.remove();
-      } else alert(`Грешка при премахването на продукта от количката!`);
+
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "Продуктът е премахнат от количката!",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: toast => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
+      } else
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: "Грешка при премахването на продукта!",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: toast => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
     })
   );
 });

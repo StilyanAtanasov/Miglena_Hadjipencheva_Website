@@ -1,0 +1,8 @@
+/* ----- SweetAlert2 ----- */
+.swal2-container {
+  width: auto !important;
+}
+
+.swal2-title {
+  font-size: 2rem !important;
+}
