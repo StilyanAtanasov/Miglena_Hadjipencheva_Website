@@ -43,10 +43,11 @@ document.addEventListener(`DOMContentLoaded`, function () {
       });
 
       if (response.ok) {
-        const cartItemElement = b.closest(`tr`);
-        const itemsSumPrice = +cartItemElement.querySelector(`.sum-price`).textContent.replace(`,`, `.`);
-
-        totalPriceElement.textContent = (+totalPriceElement.textContent.replace(`,`, `.`) - itemsSumPrice).toFixed(2).replace(`.`, `,`);
+        let cartItemElement = b.closest(`tr`);
+        if (cartItemElement != null) {
+          const itemsSumPrice = +cartItemElement.querySelector(`.sum-price`).textContent.replace(`,`, `.`);
+          totalPriceElement.textContent = (+totalPriceElement.textContent.replace(`,`, `.`) - itemsSumPrice).toFixed(2).replace(`.`, `,`);
+        } else cartItemElement = b.closest(`div`);
 
         cartItemElement.remove();
 
@@ -56,7 +57,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
           icon: "success",
           title: "Продуктът е премахнат от количката!",
           showConfirmButton: false,
-          timer: 3000,
+          timer: 4000,
           timerProgressBar: true,
           didOpen: toast => {
             toast.addEventListener("mouseenter", Swal.stopTimer);
@@ -70,7 +71,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
           icon: "error",
           title: "Грешка при премахването на продукта!",
           showConfirmButton: false,
-          timer: 3000,
+          timer: 4000,
           timerProgressBar: true,
           didOpen: toast => {
             toast.addEventListener("mouseenter", Swal.stopTimer);

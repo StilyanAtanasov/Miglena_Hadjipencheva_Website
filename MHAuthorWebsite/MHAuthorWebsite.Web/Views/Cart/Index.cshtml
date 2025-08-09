@@ -34,7 +34,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								@foreach (var item in Model.Items.Where(i => i.IsAvailable))
+								@foreach (CartItemViewModel item in Model.Items.Where(i => i.IsAvailable))
 								{
 									<tr class="clickable" data-details-url="@Url.Action("Details", "Product", new { productId = item.ProductId })">
 										<td><input type="checkbox" name="selectedItems" value="@item.ItemId" checked /></td>
@@ -81,13 +81,11 @@
 			{
 				<section class="products-section flex-column" aria-labelledby="unavailable-items">
 					<h2 id="unavailable-items" class="heading">Неналични продукти</h2>
-					@foreach (var item in Model.Items.Where(i => i is { IsAvailable: false, IsDiscontinued: false }))
+					@foreach (CartItemViewModel item in Model.Items.Where(i => i is { IsAvailable: false, IsDiscontinued: false }))
 					{
 						<div class="cart-warning flex-row">
 							Продуктът „@item.Name“ в момента е изчерпан!
-							<form method="post" asp-action="Remove" asp-controller="Cart" asp-route-itemId="@item.ItemId">
-								<button type="submit" class="btn remove btn-none"><i class="fa-solid fa-trash-can"></i></button>
-							</form>
+							<button data-role="remove-item" data-item-id="@item.ItemId" class="btn remove btn-none"><i class="fa-solid fa-trash-can"></i></button>
 						</div>
 					}
 				</section>
@@ -96,13 +94,11 @@
 			{
 				<section class="products-section flex-column" aria-labelledby="discontinued-items">
 					<h2 id="discontinued-items" class="heading">Спрени продукти</h2>
-					@foreach (var item in Model.Items.Where(i => i.IsDiscontinued))
+					@foreach (CartItemViewModel item in Model.Items.Where(i => i.IsDiscontinued))
 					{
 						<div class="cart-warning flex-row">
 							Продуктът „@item.Name“ вече не се предлага!
-							<form method="post" asp-action="Remove" asp-controller="Cart" asp-route-itemId="@item.ItemId">
-								<button type="submit" class="btn remove btn-none"><i class="fa-solid fa-trash-can"></i></button>
-							</form>
+							<button data-role="remove-item" data-item-id="@item.ItemId" class="btn remove btn-none"><i class="fa-solid fa-trash-can"></i></button>
 						</div>
 					}
 				</section>
