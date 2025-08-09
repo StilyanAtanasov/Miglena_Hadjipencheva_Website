@@ -43,7 +43,7 @@ public class CartController : BaseController
         ServiceResult r = await _cartService.RemoveFromCartAsync(GetUserId()!, itemId);
         if (r.IsBadRequest) return BadRequest(r.Errors);
 
-        return RedirectToAction(nameof(Index));
+        return StatusCode(200);
     }
 
     [HttpPost("Cart/UpdateQuantity")]
