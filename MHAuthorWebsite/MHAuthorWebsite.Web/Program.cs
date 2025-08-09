@@ -69,6 +69,14 @@ if (new[] { cloudName, apiKey, apiSecret }.Any(string.IsNullOrWhiteSpace))
 
 builder.Services.AddSingleton(new Cloudinary(new Account(cloudName, apiKey, apiSecret)));
 
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(p => p.NoCache());
+    options.AddPolicy("HomePage", p =>
+    {
+        p.Expire(TimeSpan.FromDays(7));
+    });
+});
 
 var app = builder.Build();
 
@@ -130,6 +138,8 @@ app.Use(async (context, next) =>
 app.UseRouting();
 
 app.UseCors("DefaultPolicy");
+
+app.UseOutputCache();
 
 app.UseAuthentication();
 app.UseAuthorization();
