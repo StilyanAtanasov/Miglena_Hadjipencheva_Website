@@ -21,8 +21,8 @@ document.addEventListener(`DOMContentLoaded`, function () {
       if (response.ok) {
         const data = await response.json();
 
-        data.lineTotal != null && (document.querySelector(`#line-total-${itemId}`).textContent = `${data.lineTotal} лв.`);
-        data.cartTotal != null && (totalPriceElement.textContent = `${data.cartTotal} лв.`);
+        data.lineTotal != null && (document.querySelector(`#line-total-${itemId} .sum-price`).textContent = `${data.lineTotal}`);
+        data.cartTotal != null && (totalPriceElement.textContent = `${data.cartTotal}`);
       } else alert(`Грешка при обновяване на количеството.`);
     })
   );
