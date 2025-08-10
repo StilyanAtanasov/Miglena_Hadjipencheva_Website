@@ -3,6 +3,7 @@ using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Web.Utils;
 using MHAuthorWebsite.Web.ViewModels.Product;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
@@ -15,6 +16,7 @@ public class ProductController : BaseController
 
     public ProductController(IProductService productService) => _productService = productService;
 
+    [AllowAnonymous]
     [HttpGet("Product/Details/{productId}")]
     public async Task<IActionResult> Details(Guid productId)
     {
@@ -25,6 +27,7 @@ public class ProductController : BaseController
         return View(result.Result);
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> AllProducts([FromQuery] int page = 1, [FromQuery] string? orderType = null)
     {
@@ -55,6 +58,7 @@ public class ProductController : BaseController
         return View(products);
     }
 
+    [AllowAnonymous]
     [HttpPost("/Product/ToggleLike/{productId}")]
     public async Task<IActionResult> ToggleLike([FromRoute] Guid productId)
     {

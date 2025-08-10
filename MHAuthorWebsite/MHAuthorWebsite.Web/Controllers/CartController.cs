@@ -1,6 +1,7 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Web.ViewModels.Cart;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MHAuthorWebsite.Web.Controllers;
@@ -19,6 +20,7 @@ public class CartController : BaseController
         return View(cart);
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] AddCartItemViewModel model)
     {

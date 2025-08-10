@@ -41,6 +41,8 @@
 
 		<p id="zero-liked-message" class="zero-liked flex-column @(@Model.Any() ? "hidden" : "")"><i class="fa-solid fa-heart-circle-xmark"></i> Все още не сте харесали продукт!</p>
 	</section>
+	
+	<form class="hidden">@Html.AntiForgeryToken()</form>
 </div>
 
 @section Scripts {

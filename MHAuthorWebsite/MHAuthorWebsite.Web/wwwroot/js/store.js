@@ -23,12 +23,13 @@ document.addEventListener(`DOMContentLoaded`, function () {
           RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
         },
       });
-
+      console.log(response);
       if (response.ok) {
         const isAdded = b.classList.toggle(`liked`);
 
         pushNotification(isAdded ? `Продуктът е харесан успешно!` : `Продуктът е премахнат от харесани!`, `success`);
-      } else pushNotification(`Възникна неочаквана грешка!`, `error`);
+      } else if (response.status === 401) pushNotification(`Взете в системата, за да харесате продукт!`, `warning`);
+      else pushNotification(`Възникна неочаквана грешка!`, `error`);
     })
   );
 });
