@@ -11,6 +11,8 @@
 	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/notification.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/editor.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/product-details.css" asp-append-version="true" />
 }
@@ -48,7 +50,6 @@
 			<p><strong>Цена:</strong> @Model.Price лв.</p>
 			<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
 
-			<form id="like-form" asp-controller="Product" asp-action="ToggleLike" asp-route-id="@Model.Id" class="hidden"></form>
 			<form method="post" asp-controller="Cart" asp-action="Add">
 				<input type="hidden" name="productId" value="@Model.Id" />
 				<div class="quantity">
@@ -56,7 +57,7 @@
 					<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
 				</div>
 				<div class="order-btns flex-row">
-					<button form="like-form" type="submit" class="btn like @(Model.IsLiked ? "liked" : "")">
+					<button type="button" data-role="remove-item" data-item-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")">
 						<span class="fa-stack">
 							<i class="fa-regular fa-heart fa-stack-2x"></i>
 							<i class="fa-solid fa-heart fa-stack-2x"></i>
@@ -109,5 +110,6 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/product-details.js" asp-append-version="true"></script>
 }
