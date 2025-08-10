@@ -4,7 +4,7 @@ import { pushNotification } from "./notification.js";
 
 document.addEventListener(`DOMContentLoaded`, function () {
   document.querySelectorAll(`[data-role="remove-item"]`).forEach(b =>
-    b.addEventListener(`click`, async function (e) {
+    b.addEventListener(`click`, async function () {
       const itemId = b.dataset.itemId;
 
       const response = await fetch(`/Product/ToggleLike/${itemId}`, {
@@ -19,7 +19,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
         const line = document.getElementById(`line-${itemId}`);
         if (line != null) line.remove();
 
-        pushNotification("Продуктът е премахнат от успешно!", "success");
+        pushNotification("Продуктът е премахнат успешно!", "success");
       } else pushNotification("Грешка при премахването на продукта!", "error");
     })
   );

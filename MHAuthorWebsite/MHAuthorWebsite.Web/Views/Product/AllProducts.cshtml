@@ -5,6 +5,8 @@
 
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/notification.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/store.css" asp-append-version="true" />
 }
 
@@ -54,14 +56,12 @@
 						<span class="price-text @(product.IsAvailable ? "available" : "unavailable")">@(product.IsAvailable ? "В наличност" : "Изчерпана наличност")</span>
 					</div>
 					<div class="action-btns flex-row">
-						<form asp-controller="Product" asp-action="ToggleLike" asp-route-id="@product.Id">
-							<button type="submit" class="btn like @(product.IsLiked ? "liked" : "")">
-								<span class="fa-stack">
-									<i class="fa-regular fa-heart fa-stack-2x"></i>
-									<i class="fa-solid fa-heart fa-stack-2x"></i>
-								</span>
-							</button>
-						</form>
+						<button data-role="remove-item" data-item-id="@product.Id" class="btn like @(product.IsLiked ? "liked" : "")">
+							<span class="fa-stack">
+								<i class="fa-regular fa-heart fa-stack-2x"></i>
+								<i class="fa-solid fa-heart fa-stack-2x"></i>
+							</span>
+						</button>
 						<form asp-controller="Cart" asp-action="Add">
 							<input type="hidden" name="productId" value="@product.Id" />
 							<input type="hidden" name="quantity" value="1" />
@@ -119,6 +119,7 @@
 
 @section Scripts {
 	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
 	<script src="~/js/click.js" asp-append-version="true"></script>
-	<script src="~/js/store.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/store.js" asp-append-version="true"></script>
 }
