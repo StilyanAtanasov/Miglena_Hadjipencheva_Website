@@ -72,30 +72,7 @@
 			</div>
 
 			<div id="productTypeAttributesContainer" class="form-input-box flex-column">
-				@foreach (AttributeValueForm a in Model.Attributes)
-				{
-					string inputType = AttributeDataTypeMapper.HtmlInputTypes[a.DataType];
-					string containerClass = AttributeDataTypeMapper.CssContainerClass[a.DataType];
-
-					<div class="form-input-box flex-column @containerClass">
-						<label class="form-label">@a.Label:</label>
-
-						<input type="@inputType"
-						       name="@a.Value"
-						       class="form-input"
-						       data-val="true"
-						       data-val-required="@(a.IsRequired ? $"Полето \"{a.Label}\" е задължително." : null)"
-						       style="-webkit-appearance: textarea"
-						       value="@a.Value"/>
-
-						<input type="hidden" name="@a.AttributeDefinitionId" value="@a.AttributeDefinitionId"/>
-						<input type="hidden" name="@a.Key" value="@a.Key"/>
-						<input type="hidden" name="@a.Label" value="@a.Label"/>
-						<span class="input-error"
-						      data-valmsg-for="@a.Value"
-						      data-valmsg-replace="true"></span>
-					</div>
-				}
+				<partial name="_DynamicAttributesPartial" model="Model.Attributes" />
 			</div>
 
 			<button data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">Запази</button>

@@ -19,18 +19,22 @@
 			       class="form-input"
 			       data-val="true"
 			       data-val-required="Полето е задължително."
-			       style="-webkit-appearance: textarea"/>
+			       style="-webkit-appearance: textarea"
+			       value="@a.Value"/>
 		}
 		else
 		{
 			<input type="@inputType"
 				   name="Attributes[@i].Value"
 				   class="form-input"
-				   style="-webkit-appearance: textarea" />
+				   style="-webkit-appearance: textarea"
+				   value="@a.Value" />
 		}
 
 		<input type="hidden" name="Attributes[@i].Key" value="@a.Key"/>
 		<input type="hidden" name="Attributes[@i].Label" value="@a.Label"/>
+		<input type="hidden" name="Attributes[@i].AttributeDefinitionId" value="@a.AttributeDefinitionId" />
+
 		<span class="input-error"
 		      data-valmsg-for="Attributes[@i].Value"
 		      data-valmsg-replace="true"></span>
