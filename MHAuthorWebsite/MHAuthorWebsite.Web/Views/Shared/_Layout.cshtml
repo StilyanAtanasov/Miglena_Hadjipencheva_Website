@@ -37,6 +37,14 @@
 						<i class="fa-regular fa-cart-shopping"></i> Количка
 					</a>
 				</li>
+				@if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole("Admin"))
+				{
+					<li>
+						<a data-trigger="load-unlimited" class="active flex-row" asp-area="Admin" asp-controller="AdminDashboard" asp-action="Dashboard">
+							<i class="fa-regular fa-screwdriver-wrench"></i> Админ панел
+						</a>
+					</li>
+				}
 			</ul>
 			<partial name="_LoginPartial" />
 			<div id="bars" class="bars flex-column hidden">
