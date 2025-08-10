@@ -110,7 +110,7 @@ button.active:hover::before {
 }
 
 .btn.order:not(:disabled):hover {
-  background-color: var(--color-success);
+  background-color: var(--color-tertiary-light);
   color: var(--color-primary);
   border-color: var(--color-dark);
 }

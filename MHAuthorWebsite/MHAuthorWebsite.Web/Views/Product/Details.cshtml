@@ -50,24 +50,22 @@
 			<p><strong>Цена:</strong> @Model.Price лв.</p>
 			<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
 
-			<form method="post" asp-controller="Cart" asp-action="Add">
-				<input type="hidden" name="productId" value="@Model.Id" />
-				<div class="quantity">
-					<label for="quantity">Количество:</label>
-					<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
-				</div>
-				<div class="order-btns flex-row">
-					<button type="button" data-role="remove-item" data-item-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")">
-						<span class="fa-stack">
-							<i class="fa-regular fa-heart fa-stack-2x"></i>
-							<i class="fa-solid fa-heart fa-stack-2x"></i>
-						</span>
-					</button>
-					<button type="submit" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled")>
-						<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
-					</button>
-				</div>
-			</form>
+			<input type="hidden" name="productId" value="@Model.Id" />
+			<div class="quantity">
+				<label for="quantity">Количество:</label>
+				<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
+			</div>
+			<div class="order-btns flex-row">
+				<button type="button" data-role="remove-item" data-item-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")">
+					<span class="fa-stack">
+						<i class="fa-regular fa-heart fa-stack-2x"></i>
+						<i class="fa-solid fa-heart fa-stack-2x"></i>
+					</span>
+				</button>
+				<button data-role="add-to-cart" data-item-id="@Model.Id" type="button" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled")>
+					<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
+				</button>
+			</div>
 		</section>
 	</section>
 
@@ -112,4 +110,5 @@
 	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/product-details.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/add-to-cart.js" asp-append-version="true"></script>
 }

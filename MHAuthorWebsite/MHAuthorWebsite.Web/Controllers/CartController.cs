@@ -20,7 +20,7 @@ public class CartController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromForm] AddCartItemViewModel model)
+    public async Task<IActionResult> Add([FromBody] AddCartItemViewModel model)
     {
         if (!IsUserAuthenticated()) return Unauthorized();
         if (model.ProductId == Guid.Empty || model.Quantity <= 0) return BadRequest("Invalid cart item data.");
@@ -29,10 +29,7 @@ public class CartController : BaseController
         if (result.IsBadRequest) return BadRequest(result.Errors); // TODO: Add error modal window
         if (!result.Success) return StatusCode(500);
 
-        string referer = Request.Headers["Referer"].ToString();
-        if (!string.IsNullOrEmpty(referer)) return Redirect(referer);
-
-        return RedirectToAction(nameof(Index));
+        return StatusCode(200);
     }
 
     [HttpPost("Cart/Remove/{itemId}")]

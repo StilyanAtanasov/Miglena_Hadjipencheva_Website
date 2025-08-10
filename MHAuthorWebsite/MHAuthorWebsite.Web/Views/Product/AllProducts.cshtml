@@ -62,13 +62,10 @@
 								<i class="fa-solid fa-heart fa-stack-2x"></i>
 							</span>
 						</button>
-						<form asp-controller="Cart" asp-action="Add">
-							<input type="hidden" name="productId" value="@product.Id" />
-							<input type="hidden" name="quantity" value="1" />
-							<button type="submit" class="btn order flex-row" @(product.IsAvailable ? "" : "disabled")>
-								<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
-							</button>
-						</form>
+						<input id="quantity" type="hidden" name="quantity" value="1" />
+						<button data-role="add-to-cart" data-item-id="@product.Id" class="btn order flex-row" @(product.IsAvailable ? "" : "disabled")>
+							<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
+						</button>
 					</div>
 				</div>
 			}
@@ -122,4 +119,5 @@
 	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
 	<script src="~/js/click.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/store.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/add-to-cart.js" asp-append-version="true"></script>
 }

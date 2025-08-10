@@ -31,16 +31,14 @@
 							<span class="price-text @(product.IsInStock ? "available" : "unavailable")">@(product.IsInStock ? "В наличност" : "Изчерпана наличност")</span>
 						</div>
 					</div>
-					<form method="post" asp-controller="Cart" asp-action="Add" class="order-form">
-						<input type="hidden" name="productId" value="@product.Id" />
-						<input type="hidden" name="quantity" value="1" />
-						<button type="submit" class="btn order flex-row" @(product.IsInStock ? "" : "disabled")>
-							<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
-						</button>
-					</form>
+					<input type="hidden" name="productId" value="@product.Id" />
+					<input type="hidden" name="quantity" value="1" />
+					<button data-role="add-to-cart" data-item-id="@product.Id" type="button" class="btn order flex-row" @(product.IsInStock ? "" : "disabled")>
+						<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
+					</button>
 					<button data-role="remove-item" data-item-id="@product.Id" class="btn remove btn-none"><i class="fa-solid fa-trash-can"></i></button>
 				</div>
-				<hr id="line-@product.Id"/>
+				<hr id="line-@product.Id" />
 			}
 		}
 		else
@@ -54,4 +52,5 @@
 	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/liked-products.js" asp-append-version="true"></script>
 	<script src="~/js/click.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/add-to-cart.js" asp-append-version="true"></script>
 }
