@@ -2,11 +2,15 @@
 
 import { pushNotification } from "./notification.js";
 
+let productsCount;
+
 document.addEventListener(`DOMContentLoaded`, function () {
   const totalPriceElement = document.querySelector(`#price-sum`);
 
-  const inputs = document.querySelectorAll(`[data-role="quantity-input"]`);
-  inputs.forEach(i =>
+  const quantityInputs = document.querySelectorAll(`[data-role="quantity-input"]`);
+  productsCount = quantityInputs.length;
+
+  quantityInputs.forEach(i =>
     i.addEventListener(`change`, async function () {
       const itemId = i.dataset.itemId;
       const quantity = parseInt(i.value);
@@ -29,8 +33,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
     })
   );
 
-  const deleteButtons = document.querySelectorAll(`[data-role="remove-item"]`);
-  deleteButtons.forEach(b =>
+  document.querySelectorAll(`[data-role="remove-item"]`).forEach(b =>
     b.addEventListener(`click`, async function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -49,6 +52,12 @@ document.addEventListener(`DOMContentLoaded`, function () {
         if (cartItemElement != null) {
           const itemsSumPrice = +cartItemElement.querySelector(`.sum-price`).textContent.replace(`,`, `.`);
           totalPriceElement.textContent = (+totalPriceElement.textContent.replace(`,`, `.`) - itemsSumPrice).toFixed(2).replace(`.`, `,`);
+
+          if (--productsCount === 0) {
+            document.getElementById(`valid-items-section`).remove();
+            document.getElementById(`cart-summary`).remove();
+            document.getElementById(`no-products-message`).classList.remove(`hidden`);
+          }
         } else cartItemElement = b.closest(`div`);
 
         cartItemElement.remove();

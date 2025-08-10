@@ -103,6 +103,16 @@
   font-size: 1.9rem;
 }
 
+#no-products-message {
+  font-size: 2.3rem;
+  gap: 2rem;
+}
+
+#no-products-message i {
+  font-size: 5rem;
+  color: var(--color-secondary);
+}
+
 /* --- Responsive --- */
 @media (max-width: 1050px) {
   html {
