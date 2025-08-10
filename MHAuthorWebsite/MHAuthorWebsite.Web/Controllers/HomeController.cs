@@ -8,7 +8,6 @@ public class HomeController : BaseController
 {
     [HttpGet]
     [AllowAnonymous]
-    [OutputCache(PolicyName = "HomePage")]
     public IActionResult Index()
     {
         return View();
