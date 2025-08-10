@@ -24,7 +24,7 @@ public class AttributeValueForm : IValidatableObject
         if (IsRequired && string.IsNullOrWhiteSpace(Value))
         {
             yield return new ValidationResult(
-                $"Полето \"{Label ?? Key}\" е задължително.",
+                $"Полето \"{Label}\" е задължително.",
                 new[] { nameof(Value) }
             );
         }

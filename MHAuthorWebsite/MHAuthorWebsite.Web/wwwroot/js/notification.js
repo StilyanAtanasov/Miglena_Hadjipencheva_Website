@@ -1,3 +1,5 @@
+"use strict";
+
 import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.esm.js";
 
 const defaultNotificationDuration = 5000;

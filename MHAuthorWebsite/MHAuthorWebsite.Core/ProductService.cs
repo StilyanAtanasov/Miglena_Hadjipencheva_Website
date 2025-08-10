@@ -58,7 +58,7 @@ public class ProductService : IProductService
                     .Select(a => new ProductAttributeDetailsViewModel
                     {
                         Label = a.Key,
-                        Value = a.Value ?? _repository.FindByExpressionAsync<ProductAttributeOption>(pao => pao.Id == a.ProductAttributeOptionsId).Result!.Value // TODO : experiment when ProductAttributeOptionsId is used
+                        Value = a.Value
                     })
                     .ToArray()
             };

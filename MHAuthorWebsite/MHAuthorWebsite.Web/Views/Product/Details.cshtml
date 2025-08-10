@@ -84,14 +84,14 @@
 	<hr />
 
 	<!-- Additional Attributes Section -->
-	@if (Model.Attributes.Any())
+	@if (Model.Attributes.Any(a => a.Value != null))
 	{
 		<section class="additional-info flex-column">
 			<h4 class="heading">Допълнителна информация</h4>
 
 			<table>
 				<tbody>
-					@foreach (var a in Model.Attributes)
+					@foreach (ProductAttributeDetailsViewModel a in Model.Attributes.Where(a => a.Value != null))
 					{
 						<tr>
 							<td>@a.Label</td>
