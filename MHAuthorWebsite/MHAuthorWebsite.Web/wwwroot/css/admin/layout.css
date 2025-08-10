@@ -4,6 +4,7 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 100;
+  justify-content: space-between;
   border-right: 0.15rem solid var(--color-secondary);
   border-radius: 0 2rem 2rem 0;
   font-size: 1.8rem;
@@ -11,6 +12,7 @@
   background-color: var(--color-secondary-lighter);
   box-shadow: 0 0 1rem var(--color-secondary);
   max-width: 10rem;
+  gap: 10rem;
   overflow-x: hidden;
   transition: max-width 300ms linear;
 }

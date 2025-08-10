@@ -21,8 +21,14 @@
 		<span id="loader"></span>
 	</div>
 
-<main role="main">
-		<nav class="admin-nav">
+	<main role="main">
+		<nav class="admin-nav flex-column">
+			<ul class="nav-elements flex-column">
+				<li data-url="@Url.Action("Index", "Home")" class="nav-element clickable flex-row">
+					<i class="fa-regular fa-house-chimney"></i>
+					<p class="flex-row">Към потребителския интерфейс</p>
+				</li>
+			</ul>
 			<ul class="nav-elements flex-column">
 				<li data-url="@Url.Action("Dashboard", "AdminDashboard")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.Dashboard ? "current" : "")">
 					<i class="fa-regular fa-chart-line"></i>
@@ -37,6 +43,7 @@
 					<p class="flex-row">Добавяне на категория</p>
 				</li>
 			</ul>
+			<ul class="nav-elements flex-column"></ul>
 		</nav>
 		@RenderBody()
 	</main>
