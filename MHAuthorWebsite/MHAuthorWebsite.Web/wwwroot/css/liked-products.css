@@ -59,7 +59,7 @@
   font-weight: 800;
 }
 
-.liked-products .product-card .order-form {
+.liked-products .product-card .btn.order {
   align-self: flex-end;
 }
 
