@@ -88,6 +88,11 @@ button.active:hover::before {
   transform: scaleX(1);
 }
 
+.link.italic,
+button.italic {
+  font-style: italic;
+}
+
 .flex-row {
   display: flex;
   flex-direction: row;

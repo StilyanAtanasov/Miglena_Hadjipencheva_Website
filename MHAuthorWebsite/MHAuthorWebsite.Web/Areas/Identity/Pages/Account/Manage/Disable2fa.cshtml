@@ -1,25 +1,31 @@
 ﻿@page
 @model Disable2faModel
 @{
-    ViewData["Title"] = "Disable two-factor authentication (2FA)";
-    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+	ViewData["Heading"] = "Деактивиране на двуфакторна автентикация";
+	ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
 }
 
-<partial name="_StatusMessage" for="StatusMessage" />
-<h3>@ViewData["Title"]</h3>
+@section Styles {
+	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
+}
 
-<div class="alert alert-warning" role="alert">
-    <p>
-        <strong>This action only disables 2FA.</strong>
-    </p>
-    <p>
-        Disabling 2FA does not change the keys used in authenticator apps. If you wish to change the key
-        used in an authenticator app you should <a asp-page="./ResetAuthenticator">reset your authenticator keys.</a>
-    </p>
-</div>
+<section class="content-body flex-column">
+	<partial name="_StatusMessage" for="StatusMessage" />
+	<div>
+		<p>
+			<strong>Тази операция само деактивира двуфакторната автентикация.</strong>
+		</p>
+		<p>
+			Деактивирането на двуфакторната автентикация не променя ключовете, използвани в приложенията за автентикация. Ако искате да промените ключа,
+			използван в приложението за автентикация, трябва да <a class="link active italic" asp-page="./ResetAuthenticator">нулирате вашите ключове за автентикация.</a>
+		</p>
+	</div>
+	<div>
+		<form method="post">
+			<button class="btn flex-row" type="submit"><i class="fa-regular fa-shield-minus"></i> Деактивирай</button>
+		</form>
+	</div>
+	
+	<i class="fa-solid fa-shield-minus background-icon"></i>
+</section>
 
-<div>
-    <form method="post">
-        <button class="btn btn-danger" type="submit">Disable 2FA</button>
-    </form>
-</div>
