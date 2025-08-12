@@ -13,7 +13,6 @@
   position: fixed;
   left: 0;
   top: 10rem;
-  z-index: 100;
   border-right: 0.15rem solid var(--color-secondary);
   font-size: 1.8rem;
   padding: 2rem 0;
@@ -87,4 +86,58 @@
   transform: scale(1.03);
   background-color: var(--color-tertiary-lighter);
   color: var(--color-black);
+}
+
+@media (max-width: 600px) {
+  html {
+    padding-top: 32rem;
+    font-size: 7px;
+  }
+
+  .page-wrapper {
+    padding: 5rem;
+  }
+
+  .page-content {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .content-body {
+    width: 100%;
+    gap: 2rem;
+  }
+
+  .profile-nav {
+    height: 22rem;
+    position: fixed;
+    width: 100%;
+  }
+
+  .input-form {
+    width: 100%;
+  }
+
+  .input-form .form-input.short {
+    max-width: 80%;
+  }
+
+  .background-icon {
+    position: absolute;
+    top: 45rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 450px) {
+  html {
+    font-size: 6px;
+  }
+}
+
+@media (max-width: 350px) {
+  html {
+    font-size: 5px;
+  }
 }
