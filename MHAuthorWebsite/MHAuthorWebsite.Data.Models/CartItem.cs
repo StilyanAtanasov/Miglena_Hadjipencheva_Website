@@ -24,6 +24,9 @@ public class CartItem
     public decimal Price { get; set; }
 
     [Required]
+    public bool IsSelected { get; set; }
+
+    [Required]
     [ForeignKey(nameof(Cart))]
     public Guid CartId { get; set; }
 

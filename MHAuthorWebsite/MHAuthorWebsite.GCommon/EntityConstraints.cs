@@ -62,4 +62,9 @@ public static class EntityConstraints
         public const byte TextMinLength = 2;
         public const ushort TextMaxLength = 2000;
     }
+
+    public static class CartItem
+    {
+        public const bool IsSelectedDefaultValue = true;
+    }
 }
