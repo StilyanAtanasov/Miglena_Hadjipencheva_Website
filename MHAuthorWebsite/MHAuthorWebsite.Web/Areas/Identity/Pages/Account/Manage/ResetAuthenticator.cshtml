@@ -1,0 +1,30 @@
+﻿@page
+@model ResetAuthenticatorModel
+@{
+	ViewData["Heading"] = "Нулиране на ключа за автентикация";
+	ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
+}
+
+<section class="content-body flex-column">
+	<partial name="_StatusMessage" for="StatusMessage" />
+	<article>
+		<p>
+			<strong>Ако нулирате ключа за автентикация, приложението ви за автентикация няма да работи, докато не го конфигурирате отново.</strong>
+		</p>
+		<p>
+			Този процес деактивира двуфакторната автентикация, докато не потвърдите приложението си за автентикация отново.
+			Ако не завършите конфигурацията на приложението си за автентикация, може да загубите достъп до акаунта си.
+		</p>
+	</article>
+	<div>
+		<form id="reset-authenticator-form" method="post">
+			<button id="reset-authenticator-button" class="btn flex-row" type="submit"><i class="fa-regular fa-arrow-rotate-left"></i> Нулирай ключа за автентикация</button>
+		</form>
+	</div>
+	
+	<i class="fa-solid fa-arrow-rotate-left background-icon"></i>
+</section>

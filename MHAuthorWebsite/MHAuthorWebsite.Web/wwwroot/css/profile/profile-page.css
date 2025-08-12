@@ -1,10 +1,10 @@
 .page-wrapper {
-  padding-left: 35rem;
+  padding-left: 30rem;
   justify-content: flex-start;
 }
 
 .content-body {
-  width: 100%;
+  width: 95%;
   gap: 2.5rem;
 }
 
