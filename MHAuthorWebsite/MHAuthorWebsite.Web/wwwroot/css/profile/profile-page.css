@@ -83,7 +83,7 @@
   width: 80%;
 }
 
-.btn:hover {
+.page-content .btn:hover {
   transform: scale(1.03);
   background-color: var(--color-tertiary-lighter);
   color: var(--color-black);
