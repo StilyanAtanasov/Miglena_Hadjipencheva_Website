@@ -24,28 +24,28 @@
 					{
 						<div>
 							<strong>Остават ви 0 кодa за възстановяване.</strong>
-							<p>Трябва да <a class="link active" asp-page="./GenerateRecoveryCodes">генерирате нов набор от кодове за възстановяване</a>, преди да можете да влезете с код за възстановяване.</p>
+							<p>Трябва да <a class="link active italic" asp-page="./GenerateRecoveryCodes"> генерирате нов набор от кодове за възстановяване</a>, преди да можете да влезете с код за възстановяване.</p>
 						</div>
 					}
 					else if (Model.RecoveryCodesLeft == 1)
 					{
 						<div>
 							<strong>Остават ви 1 код за възстановяване.</strong>
-							<p>Трябва да <a class="link active" asp-page="./GenerateRecoveryCodes">генерирате нов набор от кодове за възстановяване</a>, преди да можете да влезете с код за възстановяване.</p>
+							<p>Трябва да <a class="link active italic" asp-page="./GenerateRecoveryCodes"> генерирате нов набор от кодове за възстановяване</a>, преди да можете да влезете с код за възстановяване.</p>
 						</div>
 					}
 					else if (Model.RecoveryCodesLeft <= 3)
 					{
 						<div>
 							<strong>Остават ви @Model.RecoveryCodesLeft кодa за възстановяване.</strong>
-							<p>Трябва да <a class="link active" asp-page="./GenerateRecoveryCodes">генерирате нов набор от кодове за възстановяване</a>, преди да можете да влезете с код за възстановяване.</p>
+							<p>Трябва да <a class="link active italic" asp-page="./GenerateRecoveryCodes"> генерирате нов набор от кодове за възстановяване</a>, преди да можете да влезете с код за възстановяване.</p>
 						</div>
 					}
 
 					if (Model.IsMachineRemembered)
 					{
 						<form method="post">
-							<button type="submit" class="btn link">Забрави този браузър</button>
+							<button type="submit" class="btn link flex-row"><i class="fa-regular fa-broom-wide"></i> Забрави този браузър</button>
 						</form>
 					}
 
