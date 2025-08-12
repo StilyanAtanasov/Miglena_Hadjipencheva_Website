@@ -4,6 +4,7 @@ using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Cart;
 using Microsoft.EntityFrameworkCore;
+using static MHAuthorWebsite.GCommon.EntityConstraints.CartItem;
 
 namespace MHAuthorWebsite.Core;
 
@@ -54,6 +55,7 @@ public class CartService : ICartService
                 Quantity = quantity,
                 CartId = cart.Id,
                 Price = product.Price,
+                IsSelected = IsSelectedDefaultValue
             });
 
             await _repository.SaveChangesAsync();

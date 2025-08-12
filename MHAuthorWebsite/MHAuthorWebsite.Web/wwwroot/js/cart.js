@@ -33,6 +33,31 @@ document.addEventListener(`DOMContentLoaded`, function () {
     })
   );
 
+  document.querySelectorAll(`[data-role="is-selected-input"]`).forEach(i =>
+    i.addEventListener(`change`, async function () {
+      const itemId = i.dataset.itemId;
+      const isSelected = i.checked;
+
+      const response = await fetch(`Cart/UpdateIsSelected`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
+        },
+        body: JSON.stringify({ itemId, isSelected }),
+      });
+
+      if (response.ok) {
+        const selectedItems = [...document.querySelectorAll(`tbody tr`)].filter(i => i.querySelector(`[data-role="is-selected-input"]`).checked === true);
+
+        totalPriceElement.textContent = selectedItems
+          .reduce((partialSum, i) => partialSum + parseFloat(i.querySelector(`.sum-price`).textContent), 0)
+          .toFixed(2)
+          .replace(`.`, `,`);
+      } else alert(`Грешка при обновяване на селектираните продукти!`);
+    })
+  );
+
   document.querySelectorAll(`[data-role="remove-item"]`).forEach(b =>
     b.addEventListener(`click`, async function (e) {
       e.preventDefault();

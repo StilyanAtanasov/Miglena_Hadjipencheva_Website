@@ -40,11 +40,11 @@
 									<td>
 										@if (item.IsSelected)
 										{
-												<input type="checkbox" name="selectedItems" value="@item.ItemId" checked />
+												<input data-role="is-selected-input" data-item-id="@item.ItemId" type="checkbox" name="selectedItems" value="@item.ItemId" checked />
 										}
 										else
 										{
-												<input type="checkbox" name="selectedItems" value="@item.ItemId"  />
+												<input data-role="is-selected-input" data-item-id="@item.ItemId" type="checkbox" name="selectedItems" value="@item.ItemId" />
 										}
 									</td>
 									<td class="product-info flex-row">
