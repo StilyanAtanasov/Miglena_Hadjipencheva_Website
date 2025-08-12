@@ -87,6 +87,7 @@ public class CartService : ICartService
             {
                 ItemId = ci.Id,
                 ProductId = ci.ProductId,
+                IsSelected = ci.IsSelected,
                 Name = ci.Product.Name,
                 Category = ci.Product.ProductType.Name,
                 Quantity = ci.Quantity,

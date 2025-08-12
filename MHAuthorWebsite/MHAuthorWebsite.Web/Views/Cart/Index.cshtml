@@ -37,7 +37,16 @@
 							@foreach (CartItemViewModel item in Model.Items.Where(i => i.IsAvailable))
 							{
 								<tr class="clickable" data-details-url="@Url.Action("Details", "Product", new { productId = item.ProductId })">
-									<td><input type="checkbox" name="selectedItems" value="@item.ItemId" checked /></td>
+									<td>
+										@if (item.IsSelected)
+										{
+												<input type="checkbox" name="selectedItems" value="@item.ItemId" checked />
+										}
+										else
+										{
+												<input type="checkbox" name="selectedItems" value="@item.ItemId"  />
+										}
+									</td>
 									<td class="product-info flex-row">
 										<div class="product-image-container flex-row">
 											<img class="product-image" src="@item.ThumbnailUrl" alt="@(item.ThumbnailAlt ?? item.Name)" />

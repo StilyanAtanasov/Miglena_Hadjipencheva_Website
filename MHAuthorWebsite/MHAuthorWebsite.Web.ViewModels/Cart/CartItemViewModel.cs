@@ -6,6 +6,8 @@ public class CartItemViewModel
 
     public Guid ProductId { get; set; }
 
+    public bool IsSelected { get; set; }
+
     public string ThumbnailUrl { get; set; } = null!;
 
     public string ThumbnailAlt { get; set; } = null!;
