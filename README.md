@@ -99,6 +99,8 @@ MHAuthorWebsite/
 
 ### Setup:
 
+## NOTE: Replace all user secret values with valid ones ( the email must be valid and the password must be strong )
+
 ```bash
 dotnet user-secrets set "Cloudinary:CloudName" "your_cloud_name"
 dotnet user-secrets set "Cloudinary:ApiKey" "your_api_key"
