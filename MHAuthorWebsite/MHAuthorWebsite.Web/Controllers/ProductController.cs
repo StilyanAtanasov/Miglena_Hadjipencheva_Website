@@ -33,14 +33,14 @@ public class ProductController : BaseController
     {
         if (page < 1) page = 1;
         if (orderType is null) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
-        int productsCount = await _productService.GetAllProductsCountAsync();
-        if (Math.Ceiling((double)productsCount / PageSize) < page) return NotFound();
 
         bool result = SortValueMapper.SortMap.TryGetValue(orderType, out var sortValue);
         if (!result) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
 
-        (bool descending, Expression<Func<Product, object>>? expression) sortType = (sortValue.descending, sortValue.expression);
+        int productsCount = await _productService.GetAllProductsCountAsync();
+        if (productsCount > 0 && Math.Ceiling((double)productsCount / PageSize) < page) return NotFound();
 
+        (bool descending, Expression<Func<Product, object>>? expression) sortType = (sortValue.descending, sortValue.expression);
         ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page, sortType);
 
 
