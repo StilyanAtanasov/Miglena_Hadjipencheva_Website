@@ -44,4 +44,6 @@ public interface ICartService
     /// with an <see cref="UpdatedItemQuantityViewModel"/> indicating the updated item details if the operation
     /// succeeds.</returns>
     Task<ServiceResult<UpdatedItemQuantityViewModel>> UpdateItemQuantityAsync(string userId, Guid itemId, int quantity);
+
+    Task<ServiceResult> UpdateIsSelectedAsync(string userId, Guid itemId, bool isSelected);
 }

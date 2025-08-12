@@ -60,4 +60,16 @@ public class CartController : BaseController
             cartTotal = sr.Result.Total.ToString("F2")
         });
     }
+
+    [HttpPost("Cart/UpdateIsSelected")]
+    public async Task<IActionResult> UpdateIsSelected([FromBody] UpdateItemIsSelectedViewModel model)
+    {
+        if (!IsUserAuthenticated()) return Unauthorized();
+
+        ServiceResult sr = await _cartService
+            .UpdateIsSelectedAsync(GetUserId()!, model.ItemId, model.IsSelected);
+        if (sr.IsBadRequest) return BadRequest(sr.Errors);
+
+        return StatusCode(200);
+    }
 }

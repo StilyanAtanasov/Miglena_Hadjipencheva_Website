@@ -154,4 +154,27 @@ public class CartService : ICartService
             // (the non-public and deleted ones are excluded by default using a query filter)
         });
     }
+
+    public async Task<ServiceResult> UpdateIsSelectedAsync(string userId, Guid itemId, bool isSelected)
+    {
+        Cart? cart = await _repository
+            .All<Cart>()
+            .Include(c => c.CartItems)
+            .ThenInclude(ci => ci.Product)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (cart == null) return ServiceResult
+            .BadRequest(new() { ["cart"] = "Потребителят няма нищо в количката!" });
+
+        CartItem? cartItem = cart.CartItems
+            .FirstOrDefault(c => c.CartId == cart.Id && c.Id == itemId);
+
+        if (cartItem == null) return ServiceResult
+            .BadRequest(new() { ["product"] = "Продуктът не е намерен в количката!" });
+
+        cartItem.IsSelected = isSelected;
+        await _repository.SaveChangesAsync();
+
+        return ServiceResult.Ok();
+    }
 }
