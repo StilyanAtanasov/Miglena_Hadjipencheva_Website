@@ -12,7 +12,6 @@
 }
 
 <section class="content-body flex-column">
-	<partial name="_StatusMessage" for="StatusMessage" />
 	@{
 		ITrackingConsentFeature? consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
 		@if (consentFeature?.CanTrack ?? true)
