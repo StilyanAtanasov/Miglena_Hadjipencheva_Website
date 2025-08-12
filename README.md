@@ -61,6 +61,7 @@ Images are no longer stored locally but uploaded securely to Cloudinary through 
 - X-Content-Type-Options, Referrer-Policy, and frame options configured
 - CSRF protection with antiforgery tokens
 - Cookie security: HTTP-only, secure, and SameSite attributes
+- 2FA is enabled and accessible to all registered users 
 
 ---
 
