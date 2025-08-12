@@ -13,7 +13,7 @@
 	<section class="modal flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 		<form id="account" method="post" class="input-form flex-column">
-			<div asp-validation-summary="ModelOnly" role="alert"></div>
+			<div asp-validation-summary="ModelOnly" role="alert" class="input-error"></div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.Email">Имейл адрес</label>
 				<input class="form-input" asp-for="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
@@ -36,10 +36,10 @@
 
 			<div class="form-box flex-column actions">
 				<p>
-					<a data-trigger="load-unlimited" class="link active" id="forgot-password" asp-page="./ForgotPassword">Забравена парола?</a>
+					<a data-trigger="load-unlimited" class="link active italic" id="forgot-password" asp-page="./ForgotPassword">Забравена парола?</a>
 				</p>
 				<p>
-					<a data-trigger="load-unlimited" class="link active" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Нямаш профил? Регистрирай се!</a>
+					<a data-trigger="load-unlimited" class="link active italic" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Нямаш профил? Регистрирай се!</a>
 				</p>
 			</div>
 		</form>

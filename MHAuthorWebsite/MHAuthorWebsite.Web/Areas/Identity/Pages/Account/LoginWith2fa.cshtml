@@ -1,0 +1,50 @@
+﻿@page
+@model LoginWith2faModel
+
+@{
+	ViewData["Title"] = "Двуфакторна автентикация";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+}
+
+<div class="page-wrapper flex-column">
+	<section class="modal flex-column">
+		<h1 class="title">@ViewData["Title"]</h1>
+		<p class="info-message">
+			<i class="fa-regular fa-circle-info"></i> 
+			Профилът Ви е защитен с приложение за удостоверяване. Въведете кода за удостоверяване по-долу.
+		</p>
+		<form method="post" asp-route-returnUrl="@Model.ReturnUrl" class="input-form flex-column">
+			<input asp-for="RememberMe" type="hidden" />
+			<div asp-validation-summary="ModelOnly" class="text-danger" role="alert" class="input-error"></div>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Input.TwoFactorCode">Код за удостоверяване</label>
+				<input class="form-input" asp-for="Input.TwoFactorCode" autocomplete="off" />
+				<span class="input-error" asp-validation-for="Input.TwoFactorCode"></span>
+			</div>
+			<div >
+				<label asp-for="Input.RememberMachine" class="form-label">
+					<input asp-for="Input.RememberMachine" />
+					Запомни ме на това устройство?
+				</label>
+			</div>
+
+			<button type="submit" class="btn submit-btn flex-row">
+				<i class="fa-solid fa-arrow-right-to-bracket"></i> Вход
+			</button>
+
+			<div class="form-box flex-column actions">
+				<p>Нямате достъп до устройството за удостоверяване?</p>
+				<p>
+					<a id="recovery-code-login" class="link active italic" asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">Влезте с код за възстановяване</a>
+				</p>
+			</div>
+		</form>
+	</section>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

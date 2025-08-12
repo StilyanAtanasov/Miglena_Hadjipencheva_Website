@@ -21,6 +21,11 @@
   width: 50%;
 }
 
+.info-message {
+  opacity: 0.7;
+  font-size: 1.8rem;
+}
+
 .input-form {
   font-size: 1.9rem;
   width: 95%;
