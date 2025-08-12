@@ -49,7 +49,14 @@
 		</li>
 	</ol>
 
-	<i class="fa-solid fa-gears background-icon"></i>
+	@if ((bool) (ViewData["IsTwoFactorEnabled"] ?? false))
+	{
+		<i class="fa-solid fa-gears background-icon"></i>
+	}
+	else
+	{
+		<i class="fa-solid fa-shield-plus background-icon"></i>
+	}
 </section>
 
 @section Scripts {
