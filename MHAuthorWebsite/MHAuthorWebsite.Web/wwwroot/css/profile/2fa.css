@@ -1,0 +1,12 @@
+.qr-code {
+  margin: 3rem;
+}
+
+code {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+  border-radius: 1.5rem;
+  padding: 0.2rem 1rem;
+  font-style: italic;
+  margin: 0 1rem;
+}

@@ -1,8 +1,10 @@
 window.addEventListener("load", () => {
-  const uri = document.getElementById("qrCodeData").getAttribute("data-url");
+  const fontSize = +getComputedStyle(document.documentElement).fontSize.replace(`px`, ``);
+  const length = fontSize * 25;
+
   new QRCode(document.getElementById("qrCode"), {
-    text: uri,
-    width: 150,
-    height: 150,
+    text: document.getElementById("qrCodeData").getAttribute("data-url"),
+    width: length,
+    height: length,
   });
 });

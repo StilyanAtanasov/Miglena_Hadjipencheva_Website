@@ -40,6 +40,11 @@
   min-width: 100%;
 }
 
+.input-form .form-input.short {
+  max-width: 30%;
+  min-width: 10%;
+}
+
 .input-form .form-input:focus {
   background-color: var(--color-secondary-light);
 }

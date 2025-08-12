@@ -8,7 +8,7 @@
 }
 
 @section Styles {
-	<link rel="stylesheet" href="~/css/profile-page.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
 }
 
 <section class="content-body flex-column">
@@ -50,8 +50,8 @@
 					}
 
 					<div class="flex-row">
-						<a asp-page="./Disable2fa" class="btn link">Деактивирай двуфакторната автентикация</a>
-						<a asp-page="./GenerateRecoveryCodes" class="btn link">Нулирай кодовете за възстановяване</a>
+						<a asp-page="./Disable2fa" class="btn link flex-row"><i class="fa-regular fa-shield-minus"></i> Деактивирай</a>
+						<a asp-page="./GenerateRecoveryCodes" class="btn link flex-row"><i class="fa-regular fa-arrow-rotate-left"></i> Нулирай кодовете за възстановяване</a>
 					</div>
 				}
 			</section>
@@ -61,12 +61,12 @@
 				<div class="flex-row">
 					@if (!Model.HasAuthenticator)
 					{
-						<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn link">Добави автентикатор</a>
+						<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn link flex-row"> <i class="fa-regular fa-shield-plus"></i> Добави автентикатор</a>
 					}
 					else
 					{
-						<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn link">Настрой автентикатор</a>
-						<a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn link">Нулирай автентикатор</a>
+						<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn link flex-row"> <i class="fa-regular fa-gears"></i> Настрой автентикатор</a>
+						<a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn link flex-row"> <i class="fa-regular fa-arrow-rotate-left"></i> Нулирай автентикатор</a>
 					}
 				</div>
 				
