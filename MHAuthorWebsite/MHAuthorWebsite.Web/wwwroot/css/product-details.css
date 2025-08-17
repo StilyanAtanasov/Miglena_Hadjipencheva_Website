@@ -290,4 +290,10 @@ table tr:last-child td:last-child {
   .btn.like {
     font-size: 1.6rem;
   }
+
+  .dots__dot {
+    height: 0.5rem;
+    width: 1.2rem;
+    border-radius: 3rem;
+  }
 }
