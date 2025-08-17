@@ -61,6 +61,7 @@ Images are no longer stored locally but uploaded securely to Cloudinary through 
 - X-Content-Type-Options, Referrer-Policy, and frame options configured
 - CSRF protection with antiforgery tokens
 - Cookie security: HTTP-only, secure, and SameSite attributes
+- 2FA is enabled and accessible to all registered users 
 
 ---
 
@@ -98,6 +99,8 @@ MHAuthorWebsite/
 - Cloudinary account (with API key/secret in user secrets)
 
 ### Setup:
+
+## NOTE: Replace all user secret values with valid ones ( the email must be valid and the password must be strong )
 
 ```bash
 dotnet user-secrets set "Cloudinary:CloudName" "your_cloud_name"
