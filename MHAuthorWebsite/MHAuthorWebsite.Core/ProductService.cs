@@ -101,7 +101,7 @@ public class ProductService : IProductService
                 IsAvailable = p.StockQuantity > 0,
                 ProductType = p.ProductType.Name,
                 IsLiked = userId != null && p.Likes.Any(u => u.Id == userId),
-                ImageUrl = p.Images.First(i => i.IsThumbnail).ImageUrl,
+                ImageUrl = p.Images.First(i => i.IsThumbnail).ThumbnailUrl!,
                 ImageAlt = p.Images.First(i => i.IsThumbnail).AltText
             })
             .ToArrayAsync();
