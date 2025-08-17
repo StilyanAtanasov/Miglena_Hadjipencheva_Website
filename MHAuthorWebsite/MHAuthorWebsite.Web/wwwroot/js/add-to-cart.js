@@ -6,7 +6,7 @@ document.querySelectorAll(`[data-role="add-to-cart"]`).forEach(b =>
   b.addEventListener(`click`, async function () {
     const itemId = b.dataset.itemId;
 
-    let quantity = +document.getElementById(`quantity`);
+    let quantity = +document.getElementById(`quantity`).value;
     if (!quantity) quantity = 1;
 
     const response = await fetch(`/Cart/Add`, {
