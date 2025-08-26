@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- https://go.microsoft.com/fwlink/?LinkID=208121. -->
+<Project>
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAMd7XY8+TOkOzFlrMtrZdEgAAAAACAAAAAAAQZgAAAAEAACAAAAAtnXGccX9S3mTn2s09zalqDF+6lbtZYA+MEpjQUDejcAAAAAAOgAAAAAIAACAAAAD/YMYc6veybHv9VAsAaJ4U07YI01pAmnH1vaVi8ankCSAAAACCtRJEEJceCTZ4xDNN2YXTQvSKBCa40rp3Tdibx+q67UAAAADGvpw8UigBJ/buheYFS3/7j/sBXBDp3ppi80y204OCpLF9DRe4v9UTwe5BndxISHRawpzCGrJ1POBrnXoF7ldX</EncryptedPassword>
+    <History>True|2025-08-26T14:22:58.9194220Z||;False|2025-08-26T16:50:14.9907923+03:00||;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="AdminEmail">
+      <Value>admin%40mh-author.com</Value>
+    </DestinationConnectionStrings>
+    <DestinationConnectionStrings Include="AdminPassword">
+      <Value>Admin!123</Value>
+    </DestinationConnectionStrings>
+    <DestinationConnectionStrings Include="Cloudinary:ApiKey">
+      <Value>292869421157794</Value>
+    </DestinationConnectionStrings>
+    <DestinationConnectionStrings Include="Cloudinary:ApiSecret">
+      <Value>bnA7k9bwzmcDp8dZFksynkkSsSQ</Value>
+    </DestinationConnectionStrings>
+    <DestinationConnectionStrings Include="Cloudinary:CloudName">
+      <Value>dhmghlqbz</Value>
+    </DestinationConnectionStrings>
+    <DestinationConnectionStrings Include="DefaultConnection">
+      <Value>Data Source=SQL6032.site4now.net%3bInitial Catalog=db_abd7d2_mhauthorwebsitedb%3bUser Id=db_abd7d2_mhauthorwebsitedb_admin%3bPassword=LRQ9!.RTb-4!KSL</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+  <ItemGroup>
+    <EFMigrations Include="MHAuthorWebsite.Data.ApplicationDbContext">
+      <Value>Data Source=SQL6032.site4now.net%3bInitial Catalog=db_abd7d2_mhauthorwebsitedb%3bUser Id=db_abd7d2_mhauthorwebsitedb_admin%3bPassword=LRQ9!.RTb-4!KSL</Value>
+    </EFMigrations>
+  </ItemGroup>
+</Project>

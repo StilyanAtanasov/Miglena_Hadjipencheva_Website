@@ -62,7 +62,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("DefaultPolicy", p =>
     {
-        p.DisallowCredentials();
+        p.WithOrigins("http://stilyan-001-site1.stempurl.com/")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
