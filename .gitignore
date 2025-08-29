@@ -9,4 +9,4 @@
 **obj/
 
 # Exclude publish profiles
-**/Properties/PublishProfiles/
+MHAuthorWebsite/MHAuthorWebsite.Web/Properties/PublishProfiles/
