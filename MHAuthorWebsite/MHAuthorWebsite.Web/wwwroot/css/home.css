@@ -125,6 +125,7 @@
 
 .quotes .quote .quote-text {
   text-shadow: 0.15rem 0.15rem 1rem var(--color-secondary-lighter);
+  letter-spacing: 0.25rem;
 }
 
 .quote-left {
