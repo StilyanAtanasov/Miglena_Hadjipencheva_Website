@@ -7,3 +7,6 @@
 **.vs/
 **bin/
 **obj/
+
+# Exclude publish profiles
+**/Properties/PublishProfiles/
