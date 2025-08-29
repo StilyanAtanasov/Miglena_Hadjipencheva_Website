@@ -96,13 +96,13 @@
   font-size: 2.8rem;
   position: relative;
   padding: 20rem 35rem;
-  gap: 20rem;
+  gap: 25rem;
   background-color: var(--color-secondary);
 }
 
 .quotes .quote {
   position: relative;
-  width: 40vw;
+  width: 45vw;
   line-break: loose;
   align-items: center;
   gap: 3.5rem;
@@ -168,29 +168,19 @@
   .about-image-wrapper {
     width: 40%;
   }
+
+  .quotes {
+    padding: 30rem 15rem;
+  }
+
+  .quotes .quote {
+    width: 55vw;
+  }
 }
 
 @media (max-width: 800px) {
   .splash {
     background-position: 40%;
-  }
-
-  .about::after {
-    width: 45%;
-  }
-
-  .about-image-wrapper {
-    width: 45%;
-  }
-}
-
-@media (max-width: 600px) {
-  .splash {
-    background-position: 20%;
-  }
-
-  .splash-text .title {
-    font-size: 6.2rem;
   }
 
   .about::after {
@@ -210,6 +200,23 @@
 
   .about-text {
     width: 80%;
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .splash {
+    background-position: 20%;
+  }
+
+  .splash-text .title {
+    font-size: 6.2rem;
+  }
+
+  .quotes .quote {
+    align-self: center;
+    width: 85vw;
+    font-size: 3rem;
   }
 }
 
