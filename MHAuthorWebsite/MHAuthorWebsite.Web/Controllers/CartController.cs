@@ -20,7 +20,6 @@ public class CartController : BaseController
         return View(cart);
     }
 
-    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] AddCartItemViewModel model)
     {
