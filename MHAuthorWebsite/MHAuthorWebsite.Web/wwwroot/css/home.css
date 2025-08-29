@@ -41,12 +41,15 @@
   border-radius: 2rem;
 }
 
+.section {
+  padding: 10rem 5rem;
+}
+
 .about {
   min-height: 100vh;
   font-size: 2rem;
   position: relative;
   justify-content: center;
-  padding: 10rem 5rem;
 }
 
 .about::after {
@@ -87,6 +90,53 @@
 
 .about-text .name {
   font-size: 4rem;
+}
+
+.quotes {
+  font-size: 2.8rem;
+  position: relative;
+  padding: 20rem 35rem;
+  gap: 20rem;
+  background-color: var(--color-secondary);
+}
+
+.quotes .quote {
+  position: relative;
+  width: 40vw;
+  line-break: loose;
+  align-items: center;
+  gap: 3.5rem;
+  text-align: center;
+  font-style: italic;
+  color: var(--color-primary);
+  padding: 3rem 10rem;
+}
+
+.quotes .quote .line {
+  width: 30%;
+  height: 0;
+  border: 0.2rem solid var(--color-secondary-lighter);
+  border-radius: 2rem;
+}
+
+.quotes .quote .quote-text {
+  text-shadow: 0.15rem 0.15rem 1rem var(--color-secondary-lighter);
+}
+
+.quote-left {
+  align-self: flex-start;
+}
+
+.quote-right {
+  align-self: flex-end;
+}
+
+.quote-icon {
+  position: absolute;
+  font-size: 25rem;
+  opacity: 0.2;
+  left: 0;
+  top: -50%;
 }
 
 /* --- Responsive --- */

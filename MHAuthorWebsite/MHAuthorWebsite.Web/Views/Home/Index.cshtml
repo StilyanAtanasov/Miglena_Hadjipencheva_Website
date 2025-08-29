@@ -3,7 +3,7 @@
 }
 
 @section Styles {
-	<link rel="stylesheet" href="~/css/home.css" />
+	<link rel="stylesheet" href="~/css/home.css" asp-append-version="true"/>
 }
 
 <section class="splash flex-column">
@@ -13,7 +13,7 @@
 	</div>
 </section>
 
-<section class="about flex-row">
+<section class="section about flex-row">
 	<div class="about-content flex-row">
 		<div class="about-image-wrapper ">
 			<img src="~/img/author.webp" alt="Миглена Хаджипенчева" />
@@ -36,5 +36,26 @@
 				а книгите ѝ намират място в личните библиотеки на читатели от цяла България.
 			</p>
 		</article>
+	</div>
+</section>
+
+<section class="section quotes flex-column">
+	<div class="quote quote-left flex-column">
+		<i class="fa-solid fa-quote-left quote-icon"></i>
+		<span class="line"></span>
+		<q class="quote-text">Понякога думите са просто думи, но понякога са всичко, което имаме.</q>
+		<span class="line"></span>
+	</div>
+	<div class="quote quote-right flex-column">
+		<i class="fa-solid fa-quote-left quote-icon"></i>
+		<span class="line"></span>
+		<q class="quote-text">Думите са мостове между душите, които ни свързват в моменти на радост и тъга.</q>
+		<span class="line"></span>
+	</div>
+	<div class="quote quote-left flex-column">
+		<i class="fa-solid fa-quote-left quote-icon"></i>
+		<span class="line"></span>
+		<q class="quote-text">Всяка дума е семе, което може да поникне в сърцето на читателя.</q>
+		<span class="line"></span>
 	</div>
 </section>
