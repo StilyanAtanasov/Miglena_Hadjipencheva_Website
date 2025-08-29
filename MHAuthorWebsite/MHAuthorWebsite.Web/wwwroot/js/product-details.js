@@ -34,14 +34,14 @@ if (imagesCount > 1) {
   function slideTo(slide, animate = true) {
     const slides = document.querySelectorAll(".slide");
 
-    slides.forEach((s, i) => {
+    slides.forEach(s => {
       if (!animate) {
         s.style.transition = "none";
       } else {
         s.style.transition = "";
       }
 
-      s.style.transform = `translateX(${(slide - (i + 1)) * -100}%)`;
+      s.style.transform = `translateX(${(slide - 1) * -100}%)`;
     });
 
     document.querySelectorAll(".dots__dot").forEach(d => d.classList.remove(`dots__dot--active`));
@@ -55,8 +55,6 @@ if (imagesCount > 1) {
 
     return currentSliderState;
   }
-
-  slideTo(1, false);
 
   // - Listeners
   document.getElementById(`slider__btn--left`).addEventListener(`click`, () => slideTo(changeSliderState(-1)));

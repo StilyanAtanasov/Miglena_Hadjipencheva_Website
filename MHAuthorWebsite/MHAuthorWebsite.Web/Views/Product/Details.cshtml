@@ -12,24 +12,33 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="~/css/notification.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/editor.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/slider.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/product-details.css" asp-append-version="true" />
 }
 <div class="page-wrapper">
 	<section class="main flex-row">
 		<section class="hero-info flex-row">
 			<section id="images-container" class="slider flex-row" data-images-count="@Model.Images.Count">
-				@foreach (ProductDetailsImage image in Model.Images)
-				{
-					<div class="slide flex-row">
-						<img class="product-image" src="@image.ImageUrl" alt="@(image.AltText ?? Model.Name)" />
-					</div>
-				}
 				@if (Model.Images.Count > 1)
 				{
 					<button id="slider__btn--left" class="slider__btn"><i class="fa-solid fa-arrow-left"></i></button>
+				}
+
+				<div class="slides flex-row">
+					@foreach (ProductDetailsImage image in Model.Images)
+					{
+						<div class="slide flex-row">
+							<img class="product-image" src="@image.ImageUrl" alt="@image.AltText" />
+						</div>
+					}
+				</div>
+
+				@if (Model.Images.Count > 1)
+				{
 					<button id="slider__btn--right" class="slider__btn "><i class="fa-solid fa-arrow-right"></i></button>
+
 					<div id="dots-box" class="dots flex-row">
 						@for (int i = 1; i <= Model.Images.Count; i++)
 						{

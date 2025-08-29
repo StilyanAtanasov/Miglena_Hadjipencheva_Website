@@ -3,6 +3,7 @@
 }
 
 @section Styles {
+	<link rel="stylesheet" href="~/css/elements/slider.css" asp-append-version="true"/>
 	<link rel="stylesheet" href="~/css/home.css" asp-append-version="true"/>
 }
 
@@ -57,5 +58,52 @@
 		<span class="line"></span>
 		<q class="quote-text">Всяка дума е семе, което може да поникне в сърцето на читателя.</q>
 		<span class="line"></span>
+	</div>
+</section>
+
+<section class="section cites flex-column">
+	<div class="slider flex-row">
+	
+		<button id="slider__btn--left" class="slider__btn"><i class="fa-solid fa-arrow-left"></i></button>
+
+		<div class="slides flex-row"> 
+			<div class="slide cite flex-column">
+				<q class="cite-text">Ако искате да се почувствате свободни,влюбени, одухотворени... 
+					ако искате да  почувствате как бие нечие сърце, 
+					докоснете се до творчеството на една нежна и красива жена... 
+					Ще усетите топлина и любов. Ще се докоснете до нещо истинско и докосващо!
+					Това е Миглена! Огън! Любов! Истина!</q>
+				<div class="author-box flex-row">
+					<div class="author-image-box">
+						<img src="~/img/teodora-hadjipencheva.webp" />
+					</div>
+
+					<p class="cite-author">Теодора Хаджипенчева</p>
+				</div>
+			</div>
+			<div class="slide cite flex-column">
+				<q class="cite-text">
+					Ако искате да се почувствате свободни,влюбени, одухотворени...
+					ако искате да  почувствате как бие нечие сърце,
+					докоснете се до творчеството на една нежна и красива жена...
+					Ще усетите топлина и любов. Ще се докоснете до нещо истинско и докосващо!
+					Това е Миглена! Огън! Любов! Истина!
+				</q>
+				<div class="author-box flex-row">
+					<div class="author-image-box">
+						<img src="~/img/teodora-hadjipencheva.webp" />
+					</div>
+
+					<p class="cite-author">Теодора Хаджипенчева</p>
+				</div>
+			</div>
+		</div>
+
+		<button id="slider__btn--right" class="slider__btn "><i class="fa-solid fa-arrow-right"></i></button>
+
+		<div id="dots-box" class="dots flex-row">
+			<button class="dots__dot"></button>
+			<button class="dots__dot"></button>
+		</div>
 	</div>
 </section>
