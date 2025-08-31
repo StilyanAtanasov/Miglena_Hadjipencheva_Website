@@ -20,7 +20,7 @@
 <div class="page-wrapper">
 	<section class="main flex-row">
 		<section class="hero-info flex-row">
-			<section id="images-container" class="slider flex-row" data-images-count="@Model.Images.Count">
+			<section id="slider" class="slider flex-row" data-slides-count="@Model.Images.Count">
 				@if (Model.Images.Count > 1)
 				{
 					<button id="slider__btn--left" class="slider__btn"><i class="fa-solid fa-arrow-left"></i></button>
@@ -30,7 +30,9 @@
 					@foreach (ProductDetailsImage image in Model.Images)
 					{
 						<div class="slide flex-row">
-							<img class="product-image" src="@image.ImageUrl" alt="@image.AltText" />
+							<div class="slide-content">
+								<img class="product-image" src="@image.ImageUrl" alt="@image.AltText" />
+							</div>
 						</div>
 					}
 				</div>
@@ -39,12 +41,7 @@
 				{
 					<button id="slider__btn--right" class="slider__btn "><i class="fa-solid fa-arrow-right"></i></button>
 
-					<div id="dots-box" class="dots flex-row">
-						@for (int i = 1; i <= Model.Images.Count; i++)
-						{
-							<button class="dots__dot @(i == 1 ? "dots__dot--active" : "")" data-slide="@i"></button>
-						}
-					</div>
+					<div id="dots-box" class="dots flex-row"></div>
 				}
 			</section>
 			<section class="product-main-info flex-column">
@@ -120,6 +117,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/elements/slider.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/product-details.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/add-to-cart.js" asp-append-version="true"></script>
 }

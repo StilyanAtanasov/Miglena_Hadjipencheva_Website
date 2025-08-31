@@ -34,7 +34,7 @@
   width: 95%;
 }
 
-#images-container {
+#slider {
   border: 0.15rem solid var(--color-secondary);
   border-radius: 1.5rem;
 }
