@@ -3,6 +3,7 @@
 }
 
 @section Styles {
+	<link rel="stylesheet" href="~/css/animations.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/slider.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
 }
@@ -15,9 +16,9 @@
 </section>
 
 <section class="section about flex-row">
-	<div class="about-content flex-row">
-		<div class="about-image-wrapper ">
-			<img src="~/img/author.webp" alt="Миглена Хаджипенчева" />
+	<div class="about-content flex-row animate-on-scroll">
+		<div class="about-image-wrapper animate-on-scroll fade-in" >
+			<img src="~/img/author.webp" alt="Миглена Хаджипенчева" loading="lazy" />
 		</div>
 		<article class="about-text flex-column">
 			<h2 class="name">За авторката</h2>
@@ -41,19 +42,19 @@
 </section>
 
 <section class="section quotes flex-column">
-	<div class="quote quote-left flex-column">
+	<div class="quote quote-left flex-column animate-on-scroll appear-bottom">
 		<i class="fa-solid fa-quote-left quote-icon"></i>
 		<span class="line"></span>
 		<q class="quote-text">Късче любов... Дихание за двама!</q>
 		<span class="line"></span>
 	</div>
-	<div class="quote quote-right flex-column">
+	<div class="quote quote-right flex-column animate-on-scroll appear-bottom ">
 		<i class="fa-solid fa-quote-left quote-icon"></i>
 		<span class="line"></span>
 		<q class="quote-text">Думите са мостове между душите, които ни свързват в моменти на радост и тъга.</q>
 		<span class="line"></span>
 	</div>
-	<div class="quote quote-left flex-column">
+	<div class="quote quote-left flex-column animate-on-scroll appear-bottom">
 		<i class="fa-solid fa-quote-left quote-icon"></i>
 		<span class="line"></span>
 		<q class="quote-text">Всяка дума е семе, което може да поникне в сърцето на читателя.</q>
@@ -62,23 +63,23 @@
 </section>
 
 <section class="section cites flex-column">
-	<div id="slider" class="slider flex-row" data-slides-count="2">
+	<div id="slider" class="slider flex-row animate-on-scroll fade-in" data-slides-count="2">
 
 		<button id="slider__btn--left" class="slider__btn"><i class="fa-solid fa-arrow-left"></i></button>
 
 		<div class="slides flex-row">
 			<div class="slide flex-column">
 				<article class="slide-content cite">
-					<q class="cite-text">
-						Ако искате да се почувствате свободни, влюбени, одухотворени...
+					<blockquote class="cite-text">
+						"Ако искате да се почувствате свободни, влюбени, одухотворени...
 						ако искате да почувствате как бие нечие сърце,
 						докоснете се до творчеството на една нежна и красива жена...
 						Ще усетите топлина и любов. Ще се докоснете до нещо истинско и докосващо!
-						Това е Миглена! Огън! Любов! Истина!
-					</q>
+						Това е Миглена! Огън! Любов! Истина!"
+					</blockquote>
 					<div class="author-box flex-row">
 						<div class="author-image-box">
-							<img src="~/img/teodora-hadjipencheva.webp" />
+							<img src="~/img/teodora-hadjipencheva.webp" loading="lazy" />
 						</div>
 
 						<p class="cite-author">Теодора Хаджипенчева</p>
@@ -87,16 +88,16 @@
 			</div>
 			<div class="slide flex-column">
 				<article class="slide-content cite">
-					<q class="cite-text">
-						Ако искате да се почувствате свободни,влюбени, одухотворени...
+					<blockquote class="cite-text">
+						"Ако искате да се почувствате свободни,влюбени, одухотворени...
 						ако искате да почувствате как бие нечие сърце,
 						докоснете се до творчеството на една нежна и красива жена...
 						Ще усетите топлина и любов. Ще се докоснете до нещо истинско и докосващо!
-						Това е Миглена! Огън! Любов! Истина!
-					</q>
+						Това е Миглена! Огън! Любов! Истина!"
+					</blockquote>
 					<div class="author-box flex-row">
 						<div class="author-image-box">
-							<img src="~/img/teodora-hadjipencheva.webp" />
+							<img src="~/img/teodora-hadjipencheva.webp" loading="lazy" />
 						</div>
 
 						<p class="cite-author">Теодора Хаджипенчева</p>
@@ -113,4 +114,5 @@
 
 @section Scripts {
 	<script src="~/js/elements/slider.js" asp-append-version="true"></script>
+	<script src="~/js/animations.js" asp-append-version="true"></script>
 }

@@ -1,0 +1,17 @@
+.fade-in {
+  filter: blur(1rem);
+}
+
+.fade-in.animate {
+  filter: blur(0);
+}
+
+.appear-bottom {
+  opacity: 0.3;
+  transform: translateY(5rem);
+}
+
+.appear-bottom.animate {
+  opacity: 1;
+  transform: translateY(0);
+}

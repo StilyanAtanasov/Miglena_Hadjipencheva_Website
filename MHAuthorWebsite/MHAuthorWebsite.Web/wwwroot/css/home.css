@@ -17,12 +17,16 @@
   left: 68vw;
   transform: translate(-50%, -50%);
   width: max-content;
+  animation: splash-text ease-in-out 1s;
+  animation-fill-mode: forwards;
 }
 
 .splash-text .title {
   letter-spacing: 0.3rem;
   font-size: 7rem;
   text-shadow: 0.1rem 0.2rem 0.5rem var(--color-secondary-lighter);
+  animation: splash-text-title linear 3s;
+  animation-fill-mode: forwards;
 }
 
 .splash-text .subtitle {
@@ -72,6 +76,16 @@
   margin-left: 22%;
 }
 
+.about-content.animate-on-scroll .about-text {
+  opacity: 0.3;
+  transform: translateX(100vw);
+}
+
+.about-content.animate-on-scroll.animate .about-text {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 .about-image-wrapper {
   background-color: var(--color-primary);
   width: 38%;
@@ -89,6 +103,7 @@
 .about-text {
   width: 35%;
   text-align: justify;
+  text-indent: 2rem;
 }
 
 .about-text .name {
@@ -114,6 +129,14 @@
   font-style: italic;
   color: var(--color-primary);
   padding: 3rem 10rem;
+}
+
+.quotes .quote.animate-on-scroll .line {
+  width: 0;
+}
+
+.quotes .quote.animate-on-scroll.animate .line {
+  width: 30%;
 }
 
 .quotes .quote .line {
@@ -160,11 +183,13 @@
 .cites .cite .cite-text {
   font-size: 2.5rem;
   text-align: justify;
+  text-indent: 2rem;
 }
 
 .author-box {
   gap: 2rem;
   letter-spacing: 0.15rem;
+  margin-top: 2rem;
 }
 
 .author-image-box {
@@ -177,6 +202,32 @@
 .slider {
   width: 60%;
   gap: 5rem;
+}
+
+@keyframes splash-text {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -80%);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes splash-text-title {
+  30% {
+    text-shadow: 0.1rem 0.2rem 0.5rem var(--color-secondary-lighter);
+  }
+  35% {
+    text-shadow: 0.2rem 0.4rem 1rem var(--color-secondary-lighter);
+  }
+  90% {
+    text-shadow: 0.2rem 0.4rem 1rem var(--color-secondary-lighter);
+  }
+  100% {
+    text-shadow: 0.1rem 0.2rem 0.5rem var(--color-secondary-lighter);
+  }
 }
 
 /* --- Responsive --- */
