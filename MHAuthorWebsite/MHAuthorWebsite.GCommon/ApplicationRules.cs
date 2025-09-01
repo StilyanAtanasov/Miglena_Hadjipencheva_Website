@@ -6,6 +6,8 @@ public static class ApplicationRules
     {
         public const string ProjectName = "MHAuthorWebsite";
         public const string WebsiteName = "Миглена Хаджипенчева"; // TODO Use this for Layout and branding
+
+        public const string Currency = "BGN";
     }
 
     public static class Pages
@@ -50,5 +52,12 @@ public static class ApplicationRules
     {
         public const string ImageFolder = $"{Application.ProjectName}/products/originals";
         public const string ThumbnailFolder = $"{Application.ProjectName}/products/thumbnails";
+    }
+
+    public static class Econt
+    {
+        public const int ShopId = 8661922;
+        public const string ShipmentCalcUrl = "https://delivery.econt.com/customer_info.php";
+        public const string UpdateOrderEndpoint = "https://delivery-demo.econt.com/services/OrdersService.updateOrder.json"; // TODO switch to production URL when going live
     }
 }

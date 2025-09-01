@@ -20,8 +20,7 @@
 			{
 				<section id="valid-items-section" class="products-section flex-column" aria-labelledby="valid-items">
 					<h2 id="valid-items" class="heading">Избрани продукти</h2>
-					<form id="cart-form" method="post" asp-controller="Order" asp-action="Index">
-						@Html.AntiForgeryToken()
+					@Html.AntiForgeryToken()
 						<table class="cart-table">
 							<thead>
 							<tr>
@@ -79,7 +78,6 @@
 							}
 							</tbody>
 						</table>
-					</form>
 				</section>
 			}
 
@@ -125,9 +123,9 @@
 						<p><span id="price-sum">@Model.Total.ToString("F2")</span> <span> лв.</span></p>
 					</div>
 				</div>
-				<button form="cart-form" type="submit" class="btn btn-order order flex-row">
+				<a type="submit" class="btn btn-order link order flex-row" asp-controller="Order" asp-action="Index">
 					<i class="fa-solid fa-box-taped"></i> Завърши поръчка
-				</button>
+				</a>
 			</aside>
 		}
 	</div>

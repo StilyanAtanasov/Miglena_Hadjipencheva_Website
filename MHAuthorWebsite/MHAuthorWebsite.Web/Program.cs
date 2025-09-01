@@ -35,7 +35,10 @@ builder.Services.AddScoped<IAdminProductTypeService, AdminProductTypeService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 
 builder.Services.AddScoped<IProductService, ProductService>();
+
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IEcontService, EcontService>();
 
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
@@ -84,6 +87,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseDeveloperExceptionPage();
 }
 else
 {
@@ -106,7 +110,10 @@ app.UseStaticFiles();
 app.Use(async (context, next) =>
 {
     context.Response.Headers["X-Content-Type-Options"] = "nosniff";
-    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["X-Frame-Options"] =
+            "frame-ancestors " +
+            "'self' " +
+            "https://delivery.econt.com https://delivery-demo.econt.com";
     context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
     context.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=()";
     context.Response.Headers["Content-Security-Policy"] =
@@ -133,7 +140,8 @@ app.Use(async (context, next) =>
         "font-src 'self' " +
                 "https://fonts.gstatic.com https://site-assets.fontawesome.com; " +
         "img-src 'self' data: " +
-                "https://res.cloudinary.com;";
+                "https://res.cloudinary.com;" +
+        "frame-src 'self' https://delivery.econt.com https://delivery-demo.econt.com;"; // ToDO : adjust frame-ancestors directive as well & remove demos
 
     await next();
 });

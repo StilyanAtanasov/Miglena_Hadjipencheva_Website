@@ -1,0 +1,99 @@
+﻿@using static MHAuthorWebsite.GCommon.ApplicationRules.Econt
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@using MHAuthorWebsite.Web.ViewModels.Order
+@model OrderDetailsViewModel
+
+@{
+	ViewData["Title"] = "Завършване на поръчка";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/order.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+	<h1 class="title">@ViewData["Title"]</h1>
+	<aside>
+		<h2>Вашата поръчка</h2>
+		<div>
+			<table id="cart-table">
+				<thead>
+					<tr><th>Продукт</th><th>Количество</th><th>Обща цена</th></tr>
+				</thead>
+				<tbody id="cart-body">
+					@foreach (SelectedProductViewModel p in Model.SelectedProducts)
+					{
+						<tr data-total-price="@p.TotalPrice" data-weight="@p.Weight">
+							<td><img src="@p.ImageUrl" alt="@p.Name" /><span></span></td>
+							<td>@p.Name</td>
+							<td>@p.Quantity</td>
+							<td><span>@p.TotalPrice.ToString("F2")</span> <span>лв.</span></td>
+						</tr>
+					}
+				</tbody>
+			</table>
+
+			<div>
+				<div><span>Междинна сума: </span><span><span id="subtotal">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></span></div>
+				<div><span>Доставка: </span><span><span id="shipping">0.00</span> <span>лв.</span></span></div>
+				<div><span>Общо: </span><span><span id="grand">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></span></div>
+			</div>
+		</div>
+	</aside>
+
+	<div>
+		<h2>Метод на плащане</h2>
+		<div>
+			<div>
+				<label><input type="radio" name="paymentMethod" value="cod" checked /> Наложен платеж</label>
+			</div>
+		</div>
+	</div>
+
+	<div>
+		<h2>Куриер</h2>
+		<div>
+			<div>
+				<label><input type="radio" value="econt" checked /> Еконт</label>
+			</div>
+		</div>
+	</div>
+
+	<div>
+		<h2>Достави с Еконт</h2>
+		<div>
+			<div>
+				<iframe id="econt-frame" src=""></iframe>
+			</div>
+
+			<div></div>
+
+			<input type="hidden" name="customerInfo[id]" id="customerInfoId" />
+			<input type="hidden" name="shipping_price" id="shippingPrice" />
+			<input type="hidden" name="shipping_price_currency" id="shippingCurrency" />
+		</div>
+	</div>
+
+	<div>
+		<h2>Потвърди поръчка</h2>
+		<div>
+			<div>
+				<form id="confirm-form" method="post"
+					  data-econt-calc-url="@ShipmentCalcUrl"
+					  data-econt-update-endpoint="@UpdateOrderEndpoint"
+					  data-currency="@Currency"
+					  data-shop-id="@ShopId"
+					  data-total-weight="@Model.TotalWeight"
+					  data-user-name="@Model.UserData.Name"
+					  data-user-email="@Model.UserData.Email"
+					  data-user-phone="@Model.UserData.PhoneNumber">
+					<button type="submit" class="btn" id="placeOrderBtn">Поръчай</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>
+
+@section Scripts {
+	<script src="~/js/order.js" asp-append-version="true"></script>
+}
