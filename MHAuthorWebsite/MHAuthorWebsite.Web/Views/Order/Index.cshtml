@@ -8,92 +8,95 @@
 }
 
 @section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/order.css" asp-append-version="true" />
 }
 
 <section class="page-wrapper flex-column">
 	<h1 class="title">@ViewData["Title"]</h1>
-	<aside>
-		<h2>Вашата поръчка</h2>
-		<div>
-			<table id="cart-table">
-				<thead>
-					<tr><th>Продукт</th><th>Количество</th><th>Обща цена</th></tr>
-				</thead>
-				<tbody id="cart-body">
-					@foreach (SelectedProductViewModel p in Model.SelectedProducts)
-					{
-						<tr data-total-price="@p.TotalPrice" data-weight="@p.Weight">
-							<td><img src="@p.ImageUrl" alt="@p.Name" /><span></span></td>
-							<td>@p.Name</td>
-							<td>@p.Quantity</td>
-							<td><span>@p.TotalPrice.ToString("F2")</span> <span>лв.</span></td>
+	<div class="content flex-row">
+		<section class="main-content flex-column">
+			<section class="section flex-column">
+				<h2 class="heading flex-row"><i class="fa-regular fa-bags-shopping"></i> Вашата поръчка</h2>
+
+				<table class="cart-table">
+					<thead>
+						<tr>
+							<th>Продукт</th>
+							<th>Количество</th>
+							<th>Обща цена</th>
 						</tr>
-					}
-				</tbody>
-			</table>
+					</thead>
+					<tbody id="cart-body">
+						@foreach (SelectedProductViewModel p in Model.SelectedProducts)
+						{
+							<tr data-total-price="@p.TotalPrice" data-weight="@p.Weight">
+								<td class="flex-row">
+									<div class="product-image-container flex-row">
 
+										<img class="product-image" src="@p.ImageUrl" alt="@p.Name" />
+									</div>
+									<p class="product-name">@p.Name</p>
+								</td>
+								<td>@p.Quantity</td>
+								<td><span>@p.TotalPrice.ToString("F2")</span> <span>лв.</span></td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</section>
+
+			<section class="section flex-column">
+				<h2 class="heading flex-row"><i class="fa-regular fa-money-check-dollar-pen"></i> Метод на плащане</h2>
+				<div>
+					<div>
+						<label><input type="radio" name="paymentMethod" value="cod" checked /> Наложен платеж</label>
+					</div>
+				</div>
+			</section>
+
+			<section class="section flex-column">
+				<h2 class="heading flex-row"><i class="fa-regular fa-person-dolly"></i> Куриер</h2>
+				<div>
+					<div>
+						<label><input type="radio" value="econt" checked /> Еконт</label>
+					</div>
+				</div>
+				<div class="econt-delivery">
+					<iframe id="econt-frame" src=""></iframe>
+
+					<input type="hidden" name="customerInfo[id]" id="customerInfoId" />
+					<input type="hidden" name="shipping_price" id="shippingPrice" />
+					<input type="hidden" name="shipping_price_currency" id="shippingCurrency" />
+				</div>
+			</section>
+		</section>
+
+		<section class="section total-section flex-column">
+			<h2 class="heading flex-row"><i class="fa-regular fa-money-bill-1-wave"></i> Дължима сума</h2>
 			<div>
-				<div><span>Междинна сума: </span><span><span id="subtotal">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></span></div>
-				<div><span>Доставка: </span><span><span id="shipping">0.00</span> <span>лв.</span></span></div>
-				<div><span>Общо: </span><span><span id="grand">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></span></div>
-			</div>
-		</div>
-	</aside>
-
-	<div>
-		<h2>Метод на плащане</h2>
-		<div>
-			<div>
-				<label><input type="radio" name="paymentMethod" value="cod" checked /> Наложен платеж</label>
-			</div>
-		</div>
-	</div>
-
-	<div>
-		<h2>Куриер</h2>
-		<div>
-			<div>
-				<label><input type="radio" value="econt" checked /> Еконт</label>
-			</div>
-		</div>
-	</div>
-
-	<div>
-		<h2>Достави с Еконт</h2>
-		<div>
-			<div>
-				<iframe id="econt-frame" src=""></iframe>
+				<p>Междинна сума: <span id="subtotal">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></p>
+				<p>Доставка: <span id="shipping">0.00</span> <span>лв.</span></p>
+				<p class="grand-total"><strong>Общо: <span id="grand">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></strong></p>
 			</div>
 
-			<div></div>
-
-			<input type="hidden" name="customerInfo[id]" id="customerInfoId" />
-			<input type="hidden" name="shipping_price" id="shippingPrice" />
-			<input type="hidden" name="shipping_price_currency" id="shippingCurrency" />
-		</div>
-	</div>
-
-	<div>
-		<h2>Потвърди поръчка</h2>
-		<div>
-			<div>
-				<form id="confirm-form" method="post"
-					  data-econt-calc-url="@ShipmentCalcUrl"
-					  data-econt-update-endpoint="@UpdateOrderEndpoint"
-					  data-currency="@Currency"
-					  data-shop-id="@ShopId"
-					  data-total-weight="@Model.TotalWeight"
-					  data-user-name="@Model.UserData.Name"
-					  data-user-email="@Model.UserData.Email"
-					  data-user-phone="@Model.UserData.PhoneNumber">
-					<button type="submit" class="btn" id="placeOrderBtn">Поръчай</button>
-				</form>
-			</div>
-		</div>
+			<form id="confirm-form" class="flex-row" method="post"
+				  data-econt-calc-url="@ShipmentCalcUrl"
+				  data-econt-update-endpoint="@UpdateOrderEndpoint"
+				  data-currency="@Currency"
+				  data-shop-id="@ShopId"
+				  data-total-weight="@Model.TotalWeight"
+				  data-user-name="@Model.UserData.Name"
+				  data-user-email="@Model.UserData.Email"
+				  data-user-phone="@Model.UserData.PhoneNumber">
+				<button type="submit" class="btn order flex-row" id="placeOrderBtn"><i class="fa-regular fa-truck-fast"></i> Поръчай</button>
+			</form>
+		</section>
 	</div>
 </section>
 
 @section Scripts {
-	<script src="~/js/order.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/order.js" asp-append-version="true"></script>
 }
