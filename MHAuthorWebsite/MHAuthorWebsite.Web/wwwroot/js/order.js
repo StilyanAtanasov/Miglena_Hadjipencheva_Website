@@ -6,12 +6,30 @@ const form = document.getElementById(`confirm-form`);
 const currency = form.dataset.currency || `BGN`;
 const frameUrl = form.dataset.econtCalcUrl;
 const econtFrame = document.getElementById(`econt-frame`);
-const customerInfoIdInput = document.getElementById(`customerInfoId`);
-const shippingPriceInput = document.getElementById(`shippingPrice`);
-const shippingCurrencyInput = document.getElementById(`shippingCurrency`);
 const subtotalEl = document.getElementById(`subtotal`);
 const shippingEl = document.getElementById(`shipping`);
 const grandEl = document.getElementById(`grand`);
+
+class EcontDeliveryDetails {
+  constructor(data = {}) {
+    this.id = data.id || null;
+    this.name = data.name || null;
+    this.face = data.face || null;
+    this.phone = data.phone || null;
+    this.email = data.email || null;
+    this.countryCode = data.id_country || null;
+    this.cityName = data.city_name || null;
+    this.postCode = data.post_code || null;
+    this.officeCode = data.office_code || null;
+    this.zipCode = data.zip || null;
+    this.address = data.address || null;
+    this.priorityFrom = data.priority_from || null;
+    this.priorityTo = data.priority_to || null;
+    this.shippingPrice = Number(data.shipping_price_cod || 0);
+  }
+}
+
+let econtDeliveryDetails = null;
 
 function setIframeSrc() {
   const url = new URL(frameUrl);
@@ -36,7 +54,7 @@ function parseCartSubtotal() {
 
 function updateTotals() {
   const sub = parseCartSubtotal();
-  const ship = Number(shippingPriceInput.value || 0);
+  const ship = Number(econtDeliveryDetails?.shippingPrice || 0);
   subtotalEl.textContent = sub.toFixed(2);
   shippingEl.textContent = ship.toFixed(2);
   grandEl.textContent = (sub + ship).toFixed(2);
@@ -53,23 +71,36 @@ window.addEventListener(
       return;
     }
 
-    const price = data.shipping_price_cod;
-    shippingPriceInput.value = Number(price || 0).toFixed(2);
-    shippingCurrencyInput.value = data.shipping_price_currency || currency;
-    customerInfoIdInput.value = data.id || ``;
-
+    econtDeliveryDetails = new EcontDeliveryDetails(data);
     updateTotals();
   },
   false
 );
 
-form.addEventListener(`submit`, function (e) {
-  if (!customerInfoIdInput.value) {
-    e.preventDefault();
+form.addEventListener(`submit`, async function (e) {
+  e.preventDefault();
+
+  if (!econtDeliveryDetails) {
     pushNotification(`Моля попълнете формата за доставка.`, `warning`);
     return;
   }
-  updateTotals();
+
+  const payload = JSON.stringify(econtDeliveryDetails);
+
+  const response = await fetch(form.action, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
+    },
+    body: payload,
+  });
+
+  if (response.ok) {
+    pushNotification(`Поръчката Ви е успешно приета и се обработва!`, `success`);
+  } else {
+    pushNotification(`Грешка при създаването на поръчка!`, `error`);
+  }
 });
 
 setIframeSrc();

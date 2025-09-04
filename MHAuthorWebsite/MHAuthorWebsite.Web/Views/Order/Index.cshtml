@@ -65,10 +65,6 @@
 				</div>
 				<div class="econt-delivery">
 					<iframe id="econt-frame" src=""></iframe>
-
-					<input type="hidden" name="customerInfo[id]" id="customerInfoId" />
-					<input type="hidden" name="shipping_price" id="shippingPrice" />
-					<input type="hidden" name="shipping_price_currency" id="shippingCurrency" />
 				</div>
 			</section>
 		</section>
@@ -81,15 +77,17 @@
 				<p class="grand-total"><strong>Общо: <span id="grand">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></strong></p>
 			</div>
 
-			<form id="confirm-form" class="flex-row" method="post"
-				  data-econt-calc-url="@ShipmentCalcUrl"
-				  data-econt-update-endpoint="@UpdateOrderEndpoint"
-				  data-currency="@Currency"
-				  data-shop-id="@ShopId"
-				  data-total-weight="@Model.TotalWeight"
-				  data-user-name="@Model.UserData.Name"
-				  data-user-email="@Model.UserData.Email"
-				  data-user-phone="@Model.UserData.PhoneNumber">
+			<form id="confirm-form" class="flex-row" method="post" asp-controller="Order"
+				  asp-action="Order"
+			      data-econt-calc-url="@ShipmentCalcUrl"
+			      data-econt-update-endpoint="@UpdateOrderEndpoint"
+			      data-currency="@Currency"
+			      data-shop-id="@ShopId"
+			      data-total-weight="@Model.TotalWeight"
+			      data-user-name="@Model.UserData.Name"
+			      data-user-email="@Model.UserData.Email"
+			      data-user-phone="@Model.UserData.PhoneNumber">
+
 				<button type="submit" class="btn order flex-row" id="placeOrderBtn"><i class="fa-regular fa-truck-fast"></i> Поръчай</button>
 			</form>
 		</section>

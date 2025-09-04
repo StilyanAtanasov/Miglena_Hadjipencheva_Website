@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Core.Contracts;
+﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,5 +16,16 @@ public class OrderController : BaseController
     {
         OrderDetailsViewModel model = await _orderService.GetOrderDetails(GetUserId()!);
         return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Order([FromBody] EcontDeliveryDetailsViewModel model)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        ServiceResult result = await _orderService.Order(GetUserId()!, model);
+        if (!result.Success) return StatusCode(500);
+
+        return RedirectToAction(nameof(Index), "Cart");
     }
 }

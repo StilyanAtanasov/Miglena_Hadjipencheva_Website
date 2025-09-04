@@ -38,7 +38,8 @@ builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IEcontService, EcontService>();
+
+builder.Services.AddHttpClient<IEcontService, EcontService>();
 
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
