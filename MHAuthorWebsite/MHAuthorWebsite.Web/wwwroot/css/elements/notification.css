@@ -6,3 +6,9 @@
 .swal2-title {
   font-size: 2rem !important;
 }
+
+.swal2-container button.swal2-close {
+  font-size: 3rem;
+  transform: translateY(-0.2rem);
+  margin-right: 1rem;
+}

@@ -13,6 +13,7 @@ export function pushNotification(message, icon = "success", duration = defaultNo
     showConfirmButton: false,
     timer: duration,
     timerProgressBar: true,
+    showCloseButton: true,
     didOpen: toast => {
       toast.addEventListener("mouseenter", Swal.stopTimer);
       toast.addEventListener("mouseleave", Swal.resumeTimer);
