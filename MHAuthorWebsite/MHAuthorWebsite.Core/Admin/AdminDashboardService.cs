@@ -25,12 +25,16 @@ public class AdminDashboardService : IAdminDashboardService
             ProductsList = _repository
                 .AllReadonly<Product>()
                 .Include(p => p.Likes)
+                .Include(p => p.Orders)
+                    .ThenInclude(o => o.OrderedProducts)
+                        .ThenInclude(op => op.Product)
                 .Select(pr => new AdminDashboardProductsViewModel
                 {
                     Id = pr.Id,
                     Name = pr.Name,
                     LikesCount = pr.Likes.Count,
-                    SoldCount = pr.Orders.Count(o => o.Products.Any(p => p.Id == pr.Id)) // TODO FIX
+                    SoldCount = pr.Orders
+                        .Count(o => o.OrderedProducts.Any(p => p.Product.Id == pr.Id)) // TODO FIX
                 })
                 .OrderByDescending(pr => pr.SoldCount)
                 .ThenByDescending(pr => pr.LikesCount)

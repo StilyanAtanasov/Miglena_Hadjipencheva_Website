@@ -31,6 +31,11 @@
   text-align: left;
 }
 
+.cart-table th:not(:nth-child(2)),
+.cart-table td:not(:nth-child(2)) {
+  text-align: center;
+}
+
 .cart-table th {
   border-bottom: 0.1rem solid var(--color-secondary);
 }

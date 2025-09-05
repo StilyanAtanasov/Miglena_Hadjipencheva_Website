@@ -30,6 +30,54 @@ public static class EntityConstraints
         public const string PriceSqlType = "decimal(18, 2)";
     }
 
+    public static class OrderProduct
+    {
+        public const int QuantityMinValue = 1;
+
+        public const string UnitPriceSqlType = "decimal(18, 2)";
+    }
+
+    public static class Shipment
+    {
+        public const string ShippingPriceSqlType = "decimal(18, 2)";
+
+        public const int ShipmentNumberMaxLength = 100;
+
+        public const int PhoneMinLength = 6;
+        public const int PhoneMaxLength = 20;
+
+        public const int FaceMinLength = 2;
+        public const int FaceMaxLength = 150;
+
+        public const int EmailMinLength = 5;
+        public const int EmailMaxLength = 100;
+
+        public const int CurrencyMinLength = 2;
+        public const int CurrencyMaxLength = 5;
+
+        public const int AddressMinLength = 5;
+        public const int AddressMaxLength = 250;
+
+        public const int CityMinLength = 2;
+        public const int CityMaxLength = 100;
+
+        public const int PostCodeMinLength = 3;
+        public const int PostCodeMaxLength = 20;
+
+        public const int CountryCodeMinLength = 2;
+        public const int CountryCodeMaxLength = 3;
+
+        public const int PriorityFromMinLength = 2;
+        public const int PriorityFromMaxLength = 50;
+
+        public const int PriorityToMinLength = 2;
+        public const int PriorityToMaxLength = 50;
+
+        public const int ShipmentDescriptionMinLength = 2;
+        public const int ShipmentDescriptionMaxLength = 1000;
+    }
+
+
     public static class Image
     {
         public const byte UrlMaxLength = 255;

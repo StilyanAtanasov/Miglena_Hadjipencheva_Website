@@ -19,6 +19,10 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
     public DbSet<Order> Orders { get; set; } = null!;
 
+    public DbSet<OrderProduct> OrdersProducts { get; set; } = null!;
+
+    public DbSet<Shipment> Shipments { get; set; } = null!;
+
     public DbSet<Product> Products { get; set; } = null!;
 
     public DbSet<ProductAttribute> ProductAttributes { get; set; } = null!;

@@ -21,15 +21,12 @@ public class Order
 
     [Required]
     [Comment("Order timestamp")]
-    public DateTime Date { get; set; }
+    public DateTime Date { get; set; } = DateTime.UtcNow;
 
     [Required]
     [Column(TypeName = PriceSqlType)]
     [Comment("Total order price")]
     public decimal Price { get; set; }
 
-    public ICollection<Product> Products { get; set; } = new HashSet<Product>();
-
-    [Comment("Soft delete flag")]
-    public bool IsDeleted { get; set; }
+    public ICollection<OrderProduct> OrderedProducts { get; set; } = new HashSet<OrderProduct>();
 }
