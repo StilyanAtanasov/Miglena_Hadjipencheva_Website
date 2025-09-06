@@ -32,6 +32,11 @@ public class Product
     public int StockQuantity { get; set; }
 
     [Required]
+    [Comment("Product's weight")]
+    [Column(TypeName = WeightSqlType)]
+    public decimal Weight { get; set; }
+
+    [Required]
     [Comment("Foreign key to ProductType")]
     [ForeignKey(nameof(ProductType))]
     public int ProductTypeId { get; set; }

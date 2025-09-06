@@ -10,5 +10,5 @@ public class SelectedProductViewModel
 
     public string ImageUrl { get; set; } = null!;
 
-    public decimal Weight { get; set; } = 0.5m;
+    public decimal TotalWeight { get; set; }
 }

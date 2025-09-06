@@ -12,6 +12,8 @@ public class AddProductDto
 
     public int StockQuantity { get; set; }
 
+    public decimal Weight { get; set; }
+
     public int ProductTypeId { get; set; }
 
     public ICollection<ImageUploadResultDto> ImageUrls { get; set; } = null!;

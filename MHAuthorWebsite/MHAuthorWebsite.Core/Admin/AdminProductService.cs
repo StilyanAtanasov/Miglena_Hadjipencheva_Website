@@ -28,6 +28,7 @@ public class AdminProductService : ProductService, IAdminProductService
                 Price = model.Price,
                 ProductTypeId = model.ProductTypeId,
                 StockQuantity = model.StockQuantity,
+                Weight = model.Weight
             };
 
             await _repository.AddAsync(product);
@@ -98,6 +99,7 @@ public class AdminProductService : ProductService, IAdminProductService
             Price = product.Price,
             StockQuantity = product.StockQuantity,
             ProductTypeName = product.ProductType.Name,
+            Weight = product.Weight,
             Images = product.Images
                 .Select(i => new ProductImageViewModel
                 {
@@ -139,6 +141,7 @@ public class AdminProductService : ProductService, IAdminProductService
         product.Description = model.Description;
         product.Price = model.Price;
         product.StockQuantity = model.StockQuantity;
+        product.Weight = model.Weight;
 
         for (int i = 0; i < model.Attributes.Count; i++)
             product.Attributes.ElementAt(i).Value = model.Attributes.ElementAt(i).Value;

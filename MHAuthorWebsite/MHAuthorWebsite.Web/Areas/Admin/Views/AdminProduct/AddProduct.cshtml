@@ -45,6 +45,11 @@
 				<span class="input-error" asp-validation-for="StockQuantity"></span>
 			</div>
 			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Weight">Тегло (в кг.):</label>
+				<input class="form-input" asp-for="Weight" type="number" />
+				<span class="input-error" asp-validation-for="Weight"></span>
+			</div>
+			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Images">Изображения:</label>
 				<input class="form-input" id="imageInput" asp-for="Images" type="file" multiple accept="image/*" />
 				<span id="image-error" class="input-error" asp-validation-for="Images" data-max-images="@MaxImages"></span>

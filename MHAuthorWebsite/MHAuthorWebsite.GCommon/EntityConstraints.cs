@@ -15,14 +15,17 @@ public static class EntityConstraints
 
         public const byte PriceMinValue = 0;
         public const ushort PriceMaxValue = 25_000;
+        public const string PriceSqlType = "decimal(18, 2)";
 
         public const byte StockQuantityMinValue = 0;
         public const uint StockQuantityMaxValue = 1_000_000;
 
+        public const byte WeightMinValue = 0;
+        public const ushort WeightMaxValue = 1_000;
+        public const string WeightSqlType = "decimal(18, 3)";
+
         public const bool IsPublicDefaultValue = false;
         public const bool IsDeletedDefaultValue = false;
-
-        public const string PriceSqlType = "decimal(18, 2)";
     }
 
     public static class Order

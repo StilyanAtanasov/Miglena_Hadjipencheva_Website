@@ -26,6 +26,10 @@ public class AddProductForm
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public int ProductTypeId { get; set; }
 
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    [Range(WeightMinValue, WeightMaxValue, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Range")]
+    public decimal Weight { get; set; }
+
     public int TitleImageId { get; set; } = 0; // Default is 0, meaning the first (if not only) image will have a thumbnail.
 
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]

@@ -38,7 +38,8 @@ public class OrderService : IOrderService
                 ImageUrl = ci.Product.Images.FirstOrDefault()!.ThumbnailUrl!,
                 Name = ci.Product.Name,
                 TotalPrice = ci.Product.Price * ci.Quantity,
-                Quantity = ci.Quantity
+                Quantity = ci.Quantity,
+                TotalWeight = ci.Product.Weight * ci.Quantity
             })
             .ToListAsync();
 
@@ -92,7 +93,7 @@ public class OrderService : IOrderService
                     Count = i.Quantity,
                     Name = i.Product.Name,
                     TotalPrice = i.Product.Price * i.Quantity,
-                    TotalWeight = 0.5m * i.Quantity, // TODO USE REAL WEIGHT
+                    TotalWeight = i.Product.Weight * i.Quantity
                 }).ToArray()
         };
 

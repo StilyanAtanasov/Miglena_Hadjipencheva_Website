@@ -25,6 +25,10 @@ public class EditProductFormViewModel
     [Range(StockQuantityMinValue, StockQuantityMaxValue, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Range")]
     public int StockQuantity { get; set; }
 
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    [Range(WeightMinValue, WeightMaxValue, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Range")]
+    public decimal Weight { get; set; }
+
     public string ProductTypeName { get; set; } = null!;
 
     public ICollection<IFormFile>? NewImages { get; set; } = new HashSet<IFormFile>();
