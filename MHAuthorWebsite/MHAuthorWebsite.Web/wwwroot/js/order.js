@@ -36,8 +36,8 @@ function setIframeSrc() {
 
   url.searchParams.set(`id_shop`, form.dataset.shopId);
   url.searchParams.set(`order_currency`, currency);
-  url.searchParams.set(`order_total`, grandEl.textContent);
-  url.searchParams.set(`order_weight`, form.dataset.totalWeight);
+  url.searchParams.set(`order_total`, grandEl.textContent.replace(`,`, `.`));
+  url.searchParams.set(`order_weight`, form.dataset.totalWeight.replace(`,`, `.`));
   url.searchParams.set(`customer_company`, form.dataset.userName);
   url.searchParams.set(`customer_name`, form.dataset.userName);
   url.searchParams.set(`customer_email`, form.dataset.userEmail);
