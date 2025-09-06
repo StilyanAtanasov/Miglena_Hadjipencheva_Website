@@ -2,6 +2,7 @@
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Identity;
@@ -61,11 +62,10 @@ public class OrderService : IOrderService
             .Include(ci => ci.Product)
             .ToArrayAsync();
 
-        EcontOrderDto order = new()
+        EcontOrderDto orderDto = new()
         {
-            OrderNumber = Guid.NewGuid().ToString("N"),
             Status = "New",
-            OrderTime = DateTime.UtcNow.ToString("o"),
+            OrderTime = DateTime.UtcNow.Ticks,
             OrderSum = cartItems.Sum(ci => ci.Product.Price * ci.Quantity),
             Cod = true,
             PartialDelivery = false,
@@ -93,13 +93,44 @@ public class OrderService : IOrderService
                     Name = i.Product.Name,
                     TotalPrice = i.Product.Price * i.Quantity,
                     TotalWeight = 0.5m * i.Quantity, // TODO USE REAL WEIGHT
-                    HideCount = 0,
-                    Url = i.Product.Id.ToString(),
-                    Sku = i.Product.Id.ToString()
                 }).ToArray()
         };
 
-        ServiceResult sr = await _econtService.PlaceOrderAsync(order);
+        ServiceResult<EcontOrderDto> sr = await _econtService.PlaceOrderAsync(orderDto);
+        if (!sr.Success) return ServiceResult.Failure();
+
+        EcontOrderDto createdOrder = sr.Result!;
+
+        Order order = new()
+        {
+            Date = DateTime.UtcNow,
+            UserId = userId,
+            OrderedProducts = cartItems
+               .Select(ci => new OrderProduct
+               {
+                   ProductId = ci.ProductId,
+                   Quantity = ci.Quantity,
+                   UnitPrice = ci.Product.Price,
+               })
+               .ToArray(),
+            Shipment = new Shipment
+            {
+                ShippingPrice = model.ShippingPrice,
+                OrderNumber = createdOrder.OrderNumber,
+                Face = createdOrder.CustomerInfo.Face,
+                Phone = createdOrder.CustomerInfo.Phone,
+                Email = createdOrder.CustomerInfo.Email,
+                City = createdOrder.CustomerInfo.CityName,
+                PostCode = createdOrder.CustomerInfo.PostCode,
+                Address = createdOrder.CustomerInfo.Address,
+                PriorityFrom = createdOrder.CustomerInfo.PriorityFrom,
+                PriorityTo = createdOrder.CustomerInfo.PriorityTo,
+                Courier = Courier.Econt,
+                Currency = Currency
+            },
+        };
+
+        await _repository.AddAsync(order);
 
         foreach (CartItem item in cartItems) item.Product.StockQuantity -= item.Quantity;
 

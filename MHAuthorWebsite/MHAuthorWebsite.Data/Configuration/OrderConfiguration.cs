@@ -13,5 +13,9 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .WithMany()
             .HasForeignKey(o => o.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .Property(s => s.IsAccepted)
+            .HasDefaultValue(false);
     }
 }

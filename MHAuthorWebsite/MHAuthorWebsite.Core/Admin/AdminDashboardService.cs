@@ -26,15 +26,12 @@ public class AdminDashboardService : IAdminDashboardService
                 .AllReadonly<Product>()
                 .Include(p => p.Likes)
                 .Include(p => p.Orders)
-                    .ThenInclude(o => o.OrderedProducts)
-                        .ThenInclude(op => op.Product)
                 .Select(pr => new AdminDashboardProductsViewModel
                 {
                     Id = pr.Id,
                     Name = pr.Name,
                     LikesCount = pr.Likes.Count,
-                    SoldCount = pr.Orders
-                        .Count(o => o.OrderedProducts.Any(p => p.Product.Id == pr.Id)) // TODO FIX
+                    SoldCount = pr.Orders.Sum(op => op.Quantity) // TODO SELECT accepted orders only
                 })
                 .OrderByDescending(pr => pr.SoldCount)
                 .ThenByDescending(pr => pr.LikesCount)

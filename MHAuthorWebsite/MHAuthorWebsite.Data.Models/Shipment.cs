@@ -8,7 +8,7 @@ namespace MHAuthorWebsite.Data.Models;
 public class Shipment
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [Required]
     [ForeignKey(nameof(Order))]
@@ -16,8 +16,11 @@ public class Shipment
 
     public Order Order { get; set; } = null!;
 
+    [MaxLength(OrderNumberMaxLength)]
+    public string? OrderNumber { get; set; }
+
     [MaxLength(ShipmentNumberMaxLength)]
-    public string ShipmentNumber { get; set; } = null!;
+    public string? ShipmentNumber { get; set; }
 
     [Required]
     [MaxLength(PhoneMaxLength)]
@@ -52,9 +55,6 @@ public class Shipment
 
     [MaxLength(PostCodeMaxLength)]
     public string? PostCode { get; set; }
-
-    [MaxLength(CountryCodeMaxLength)]
-    public string CountryCode { get; set; } = "BGN";
 
     [MaxLength(PriorityFromMaxLength)]
     public string? PriorityFrom { get; set; }

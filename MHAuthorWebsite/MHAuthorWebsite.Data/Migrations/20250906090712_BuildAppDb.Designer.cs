@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace MHAuthorWebsite.Web.Data.Migrations
+namespace MHAuthorWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250723155831_ExtendImagesTable")]
-    partial class ExtendImagesTable
+    [Migration("20250906090712_BuildAppDb")]
+    partial class BuildAppDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,11 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.Property<Guid>("CartId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsSelected")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18, 2)");
@@ -114,6 +119,7 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .HasComment("Primary key");
 
                     b.Property<string>("AltText")
+                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)")
                         .HasComment("Alternative text for accessibility");
@@ -124,6 +130,10 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasComment("URL path to the image");
 
+                    b.Property<bool>("IsThumbnail")
+                        .HasColumnType("bit")
+                        .HasComment("Defines whether the image is a thumbnail (the image will be used for product listings)");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Foreign key to Product");
@@ -133,8 +143,11 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasComment("The publicId in Cloudinary");
 
+                    b.Property<string>("ThumbnailPublicId")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("The publicId for thumbnail in Cloudinary");
+
                     b.Property<string>("ThumbnailUrl")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasComment("URL path to the thumbnail");
@@ -157,13 +170,8 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .HasColumnType("datetime2")
                         .HasComment("Order timestamp");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasComment("Soft delete flag");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18, 2)")
-                        .HasComment("Total order price");
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -172,9 +180,32 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("MHAuthorWebsite.Data.Models.OrderProduct", b =>
+                {
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("ProductId", "OrderId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrdersProducts");
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Product", b =>
@@ -236,6 +267,10 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AttributeDefinitionId")
+                        .HasColumnType("int")
+                        .HasComment("Foreign key to Product Attribute Definition");
+
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -256,6 +291,8 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .HasComment("Value of the attribute");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AttributeDefinitionId");
 
                     b.HasIndex("ProductAttributeOptionsId");
 
@@ -351,6 +388,91 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProductTypes");
+                });
+
+            modelBuilder.Entity("MHAuthorWebsite.Data.Models.Shipment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CountryCode")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<int>("Courier")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Face")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<bool>("IsAccepted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PostCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PriorityFrom")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PriorityTo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ShipmentDescription")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ShipmentNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("ShippingPrice")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.HasIndex("ShipmentNumber")
+                        .IsUnique()
+                        .HasFilter("[ShipmentNumber] IS NOT NULL");
+
+                    b.ToTable("Shipments");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -555,21 +677,6 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("OrdersProducts", b =>
-                {
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("OrderId", "ProductId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("OrdersProducts", (string)null);
-                });
-
             modelBuilder.Entity("ProductsLikes", b =>
                 {
                     b.Property<string>("UserId")
@@ -636,6 +743,10 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Order", b =>
                 {
+                    b.HasOne("MHAuthorWebsite.Data.Models.Product", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("ProductId");
+
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -643,6 +754,25 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MHAuthorWebsite.Data.Models.OrderProduct", b =>
+                {
+                    b.HasOne("MHAuthorWebsite.Data.Models.Order", "Order")
+                        .WithMany("OrderedProducts")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MHAuthorWebsite.Data.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Product", b =>
@@ -658,6 +788,12 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductAttribute", b =>
                 {
+                    b.HasOne("MHAuthorWebsite.Data.Models.ProductAttributeDefinition", "AttributeDefinition")
+                        .WithMany()
+                        .HasForeignKey("AttributeDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MHAuthorWebsite.Data.Models.ProductAttributeOption", "ProductAttributeOptions")
                         .WithMany("UsedInAttributes")
                         .HasForeignKey("ProductAttributeOptionsId");
@@ -667,6 +803,8 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("AttributeDefinition");
 
                     b.Navigation("Product");
 
@@ -693,6 +831,17 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("AttributeDefinition");
+                });
+
+            modelBuilder.Entity("MHAuthorWebsite.Data.Models.Shipment", b =>
+                {
+                    b.HasOne("MHAuthorWebsite.Data.Models.Order", "Order")
+                        .WithOne("Shipment")
+                        .HasForeignKey("MHAuthorWebsite.Data.Models.Shipment", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -746,21 +895,6 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("OrdersProducts", b =>
-                {
-                    b.HasOne("MHAuthorWebsite.Data.Models.Order", null)
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MHAuthorWebsite.Data.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("ProductsLikes", b =>
                 {
                     b.HasOne("MHAuthorWebsite.Data.Models.Product", null)
@@ -781,6 +915,14 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                     b.Navigation("CartItems");
                 });
 
+            modelBuilder.Entity("MHAuthorWebsite.Data.Models.Order", b =>
+                {
+                    b.Navigation("OrderedProducts");
+
+                    b.Navigation("Shipment")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Product", b =>
                 {
                     b.Navigation("Attributes");
@@ -788,6 +930,8 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Images");
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductAttributeDefinition", b =>

@@ -2,13 +2,13 @@
 
 public class EcontOrderDto
 {
-    public string? Id { get; set; }
+    public long? Id { get; set; }
 
     public string? OrderNumber { get; set; }
 
     public string? Status { get; set; }
 
-    public string? OrderTime { get; set; }
+    public long? OrderTime { get; set; }
 
     public decimal OrderSum { get; set; }
 

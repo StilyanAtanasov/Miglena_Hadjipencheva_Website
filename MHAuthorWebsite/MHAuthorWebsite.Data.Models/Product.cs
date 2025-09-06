@@ -46,7 +46,7 @@ public class Product
 
     public ICollection<IdentityUser> Likes { get; set; } = new HashSet<IdentityUser>();
 
-    public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
+    public ICollection<OrderProduct> Orders { get; set; } = new HashSet<OrderProduct>();
 
     [Comment("Determines if the product should be visible for basic users")]
     public bool IsPublic { get; set; }

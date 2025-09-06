@@ -43,6 +43,8 @@ public static class EntityConstraints
 
         public const int ShipmentNumberMaxLength = 100;
 
+        public const int OrderNumberMaxLength = 50;
+
         public const int PhoneMinLength = 6;
         public const int PhoneMaxLength = 20;
 
@@ -63,9 +65,6 @@ public static class EntityConstraints
 
         public const int PostCodeMinLength = 3;
         public const int PostCodeMaxLength = 20;
-
-        public const int CountryCodeMinLength = 2;
-        public const int CountryCodeMaxLength = 3;
 
         public const int PriorityFromMinLength = 2;
         public const int PriorityFromMaxLength = 50;

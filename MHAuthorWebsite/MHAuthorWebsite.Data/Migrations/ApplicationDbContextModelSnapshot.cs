@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace MHAuthorWebsite.Web.Data.Migrations
+namespace MHAuthorWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -167,12 +167,10 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .HasColumnType("datetime2")
                         .HasComment("Order timestamp");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18, 2)")
-                        .HasComment("Total order price");
-
-                    b.Property<Guid?>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<bool>("IsAccepted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -180,8 +178,6 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .HasComment("Foreign key to User");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
 
                     b.HasIndex("UserId");
 
@@ -393,11 +389,9 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Shipment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
                         .HasMaxLength(250)
@@ -406,11 +400,6 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                     b.Property<string>("City")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("CountryCode")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
 
                     b.Property<int>("Courier")
                         .HasColumnType("int");
@@ -432,6 +421,10 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("OrderNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -455,7 +448,6 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("ShipmentNumber")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -464,7 +456,12 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.HasIndex("ShipmentNumber")
+                        .IsUnique()
+                        .HasFilter("[ShipmentNumber] IS NOT NULL");
 
                     b.ToTable("Shipments");
                 });
@@ -737,10 +734,6 @@ namespace MHAuthorWebsite.Web.Data.Migrations
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Order", b =>
                 {
-                    b.HasOne("MHAuthorWebsite.Data.Models.Product", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("ProductId");
-
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -759,7 +752,7 @@ namespace MHAuthorWebsite.Web.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("MHAuthorWebsite.Data.Models.Product", "Product")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -830,8 +823,8 @@ namespace MHAuthorWebsite.Web.Data.Migrations
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Shipment", b =>
                 {
                     b.HasOne("MHAuthorWebsite.Data.Models.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
+                        .WithOne("Shipment")
+                        .HasForeignKey("MHAuthorWebsite.Data.Models.Shipment", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -912,6 +905,9 @@ namespace MHAuthorWebsite.Web.Data.Migrations
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Order", b =>
                 {
                     b.Navigation("OrderedProducts");
+
+                    b.Navigation("Shipment")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Product", b =>

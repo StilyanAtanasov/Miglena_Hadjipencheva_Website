@@ -19,7 +19,7 @@ public class EcontService : IEcontService
         _config = config;
     }
 
-    public async Task<ServiceResult> PlaceOrderAsync(EcontOrderDto order)
+    public async Task<ServiceResult<EcontOrderDto>> PlaceOrderAsync(EcontOrderDto order)
     {
         string url = UpdateOrderEndpoint;
         string privateKey = _config["EcontApiSecret"]!;
@@ -36,9 +36,16 @@ public class EcontService : IEcontService
         request.Headers.Add("X-ID-Shop", shopId.ToString());
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        /*HttpResponseMessage response = await _http.SendAsync(request);
-        if (!response.IsSuccessStatusCode) return ServiceResult.Failure();*/ // TODO Uncomment in production
+        HttpResponseMessage response = await _http.SendAsync(request);
+        if (!response.IsSuccessStatusCode) return ServiceResult<EcontOrderDto>.Failure();
 
-        return ServiceResult.Ok();
+        string responseJson = await response.Content.ReadAsStringAsync();
+        EcontOrderDto responseDto = JsonSerializer.Deserialize<EcontOrderDto>(responseJson, new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
+        })!;
+
+        return ServiceResult<EcontOrderDto>.Ok(responseDto);
     }
 }

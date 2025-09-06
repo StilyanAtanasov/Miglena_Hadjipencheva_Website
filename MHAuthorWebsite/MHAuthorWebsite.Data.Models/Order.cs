@@ -19,14 +19,13 @@ public class Order
 
     public IdentityUser User { get; set; } = null!;
 
+    public Shipment Shipment { get; set; } = null!;
+
     [Required]
     [Comment("Order timestamp")]
     public DateTime Date { get; set; } = DateTime.UtcNow;
 
-    [Required]
-    [Column(TypeName = PriceSqlType)]
-    [Comment("Total order price")]
-    public decimal Price { get; set; }
+    public bool IsAccepted { get; set; }
 
     public ICollection<OrderProduct> OrderedProducts { get; set; } = new HashSet<OrderProduct>();
 }
