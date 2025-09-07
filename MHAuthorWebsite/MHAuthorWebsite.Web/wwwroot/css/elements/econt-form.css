@@ -1,0 +1,96 @@
+/* ----- NOTE ------ */
+
+/* 
+ * This stylesheet is NOT directly used or referenced inside the project.
+
+ * It is a copy of the custom styles applied to the Econt shipment form.
+ * Since the form is rendered inside an iframe, it cannot be styled via the app's CSS.
+
+ * To apply these styles, copy and paste the content of this file into:
+ * https://delivery.econt.com/shop_settings_general.php (Custom CSS field).
+
+ * These styles are bound to the ShopId (which is public), so there is no security concern.
+ * Keeping a copy in the repo ensures versioning and easier collaboration.
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap");
+
+:root {
+  --font-primary: "Sofia Sans Condensed";
+  --color-dark: rgba(24, 23, 23, 0.879);
+  --color-grey: rgba(97, 97, 97, 0.923);
+  --color-primary: #fcfcfc;
+  --color-secondary: rgb(58, 5, 58);
+  --color-secondary-light: rgb(250, 234, 250);
+  --color-secondary-lighter: rgb(251, 243, 251);
+  --color-secondary-lighter-transparent: rgba(255, 241, 255, 0.693);
+  --color-tertiary: rgb(35, 22, 215);
+  --color-tertiary-light: rgb(60, 151, 226);
+  --color-tertiary-lighter: rgb(158, 254, 252);
+  --color-error: rgb(255, 73, 73);
+  --color-success: rgb(56, 210, 56);
+  --color-orange: rgb(255, 191, 0);
+}
+
+html {
+  font-size: 10px !important;
+}
+
+* {
+  font-family: var(--font-primary) !important;
+  transition: all linear 200ms !important;
+}
+
+.customer-info-form form {
+  font-family: var(--font-primary);
+  font-size: 1.9rem;
+  padding: 3rem 1rem;
+}
+
+.customer-info-form form .form-element {
+  overflow: visible;
+  margin-bottom: 2.5rem;
+}
+
+.customer-info-form form .form-element > label {
+  color: var(--color-dark);
+}
+
+.customer-info-form form .form-element > input,
+.customer-info-form form .form-element > select {
+  border-radius: 1.5rem;
+  padding: 0.5rem 1.5rem;
+  border: 0.15rem solid var(--color-secondary);
+}
+
+.customer-info-form form .form-element > input:focus,
+.customer-info-form form .form-element > select:focus {
+  border: 0.15rem solid var(--color-secondary);
+}
+
+.customer-info-form form .form-element > input:focus + label,
+.customer-info-form form .form-element > input:valid + label,
+.customer-info-form form .form-element > select:focus + label,
+.customer-info-form form .form-element > select:valid + label {
+  margin-top: -3.2rem;
+  font-size: 1.4rem;
+}
+
+[role="button"]:hover,
+button:not(.checkbox):not(.radio):not(.checkbox-ios):not(.filter-btn):hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover {
+  color: var(--color-primary);
+  background-color: var(--color-tertiary-light);
+}
+
+button.office-locator:hover {
+  background-color: var(--color-tertiary-lighter) !important;
+}
+
+.w3w.w3w-locator {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+}
