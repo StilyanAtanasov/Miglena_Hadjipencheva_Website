@@ -120,7 +120,8 @@ public class AdminProductController : AdminBaseController
             StockQuantity = model.StockQuantity,
             ProductTypeId = model.ProductTypeId,
             ImageUrls = imageResult.Result,
-            Attributes = model.Attributes
+            Attributes = model.Attributes,
+            Weight = model.Weight
         };
 
         ServiceResult productResult = await _productService.AddProductAsync(dto);
