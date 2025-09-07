@@ -71,25 +71,29 @@
 
 		<section class="section total-section flex-column">
 			<h2 class="heading flex-row"><i class="fa-regular fa-money-bill-1-wave"></i> Дължима сума</h2>
-			<div>
-				<p>Междинна сума: <span id="subtotal">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></p>
-				<p>Доставка: <span id="shipping">0.00</span> <span>лв.</span></p>
-				<p class="grand-total"><strong>Общо: <span id="grand">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></strong></p>
+
+			<div class="total-section-content flex-column">
+				<div>
+					<p>Междинна сума: <span id="subtotal">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></p>
+					<p>Доставка: <span id="shipping">0.00</span> <span>лв.</span></p>
+				</div>
+				<div class="flex-column">
+					<p class="grand-total"><strong>Общо: <span id="grand">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></strong></p>
+					<form id="confirm-form" class="flex-row" method="post" asp-controller="Order"
+						  asp-action="Order"
+						  data-econt-calc-url="@ShipmentCalcUrl"
+						  data-econt-update-endpoint="@UpdateOrderEndpoint"
+						  data-currency="@Currency"
+						  data-shop-id="@ShopId"
+						  data-total-weight="@Model.TotalWeight.ToString("F3")"
+						  data-user-name="@Model.UserData.Name"
+						  data-user-email="@Model.UserData.Email"
+						  data-user-phone="@Model.UserData.PhoneNumber">
+
+						<button type="submit" class="btn order flex-row" id="placeOrderBtn"><i class="fa-regular fa-truck-fast"></i> Поръчай</button>
+					</form>
+				</div>
 			</div>
-
-			<form id="confirm-form" class="flex-row" method="post" asp-controller="Order"
-				  asp-action="Order"
-			      data-econt-calc-url="@ShipmentCalcUrl"
-			      data-econt-update-endpoint="@UpdateOrderEndpoint"
-			      data-currency="@Currency"
-			      data-shop-id="@ShopId"
-			      data-total-weight="@Model.TotalWeight.ToString("F3")"
-			      data-user-name="@Model.UserData.Name"
-			      data-user-email="@Model.UserData.Email"
-			      data-user-phone="@Model.UserData.PhoneNumber">
-
-				<button type="submit" class="btn order flex-row" id="placeOrderBtn"><i class="fa-regular fa-truck-fast"></i> Поръчай</button>
-			</form>
 		</section>
 	</div>
 </section>
