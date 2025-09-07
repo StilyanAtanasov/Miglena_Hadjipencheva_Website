@@ -146,6 +146,11 @@ table tr:last-child td:last-child {
   border-radius: 1.5rem;
 }
 
+.slide-content {
+  height: 100%;
+  justify-content: center;
+}
+
 /* --- Quill editor --- */
 #description-editor {
   border: none;
