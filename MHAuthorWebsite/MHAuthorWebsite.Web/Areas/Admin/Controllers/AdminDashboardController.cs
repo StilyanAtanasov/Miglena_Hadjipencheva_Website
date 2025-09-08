@@ -1,7 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Web.ViewModels.Admin.Dashboard;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
 
 namespace MHAuthorWebsite.Web.Areas.Admin.Controllers;
 

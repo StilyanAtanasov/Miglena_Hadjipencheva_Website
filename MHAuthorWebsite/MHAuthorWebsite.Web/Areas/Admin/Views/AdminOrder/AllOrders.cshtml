@@ -1,0 +1,37 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Order
+@model ICollection<AllOrdersListItemViewModel>
+
+@{
+	ViewData["Title"] = "All Orders";
+}
+
+<div class="page-wrapper flex-column">
+	<h1 class="title">@ViewData["Title"]</h1>
+
+	<table>
+		<thead>
+			<tr>
+				<th>Order ID</th>
+				<th>Customer Name</th>
+				<th>Total Amount</th>
+				<th>Order Date</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var order in Model)
+			{
+				<tr>
+					<td>@order.Id</td>
+					<td>@order.CustomerName</td>
+					<td>@order.TotalAmount</td>
+					<td>@order.OrderDate</td>
+					<td>
+						<a asp-area="Admin" asp-controller="AdminOrder" asp-action="Edit" asp-route-id="@order.Id">Edit</a>
+						<a asp-area="Admin" asp-controller="AdminOrder" asp-action="Delete" asp-route-id="@order.Id">Delete</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

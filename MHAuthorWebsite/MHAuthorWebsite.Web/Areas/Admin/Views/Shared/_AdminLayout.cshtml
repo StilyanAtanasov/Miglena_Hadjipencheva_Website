@@ -12,7 +12,7 @@
 	<link rel="stylesheet" href="~/css/reset.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/common.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/admin/common.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/loader.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/loader.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/admin/layout.css" asp-append-version="true" />
 	@await RenderSectionAsync("Styles", required: false)
 </head>
@@ -41,6 +41,10 @@
 				<li data-url="@Url.Action("AddProductType", "AdminProductType")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AddProductType ? "current" : "")">
 					<i class="fa-regular fa-icons"></i>
 					<p class="flex-row">Добавяне на категория</p>
+				</li>
+				<li data-url="@Url.Action("AllOrders", "AdminOrder")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AddProductType ? "current" : "")">
+					<i class="fa-regular fa-pallet-boxes"></i>
+					<p class="flex-row">Поръчки</p>
 				</li>
 			</ul>
 			<ul class="nav-elements flex-column"></ul>

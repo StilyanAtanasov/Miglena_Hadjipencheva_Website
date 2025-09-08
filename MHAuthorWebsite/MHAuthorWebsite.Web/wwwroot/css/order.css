@@ -102,7 +102,7 @@
 
 .econt-delivery #econt-frame {
   width: 100%;
-  min-height: 50rem;
+  min-height: 70rem;
   padding: 3rem;
   border-radius: 2rem;
   border: 0.1rem solid var(--color-secondary);
