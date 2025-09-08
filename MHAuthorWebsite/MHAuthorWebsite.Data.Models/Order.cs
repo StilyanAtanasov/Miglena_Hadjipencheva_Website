@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MHAuthorWebsite.Data.Models.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static MHAuthorWebsite.GCommon.EntityConstraints.Order;
 
 namespace MHAuthorWebsite.Data.Models;
 
@@ -25,7 +25,7 @@ public class Order
     [Comment("Order timestamp")]
     public DateTime Date { get; set; } = DateTime.UtcNow;
 
-    public bool IsAccepted { get; set; }
+    public OrderStatus Status { get; set; }
 
     public ICollection<OrderProduct> OrderedProducts { get; set; } = new HashSet<OrderProduct>();
 }

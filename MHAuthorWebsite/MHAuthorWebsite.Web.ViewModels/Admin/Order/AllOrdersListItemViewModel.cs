@@ -12,5 +12,5 @@ public class AllOrdersListItemViewModel
 
     public decimal TotalAmount { get; set; }
 
-    public bool IsAccepted { get; set; }
+    public string Status { get; set; } = null!;
 }

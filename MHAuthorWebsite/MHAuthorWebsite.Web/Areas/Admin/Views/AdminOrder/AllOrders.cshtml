@@ -27,8 +27,12 @@
 					<td>@order.TotalAmount</td>
 					<td>@order.OrderDate</td>
 					<td>
-						<a asp-area="Admin" asp-controller="AdminOrder" asp-action="Edit" asp-route-id="@order.Id">Edit</a>
-						<a asp-area="Admin" asp-controller="AdminOrder" asp-action="Delete" asp-route-id="@order.Id">Delete</a>
+						<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Accept" asp-route-orderId="@order.Id">
+							<button type="submit"> Accept</button>
+						</form>
+						<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Reject" asp-route-orderId="@order.Id">
+							<button type="submit"> Reject</button>
+						</form>
 					</td>
 				</tr>
 			}

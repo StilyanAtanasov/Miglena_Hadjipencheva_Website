@@ -28,11 +28,6 @@ public static class EntityConstraints
         public const bool IsDeletedDefaultValue = false;
     }
 
-    public static class Order
-    {
-        public const string PriceSqlType = "decimal(18, 2)";
-    }
-
     public static class OrderProduct
     {
         public const int QuantityMinValue = 1;

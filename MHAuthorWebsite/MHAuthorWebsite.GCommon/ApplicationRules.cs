@@ -60,5 +60,6 @@ public static class ApplicationRules
         public const string ShipmentCalcUrl = "https://delivery.econt.com/customer_info.php";
         public const string UpdateOrderEndpoint = "https://delivery.econt.com/services/OrdersService.updateOrder.json";
         public const string CreateAwbEndpoint = "https://delivery.econt.com/services/OrdersService.createAWB.json";
+        public const string DeleteLabelEndpoint = "https://delivery.econt.com/services/OrdersService.deleteLabel.json";
     }
 }

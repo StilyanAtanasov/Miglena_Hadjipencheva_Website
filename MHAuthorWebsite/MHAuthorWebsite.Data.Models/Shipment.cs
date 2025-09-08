@@ -17,6 +17,9 @@ public class Shipment
     public Order Order { get; set; } = null!;
 
     [Required]
+    public int CourierShipmentId { get; set; }
+
+    [Required]
     [MaxLength(OrderNumberMaxLength)]
     public string OrderNumber { get; set; } = null!;
 

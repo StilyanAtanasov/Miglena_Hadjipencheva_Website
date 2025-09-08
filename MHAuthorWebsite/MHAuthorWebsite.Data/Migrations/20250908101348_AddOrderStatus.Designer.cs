@@ -4,6 +4,7 @@ using MHAuthorWebsite.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MHAuthorWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250908101348_AddOrderStatus")]
+    partial class AddOrderStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -406,9 +409,6 @@ namespace MHAuthorWebsite.Data.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Courier")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CourierShipmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Currency")

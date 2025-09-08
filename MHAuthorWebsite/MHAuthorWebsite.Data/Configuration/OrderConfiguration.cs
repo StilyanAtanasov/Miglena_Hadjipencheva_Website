@@ -1,4 +1,5 @@
 ﻿using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Data.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,7 +16,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
-            .Property(s => s.IsAccepted)
-            .HasDefaultValue(false);
+            .Property(s => s.Status)
+            .HasDefaultValue(OrderStatus.InReview);
     }
 }

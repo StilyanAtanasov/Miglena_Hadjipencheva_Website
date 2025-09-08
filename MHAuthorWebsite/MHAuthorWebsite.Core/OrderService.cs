@@ -13,22 +13,22 @@ namespace MHAuthorWebsite.Core;
 
 public class OrderService : IOrderService
 {
-    private readonly IApplicationRepository _repository;
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly IEcontService _econtService;
+    protected readonly IApplicationRepository Repository;
+    protected readonly UserManager<IdentityUser> UserManager;
+    protected readonly IEcontService EcontService;
 
     public OrderService(IApplicationRepository repository, UserManager<IdentityUser> userManager, IEcontService econtService)
     {
-        _repository = repository;
-        _userManager = userManager;
-        _econtService = econtService;
+        Repository = repository;
+        UserManager = userManager;
+        EcontService = econtService;
     }
 
     public async Task<OrderDetailsViewModel> GetOrderDetails(string userId)
     {
-        IdentityUser user = (await _userManager.FindByIdAsync(userId))!;
+        IdentityUser user = (await UserManager.FindByIdAsync(userId))!;
 
-        ICollection<SelectedProductViewModel> selectedProducts = await _repository
+        ICollection<SelectedProductViewModel> selectedProducts = await Repository
             .WhereReadonly<CartItem>(ci => ci.Cart.UserId == userId && ci.IsSelected && ci.Product.IsPublic && ci.Product.StockQuantity >= ci.Quantity)
             .Include(ci => ci.Cart)
             .Include(ci => ci.Product)
@@ -57,7 +57,7 @@ public class OrderService : IOrderService
 
     public async Task<ServiceResult> Order(string userId, EcontDeliveryDetailsViewModel model)
     {
-        CartItem[] cartItems = await _repository
+        CartItem[] cartItems = await Repository
             .Where<CartItem>(ci => ci.Cart.UserId == userId && ci.IsSelected && ci.Product.IsPublic && ci.Product.StockQuantity >= ci.Quantity)
             .Include(ci => ci.Cart)
             .Include(ci => ci.Product)
@@ -97,7 +97,7 @@ public class OrderService : IOrderService
                 }).ToArray()
         };
 
-        ServiceResult<EcontOrderDto> sr = await _econtService.PlaceOrderAsync(orderDto);
+        ServiceResult<EcontOrderDto> sr = await EcontService.PlaceOrderAsync(orderDto);
         if (!sr.Success) return ServiceResult.Failure();
 
         EcontOrderDto createdOrder = sr.Result!;
@@ -116,6 +116,7 @@ public class OrderService : IOrderService
                .ToArray(),
             Shipment = new Shipment
             {
+                CourierShipmentId = createdOrder.Id!.Value,
                 ShippingPrice = model.ShippingPrice,
                 OrderNumber = createdOrder.OrderNumber,
                 Face = createdOrder.CustomerInfo.Face,
@@ -131,12 +132,12 @@ public class OrderService : IOrderService
             },
         };
 
-        await _repository.AddAsync(order);
+        await Repository.AddAsync(order);
 
         foreach (CartItem item in cartItems) item.Product.StockQuantity -= item.Quantity;
 
-        _repository.DeleteRange(cartItems);
-        await _repository.SaveChangesAsync();
+        Repository.DeleteRange(cartItems);
+        await Repository.SaveChangesAsync();
 
         return ServiceResult.Ok();
     }

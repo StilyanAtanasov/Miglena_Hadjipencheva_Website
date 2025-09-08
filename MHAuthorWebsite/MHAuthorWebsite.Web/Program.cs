@@ -43,6 +43,7 @@ builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
 builder.Services.AddHttpClient<IEcontService, EcontService>();
+builder.Services.AddHttpClient<IAdminEcontService, AdminEcontService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -174,7 +175,8 @@ app.MapControllerRoute(
 app.MapAreaControllerRoute(
     name: "Admin",
     areaName: "Admin",
-    pattern: "Admin/{controller=AdminDashboard}/{action=Dashboard}/{id?}");
+    pattern: "Admin/{controller}/{action}/{id?}",
+defaults: new { controller = "AdminDashboard", action = "Dashboard" });
 
 app.MapRazorPages();
 
