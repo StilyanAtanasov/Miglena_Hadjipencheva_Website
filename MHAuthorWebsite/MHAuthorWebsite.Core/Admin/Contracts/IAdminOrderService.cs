@@ -10,4 +10,6 @@ public interface IAdminOrderService
     Task<ServiceResult> AcceptOrderAsync(Guid orderId);
 
     Task<ServiceResult> RejectOrderAsync(Guid orderId);
+
+    Task<ServiceResult> TerminateOrderAsync(Guid orderId);
 }

@@ -1,6 +1,7 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
+using MHAuthorWebsite.Data.Common.Extensions;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
@@ -65,7 +66,7 @@ public class OrderService : IOrderService
 
         EcontOrderDto orderDto = new()
         {
-            Status = "New",
+            Status = OrderStatus.InReview.GetDisplayName(),
             OrderTime = DateTime.UtcNow.Ticks,
             OrderSum = cartItems.Sum(ci => ci.Product.Price * ci.Quantity),
             Cod = true,
@@ -97,7 +98,7 @@ public class OrderService : IOrderService
                 }).ToArray()
         };
 
-        ServiceResult<EcontOrderDto> sr = await EcontService.PlaceOrderAsync(orderDto);
+        ServiceResult<EcontOrderDto> sr = await EcontService.UpdateOrderAsync(orderDto);
         if (!sr.Success) return ServiceResult.Failure();
 
         EcontOrderDto createdOrder = sr.Result!;

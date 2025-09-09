@@ -10,7 +10,6 @@ using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 
 namespace MHAuthorWebsite.Core.Admin;
 
@@ -45,24 +44,25 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
     public async Task<ServiceResult> AcceptOrderAsync(Guid orderId)
     {
-        Order? order = await Repository
-            .All<Order>()
-            .Include(o => o.Shipment)
-            .FirstOrDefaultAsync(o => o.Id == orderId);
+        (Order? order, EcontOrderDto? orderDto) = await PrepareOrderDto(orderId);
 
-        if (order == null) return ServiceResult.BadRequest();
+        if (order == null || order.Status != OrderStatus.InReview) return ServiceResult.BadRequest();
 
-        EcontOrderDto orderDto = new()
+        orderDto!.Status = OrderStatus.Accepted.GetDisplayName();
+
+        ServiceResult<EcontOrderDto> orderInfoUpdateResult = await EcontService.UpdateOrderAsync(orderDto);
+        if (!orderInfoUpdateResult.Success) return ServiceResult.Failure();
+
+        ServiceResult<EcontShipmentStatusDto> awbCreationResult = await _adminEcontService.CreateAWBAsync(orderDto);
+        if (!awbCreationResult.Success)
         {
-            Id = order.Shipment.CourierShipmentId,
-            OrderNumber = order.Shipment.OrderNumber,
-        };
-
-        ServiceResult<EcontShipmentStatusDto> sr = await _adminEcontService.CreateAWBAsync(orderDto);
-        if (!sr.Success) return ServiceResult.Failure();
+            orderDto.Status = OrderStatus.InReview.GetDisplayName();
+            await EcontService.UpdateOrderAsync(orderDto);
+            return ServiceResult.Failure();
+        }
 
         order.Status = OrderStatus.Accepted;
-        order.Shipment.ShipmentNumber = sr.Result!.ShipmentNumber;
+        order.Shipment.ShipmentNumber = awbCreationResult.Result!.ShipmentNumber;
 
         await Repository.SaveChangesAsync();
 
@@ -71,24 +71,85 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
     public async Task<ServiceResult> RejectOrderAsync(Guid orderId)
     {
-        Order? order = await Repository
-            .All<Order>()
-            .Include(o => o.Shipment)
-            .FirstOrDefaultAsync(o => o.Id == orderId);
+        (Order? order, EcontOrderDto? orderDto) = await PrepareOrderDto(orderId);
 
-        if (order == null) return ServiceResult.BadRequest();
+        if (order == null || order.Status != OrderStatus.InReview) return ServiceResult.BadRequest();
 
-        EcontOrderDto orderDto = new()
-        {
-            Id = order.Shipment.CourierShipmentId,
-            OrderNumber = order.Shipment.OrderNumber,
-        };
+        orderDto!.Status = OrderStatus.Rejected.GetDisplayName();
+
+        ServiceResult<EcontOrderDto> orderInfoUpdateResult = await EcontService.UpdateOrderAsync(orderDto);
+        if (!orderInfoUpdateResult.Success) return ServiceResult.Failure();
+
+        order.Status = OrderStatus.Rejected;
+        await RestoreProducts(Repository, order.Id, false);
+
+        await Repository.SaveChangesAsync();
+
+        return ServiceResult.Ok();
+    }
+
+    public async Task<ServiceResult> TerminateOrderAsync(Guid orderId)
+    {
+        (Order? order, EcontOrderDto? orderDto) = await PrepareOrderDto(orderId);
+
+        if (order == null || order.Status != OrderStatus.Accepted) return ServiceResult.BadRequest();
+
+        orderDto!.Status = OrderStatus.Terminated.GetDisplayName();
 
         ServiceResult sr = await _adminEcontService.DeleteLabelAsync(orderDto);
         if (!sr.Success) return ServiceResult.Failure();
 
-        // TODO finish this method
+        ServiceResult<EcontOrderDto> orderInfoUpdateResult = await EcontService.UpdateOrderAsync(orderDto);
+        if (!orderInfoUpdateResult.Success) return ServiceResult.Failure();
+
+        order.Status = OrderStatus.Terminated;
+        await RestoreProducts(Repository, order.Id, false);
+
+        await Repository.SaveChangesAsync();
 
         return ServiceResult.Ok();
+    }
+
+    private async Task RestoreProducts(IApplicationRepository repository, Guid orderId, bool saveChanges = true)
+    {
+        OrderProduct[] orderedProducts = await repository
+            .Where<OrderProduct>(op => op.OrderId == orderId)
+            .Include(op => op.Product)
+            .ToArrayAsync();
+
+        foreach (OrderProduct orderedProduct in orderedProducts)
+            orderedProduct.Product.StockQuantity += orderedProduct.Quantity;
+
+        if (saveChanges) await repository.SaveChangesAsync();
+    }
+
+    private async Task<(Order?, EcontOrderDto?)> PrepareOrderDto(Guid orderId)
+    {
+        Order? order = await Repository
+            .All<Order>()
+            .Include(o => o.Shipment)
+            .Include(o => o.OrderedProducts)
+                .ThenInclude(op => op.Product)
+            .FirstOrDefaultAsync(o => o.Id == orderId);
+
+        if (order == null) return (null, null);
+
+        EcontOrderDto orderDto = new()
+        {
+            Id = order.Shipment.CourierShipmentId,
+            Status = order.Status.GetDisplayName(),
+            OrderNumber = order.Shipment.OrderNumber,
+            Items = order.OrderedProducts
+                .Select(i => new OrderItemDto
+                {
+                    Count = i.Quantity,
+                    Name = i.Product.Name,
+                    TotalPrice = i.UnitPrice * i.Quantity,
+                    TotalWeight = i.Product.Weight * i.Quantity
+                }).ToArray()
+            // NOTE: The API requires Items to update the order info.
+        };
+
+        return (order, orderDto);
     }
 }

@@ -5,5 +5,5 @@ namespace MHAuthorWebsite.Core.Contracts;
 
 public interface IEcontService
 {
-    Task<ServiceResult<EcontOrderDto>> PlaceOrderAsync(EcontOrderDto order);
+    Task<ServiceResult<EcontOrderDto>> UpdateOrderAsync(EcontOrderDto order);
 }

@@ -39,4 +39,15 @@ public class AdminOrderController : AdminBaseController
 
         return RedirectToAction(nameof(AllOrders));
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Terminate(Guid orderId)
+    {
+        ServiceResult sr = await _adminOrderService.TerminateOrderAsync(orderId);
+
+        if (sr is { Success: false, IsBadRequest: true }) return BadRequest();
+        if (!sr.Success) return StatusCode(500);
+
+        return RedirectToAction(nameof(AllOrders));
+    }
 }

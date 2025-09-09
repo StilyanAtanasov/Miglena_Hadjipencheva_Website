@@ -33,6 +33,9 @@
 						<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Reject" asp-route-orderId="@order.Id">
 							<button type="submit"> Reject</button>
 						</form>
+						<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Terminate" asp-route-orderId="@order.Id">
+							<button type="submit"> Terminate</button>
+						</form>
 					</td>
 				</tr>
 			}

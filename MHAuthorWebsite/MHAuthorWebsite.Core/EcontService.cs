@@ -1,7 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
-using MHAuthorWebsite.Data.Models;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 using System.Text.Json;
@@ -20,12 +19,12 @@ public class EcontService : IEcontService
         Config = config;
     }
 
-    public async Task<ServiceResult<EcontOrderDto>> PlaceOrderAsync(EcontOrderDto order)
+    public async Task<ServiceResult<EcontOrderDto>> UpdateOrderAsync(EcontOrderDto order)
     {
         HttpResponseMessage response = await SendRequestAsync(UpdateOrderEndpoint, order);
+        string responseJson = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode) return ServiceResult<EcontOrderDto>.Failure();
 
-        string responseJson = await response.Content.ReadAsStringAsync();
         EcontOrderDto responseDto = JsonSerializer.Deserialize<EcontOrderDto>(responseJson, new JsonSerializerOptions()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -35,7 +34,7 @@ public class EcontService : IEcontService
         return ServiceResult<EcontOrderDto>.Ok(responseDto);
     }
 
-    protected async Task<HttpResponseMessage> SendRequestAsync(string Endpoint, object payload)
+    protected async Task<HttpResponseMessage> SendRequestAsync(string endpoint, object payload)
     {
         string json = JsonSerializer.Serialize(payload, new JsonSerializerOptions
         {
@@ -43,7 +42,7 @@ public class EcontService : IEcontService
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
         });
 
-        using HttpRequestMessage request = new(HttpMethod.Post, Endpoint);
+        using HttpRequestMessage request = new(HttpMethod.Post, endpoint);
         request.Headers.TryAddWithoutValidation("Authorization", Config["EcontApiSecret"]!);
         request.Headers.Add("X-ID-Shop", ShopId.ToString());
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
