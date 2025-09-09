@@ -48,48 +48,18 @@ public class AdminOrderService : OrderService, IAdminOrderService
         Order? order = await Repository
             .All<Order>()
             .Include(o => o.Shipment)
-            .Include(o => o.OrderedProducts)
-                .ThenInclude(op => op.Product)
-            .Include(o => o.User)
             .FirstOrDefaultAsync(o => o.Id == orderId);
 
-        if (order == null || order.Status != OrderStatus.InReview) return ServiceResult.BadRequest();
+        if (order == null) return ServiceResult.BadRequest();
 
         EcontOrderDto orderDto = new()
         {
             Id = order.Shipment.CourierShipmentId,
-            Status = "Accepted",
             OrderNumber = order.Shipment.OrderNumber,
-            OrderTime = order.Date.Ticks,
-            OrderSum = order.OrderedProducts.Sum(ci => ci.UnitPrice * ci.Quantity),
-            Cod = true,
-            PartialDelivery = false,
-            Currency = Currency,
-            CustomerInfo = new CustomerInfoDto
-            {
-                Id = order.User.Id,
-                Name = order.User.UserName!, // TODO Check if user has their data deleted and use the name provided in the form
-                Face = order.Shipment.Face,
-                Phone = order.Shipment.Phone,
-                Email = order.Shipment.Email,
-                CityName = order.Shipment.City,
-                PostCode = order.Shipment.PostCode,
-                Address = order.Shipment.Address,
-                PriorityFrom = order.Shipment.PriorityFrom,
-                PriorityTo = order.Shipment.PriorityTo
-            },
-            Items = order.OrderedProducts
-                .Select(i => new OrderItemDto
-                {
-                    Count = i.Quantity,
-                    Name = i.Product.Name,
-                    TotalPrice = i.UnitPrice * i.Quantity,
-                    TotalWeight = i.Product.Weight * i.Quantity
-                }).ToArray()
         };
 
         ServiceResult<EcontShipmentStatusDto> sr = await _adminEcontService.CreateAWBAsync(orderDto);
-        if (sr.Success) return ServiceResult.Failure();
+        if (!sr.Success) return ServiceResult.Failure();
 
         order.Status = OrderStatus.Accepted;
         order.Shipment.ShipmentNumber = sr.Result!.ShipmentNumber;
@@ -104,20 +74,18 @@ public class AdminOrderService : OrderService, IAdminOrderService
         Order? order = await Repository
             .All<Order>()
             .Include(o => o.Shipment)
-            .Include(o => o.OrderedProducts)
             .FirstOrDefaultAsync(o => o.Id == orderId);
 
-        if (order == null || order.Status != OrderStatus.InReview) return ServiceResult.BadRequest();
+        if (order == null) return ServiceResult.BadRequest();
 
         EcontOrderDto orderDto = new()
         {
             Id = order.Shipment.CourierShipmentId,
-            Status = "Rejected",
             OrderNumber = order.Shipment.OrderNumber,
         };
 
         ServiceResult sr = await _adminEcontService.DeleteLabelAsync(orderDto);
-        if (sr.Success) return ServiceResult.Failure();
+        if (!sr.Success) return ServiceResult.Failure();
 
         // TODO finish this method
 
