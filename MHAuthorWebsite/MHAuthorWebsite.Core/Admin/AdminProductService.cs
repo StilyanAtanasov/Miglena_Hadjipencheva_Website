@@ -13,7 +13,7 @@ public class AdminProductService : ProductService, IAdminProductService
 {
     private readonly IApplicationRepository _repository;
 
-    public AdminProductService(IApplicationRepository repository, UserManager<IdentityUser> userManager)
+    public AdminProductService(IApplicationRepository repository, UserManager<ApplicationUser> userManager)
     : base(repository, userManager)
         => _repository = repository;
 

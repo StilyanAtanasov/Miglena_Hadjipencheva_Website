@@ -4,6 +4,7 @@ using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data;
+using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Seeding;
 using MHAuthorWebsite.Data.Shared;
 using Microsoft.AspNetCore.Identity;
@@ -19,8 +20,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services
-    .AddDefaultIdentity<IdentityUser>(options =>
+    .AddDefaultIdentity<ApplicationUser>(options =>
     {
+        options.User.AllowedUserNameCharacters = null!;
+        options.User.RequireUniqueEmail = true;
         options.SignIn.RequireConfirmedAccount = false;
     })
     .AddRoles<IdentityRole>()

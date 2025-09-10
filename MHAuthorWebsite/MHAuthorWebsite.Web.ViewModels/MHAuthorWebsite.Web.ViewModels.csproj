@@ -13,21 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MHAuthorWebsite.Data.Models\MHAuthorWebsite.Data.Models.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.GCommon\MHAuthorWebsite.GCommon.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Localization\ValidationMessages.bg.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ValidationMessages.bg.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Localization\ValidationMessages.bg.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ValidationMessages.bg.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <ProjectReference Include="..\MHAuthorWebsite.Web.Common\MHAuthorWebsite.Web.Common.csproj" />
   </ItemGroup>
 
 </Project>

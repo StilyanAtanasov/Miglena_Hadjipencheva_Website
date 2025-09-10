@@ -49,7 +49,7 @@ public class Product
 
     public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
 
-    public ICollection<IdentityUser> Likes { get; set; } = new HashSet<IdentityUser>();
+    public ICollection<ApplicationUser> Likes { get; set; } = new HashSet<ApplicationUser>();
 
     public ICollection<OrderProduct> Orders { get; set; } = new HashSet<OrderProduct>();
 

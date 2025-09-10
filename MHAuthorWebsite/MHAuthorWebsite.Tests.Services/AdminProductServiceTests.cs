@@ -19,15 +19,15 @@ public class AdminProductServiceTests
     private IAdminProductService _adminProductService = null!;
     private ApplicationDbContext _dbContext = null!;
 
-    private Mock<UserManager<IdentityUser>> _userManagerMock = null!;
+    private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
 
     private Product _defaultProduct = null!;
 
     [SetUp]
     public async Task Setup()
     {
-        _userManagerMock = new Mock<UserManager<IdentityUser>>(
-            Mock.Of<IUserStore<IdentityUser>>(),
+        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
+            Mock.Of<IUserStore<ApplicationUser>>(),
             null!, null!, null!, null!, null!, null!, null!, null!
         );
 

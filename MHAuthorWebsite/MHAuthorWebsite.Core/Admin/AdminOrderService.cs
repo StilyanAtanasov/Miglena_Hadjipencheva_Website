@@ -19,7 +19,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
     public AdminOrderService
         (IApplicationRepository repository,
-        UserManager<IdentityUser> userManager,
+        UserManager<ApplicationUser> userManager,
         IEcontService econtService,
         IAdminEcontService adminEcontService)
         : base(repository, userManager, econtService)

@@ -1,4 +1,5 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Dashboard
+@using static MHAuthorWebsite.GCommon.ApplicationRules.DataCollection;
 @model AdminDashboardViewModel
 
 @{
@@ -32,20 +33,20 @@
 				<p class="subheading">Активни потребители:</p>
 				<span class="notice flex-row">
 					<i class="fa-solid fa-circle-info"></i>
-					През последните 30 дни
+					През последните @UsersActivityForPeriod дни
 				</span>
 				<div class="statistics-container active-users-count">
-					<span><strong>2</strong></span> <!-- TODO Placeholder for active users count, replace with actual logic -->
+					<span><strong>@Model.ActiveUsersCount</strong></span> <!-- TODO Placeholder for active users count, replace with actual logic -->
 				</div>
 			</div>
 			<div class="flex-column">
 				<p class="subheading">Нови потребители:</p>
 				<span class="notice flex-row">
 					<i class="fa-solid fa-circle-info"></i>
-					За последните 30 дни
+					За последните @UsersActivityForPeriod дни
 				</span>
 				<div class="statistics-container new-users-count">
-					<span><strong>1</strong></span> <!-- TODO Placeholder for active users count, replace with actual logic -->
+					<span><strong>@Model.NewUsersCount</strong></span> <!-- TODO Placeholder for active users count, replace with actual logic -->
 				</div>
 			</div>
 		</div>

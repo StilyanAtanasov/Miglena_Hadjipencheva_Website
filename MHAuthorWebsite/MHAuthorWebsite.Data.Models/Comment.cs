@@ -26,7 +26,7 @@ public class Comment
     [ForeignKey(nameof(User))]
     public string UserId { get; set; } = null!;
 
-    public IdentityUser User { get; set; } = null!;
+    public ApplicationUser User { get; set; } = null!;
 
     [Required]
     [Comment("Foreign key to Product")]

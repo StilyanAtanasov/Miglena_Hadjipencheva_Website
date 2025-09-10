@@ -2,6 +2,15 @@
 
 public static class EntityConstraints
 {
+    public static class ApplicationUser
+    {
+        public const byte NameMinLength = 2;
+        public const byte NameMaxLength = 120;
+
+        public const byte PasswordMinLength = 6;
+        public const byte PasswordMaxLength = 100;
+    }
+
     public static class Product
     {
         public const byte NameMinLength = 2;

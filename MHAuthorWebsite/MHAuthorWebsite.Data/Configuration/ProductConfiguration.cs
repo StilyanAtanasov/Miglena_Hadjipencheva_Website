@@ -12,11 +12,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
         builder
             .HasMany(p => p.Likes)
-            .WithMany()
+            .WithMany(u => u.LikedProducts)
             .UsingEntity<Dictionary<string, object>>(
                 "ProductsLikes",
                 j => j
-                    .HasOne<IdentityUser>()
+                    .HasOne<ApplicationUser>()
                     .WithMany()
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Restrict),

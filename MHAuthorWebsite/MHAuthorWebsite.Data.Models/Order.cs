@@ -17,7 +17,7 @@ public class Order
     [ForeignKey(nameof(User))]
     public string UserId { get; set; } = null!;
 
-    public IdentityUser User { get; set; } = null!;
+    public ApplicationUser User { get; set; } = null!;
 
     public Shipment Shipment { get; set; } = null!;
 

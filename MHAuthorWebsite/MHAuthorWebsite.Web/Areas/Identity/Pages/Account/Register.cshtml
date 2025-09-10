@@ -14,6 +14,11 @@
 		<form class="input-form flex-column" id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
 			<div asp-validation-summary="ModelOnly" role="alert" class="input-error"></div>
 			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Input.Name">Име и фамилия</label>
+				<input class="form-input" asp-for="Input.Name" autocomplete="name" aria-required="true" placeholder="Иван Иванов" />
+				<span class="input-error" asp-validation-for="Input.Name"></span>
+			</div>
+			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.Email">Имейл адрес</label>
 				<input class="form-input" asp-for="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
 				<span class="input-error" asp-validation-for="Input.Email"></span>

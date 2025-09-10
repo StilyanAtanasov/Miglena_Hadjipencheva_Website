@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Web.ViewModels.Localization;
+﻿using MHAuthorWebsite.Web.Common.Localization;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;

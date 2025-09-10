@@ -15,10 +15,10 @@ namespace MHAuthorWebsite.Core;
 public class OrderService : IOrderService
 {
     protected readonly IApplicationRepository Repository;
-    protected readonly UserManager<IdentityUser> UserManager;
+    protected readonly UserManager<ApplicationUser> UserManager;
     protected readonly IEcontService EcontService;
 
-    public OrderService(IApplicationRepository repository, UserManager<IdentityUser> userManager, IEcontService econtService)
+    public OrderService(IApplicationRepository repository, UserManager<ApplicationUser> userManager, IEcontService econtService)
     {
         Repository = repository;
         UserManager = userManager;
@@ -27,7 +27,7 @@ public class OrderService : IOrderService
 
     public async Task<OrderDetailsViewModel> GetOrderDetails(string userId)
     {
-        IdentityUser user = (await UserManager.FindByIdAsync(userId))!;
+        ApplicationUser user = (await UserManager.FindByIdAsync(userId))!;
 
         ICollection<SelectedProductViewModel> selectedProducts = await Repository
             .WhereReadonly<CartItem>(ci => ci.Cart.UserId == userId && ci.IsSelected && ci.Product.IsPublic && ci.Product.StockQuantity >= ci.Quantity)

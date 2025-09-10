@@ -13,9 +13,9 @@ namespace MHAuthorWebsite.Core;
 public class ProductService : IProductService
 {
     private readonly IApplicationRepository _repository;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ProductService(IApplicationRepository repository, UserManager<IdentityUser> userManager)
+    public ProductService(IApplicationRepository repository, UserManager<ApplicationUser> userManager)
     {
         _repository = repository;
         _userManager = userManager;
@@ -115,7 +115,7 @@ public class ProductService : IProductService
 
         if (product is null) return ServiceResult.NotFound();
 
-        IdentityUser? user = await _userManager.FindByIdAsync(userId);
+        ApplicationUser? user = await _userManager.FindByIdAsync(userId);
         if (user is null) return ServiceResult.Forbidden();
 
         if (product.Likes.All(u => u.Id != userId)) product.Likes.Add(user);

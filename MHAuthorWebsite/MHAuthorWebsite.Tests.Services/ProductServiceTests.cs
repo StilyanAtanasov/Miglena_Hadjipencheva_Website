@@ -19,7 +19,7 @@ public class ProductServiceTests
     private IProductService _productService = null!;
     private ApplicationDbContext _dbContext = null!;
 
-    private Mock<UserManager<IdentityUser>> _userManagerMock = null!;
+    private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
 
     private Product _defaultProduct = null!;
     private const string DefaultUserId = "test-user";
@@ -31,8 +31,8 @@ public class ProductServiceTests
             .UseInMemoryDatabase("ProductTestDb")
             .Options;
 
-        _userManagerMock = new Mock<UserManager<IdentityUser>>(
-            Mock.Of<IUserStore<IdentityUser>>(),
+        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
+            Mock.Of<IUserStore<ApplicationUser>>(),
             null!, null!, null!, null!, null!, null!, null!, null!
         );
 
@@ -87,7 +87,7 @@ public class ProductServiceTests
         // Arrange
         Product p = await _dbContext.Products.FirstAsync();
 
-        IdentityUser user = new()
+        ApplicationUser user = new()
         {
             Id = Guid.NewGuid().ToString(),
             UserName = "test-user2"
@@ -112,7 +112,7 @@ public class ProductServiceTests
     public async Task ToggleLikeProduct_ReturnsOk_WhenLiking()
     {
         // Arrange
-        IdentityUser user = new()
+        ApplicationUser user = new()
         {
             Id = DefaultUserId,
             UserName = "testuser@example.com"
@@ -138,7 +138,7 @@ public class ProductServiceTests
     public async Task ToggleLikeProduct_ReturnsOk_WhenDisliking()
     {
         // Arrange
-        IdentityUser user = new()
+        ApplicationUser user = new()
         {
             Id = DefaultUserId,
             UserName = "testuser@example.com"
