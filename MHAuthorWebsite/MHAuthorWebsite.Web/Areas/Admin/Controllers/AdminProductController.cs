@@ -30,16 +30,7 @@ public class AdminProductController : AdminBaseController
     [HttpGet]
     public async Task<IActionResult> AddProduct()
     {
-        ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
-
-        ViewBag.ProductTypes = productTypes
-            .Select(pt => new SelectListItem
-            {
-                Value = pt.Id.ToString(),
-                Text = pt.Name
-            })
-            .ToArray();
-
+        await PrepareViewBagForAddProduct();
         return View();
     }
 
@@ -48,14 +39,7 @@ public class AdminProductController : AdminBaseController
     {
         if (!ModelState.IsValid)
         {
-            ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
-            ViewBag.ProductTypes = productTypes
-                .Select(pt => new SelectListItem
-                {
-                    Value = pt.Id.ToString(),
-                    Text = pt.Name
-                })
-                .ToArray();
+            await PrepareViewBagForAddProduct();
             return View(model);
         }
 
@@ -63,14 +47,7 @@ public class AdminProductController : AdminBaseController
         {
             ModelState.AddModelError(nameof(model.Images), $"Можете да качите максимум {MaxImages} снимки.");
             ModelState.AddModelError(nameof(model.Description), "Описанието не трябва да надвишава 4000 символа текст.");
-            ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
-            ViewBag.ProductTypes = productTypes
-                .Select(pt => new SelectListItem
-                {
-                    Value = pt.Id.ToString(),
-                    Text = pt.Name
-                })
-                .ToArray();
+            await PrepareViewBagForAddProduct();
             return View(model);
         }
 
@@ -80,29 +57,15 @@ public class AdminProductController : AdminBaseController
         if (plainText.Length > DescriptionTextMaxLength)
         {
             ModelState.AddModelError(nameof(model.Description), "Описанието не трябва да надвишава 4000 символа текст.");
-            ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
-            ViewBag.ProductTypes = productTypes
-                .Select(pt => new SelectListItem
-                {
-                    Value = pt.Id.ToString(),
-                    Text = pt.Name
-                })
-                .ToArray();
+            await PrepareViewBagForAddProduct();
             return View(model);
         }
 
         if (delta.Length > DescriptionDeltaMaxLength)
         {
             ModelState.AddModelError(nameof(model.Description), "HTML съдържанието е прекалено голямо.");
-            ICollection<ProductTypeDto> productTypes = await _productTypeService.GetAllReadonlyAsync();
-            ViewBag.ProductTypes = productTypes
-                .Select(pt => new SelectListItem
-                {
-                    Value = pt.Id.ToString(),
-                    Text = pt.Name
-                })
-                .ToArray();
-            return View(model); // TODO: DRY 
+            await PrepareViewBagForAddProduct();
+            return View(model);
         }
 
         if (model.TitleImageId > model.Images.Count - 1 || model.TitleImageId < 0)
@@ -281,5 +244,16 @@ public class AdminProductController : AdminBaseController
                 sb.Append(insert.GetString());
 
         return sb.ToString();
+    }
+
+    private async Task PrepareViewBagForAddProduct()
+    {
+        ViewBag.ProductTypes = (await _productTypeService.GetAllReadonlyAsync())
+            .Select(pt => new SelectListItem
+            {
+                Value = pt.Id.ToString(),
+                Text = pt.Name
+            })
+            .ToArray();
     }
 }

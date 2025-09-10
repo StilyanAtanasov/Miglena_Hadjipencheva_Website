@@ -147,7 +147,7 @@ app.Use(async (context, next) =>
                 "https://fonts.gstatic.com https://site-assets.fontawesome.com; " +
         "img-src 'self' data: " +
                 "https://res.cloudinary.com;" +
-        "frame-src 'self' https://delivery.econt.com https://delivery-demo.econt.com;"; // ToDO : adjust frame-ancestors directive as well & remove demos
+        "frame-src 'self' https://delivery.econt.com https://delivery.econt.com;";
 
     await next();
 });
