@@ -30,7 +30,7 @@ public static class EntityConstraints
 
     public static class OrderProduct
     {
-        public const int QuantityMinValue = 1;
+        public const byte QuantityMinValue = 1;
 
         public const string UnitPriceSqlType = "decimal(18, 2)";
     }
@@ -39,39 +39,41 @@ public static class EntityConstraints
     {
         public const string ShippingPriceSqlType = "decimal(18, 2)";
 
-        public const int ShipmentNumberMaxLength = 100;
+        public const byte ShipmentNumberMaxLength = 100;
 
-        public const int OrderNumberMaxLength = 50;
+        public const byte OrderNumberMaxLength = 50;
 
-        public const int PhoneMinLength = 6;
-        public const int PhoneMaxLength = 20;
+        public const byte AwbUrlMaxLength = 255;
 
-        public const int FaceMinLength = 2;
-        public const int FaceMaxLength = 150;
+        public const byte PhoneMinLength = 6;
+        public const byte PhoneMaxLength = 20;
 
-        public const int EmailMinLength = 5;
-        public const int EmailMaxLength = 100;
+        public const byte FaceMinLength = 2;
+        public const byte FaceMaxLength = 150;
 
-        public const int CurrencyMinLength = 2;
-        public const int CurrencyMaxLength = 5;
+        public const byte EmailMinLength = 5;
+        public const byte EmailMaxLength = 100;
 
-        public const int AddressMinLength = 5;
-        public const int AddressMaxLength = 250;
+        public const byte CurrencyMinLength = 2;
+        public const byte CurrencyMaxLength = 5;
 
-        public const int CityMinLength = 2;
-        public const int CityMaxLength = 100;
+        public const byte AddressMinLength = 5;
+        public const byte AddressMaxLength = 250;
 
-        public const int PostCodeMinLength = 3;
-        public const int PostCodeMaxLength = 20;
+        public const byte CityMinLength = 2;
+        public const byte CityMaxLength = 100;
 
-        public const int PriorityFromMinLength = 2;
-        public const int PriorityFromMaxLength = 50;
+        public const byte PostCodeMinLength = 3;
+        public const byte PostCodeMaxLength = 20;
 
-        public const int PriorityToMinLength = 2;
-        public const int PriorityToMaxLength = 50;
+        public const byte PriorityFromMinLength = 2;
+        public const byte PriorityFromMaxLength = 50;
 
-        public const int ShipmentDescriptionMinLength = 2;
-        public const int ShipmentDescriptionMaxLength = 1000;
+        public const byte PriorityToMinLength = 2;
+        public const byte PriorityToMaxLength = 50;
+
+        public const byte ShipmentDescriptionMinLength = 2;
+        public const ushort ShipmentDescriptionMaxLength = 1000;
     }
 
 

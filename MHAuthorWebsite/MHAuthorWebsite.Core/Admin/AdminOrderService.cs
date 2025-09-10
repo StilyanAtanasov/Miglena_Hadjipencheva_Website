@@ -63,6 +63,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
         order.Status = OrderStatus.Accepted;
         order.Shipment.ShipmentNumber = awbCreationResult.Result!.ShipmentNumber;
+        order.Shipment.AwbUrl = awbCreationResult.Result.PdfUrl;
 
         await Repository.SaveChangesAsync();
 
@@ -148,6 +149,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
                     TotalWeight = i.Product.Weight * i.Quantity
                 }).ToArray()
             // NOTE: The API requires Items to update the order info.
+            // TODO make the logic around this cleaner
         };
 
         return (order, orderDto);

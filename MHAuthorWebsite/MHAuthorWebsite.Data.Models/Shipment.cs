@@ -1,4 +1,5 @@
 ﻿using MHAuthorWebsite.Data.Models.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Shipment;
@@ -25,6 +26,10 @@ public class Shipment
 
     [MaxLength(ShipmentNumberMaxLength)]
     public string? ShipmentNumber { get; set; }
+
+    [MaxLength(AwbUrlMaxLength)]
+    [Comment("URL to the Air Waybill (AWB) document")]
+    public string? AwbUrl { get; set; }
 
     [Required]
     [MaxLength(PhoneMaxLength)]
