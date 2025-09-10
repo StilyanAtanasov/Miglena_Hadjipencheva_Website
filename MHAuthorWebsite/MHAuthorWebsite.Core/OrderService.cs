@@ -49,7 +49,7 @@ public class OrderService : IOrderService
             UserData = new()
             {
                 Email = user.Email!,
-                Name = user.UserName!, // TODO Require real name
+                Name = user.Name!,
                 PhoneNumber = user.PhoneNumber
             },
             SelectedProducts = selectedProducts
