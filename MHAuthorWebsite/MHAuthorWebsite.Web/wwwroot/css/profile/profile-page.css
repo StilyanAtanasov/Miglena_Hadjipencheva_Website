@@ -8,7 +8,8 @@
   gap: 2.5rem;
 }
 
-.profile-nav {
+.profile-nav,
+.inner-nav {
   height: 100%;
   position: fixed;
   left: 0;
@@ -19,6 +20,7 @@
   background-color: var(--color-secondary-lighter);
   box-shadow: 0 0 1rem var(--color-secondary);
   width: 30rem;
+  z-index: 50;
 }
 
 .profile-nav .profile-nav-elements {
@@ -30,7 +32,8 @@
 .profile-nav .profile-nav-elements .side-nav-element .link {
   width: 100%;
   height: 100%;
-  padding: 1rem 3rem 1rem 1.5rem;
+  margin: 0;
+  padding: 1rem 3rem 1rem 2rem;
 }
 
 .profile-nav .profile-nav-elements .side-nav-element:hover,
@@ -43,6 +46,46 @@
 .profile-nav .profile-nav-elements .side-nav-element:hover .link,
 .profile-nav .profile-nav-elements .side-nav-element.current .link {
   color: var(--color-primary);
+}
+
+.inner-nav {
+  left: 30rem;
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+  box-shadow: 1rem 0 2rem -0.9rem var(--color-secondary);
+  gap: 0;
+}
+
+.profile-nav .profile-nav-elements .side-nav-element .inner-nav .inner-nav-element .link {
+  color: var(--color-secondary);
+}
+
+.side-nav-element .inner-nav,
+.side-nav-element .nav-arrow {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.side-nav-element:hover .inner-nav,
+.side-nav-element:hover .nav-arrow {
+  visibility: visible;
+  opacity: 1;
+}
+
+.nav-arrow {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 2.5rem 3rem 2.5rem;
+  border-color: transparent transparent var(--color-primary) transparent;
+  transform: rotate(-90deg) translateY(1.5rem);
+  transition: all 150ms linear;
+}
+
+.inner-nav .inner-nav-element:hover,
+.inner-nav .inner-nav-element.current {
+  background-color: var(--color-secondary-light);
+  cursor: pointer;
 }
 
 .page-content {
@@ -109,9 +152,28 @@
   }
 
   .profile-nav {
-    height: 22rem;
+    height: auto;
     position: fixed;
     width: 100%;
+    transition: height 500ms linear;
+  }
+
+  .inner-nav {
+    width: 100%;
+    height: 0;
+    position: static;
+    padding: 0;
+    transition: all 200ms linear;
+  }
+
+  .side-nav-element:hover .inner-nav {
+    height: auto;
+    padding: 2rem 0;
+  }
+
+  .nav-arrow {
+    transform: rotate(0deg) translateY(0.8rem);
+    margin-right: 2rem;
   }
 
   .input-form {
