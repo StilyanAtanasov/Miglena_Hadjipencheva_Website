@@ -7,9 +7,13 @@ using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Seeding;
 using MHAuthorWebsite.Data.Shared;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +32,18 @@ builder.Services
     })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddAuthentication()
+    .AddGoogle(googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    })
+    .AddFacebook(facebookOptions =>
+    {
+        facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
+        facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
+    });
 
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
@@ -51,8 +67,8 @@ builder.Services.AddHttpClient<IAdminEcontService, AdminEcontService>();
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.HttpOnly = true;
-    options.Cookie.SameSite = SameSiteMode.Strict;
     options.SlidingExpiration = true;
 
     options.Events.OnRedirectToAccessDenied = context =>
@@ -107,7 +123,7 @@ app.UseCookiePolicy(new CookiePolicyOptions
 {
     Secure = CookieSecurePolicy.Always,
     HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
-    MinimumSameSitePolicy = SameSiteMode.Strict
+    MinimumSameSitePolicy = SameSiteMode.None
 });
 
 app.UseHttpsRedirection();

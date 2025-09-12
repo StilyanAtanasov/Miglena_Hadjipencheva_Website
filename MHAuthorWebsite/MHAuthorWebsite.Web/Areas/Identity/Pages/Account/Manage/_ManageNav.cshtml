@@ -14,7 +14,14 @@
 				Основна информация
 			</a>
 		</li>
-		<li class="side-nav-element @(currentPage == ManageNavPages.PersonalData ? "current" : "")">
+		<li class="side-nav-element flex-row">
+			<a class="link flex-row">
+				<i class="fa-solid fa-truck-fast"></i>
+				Вашите поръчки
+			</a>
+		</li>
+		<!-- TODO Use custom class for current page  -->
+		<li class="side-nav-element @(currentPage == ManageNavPages.PersonalData ? "current" : "")"> 
 			<div class="flex-row">
 				<p class="link flex-row">
 					<i class="fa-solid fa-gear"></i>
