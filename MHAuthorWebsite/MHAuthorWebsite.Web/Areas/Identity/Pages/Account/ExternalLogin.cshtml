@@ -1,33 +1,42 @@
 ﻿@page
 @model ExternalLoginModel
+
 @{
-    ViewData["Title"] = "Register";
+	ViewData["Title"] = "Регистрация";
 }
 
-<h1>@ViewData["Title"]</h1>
-<h2 id="external-login-title">Associate your @Model.ProviderDisplayName account.</h2>
-<hr />
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+}
 
-<p id="external-login-description" class="text-info">
-    You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.
-    Please enter an email address for this site below and click the Register button to finish
-    logging in.
-</p>
+<section class="page-wrapper flex-column">
+	<section class="modal flex-column">
+		<h1 class="title">@ViewData["Title"]</h1>
+		<h2 id="external-login-title" class="heading">Свържете акаунта си в @Model.ProviderDisplayName.</h2>
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email."/>
-                <label asp-for="Input.Email" class="form-label"></label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
-    </div>
-</div>
+		<p id="external-login-description" class="info-message">
+			<i class="fa-regular fa-circle-info"></i>
+			Вие сте успешно удостоверени с <strong>@Model.ProviderDisplayName</strong>.
+			Моля, въведете имейл адрес за този сайт по-долу и кликнете върху бутона Регистрация, за да завършите
+			влизането.
+		</p>
+
+		<form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="input-form flex-column">
+			<div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Input.Email">Имейл адрес</label>
+				<input class="form-input" asp-for="Input.Email" autocomplete="email" placeholder="Моля, въведете имейл адрес." />
+				<span class="input-error" asp-validation-for="Input.Email" class="text-danger"></span>
+			</div>
+
+			<button type="submit" class="btn submit-btn flex-row">
+				<i class="fa-solid fa-arrow-right-to-bracket"></i> 
+				Вход
+			</button>
+		</form>
+	</section>
+</section>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+	<partial name="_ValidationScriptsPartial" />
 }
