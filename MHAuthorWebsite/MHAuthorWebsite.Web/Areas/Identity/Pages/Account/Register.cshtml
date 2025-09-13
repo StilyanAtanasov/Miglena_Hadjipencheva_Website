@@ -1,4 +1,6 @@
 ﻿@page
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model RegisterModel
 @{
 	ViewData["Title"] = "Регистрация";
@@ -41,6 +43,21 @@
 				</p>
 			</div>
 		</form>
+		
+		@if ((Model.ExternalLogins?.Count ?? 0) != 0)
+		{
+			<div class="flex-column">
+				<h3 class="subheading">Регистрация с външен акаунт</h3>
+				<form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="input-form flex-column">
+					<div class="flex-row center">
+						@foreach (AuthenticationScheme provider in Model.ExternalLogins!)
+						{
+							<button type="submit" class="btn submit-btn flex-row" name="provider" value="@provider.Name" title="Регистрирай се в системата с @provider.DisplayName акаунт">@provider.DisplayName</button>
+						}
+					</div>
+				</form>
+			</div>
+		}
 	</section>
 </div>
 

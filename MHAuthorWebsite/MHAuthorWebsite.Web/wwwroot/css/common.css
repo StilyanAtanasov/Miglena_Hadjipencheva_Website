@@ -100,10 +100,18 @@ button.italic {
   gap: 1rem;
 }
 
+.flex-row.center {
+  justify-content: center;
+}
+
 .flex-column {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.flex-column.center {
+  align-items: center;
 }
 
 .btn {
