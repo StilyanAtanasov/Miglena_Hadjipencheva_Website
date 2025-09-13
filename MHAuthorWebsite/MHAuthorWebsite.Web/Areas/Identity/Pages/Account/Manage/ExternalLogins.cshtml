@@ -1,6 +1,7 @@
 ﻿@page
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MHAuthorWebsite.Web.Utils
 @model ExternalLoginsModel
 @{
 	ViewData["Heading"] = "Външни акаунти";
@@ -20,14 +21,14 @@
 			@foreach (UserLoginInfo login in Model.CurrentLogins)
 			{
 				<div class="flex-row">
-					<i class="fa-solid fa-shield-check"></i>
 
+					<img src="@Url.Content(OAuthProviderMapper.ProviderIcons.TryGetValue(login.LoginProvider, out string? path) ? path : "")" alt="" class="icon small" />
 					<h4 id="@($"login-provider-{login.LoginProvider}")">@login.ProviderDisplayName</h4>
-
-					<i class="fa-solid fa-arrow-right"></i>
 
 					@if (Model.ShowRemoveButton)
 					{
+						<i class="fa-solid fa-arrow-right"></i>
+
 						<form id="@($"remove-login-{login.LoginProvider}")" asp-page-handler="RemoveLogin" method="post">
 							<div>
 								<input asp-for="@login.LoginProvider" name="LoginProvider" type="hidden" />
@@ -50,7 +51,14 @@
 			<div id="socialLoginList" class="flex-row">
 				@foreach (AuthenticationScheme provider in Model.OtherLogins)
 				{
-					<button id="@($"link-login-button-{provider.Name}")" type="submit" class="btn" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+					string iconPath = OAuthProviderMapper.ProviderIcons.TryGetValue(provider.Name, out string? path)
+					? path
+					: "";
+
+					<button type="submit" class="btn submit-btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Влез в системата с @provider.DisplayName акаунт">
+						<img src="@Url.Content(iconPath)" alt="" class="icon" />
+						@(iconPath == string.Empty ? provider.DisplayName : "")
+					</button>
 				}
 			</div>
 		</form>

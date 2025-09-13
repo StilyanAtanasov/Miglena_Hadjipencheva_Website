@@ -1,7 +1,9 @@
 ﻿@page
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MHAuthorWebsite.Web.Utils
 @model RegisterModel
+
 @{
 	ViewData["Title"] = "Регистрация";
 }
@@ -52,7 +54,14 @@
 					<div class="flex-row center">
 						@foreach (AuthenticationScheme provider in Model.ExternalLogins!)
 						{
-							<button type="submit" class="btn submit-btn flex-row" name="provider" value="@provider.Name" title="Регистрирай се в системата с @provider.DisplayName акаунт">@provider.DisplayName</button>
+							string iconPath = OAuthProviderMapper.ProviderIcons.TryGetValue(provider.Name, out string? path)
+								? path
+								: "";
+
+							<button type="submit" class="btn submit-btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Регистрирай се в системата с @provider.DisplayName акаунт">
+								<img src="@Url.Content(iconPath)" alt="" class="icon"/>
+								@(iconPath == string.Empty ? provider.DisplayName : "")
+							</button>
 						}
 					</div>
 				</form>

@@ -1,5 +1,6 @@
 ﻿@page
 @using Microsoft.AspNetCore.Authentication
+@using MHAuthorWebsite.Web.Utils
 @model LoginModel
 
 @{
@@ -53,7 +54,14 @@
 					<div class="flex-row center">
 						@foreach (AuthenticationScheme provider in Model.ExternalLogins!)
 						{
-							<button type="submit" class="btn submit-btn flex-row" name="provider" value="@provider.Name" title="Влез в системата с @provider.DisplayName акаунт">@provider.DisplayName</button>
+							string iconPath = OAuthProviderMapper.ProviderIcons.TryGetValue(provider.Name, out string? path)
+							? path
+							: "";
+
+							<button type="submit" class="btn submit-btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Влез в системата с @provider.DisplayName акаунт">
+								<img src="@Url.Content(iconPath)" alt="" class="icon" />
+								@(iconPath == string.Empty ? provider.DisplayName : "")
+							</button>
 						}
 					</div>
 				</form>

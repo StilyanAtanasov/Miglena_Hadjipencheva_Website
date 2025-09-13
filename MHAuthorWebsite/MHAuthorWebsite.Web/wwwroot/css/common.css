@@ -138,6 +138,16 @@ button.btn.remove:hover {
   border: none;
 }
 
+img.icon {
+  width: 4rem;
+  height: 4rem;
+}
+
+img.icon.small {
+  width: 2.8rem;
+  height: 2.8rem;
+}
+
 .title {
   font-size: 4.5rem;
   letter-spacing: 0.07rem;
