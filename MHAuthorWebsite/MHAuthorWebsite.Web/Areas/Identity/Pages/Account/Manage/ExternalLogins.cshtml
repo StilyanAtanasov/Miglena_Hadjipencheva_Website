@@ -16,47 +16,45 @@
 	@if (Model.CurrentLogins?.Count > 0)
 	{
 		<h4>Вашите външни акаунти</h4>
-		<table class="table">
-			<tbody>
-				@foreach (UserLoginInfo login in Model.CurrentLogins)
-				{
-					<tr>
-						<td id="@($"login-provider-{login.LoginProvider}")">@login.ProviderDisplayName</td>
-						<td>
-							@if (Model.ShowRemoveButton)
-							{
-								<form id="@($"remove-login-{login.LoginProvider}")" asp-page-handler="RemoveLogin" method="post">
-									<div>
-										<input asp-for="@login.LoginProvider" name="LoginProvider" type="hidden" />
-										<input asp-for="@login.ProviderKey" name="ProviderKey" type="hidden" />
-										<button type="submit" class="btn" title="Remove this @login.ProviderDisplayName login from your account">Remove</button>
-									</div>
-								</form>
-							}
-							else
-							{
-								@: &nbsp;
-							}
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
+		<div class="flex-column">
+			@foreach (UserLoginInfo login in Model.CurrentLogins)
+			{
+				<div class="flex-row">
+					<i class="fa-solid fa-shield-check"></i>
+
+					<h4 id="@($"login-provider-{login.LoginProvider}")">@login.ProviderDisplayName</h4>
+
+					<i class="fa-solid fa-arrow-right"></i>
+
+					@if (Model.ShowRemoveButton)
+					{
+						<form id="@($"remove-login-{login.LoginProvider}")" asp-page-handler="RemoveLogin" method="post">
+							<div>
+								<input asp-for="@login.LoginProvider" name="LoginProvider" type="hidden" />
+								<input asp-for="@login.ProviderKey" name="ProviderKey" type="hidden" />
+								<button type="submit" class="btn flex-row" title="Премахнете @login.ProviderDisplayName входа от вашия акаунт">
+									<i class="fa-solid fa-xmark"></i>
+									Премахнете
+								</button>
+							</div>
+						</form>
+					}
+				</div>
+			}
+		</div>
 	}
 	@if (Model.OtherLogins?.Count > 0)
 	{
 		<h4>Добавете друга услуга за вход.</h4>
 		<form id="link-login-form" asp-page-handler="LinkLogin" method="post">
-			<div id="socialLoginList">
-				<p>
-					@foreach (AuthenticationScheme provider in Model.OtherLogins)
-					{
-						<button id="@($"link-login-button-{provider.Name}")" type="submit" class="btn" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-					}
-				</p>
+			<div id="socialLoginList" class="flex-row">
+				@foreach (AuthenticationScheme provider in Model.OtherLogins)
+				{
+					<button id="@($"link-login-button-{provider.Name}")" type="submit" class="btn" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+				}
 			</div>
 		</form>
 	}
-	
+
 	<i class="fa-solid fa-arrow-up-right-from-square background-icon"></i>
 </section>
