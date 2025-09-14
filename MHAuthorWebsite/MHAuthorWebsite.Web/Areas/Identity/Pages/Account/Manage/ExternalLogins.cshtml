@@ -56,8 +56,14 @@
 					: "";
 
 					<button type="submit" class="btn submit-btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Влез в системата с @provider.DisplayName акаунт">
-						<img src="@Url.Content(iconPath)" alt="" class="icon" />
-						@(iconPath == string.Empty ? provider.DisplayName : "")
+						@if (!string.IsNullOrEmpty(iconPath))
+						{
+							<img src="@Url.Content(iconPath)" alt="" class="icon" />
+						}
+						else
+						{
+							<span>@provider.DisplayName</span>
+						}
 					</button>
 				}
 			</div>
