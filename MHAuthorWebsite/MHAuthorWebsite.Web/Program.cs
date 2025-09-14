@@ -7,13 +7,9 @@ using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Seeding;
 using MHAuthorWebsite.Data.Shared;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,11 +34,6 @@ builder.Services.AddAuthentication()
     {
         googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
         googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
-    })
-    .AddFacebook(facebookOptions =>
-    {
-        facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
-        facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
     });
 
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
