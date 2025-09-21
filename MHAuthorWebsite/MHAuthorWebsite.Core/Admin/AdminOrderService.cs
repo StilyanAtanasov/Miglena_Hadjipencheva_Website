@@ -61,9 +61,34 @@ public class AdminOrderService : OrderService, IAdminOrderService
             return ServiceResult.Failure();
         }
 
+        EcontShipmentStatusDto shipmentInfo = awbCreationResult.Result!;
+
         order.Status = OrderStatus.Accepted;
-        order.Shipment.ShipmentNumber = awbCreationResult.Result!.ShipmentNumber;
-        order.Shipment.AwbUrl = awbCreationResult.Result.PdfUrl;
+        order.Shipment.ShipmentNumber = shipmentInfo.ShipmentNumber;
+        order.Shipment.AwbUrl = shipmentInfo.PdfUrl;
+
+        order.Shipment.Services = shipmentInfo.Services
+            .Select(s => new ShipmentService
+            {
+                Count = s.Count,
+                Currency = s.Currency,
+                Price = s.Price,
+                Description = s.Description,
+                PaymentSide = s.PaymentSide,
+                Type = s.Type
+            })
+            .ToArray();
+
+        order.Shipment.Events = shipmentInfo.TrackingEvents
+            .Select(e => new ShipmentEvent
+            {
+                DestinationType = e.DestinationType,
+                DestinationDetails = e.DestinationDetails,
+                CityName = e.CityName,
+                OfficeName = e.OfficeName,
+                Time = DateTime.Parse(e.Time!),
+            })
+            .ToArray();
 
         await Repository.SaveChangesAsync();
 

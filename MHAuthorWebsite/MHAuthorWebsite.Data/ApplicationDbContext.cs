@@ -22,6 +22,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<Shipment> Shipments { get; set; } = null!;
 
+    public DbSet<ShipmentEvent> ShipmentEvents { get; set; } = null!;
+
+    public DbSet<ShipmentService> ShipmentServices { get; set; } = null!;
+
     public DbSet<Product> Products { get; set; } = null!;
 
     public DbSet<ProductAttribute> ProductAttributes { get; set; } = null!;

@@ -85,6 +85,23 @@ public static class EntityConstraints
         public const ushort ShipmentDescriptionMaxLength = 1000;
     }
 
+    public static class ShipmentEvent
+    {
+        public const byte DestinationTypeMaxLength = 100;
+        public const ushort DestinationDetailsMaxLength = 500;
+        public const byte OfficeNameMaxLength = 150;
+        public const byte CityNameMaxLength = 120;
+    }
+
+    public static class ShipmentService
+    {
+        public const byte TypeMaxLength = 50;
+        public const ushort DescriptionMaxLength = 500;
+        public const byte PaymentSideMaxLength = 40;
+        public const byte CurrentMaxLength = 15;
+
+        public const string PriceSqlType = "decimal(18, 2)";
+    }
 
     public static class Image
     {

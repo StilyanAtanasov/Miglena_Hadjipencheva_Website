@@ -3,6 +3,7 @@
 
 @{
 	ViewData["Title"] = "All Orders";
+	ViewData["CurrentPage"] = Pages.Admin.AllOrders;
 }
 
 <div class="page-wrapper flex-column">
@@ -35,6 +36,9 @@
 						</form>
 						<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Terminate" asp-route-orderId="@order.Id">
 							<button type="submit"> Terminate</button>
+						</form>
+						<form method="post"  asp-controller="Order" asp-action="GetTrace" asp-route-orderId="@order.Id">
+							<button type="submit"> Get Trace</button>
 						</form>
 					</td>
 				</tr>

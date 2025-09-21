@@ -8,4 +8,6 @@ public interface IOrderService
     Task<OrderDetailsViewModel> GetOrderDetails(string userId);
 
     Task<ServiceResult> Order(string userId, EcontDeliveryDetailsViewModel model);
+
+    //Task<ServiceResult> GetOrderTrackingInfo(string userId, Guid orderId);
 }

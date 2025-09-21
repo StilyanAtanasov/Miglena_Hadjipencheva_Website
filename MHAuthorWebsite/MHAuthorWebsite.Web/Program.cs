@@ -2,6 +2,7 @@ using CloudinaryDotNet;
 using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Background_Services;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Models;
@@ -59,6 +60,8 @@ builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
 builder.Services.AddHttpClient<IEcontService, EcontService>();
 builder.Services.AddHttpClient<IAdminEcontService, AdminEcontService>();
+
+builder.Services.AddHostedService<ShipmentUpdateService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

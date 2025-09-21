@@ -46,9 +46,6 @@ public class Shipment
     [Required]
     public Courier Courier { get; set; }
 
-    /*[MaxLength(50)]
-    public string ShippingStatus { get; set; } = "Pending";*/ // TODO Add enum for shipping status
-
     [Column(TypeName = ShippingPriceSqlType)]
     public decimal ShippingPrice { get; set; }
 
@@ -73,4 +70,10 @@ public class Shipment
 
     [MaxLength(ShipmentDescriptionMaxLength)]
     public string? ShipmentDescription { get; set; }
+
+    public DateTime? ExpectedDeliveryDate { get; set; }
+
+    public ICollection<ShipmentEvent> Events { get; set; } = new HashSet<ShipmentEvent>();
+
+    public ICollection<ShipmentService> Services { get; set; } = new HashSet<ShipmentService>();
 }

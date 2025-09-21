@@ -24,6 +24,7 @@ public static class ApplicationRules
             public const string AddProduct = nameof(AddProduct);
             public const string EditProduct = nameof(EditProduct);
             public const string AddProductType = nameof(AddProductType);
+            public const string AllOrders = nameof(AllOrders);
         }
     }
 
@@ -66,5 +67,6 @@ public static class ApplicationRules
         public const string UpdateOrderEndpoint = "https://delivery.econt.com/services/OrdersService.updateOrder.json";
         public const string CreateAwbEndpoint = "https://delivery.econt.com/services/OrdersService.createAWB.json";
         public const string DeleteLabelEndpoint = "https://delivery.econt.com/services/OrdersService.deleteLabel.json";
+        public const string GetTraceEndpoint = "https://delivery.econt.com/services/OrdersService.getTrace.json";
     }
 }

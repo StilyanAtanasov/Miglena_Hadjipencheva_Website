@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,21 @@ public class EcontService : IEcontService
         })!;
 
         return ServiceResult<EcontOrderDto>.Ok(responseDto);
+    }
+
+    public async Task<ServiceResult<EcontShipmentStatusDto>> GetTrackingInfo(EcontOrderDto order)
+    {
+        HttpResponseMessage response = await SendRequestAsync(GetTraceEndpoint, order);
+        string responseJson = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode) return ServiceResult<EcontShipmentStatusDto>.Failure();
+
+        EcontShipmentStatusDto responseDto = JsonSerializer.Deserialize<EcontShipmentStatusDto>(responseJson, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
+        })!;
+
+        return ServiceResult<EcontShipmentStatusDto>.Ok(responseDto);
     }
 
     protected async Task<HttpResponseMessage> SendRequestAsync(string endpoint, object payload)

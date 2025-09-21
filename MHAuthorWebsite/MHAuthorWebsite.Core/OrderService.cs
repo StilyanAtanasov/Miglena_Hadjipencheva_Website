@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Common.Extensions;
@@ -139,6 +140,26 @@ public class OrderService : IOrderService
 
         Repository.DeleteRange(cartItems);
         await Repository.SaveChangesAsync();
+
+        return ServiceResult.Ok();
+    }
+
+    public async Task<ServiceResult> GetOrderTrackingInfo(Guid orderId)
+    {
+        Order? order = await Repository
+            .WhereReadonly<Order>(o => o.Id == orderId)
+            .Include(o => o.Shipment)
+            .FirstOrDefaultAsync();
+
+        if (order == null) return ServiceResult.Failure();
+
+        EcontOrderDto dto = new()
+        {
+            Id = order.Shipment.CourierShipmentId,
+            OrderNumber = order.Shipment.OrderNumber
+        };
+
+        ServiceResult<EcontShipmentStatusDto> sr = await EcontService.GetTrackingInfo(dto);
 
         return ServiceResult.Ok();
     }

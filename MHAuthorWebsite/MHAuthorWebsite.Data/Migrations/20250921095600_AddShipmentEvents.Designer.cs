@@ -4,6 +4,7 @@ using MHAuthorWebsite.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MHAuthorWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250921095600_AddShipmentEvents")]
+    partial class AddShipmentEvents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -501,9 +504,6 @@ namespace MHAuthorWebsite.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("ExpectedDeliveryDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Face")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -590,48 +590,6 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.HasIndex("ShipmentId");
 
                     b.ToTable("ShipmentEvents");
-                });
-
-            modelBuilder.Entity("MHAuthorWebsite.Data.Models.ShipmentService", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("PaymentSide")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<Guid>("ShipmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ShipmentId");
-
-                    b.ToTable("ShipmentServices");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -945,17 +903,6 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.Navigation("Shipment");
                 });
 
-            modelBuilder.Entity("MHAuthorWebsite.Data.Models.ShipmentService", b =>
-                {
-                    b.HasOne("MHAuthorWebsite.Data.Models.Shipment", "Shipment")
-                        .WithMany("Services")
-                        .HasForeignKey("ShipmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Shipment");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1073,8 +1020,6 @@ namespace MHAuthorWebsite.Data.Migrations
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.Shipment", b =>
                 {
                     b.Navigation("Events");
-
-                    b.Navigation("Services");
                 });
 #pragma warning restore 612, 618
         }
