@@ -1,0 +1,103 @@
+.status-message {
+  background-color: var(--color-secondary-light);
+  padding: 0.5rem 2rem;
+  border-radius: 1.5rem;
+  display: inline;
+}
+
+.product-item {
+  text-align: center;
+  width: 17rem;
+}
+
+.product-item p {
+  line-break: loose;
+}
+
+.product-image-box {
+  border-radius: 2rem;
+  width: 17rem;
+  height: 17rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.product-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-image-box .quantity-badge {
+  position: absolute;
+  bottom: 0.3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-dark);
+  padding: 0.3rem 2rem;
+  border-radius: 1rem;
+  color: var(--color-primary);
+}
+
+.tracking-events .tracking-list {
+  list-style: none;
+}
+
+.tracking-events .tracking-row {
+  gap: 3rem;
+  position: relative;
+}
+
+.tracking-events .tracking-row::before {
+  position: absolute;
+  content: "";
+  width: 0.2rem;
+  height: 100%;
+  background-color: var(--color-secondary);
+  left: 0.95rem;
+}
+
+.tracking-events .tracking-row:first-of-type::before {
+  height: 50%;
+  top: 50%;
+}
+
+.tracking-events .tracking-row:last-of-type::before {
+  height: 50%;
+  bottom: 50%;
+}
+
+.tracking-events .tracking-row:only-of-type::before {
+  content: none;
+}
+
+.tracking-events .tracking-row .tracking-text {
+  padding: 0.8rem 2.8rem;
+  width: fit-content;
+}
+
+.tracking-events .tracking-row:last-of-type .tracking-text {
+  background-color: var(--color-secondary-light);
+  border-radius: 5rem;
+}
+
+.tracking-events .tracking-row .tracking-dot {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+}
+
+.tracking-events .tracking-row .tracking-dot::before {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 0.3rem solid var(--color-secondary);
+  box-shadow: inset 0 0 0 0.3rem var(--color-primary);
+  background-color: var(--color-secondary);
+}
