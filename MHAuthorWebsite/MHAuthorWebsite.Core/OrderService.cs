@@ -25,7 +25,7 @@ public class OrderService : IOrderService
         EcontService = econtService;
     }
 
-    public async Task<OrderDetailsViewModel> GetOrderDetails(string userId)
+    public async Task<OrderSummaryViewModel> GetOrderSummary(string userId)
     {
         ApplicationUser user = (await UserManager.FindByIdAsync(userId))!;
 
@@ -44,7 +44,7 @@ public class OrderService : IOrderService
             })
             .ToListAsync();
 
-        return new OrderDetailsViewModel
+        return new OrderSummaryViewModel
         {
             UserData = new()
             {
@@ -166,4 +166,63 @@ public class OrderService : IOrderService
         })
         .ToArrayAsync();
 
+    public async Task<ServiceResult<OrderDetailsViewModel>> GetOrderDetails(string userId, Guid orderId)
+    {
+        Order? order = await Repository
+            .WhereReadonly<Order>(o => o.Id == orderId)
+            .Include(o => o.OrderedProducts)
+                .ThenInclude(op => op.Product)
+                    .ThenInclude(p => p.Images)
+            .Include(o => o.Shipment)
+                .ThenInclude(s => s.Events)
+            .FirstOrDefaultAsync();
+
+        if (order == null) return ServiceResult<OrderDetailsViewModel>.NotFound();
+        if (order.UserId != userId) return ServiceResult<OrderDetailsViewModel>.Forbidden();
+
+        OrderDetailsViewModel model = new()
+        {
+            OrderId = order.Id,
+            OrderDate = order.Date,
+            Status = order.Status.GetDisplayName(),
+            Products = order.OrderedProducts
+                .Select(op => new OrderProductDetailsViewModel
+                {
+                    ImageUrl = op.Product.Images.FirstOrDefault(i => i.IsThumbnail)!.ThumbnailUrl!,
+                    ProductName = op.Product.Name,
+                    UnitPrice = op.UnitPrice,
+                    Quantity = op.Quantity,
+                })
+                .ToArray(),
+            Shipment = new OrderShipmentDetailsViewModel
+            {
+                CourierName = order.Shipment.Courier.GetDisplayName(),
+                ShipmentNumber = order.Shipment.ShipmentNumber!,
+                ShippingPrice = order.Shipment.ShippingPrice,
+                Face = order.Shipment.Face,
+                Phone = order.Shipment.Phone,
+                Email = order.Shipment.Email,
+                City = order.Shipment.City,
+                PostCode = order.Shipment.PostCode,
+                Address = order.Shipment.Address,
+                PriorityFrom = order.Shipment.PriorityFrom!,
+                PriorityTo = order.Shipment.PriorityTo!,
+                TrackingEvents = order.Shipment.Events
+                    .OrderByDescending(e => e.Time)
+                    .Select(e => new OrderShipmentEventViewModel
+                    {
+                        CityName = e.CityName,
+                        DestinationDetails = e.DestinationDetails!,
+                        DestinationType = e.DestinationType,
+                        OfficeName = e.OfficeName,
+                        Time = e.Time,
+                    })
+                    .ToArray(),
+                ExpectedDeliveryDate = order.Shipment.ExpectedDeliveryDate!.Value,
+                Currency = order.Shipment.Currency
+            }
+        };
+
+        return ServiceResult<OrderDetailsViewModel>.Ok(model);
+    }
 }

@@ -14,7 +14,7 @@ public class OrderController : BaseController
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        OrderDetailsViewModel model = await _orderService.GetOrderDetails(GetUserId()!);
+        OrderSummaryViewModel model = await _orderService.GetOrderSummary(GetUserId()!);
         return View(model);
     }
 
@@ -34,5 +34,20 @@ public class OrderController : BaseController
     {
         ICollection<MyOrdersViewModel> model = await _orderService.GetUserOrders(GetUserId()!);
         return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> OrderDetails(Guid orderId)
+    {
+        ServiceResult<OrderDetailsViewModel> sr = await _orderService.GetOrderDetails(GetUserId()!, orderId);
+        if (!sr.Success)
+        {
+            if (!sr.Found) return NotFound();
+            if (!sr.HasPermission) return Forbid();
+
+            return StatusCode(500);
+        }
+
+        return View(sr.Result);
     }
 }

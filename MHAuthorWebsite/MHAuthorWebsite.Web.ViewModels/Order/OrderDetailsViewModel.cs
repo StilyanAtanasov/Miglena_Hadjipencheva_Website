@@ -2,11 +2,13 @@
 
 public class OrderDetailsViewModel
 {
-    public ICollection<SelectedProductViewModel> SelectedProducts { get; set; } = new HashSet<SelectedProductViewModel>();
+    public Guid OrderId { get; set; }
 
-    public UserDataViewModel UserData { get; set; } = null!;
+    public DateTime OrderDate { get; set; }
 
-    public decimal Subtotal => SelectedProducts.Sum(sp => sp.TotalPrice);
+    public string Status { get; set; } = null!;
 
-    public decimal TotalWeight => SelectedProducts.Sum(sp => sp.TotalWeight);
+    public OrderShipmentDetailsViewModel Shipment { get; set; } = null!;
+
+    public ICollection<OrderProductDetailsViewModel> Products { get; set; } = null!;
 }

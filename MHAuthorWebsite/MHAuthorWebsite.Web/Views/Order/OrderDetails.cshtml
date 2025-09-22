@@ -1,0 +1,90 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Order
+@model OrderDetailsViewModel
+
+@{
+	ViewData["Title"] = "Поръчка";
+	Layout = "/Areas/Identity/Pages/Account/Manage/_Layout.cshtml";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/profile/order-details.css" asp-append-version="true" />
+}
+
+<section class="content-body flex-column">
+	<h1>Order Details</h1>
+
+	<article class="order-summary">
+		<h2>Order Info</h2>
+		<p><strong>Order ID:</strong> @Model.OrderId</p>
+		<p><strong>Date:</strong> @Model.OrderDate.ToString("dd MMM yyyy HH:mm")</p>
+		<p><strong>Status:</strong> @Model.Status</p>
+
+		<section class="ordered-products">
+			<h2>Products</h2>
+			<div class="products-list">
+				@foreach (OrderProductDetailsViewModel product in Model.Products)
+				{
+					<div class="product-item">
+						<div class="product-image-box">
+							<img src="@product.ImageUrl" alt="" />
+							<div class="quantity-badge">@product.Quantity x</div>
+						</div>
+						<p><strong>@product.ProductName</strong></p>
+						<p>Quantity: @product.Quantity</p>
+						<p>Unit Price: @product.UnitPrice.ToString("F2")</p>
+					</div>
+				}
+			</div>
+		</section>
+	</article>
+
+	<article class="courier-info">
+		<h2>Courier Info</h2>
+		<p><strong>Courier:</strong> @Model.Shipment.CourierName</p>
+		<p><strong>Contact:</strong> @Model.Shipment.Face | @Model.Shipment.Phone | @Model.Shipment.Email</p>
+		@if (!string.IsNullOrWhiteSpace(Model.Shipment.Address))
+		{
+			<p><strong>Address:</strong> @Model.Shipment.Address, @Model.Shipment.City, @Model.Shipment.PostCode</p>
+		}
+		<p><strong>Shipping Price:</strong> @Model.Shipment.ShippingPrice @Model.Shipment.Currency</p>
+
+		<p><strong>Expected Delivery:</strong> @Model.Shipment.ExpectedDeliveryDate.ToString("dd MMM yyyy")</p>
+
+	</article>
+
+	<section class="tracking-events">
+		<h2>Tracking</h2>
+		@if (Model.Shipment.TrackingEvents.Any())
+		{
+			<ul>
+				@foreach (var ev in Model.Shipment.TrackingEvents)
+				{
+					<li>
+						<strong>@ev.Time.ToString("dd MMM HH:mm"):</strong>
+						@if (!string.IsNullOrWhiteSpace(ev.DestinationType))
+						{
+							<span>@ev.DestinationType</span>
+						}
+						@if (!string.IsNullOrWhiteSpace(ev.DestinationDetails))
+						{
+							<span> - @ev.DestinationDetails</span>
+						}
+						@if (!string.IsNullOrWhiteSpace(ev.OfficeName))
+						{
+							<span> (@ev.OfficeName)</span>
+						}
+						@if (!string.IsNullOrWhiteSpace(ev.CityName))
+						{
+							<span>, @ev.CityName</span>
+						}
+					</li>
+				}
+			</ul>
+		}
+		else
+		{
+			<p>No tracking updates yet.</p>
+		}
+	</section>
+</section>
