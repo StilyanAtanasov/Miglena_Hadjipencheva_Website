@@ -1,5 +1,4 @@
-﻿using MHAuthorWebsite.Core.Admin.Dto;
-using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Common.Extensions;
@@ -144,23 +143,27 @@ public class OrderService : IOrderService
         return ServiceResult.Ok();
     }
 
-    public async Task<ServiceResult> GetOrderTrackingInfo(Guid orderId)
-    {
-        Order? order = await Repository
-            .WhereReadonly<Order>(o => o.Id == orderId)
-            .Include(o => o.Shipment)
-            .FirstOrDefaultAsync();
-
-        if (order == null) return ServiceResult.Failure();
-
-        EcontOrderDto dto = new()
+    public async Task<ICollection<MyOrdersViewModel>> GetUserOrders(string userId) =>
+    await Repository
+        .WhereReadonly<Order>(o => o.UserId == userId)
+        .Include(o => o.OrderedProducts)
+            .ThenInclude(op => op.Product)
+                .ThenInclude(p => p.Images)
+        .OrderByDescending(o => o.Date)
+        .Select(o => new MyOrdersViewModel
         {
-            Id = order.Shipment.CourierShipmentId,
-            OrderNumber = order.Shipment.OrderNumber
-        };
+            OrderId = o.Id,
+            CreatedAt = o.Date,
+            Total = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity) + o.Shipment.ShippingPrice,
+            Status = o.Status.GetDisplayName(),
+            Products = o.OrderedProducts
+                .Select(op => new MyOrdersOrderProductViewModel
+                {
+                    ImageUrl = op.Product.Images.FirstOrDefault(i => i.IsThumbnail)!.ThumbnailUrl!,
+                    Quantity = op.Quantity,
+                })
+                .ToArray()
+        })
+        .ToArrayAsync();
 
-        ServiceResult<EcontShipmentStatusDto> sr = await EcontService.GetTrackingInfo(dto);
-
-        return ServiceResult.Ok();
-    }
 }

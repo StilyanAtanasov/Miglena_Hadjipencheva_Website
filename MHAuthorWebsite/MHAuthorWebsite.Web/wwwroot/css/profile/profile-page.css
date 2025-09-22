@@ -19,7 +19,7 @@
   padding: 2rem 0;
   background-color: var(--color-secondary-lighter);
   box-shadow: 0 0 1rem var(--color-secondary);
-  width: 30rem;
+  width: 27rem;
   z-index: 50;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .inner-nav {
-  left: 30rem;
+  left: 27rem;
   background-color: var(--color-primary);
   color: var(--color-secondary);
   box-shadow: 1rem 0 2rem -0.9rem var(--color-secondary);
@@ -95,7 +95,8 @@
   font-size: 2rem;
   margin-top: 5rem;
   width: 80%;
-  margin-left: 20%;
+  margin-left: 15%;
+  margin-right: 5%;
 }
 
 .page-content .warning {
@@ -122,10 +123,6 @@
   z-index: -1;
   font-size: 60rem;
   color: var(--color-secondary-light);
-}
-
-.input-form {
-  width: 80%;
 }
 
 .page-content .btn:hover {

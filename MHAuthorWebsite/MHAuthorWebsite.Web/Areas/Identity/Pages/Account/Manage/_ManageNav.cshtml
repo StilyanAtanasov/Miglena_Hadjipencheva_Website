@@ -1,4 +1,6 @@
 ﻿@using MHAuthorWebsite.Data.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
 @inject SignInManager<ApplicationUser> SignInManager
 
 @{
@@ -9,13 +11,13 @@
 <nav class="profile-nav">
 	<ul class="profile-nav-elements flex-column">
 		<li class="side-nav-element flex-row @(currentPage == ManageNavPages.Index ? "current" : "")">
-			<a class="link flex-row" id="profile" asp-page="./Index">
+			<a class="link flex-row" id="profile" asp-area="Identity"  asp-page="/Account/Manage/Index">
 				<i class="fa-solid fa-pencil"></i>
 				Основна информация
 			</a>
 		</li>
 		<li class="side-nav-element flex-row">
-			<a class="link flex-row">
+			<a class="link flex-row" asp-controller="Order" asp-action="MyOrders">
 				<i class="fa-solid fa-truck-fast"></i>
 				Вашите поръчки
 			</a>
@@ -33,7 +35,7 @@
 
 			<ul class="inner-nav flex-column">
 				<li class="inner-nav-element">
-					<a class="link flex-row" id="change-password" asp-page="./ChangePassword">
+					<a class="link flex-row" id="change-password" asp-area="Identity"  asp-page="/Account/Manage/ChangePassword">
 						<i class="fa-solid fa-key"></i>
 						Пароли
 					</a>
@@ -41,20 +43,20 @@
 				@if (hasExternalLogins)
 				{
 					<li class="inner-nav-element">
-						<a id="external-login" class="link flex-row" asp-page="./ExternalLogins">
+						<a id="external-login" class="link flex-row" asp-area="Identity" asp-page="/Account/Manage/ExternalLogins">
 							<i class="fa-solid fa-arrow-up-right-from-square"></i>
 							Външни акаунти
 						</a>
 					</li>
 				}
 				<li class="inner-nav-element">
-					<a class="link flex-row" id="two-factor" asp-page="./TwoFactorAuthentication">
+					<a class="link flex-row" id="two-factor" asp-area="Identity" asp-page="/Account/Manage/TwoFactorAuthentication">
 						<i class="fa-solid fa-lock-keyhole"></i>
 						Двуфакторна автентикация
 					</a>
 				</li>
 				<li class="inner-nav-element">
-					<a class="link flex-row" id="personal-data" asp-page="./PersonalData">
+					<a class="link flex-row" id="personal-data" asp-area="Identity" asp-page="/Account/Manage/PersonalData">
 						<i class="fa-solid fa-id-card"></i>
 						Лични данни
 					</a>

@@ -9,5 +9,5 @@ public interface IOrderService
 
     Task<ServiceResult> Order(string userId, EcontDeliveryDetailsViewModel model);
 
-    //Task<ServiceResult> GetOrderTrackingInfo(string userId, Guid orderId);
+    Task<ICollection<MyOrdersViewModel>> GetUserOrders(string userId);
 }

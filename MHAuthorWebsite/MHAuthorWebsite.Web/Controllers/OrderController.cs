@@ -29,12 +29,10 @@ public class OrderController : BaseController
         return RedirectToAction(nameof(Index), "Cart");
     }
 
-    [HttpPost]
-    public async Task<IActionResult> GetTrace(Guid orderId)
+    [HttpGet]
+    public async Task<IActionResult> MyOrders()
     {
-        /*ServiceResult result = await _orderService.GetOrderTrackingInfo(GetUserId()!, orderId);
-        if (!result.Success) return StatusCode(500);*/
-
-        return Ok();
+        ICollection<MyOrdersViewModel> model = await _orderService.GetUserOrders(GetUserId()!);
+        return View(model);
     }
 }
