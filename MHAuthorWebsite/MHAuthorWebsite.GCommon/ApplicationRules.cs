@@ -15,6 +15,14 @@ public static class ApplicationRules
         public const byte UsersActivityForPeriod = 30; // Days
     }
 
+    public static class OrderSystemEventsMessages
+    {
+        public const string AwaitingApproval = "Поръчката е създадена успешно и очаква да бъде одобрена!";
+        public const string Accepted = "Поръчката е одобрена и се подготвя за изпращане!";
+        public const string Rejected = "Поръчката е отказана и няма да бъде изпратена!";
+        public const string Terminated = "Поръчката е прекратена и няма да бъде доставена!";
+    }
+
     public static class Pages
     {
         public static class Admin

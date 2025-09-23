@@ -3,6 +3,7 @@ using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,8 +30,8 @@ public class ShipmentUpdateService : BackgroundService
                 IEcontService econtService = scope.ServiceProvider.GetRequiredService<IEcontService>();
 
                 Order[] acceptedOrders = await repository
-                    .WhereReadonly<Order>(o => o.Status == Data.Models.Enums.OrderStatus.Shipped
-                                                 || o.Status == Data.Models.Enums.OrderStatus.Accepted)
+                    .WhereReadonly<Order>(o => o.Status == OrderStatus.Shipped
+                                                 || o.Status == OrderStatus.Accepted)
                     .Include(o => o.Shipment)
                         .ThenInclude(s => s.Events)
                     .ToArrayAsync(cancellationToken);
@@ -53,11 +54,18 @@ public class ShipmentUpdateService : BackgroundService
                     if (!sr.Success) continue;
 
                     EcontShipmentStatusDto shipmentInfo = sr.Result!;
-                    if (shipmentInfo.TrackingEvents.Count > order.Shipment.Events.Count)
+                    if (shipmentInfo.TrackingEvents.Count > order.Shipment.Events.Count(e => e.Source == ShipmentEventSource.Econt))
                     {
                         repository.Attach(order.Shipment);
 
-                        order.Shipment.Events = shipmentInfo.TrackingEvents
+                        ShipmentEvent[] newEvents = shipmentInfo.TrackingEvents
+                            .Where(te => !order.Shipment.Events
+                                .Any(se => se.Source == ShipmentEventSource.Econt
+                                           && se.Time == DateTime.Parse(te.Time!)
+                                           && se.DestinationType == te.DestinationType
+                                           && se.DestinationDetails == te.DestinationDetails
+                                           && se.CityName == te.CityName
+                                           && se.OfficeName == te.OfficeName))
                             .Select(eventInfo => new ShipmentEvent
                             {
                                 DestinationType = eventInfo.DestinationType,
@@ -65,14 +73,18 @@ public class ShipmentUpdateService : BackgroundService
                                 CityName = eventInfo.CityName,
                                 OfficeName = eventInfo.OfficeName,
                                 Time = DateTime.Parse(eventInfo.Time!),
+                                Source = ShipmentEventSource.Econt,
+                                ShipmentId = order.Shipment.Id
                             })
-                            .ToList();
+                            .ToArray();
+
+                        await repository.AddRangeAsync(newEvents);
 
                         order.Shipment.ExpectedDeliveryDate = shipmentInfo.ExpectedDeliveryDate is not null ?
                             DateTimeOffset.FromUnixTimeMilliseconds(shipmentInfo.ExpectedDeliveryDate!.Value).UtcDateTime : null;
 
-                        if (shipmentInfo.SendTime != null) order.Status = Data.Models.Enums.OrderStatus.Shipped;
-                        if (shipmentInfo.DeliveryTime != null) order.Status = Data.Models.Enums.OrderStatus.Delivered;
+                        if (shipmentInfo.SendTime != null) order.Status = OrderStatus.Shipped;
+                        if (shipmentInfo.DeliveryTime != null) order.Status = OrderStatus.Delivered;
 
                         await repository.SaveChangesAsync();
                     }

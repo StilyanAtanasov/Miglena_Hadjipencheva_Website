@@ -9,6 +9,7 @@ using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
+using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
 
 namespace MHAuthorWebsite.Core;
 
@@ -129,7 +130,16 @@ public class OrderService : IOrderService
                 PriorityFrom = createdOrder.CustomerInfo.PriorityFrom,
                 PriorityTo = createdOrder.CustomerInfo.PriorityTo,
                 Courier = Courier.Econt,
-                Currency = Currency
+                Currency = Currency,
+                Events = new HashSet<ShipmentEvent>
+                {
+                    new()
+                    {
+                        Time = DateTime.UtcNow,
+                        Source = ShipmentEventSource.System,
+                        DestinationDetails = AwaitingApproval
+                    }
+                }
             },
         };
 
@@ -208,7 +218,7 @@ public class OrderService : IOrderService
                 PriorityFrom = order.Shipment.PriorityFrom,
                 PriorityTo = order.Shipment.PriorityTo,
                 TrackingEvents = order.Shipment.Events
-                    .OrderByDescending(e => e.Time)
+                    .OrderBy(e => e.Time)
                     .Select(e => new OrderShipmentEventViewModel
                     {
                         CityName = e.CityName,

@@ -12,7 +12,7 @@ public class AdminEcontService : EcontService, IAdminEcontService
 {
     public AdminEcontService(HttpClient http, IConfiguration config) : base(http, config) { }
 
-    public async Task<ServiceResult<EcontShipmentStatusDto>> CreateAWBAsync(EcontOrderDto order)
+    public async Task<ServiceResult<EcontShipmentStatusDto>> CreateAwbAsync(EcontOrderDto order)
     {
         HttpResponseMessage response = await SendRequestAsync(CreateAwbEndpoint, order);
         if (!response.IsSuccessStatusCode) return ServiceResult<EcontShipmentStatusDto>.Failure();

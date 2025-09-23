@@ -7,7 +7,7 @@ namespace MHAuthorWebsite.Core.Admin.Contracts;
 
 public interface IAdminEcontService : IEcontService
 {
-    Task<ServiceResult<EcontShipmentStatusDto>> CreateAWBAsync(EcontOrderDto order);
+    Task<ServiceResult<EcontShipmentStatusDto>> CreateAwbAsync(EcontOrderDto order);
 
     Task<ServiceResult> DeleteLabelAsync(EcontOrderDto order);
 }

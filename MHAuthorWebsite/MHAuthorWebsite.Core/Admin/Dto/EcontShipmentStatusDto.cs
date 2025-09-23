@@ -10,11 +10,11 @@ public class EcontShipmentStatusDto
 
     public string? StoragePersonName { get; set; }
 
-    public DateTime? CreatedTime { get; set; }
+    public long? CreatedTime { get; set; }
 
-    public DateTime? SendTime { get; set; }
+    public long? SendTime { get; set; }
 
-    public DateTime? DeliveryTime { get; set; }
+    public long? DeliveryTime { get; set; }
 
     public string? ShipmentType { get; set; }
 
@@ -36,13 +36,13 @@ public class EcontShipmentStatusDto
 
     public string? CdCollectedCurrency { get; set; }
 
-    public DateTime? CdCollectedTime { get; set; }
+    public long? CdCollectedTime { get; set; }
 
     public decimal CdPaidAmount { get; set; }
 
     public string? CdPaidCurrency { get; set; }
 
-    public DateTime? CdPaidTime { get; set; }
+    public long? CdPaidTime { get; set; }
 
     public decimal TotalPrice { get; set; }
 
@@ -64,7 +64,7 @@ public class EcontShipmentStatusDto
 
     public ICollection<EcontServiceDto> Services { get; set; } = new HashSet<EcontServiceDto>();
 
-    public ICollection<EcontTrackingEventDto> TrackingEvents { get; set; } = new HashSet<EcontTrackingEventDto>();
+    public ICollection<EcontTrackingEventDto>? TrackingEvents { get; set; }
 
     [JsonPropertyName("pdfURL")]
     public string PdfUrl { get; set; } = null!;
@@ -77,7 +77,7 @@ public class EcontShipmentStatusDto
 
     public bool? PartialDelivery { get; set; }
 
-    public bool? AlertRedirected { get; set; }
+    public string? AlertRedirected { get; set; }
 
     [JsonPropertyName("PackingListPDFURL")]
     public string? PackingListPdfUrl { get; set; }

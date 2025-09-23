@@ -10,6 +10,8 @@ using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
 
 namespace MHAuthorWebsite.Core.Admin;
 
@@ -53,13 +55,21 @@ public class AdminOrderService : OrderService, IAdminOrderService
         ServiceResult<EcontOrderDto> orderInfoUpdateResult = await EcontService.UpdateOrderAsync(orderDto);
         if (!orderInfoUpdateResult.Success) return ServiceResult.Failure();
 
-        ServiceResult<EcontShipmentStatusDto> awbCreationResult = await _adminEcontService.CreateAWBAsync(orderDto);
+        ServiceResult<EcontShipmentStatusDto> awbCreationResult = await _adminEcontService.CreateAwbAsync(orderDto);
         if (!awbCreationResult.Success)
         {
             orderDto.Status = OrderStatus.InReview.GetDisplayName();
             await EcontService.UpdateOrderAsync(orderDto);
             return ServiceResult.Failure();
         }
+
+        await Repository.AddAsync(new ShipmentEvent
+        {
+            Time = DateTime.UtcNow,
+            Source = ShipmentEventSource.System,
+            DestinationDetails = Accepted,
+            ShipmentId = order.Shipment.Id
+        });
 
         EcontShipmentStatusDto shipmentInfo = awbCreationResult.Result!;
 
@@ -79,7 +89,9 @@ public class AdminOrderService : OrderService, IAdminOrderService
             })
             .ToArray();
 
-        order.Shipment.Events = shipmentInfo.TrackingEvents
+        if (shipmentInfo.TrackingEvents is not null)
+        {
+            ShipmentEvent[] events = shipmentInfo.TrackingEvents
             .Select(e => new ShipmentEvent
             {
                 DestinationType = e.DestinationType,
@@ -87,8 +99,12 @@ public class AdminOrderService : OrderService, IAdminOrderService
                 CityName = e.CityName,
                 OfficeName = e.OfficeName,
                 Time = DateTime.Parse(e.Time!),
+                Source = ShipmentEventSource.Econt
             })
             .ToArray();
+
+            await Repository.AddRangeAsync(events);
+        }
 
         await Repository.SaveChangesAsync();
 
@@ -105,6 +121,14 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
         ServiceResult<EcontOrderDto> orderInfoUpdateResult = await EcontService.UpdateOrderAsync(orderDto);
         if (!orderInfoUpdateResult.Success) return ServiceResult.Failure();
+
+        await Repository.AddAsync(new ShipmentEvent()
+        {
+            Time = DateTime.UtcNow,
+            Source = ShipmentEventSource.System,
+            DestinationDetails = Rejected,
+            ShipmentId = order.Shipment.Id
+        });
 
         order.Status = OrderStatus.Rejected;
         await RestoreProducts(Repository, order.Id, false);
@@ -127,6 +151,14 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
         ServiceResult<EcontOrderDto> orderInfoUpdateResult = await EcontService.UpdateOrderAsync(orderDto);
         if (!orderInfoUpdateResult.Success) return ServiceResult.Failure();
+
+        await Repository.AddAsync(new ShipmentEvent
+        {
+            Time = DateTime.UtcNow,
+            Source = ShipmentEventSource.System,
+            DestinationDetails = Terminated,
+            ShipmentId = order.Shipment.Id
+        });
 
         order.Status = OrderStatus.Terminated;
         await RestoreProducts(Repository, order.Id, false);

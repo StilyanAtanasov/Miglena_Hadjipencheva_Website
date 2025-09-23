@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MHAuthorWebsite.Data.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ShipmentEvent;
 
@@ -28,4 +29,7 @@ public class ShipmentEvent
     public Guid ShipmentId { get; set; }
 
     public Shipment Shipment { get; set; } = null!;
+
+    [Required]
+    public ShipmentEventSource Source { get; set; }
 }
