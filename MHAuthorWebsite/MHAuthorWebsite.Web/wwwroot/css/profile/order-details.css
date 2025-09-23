@@ -1,8 +1,48 @@
+.content-body {
+  margin: 3rem 0;
+}
+
+.section-heading {
+  gap: 3rem;
+}
+
+.warning {
+  font-size: 2.5rem;
+  margin: 5rem 0;
+}
+
 .status-message {
   background-color: var(--color-secondary-light);
-  padding: 0.5rem 2rem;
-  border-radius: 1.5rem;
-  display: inline;
+  padding: 0.7rem 2rem;
+  border-radius: 5rem;
+  width: fit-content;
+}
+
+.info-section {
+  gap: 3rem;
+  width: 100%;
+}
+
+.info-section article {
+  width: 50%;
+}
+
+.heading {
+  margin-bottom: 1rem;
+}
+
+.order-summary,
+.courier-info,
+.tracking-events,
+.ordered-products {
+  padding: 2rem 3.5rem;
+  border-radius: 2rem;
+  border: 0.2rem solid var(--color-secondary-light);
+}
+
+.order-summary p,
+.courier-info p {
+  font-size: 2.1rem;
 }
 
 .product-item {
@@ -35,7 +75,7 @@
   transform: translateX(-50%);
   background-color: var(--color-dark);
   padding: 0.3rem 2rem;
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   color: var(--color-primary);
 }
 
@@ -54,7 +94,7 @@
   width: 0.2rem;
   height: 100%;
   background-color: var(--color-secondary);
-  left: 0.95rem;
+  left: 0.9rem;
 }
 
 .tracking-events .tracking-row:first-of-type::before {

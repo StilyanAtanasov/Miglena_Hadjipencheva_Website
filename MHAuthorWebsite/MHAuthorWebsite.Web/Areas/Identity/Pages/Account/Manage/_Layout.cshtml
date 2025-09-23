@@ -1,6 +1,6 @@
 ﻿@{
 	Layout = "/Views/Shared/_Layout.cshtml";
-	ViewData["Title"] = "Профил";
+	ViewData["Title"] = ViewData["Heading"];
 }
 
 <div class="page-wrapper flex-column">
@@ -9,7 +9,11 @@
 	<div class="flex-column page-content">
 		<partial name="~/Areas/Identity/Pages/Account/Manage/_ManageNav.cshtml" />
 
-		<h3 class="heading">@ViewData["Heading"]</h3>
+		@await RenderSectionAsync("Heading", required: false)
+		@if (!IsSectionDefined("Heading"))
+		{
+			<h3 class="title-small">@ViewData["Heading"]</h3>
+		}
 		@RenderBody()
 	</div>
 </div>

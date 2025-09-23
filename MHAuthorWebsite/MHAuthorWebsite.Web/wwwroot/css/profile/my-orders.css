@@ -1,8 +1,3 @@
-.orders-list {
-  gap: 2rem;
-  margin-bottom: 5rem;
-}
-
 .order-card {
   border: 0.1rem solid var(--color-secondary);
   border-radius: 2rem;

@@ -1,8 +1,12 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Order
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@using MHAuthorWebsite.Data.Models.Enums
+@using MHAuthorWebsite.Data.Common.Extensions
+@using MHAuthorWebsite.Web.ViewModels.Shared
 @model OrderDetailsViewModel
 
 @{
-	ViewData["Title"] = "Поръчка";
+	ViewData["Heading"] = $"Поръчка № {Model.OrderId}";
 	Layout = "/Areas/Identity/Pages/Account/Manage/_Layout.cshtml";
 }
 
@@ -11,49 +15,60 @@
 	<link rel="stylesheet" href="~/css/profile/order-details.css" asp-append-version="true" />
 }
 
+@section Heading
+{
+	<div class="section-heading flex-row">
+		<h3 class="title-small visible">@ViewData["Heading"]</h3>
+		<p class="status-message"><strong>@Model.Status</strong></p>
+	</div>
+}
+
 <section class="content-body flex-column">
-	<h1>Order Details</h1>
+	@if (Model.Status == OrderStatus.Rejected.GetDisplayName())
+	{
+		WarningViewModel message = new()
+		{
+			Message = "За съжаление, вашата поръчка е отказана и няма да бъде доставена. Ако имате въпроси или нужда от допълнителна информация, моля свържете се с нас!"
+		};
 
-	<article class="order-summary">
-		<h2>Order Info</h2>
-		<p><strong>Order ID:</strong> @Model.OrderId</p>
-		<p><strong>Date:</strong> @Model.OrderDate.ToString("dd MMM yyyy HH:mm")</p>
-		<p class="status-message"><strong>Status:</strong> @Model.Status</p>
-	</article>
+		<partial name="_WarningMessage" model="message" />
 
-	<section class="ordered-products">
-		<h2>Products</h2>
-		<div class="flex-row">
-			@foreach (OrderProductDetailsViewModel product in Model.Products)
+	}
+	@if (Model.Status == OrderStatus.Terminated.GetDisplayName())
+	{
+		WarningViewModel message = new()
+		{
+			Message = "За съжаление, вашата поръчка е прекратена и няма да бъде доставена окончателно. Ако имате въпроси или нужда от допълнителна информация, моля свържете се с нас!"
+		};
+
+		<partial name="_WarningMessage" model="message" />
+	}
+	<section class="info-section flex-row">
+		<article class="order-summary">
+			<h4 class="heading">Основна информация</h4>
+			<p><strong>№</strong> @Model.OrderId</p>
+			<p><strong>Дата на поръчка:</strong> @Model.OrderDate.ToString("dd MMM yyyy, HH:mm ч.")</p>
+			<p><strong>Обща стойност:</strong> @((Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice).ToString("F2")) @Currency</p>
+			<p><strong>Статус: </strong>@Model.Status</p>
+		</article>
+
+		<article class="courier-info">
+			<h4 class="heading">Информация за доставка</h4>
+			<p><strong>Куриер:</strong> @Model.Shipment.CourierName</p>
+			<p><strong>Лице:</strong> @Model.Shipment.Face | @Model.Shipment.Phone | @Model.Shipment.Email</p>
+			@if (!string.IsNullOrWhiteSpace(Model.Shipment.Address))
 			{
-				<div class="product-item">
-					<div class="product-image-box">
-						<img src="@product.ImageUrl" alt="" />
-						<div class="quantity-badge">@(product.Quantity)x</div>
-					</div>
-					<p><strong>@product.ProductName</strong></p>
-					<p>Unit Price: @product.UnitPrice.ToString("F2")</p>
-				</div>
+				<p><strong>Адрес:</strong> @Model.Shipment.Address, @Model.Shipment.City, @Model.Shipment.PostCode</p>
 			}
-		</div>
+
+			<p><strong>Цена на доставка:</strong> @Model.Shipment.ShippingPrice @Model.Shipment.Currency</p>
+			<p><strong>Очаквана доставка:</strong> @Model.Shipment.ExpectedDeliveryDate.ToString("dd MMM yyyy")</p>
+
+		</article>
 	</section>
 
-	<article class="courier-info">
-		<h2>Courier Info</h2>
-		<p><strong>Courier:</strong> @Model.Shipment.CourierName</p>
-		<p><strong>Contact:</strong> @Model.Shipment.Face | @Model.Shipment.Phone | @Model.Shipment.Email</p>
-		@if (!string.IsNullOrWhiteSpace(Model.Shipment.Address))
-		{
-			<p><strong>Address:</strong> @Model.Shipment.Address, @Model.Shipment.City, @Model.Shipment.PostCode</p>
-		}
-		<p><strong>Shipping Price:</strong> @Model.Shipment.ShippingPrice @Model.Shipment.Currency</p>
-
-		<p><strong>Expected Delivery:</strong> @Model.Shipment.ExpectedDeliveryDate.ToString("dd MMM yyyy")</p>
-
-	</article>
-
 	<section class="tracking-events">
-		<h2>Tracking</h2>
+		<h4 class="heading">Проследи пратка</h4>
 		@if (Model.Shipment.TrackingEvents.Any())
 		{
 			<ul class="tracking-list">
@@ -63,13 +78,9 @@
 						<span class="tracking-dot"></span>
 						<p class="tracking-text">
 							<strong>@ev.Time.ToString("dd MMM HH:mm"):</strong>
-							@if (!string.IsNullOrWhiteSpace(ev.DestinationType))
-							{
-								<span>@ev.DestinationType</span>
-							}
 							@if (!string.IsNullOrWhiteSpace(ev.DestinationDetails))
 							{
-								<span> - @ev.DestinationDetails</span>
+								<span> @ev.DestinationDetails</span>
 							}
 							@if (!string.IsNullOrWhiteSpace(ev.OfficeName))
 							{
@@ -87,7 +98,24 @@
 		}
 		else
 		{
-			<p>No tracking updates yet.</p>
+			<p>Няма актуализации за проследяване.</p>
 		}
+	</section>
+	
+	<section class="ordered-products">
+		<h4 class="heading">Продукти</h4>
+		<div class="flex-row">
+			@foreach (OrderProductDetailsViewModel product in Model.Products)
+			{
+				<div class="product-item">
+					<div class="product-image-box">
+						<img src="@product.ImageUrl" alt="" />
+						<div class="quantity-badge">@(product.Quantity)x</div>
+					</div>
+					<p><strong>@product.ProductName</strong></p>
+					<p>Ед. цена: @product.UnitPrice.ToString("F2")</p>
+				</div>
+			}
+		</div>
 	</section>
 </section>

@@ -1,4 +1,6 @@
 ﻿@page
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model PersonalDataModel
 @{
 	ViewData["Heading"] = "Лични данни";
@@ -15,13 +17,15 @@
 		Вашият акаунт съдържа лични данни, които сте ни предоставили!
 		Тази страница ви позволява да изтеглите или изтриете тези данни!
 	</p>
-	<div class="warning flex-column">
-		<div class="flex-row">
-			<i class="fa-solid fa-circle-exclamation"></i>
-			<span class="warning-uppercase">Внимание:</span>
-		</div>
-		<strong>Изтриването на данните трайно ще премахне вашият профил в системата! Този процес е необратим!</strong>
-	</div>
+	@{
+		WarningViewModel message = new()
+		{
+			Message = "Изтриването на данните трайно ще премахне вашият профил в системата! Този процес е необратим!"
+		};
+	}
+
+	<partial name="_WarningMessage" model="message" />
+
 	<div class="action-buttons flex-row">
 		<form id="download-data" asp-page="DownloadPersonalData" method="post">
 			<button type="submit" class="btn flex-row">
