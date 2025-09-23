@@ -4,8 +4,6 @@ public class OrderShipmentEventViewModel
 {
     public DateTime Time { get; set; }
 
-    public string? DestinationType { get; set; }
-
     public string DestinationDetails { get; set; } = null!;
 
     public string? OfficeName { get; set; }

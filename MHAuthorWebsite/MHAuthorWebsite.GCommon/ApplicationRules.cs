@@ -68,5 +68,7 @@ public static class ApplicationRules
         public const string CreateAwbEndpoint = "https://delivery.econt.com/services/OrdersService.createAWB.json";
         public const string DeleteLabelEndpoint = "https://delivery.econt.com/services/OrdersService.deleteLabel.json";
         public const string GetTraceEndpoint = "https://delivery.econt.com/services/OrdersService.getTrace.json";
+
+        public const string EcontTrackerUrl = "https://www.econt.com/services/track-shipment";
     }
 }

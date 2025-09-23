@@ -97,6 +97,7 @@
   width: 80%;
   margin-left: 15%;
   margin-right: 5%;
+  position: relative;
 }
 
 .page-content .warning {
@@ -116,13 +117,14 @@
 }
 
 .background-icon {
-  position: absolute;
+  position: fixed;
   top: 20rem;
   right: 10rem;
-  opacity: 0.45;
+  opacity: 0.4;
   z-index: -1;
   font-size: 60rem;
   color: var(--color-secondary-light);
+  filter: blur(0.2rem);
 }
 
 .page-content .btn:hover {

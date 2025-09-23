@@ -2,7 +2,7 @@
 
 public class OrderShipmentDetailsViewModel
 {
-    public string ShipmentNumber { get; set; } = null!;
+    public string? ShipmentNumber { get; set; }
 
     public string CourierName { get; set; } = null!;
 
@@ -22,11 +22,11 @@ public class OrderShipmentDetailsViewModel
 
     public string Currency { get; set; } = null!;
 
-    public string PriorityFrom { get; set; } = null!;
+    public string? PriorityFrom { get; set; }
 
-    public string PriorityTo { get; set; } = null!;
+    public string? PriorityTo { get; set; }
 
-    public DateTime ExpectedDeliveryDate { get; set; }
+    public DateTime? ExpectedDeliveryDate { get; set; }
 
     public ICollection<OrderShipmentEventViewModel> TrackingEvents { get; set; } = null!;
 }

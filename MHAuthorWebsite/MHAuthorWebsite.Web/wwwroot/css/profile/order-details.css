@@ -8,11 +8,13 @@
 
 .warning {
   font-size: 2.5rem;
-  margin: 5rem 0;
+  margin: 3rem 0 5rem 0;
+  padding: 0 2rem;
 }
 
 .status-message {
-  background-color: var(--color-secondary-light);
+  background-color: var(--color-tertiary-light);
+  color: var(--color-primary);
   padding: 0.7rem 2rem;
   border-radius: 5rem;
   width: fit-content;
@@ -21,6 +23,7 @@
 .info-section {
   gap: 3rem;
   width: 100%;
+  align-items: start;
 }
 
 .info-section article {
@@ -43,6 +46,14 @@
 .order-summary p,
 .courier-info p {
   font-size: 2.1rem;
+}
+
+.shipment-tracker-link {
+  gap: 0.5rem;
+}
+
+.shipment-tracker-link i {
+  font-size: 1.8rem;
 }
 
 .product-item {
@@ -140,4 +151,21 @@
   border: 0.3rem solid var(--color-secondary);
   box-shadow: inset 0 0 0 0.3rem var(--color-primary);
   background-color: var(--color-secondary);
+}
+
+.background-icon {
+  top: 25rem;
+  opacity: 0.25;
+  filter: blur(0.5rem);
+}
+
+@media (max-width: 600px) {
+  .section-heading,
+  .info-section {
+    flex-direction: column;
+  }
+
+  .info-section article {
+    width: 100%;
+  }
 }

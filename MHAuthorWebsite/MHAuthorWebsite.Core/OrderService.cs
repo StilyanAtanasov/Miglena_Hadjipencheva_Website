@@ -197,7 +197,7 @@ public class OrderService : IOrderService
             Shipment = new OrderShipmentDetailsViewModel
             {
                 CourierName = order.Shipment.Courier.GetDisplayName(),
-                ShipmentNumber = order.Shipment.ShipmentNumber!,
+                ShipmentNumber = order.Shipment.ShipmentNumber,
                 ShippingPrice = order.Shipment.ShippingPrice,
                 Face = order.Shipment.Face,
                 Phone = order.Shipment.Phone,
@@ -205,20 +205,19 @@ public class OrderService : IOrderService
                 City = order.Shipment.City,
                 PostCode = order.Shipment.PostCode,
                 Address = order.Shipment.Address,
-                PriorityFrom = order.Shipment.PriorityFrom!,
-                PriorityTo = order.Shipment.PriorityTo!,
+                PriorityFrom = order.Shipment.PriorityFrom,
+                PriorityTo = order.Shipment.PriorityTo,
                 TrackingEvents = order.Shipment.Events
                     .OrderByDescending(e => e.Time)
                     .Select(e => new OrderShipmentEventViewModel
                     {
                         CityName = e.CityName,
                         DestinationDetails = e.DestinationDetails!,
-                        DestinationType = e.DestinationType,
                         OfficeName = e.OfficeName,
                         Time = e.Time,
                     })
                     .ToArray(),
-                ExpectedDeliveryDate = order.Shipment.ExpectedDeliveryDate!.Value,
+                ExpectedDeliveryDate = order.Shipment.ExpectedDeliveryDate,
                 Currency = order.Shipment.Currency
             }
         };

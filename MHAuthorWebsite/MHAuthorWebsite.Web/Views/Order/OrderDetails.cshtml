@@ -1,8 +1,10 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Order
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Econt
 @using MHAuthorWebsite.Data.Models.Enums
 @using MHAuthorWebsite.Data.Common.Extensions
 @using MHAuthorWebsite.Web.ViewModels.Shared
+
 @model OrderDetailsViewModel
 
 @{
@@ -46,24 +48,48 @@
 	<section class="info-section flex-row">
 		<article class="order-summary">
 			<h4 class="heading">Основна информация</h4>
-			<p><strong>№</strong> @Model.OrderId</p>
-			<p><strong>Дата на поръчка:</strong> @Model.OrderDate.ToString("dd MMM yyyy, HH:mm ч.")</p>
-			<p><strong>Обща стойност:</strong> @((Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice).ToString("F2")) @Currency</p>
-			<p><strong>Статус: </strong>@Model.Status</p>
+			<p class="flex-row"><strong>№</strong> @Model.OrderId</p>
+			<p class="flex-row"><strong>Дата на поръчка:</strong> @Model.OrderDate.ToString("dd MMM yyyy, HH:mm ч.")</p>
+			<p class="flex-row"><strong>Обща стойност:</strong> @((Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice).ToString("F2")) @Currency</p>
+			<p class="flex-row"><strong>Статус: </strong>@Model.Status</p>
 		</article>
 
 		<article class="courier-info">
 			<h4 class="heading">Информация за доставка</h4>
-			<p><strong>Куриер:</strong> @Model.Shipment.CourierName</p>
-			<p><strong>Лице:</strong> @Model.Shipment.Face | @Model.Shipment.Phone | @Model.Shipment.Email</p>
-			@if (!string.IsNullOrWhiteSpace(Model.Shipment.Address))
+			@if (Model.Shipment.ShipmentNumber is not null)
 			{
-				<p><strong>Адрес:</strong> @Model.Shipment.Address, @Model.Shipment.City, @Model.Shipment.PostCode</p>
+				<p class="flex-row">
+					<strong>№ на пратката:</strong> @Model.Shipment.ShipmentNumber
+					<a class="shipment-tracker-link link active flex-row"
+					   href="@(EcontTrackerUrl)/@Model.Shipment.ShipmentNumber">
+						Проследи
+						<i class="fa-regular fa-arrow-right"></i>
+					</a>
+				</p>
 			}
 
-			<p><strong>Цена на доставка:</strong> @Model.Shipment.ShippingPrice @Model.Shipment.Currency</p>
-			<p><strong>Очаквана доставка:</strong> @Model.Shipment.ExpectedDeliveryDate.ToString("dd MMM yyyy")</p>
+			<p class="flex-row"><strong>Куриер:</strong> @Model.Shipment.CourierName</p>
+			<p class="flex-row"><strong>Лице:</strong> @Model.Shipment.Face | @Model.Shipment.Phone | @Model.Shipment.Email</p>
+			@if (!string.IsNullOrWhiteSpace(Model.Shipment.Address))
+			{
+				<p class="flex-row"><strong>Адрес:</strong> @Model.Shipment.Address, @Model.Shipment.City, @Model.Shipment.PostCode</p>
+			}
 
+			<p class="flex-row"><strong>Цена на доставка:</strong> @Model.Shipment.ShippingPrice @Model.Shipment.Currency</p>
+
+			@if (Model.Shipment.ExpectedDeliveryDate.HasValue)
+			{
+				<p class="flex-row"><strong>Очаквана доставка:</strong> @Model.Shipment.ExpectedDeliveryDate.Value.ToString("dd MMM yyyy")</p>
+			}
+
+			@{
+				bool hasPriorityFrom = !string.IsNullOrWhiteSpace(Model.Shipment.PriorityFrom);
+				bool hasPriorityTo = !string.IsNullOrWhiteSpace(Model.Shipment.PriorityTo);
+			}
+			@if (hasPriorityFrom || hasPriorityTo)
+			{
+				<p class="flex-row"><strong>Доставката да бъде</strong> @(hasPriorityFrom ? $"от: {Model.Shipment.PriorityFrom} ч." : "") @(hasPriorityTo ? $"до: {Model.Shipment.PriorityTo} ч." : "")</p>
+			}
 		</article>
 	</section>
 
@@ -77,7 +103,7 @@
 					<li class="tracking-row flex-row">
 						<span class="tracking-dot"></span>
 						<p class="tracking-text">
-							<strong>@ev.Time.ToString("dd MMM HH:mm"):</strong>
+							<strong>@ev.Time.ToString("dd MMM yyyy, HH:mm ч."):</strong>
 							@if (!string.IsNullOrWhiteSpace(ev.DestinationDetails))
 							{
 								<span> @ev.DestinationDetails</span>
@@ -101,7 +127,7 @@
 			<p>Няма актуализации за проследяване.</p>
 		}
 	</section>
-	
+
 	<section class="ordered-products">
 		<h4 class="heading">Продукти</h4>
 		<div class="flex-row">
@@ -118,4 +144,6 @@
 			}
 		</div>
 	</section>
+
+	<i class="fa-solid fa-memo-circle-info background-icon"></i>
 </section>

@@ -2,6 +2,7 @@
   border: 0.1rem solid var(--color-secondary);
   border-radius: 2rem;
   padding: 2rem 3rem;
+  backdrop-filter: blur(1rem);
 }
 
 .order-info {
