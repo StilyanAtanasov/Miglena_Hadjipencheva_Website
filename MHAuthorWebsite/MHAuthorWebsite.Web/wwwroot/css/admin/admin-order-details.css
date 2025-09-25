@@ -1,0 +1,38 @@
+.page-wrapper {
+  align-items: unset;
+  padding: 8rem 5rem;
+}
+
+.section-heading {
+  margin-bottom: 5rem;
+}
+
+.shipment-services,
+.shipment-awb {
+  padding: 2rem 3.5rem;
+  border-radius: 2rem;
+  border: 0.2rem solid var(--color-secondary-light);
+}
+
+.shipment-info-section {
+  gap: 3rem;
+  width: 100%;
+  align-items: start;
+}
+
+.awb-doc {
+  height: 50rem;
+}
+
+.service-item {
+  gap: 0;
+  font-size: 2rem;
+}
+
+.service-item:last-of-type hr {
+  display: none;
+}
+
+.tracking-events {
+  width: 100%;
+}

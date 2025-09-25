@@ -37,9 +37,7 @@
 						<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Terminate" asp-route-orderId="@order.Id">
 							<button type="submit"> Terminate</button>
 						</form>
-						<form method="post"  asp-controller="Order" asp-action="GetTrace" asp-route-orderId="@order.Id">
-							<button type="submit"> Get Trace</button>
-						</form>
+						<a asp-area="Admin" asp-controller="AdminOrder" asp-action="OrderDetails" asp-route-orderId="@order.Id"> Details</a>
 					</td>
 				</tr>
 			}

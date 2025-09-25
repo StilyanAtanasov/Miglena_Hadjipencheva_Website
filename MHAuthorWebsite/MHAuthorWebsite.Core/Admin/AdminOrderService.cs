@@ -8,9 +8,9 @@ using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
+using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
 
 namespace MHAuthorWebsite.Core.Admin;
@@ -43,6 +43,78 @@ public class AdminOrderService : OrderService, IAdminOrderService
                 Status = o.Status.GetDisplayName()
             })
             .ToArrayAsync();
+
+    public async Task<ServiceResult<AdminOrderDetailsViewModel>> GetOrderDetailsAsync(Guid orderId)
+    {
+        Order? order = await Repository
+            .WhereReadonly<Order>(o => o.Id == orderId)
+            .Include(o => o.OrderedProducts)
+                .ThenInclude(op => op.Product)
+                    .ThenInclude(p => p.Images)
+            .Include(o => o.Shipment)
+                .ThenInclude(s => s.Events)
+            .Include(o => o.Shipment)
+                .ThenInclude(s => s.Services)
+            .FirstOrDefaultAsync();
+
+        if (order == null) return ServiceResult<AdminOrderDetailsViewModel>.NotFound();
+
+        AdminOrderDetailsViewModel model = new()
+        {
+            OrderId = order.Id,
+            OrderDate = order.Date,
+            Status = order.Status.GetDisplayName(),
+            Products = order.OrderedProducts
+                 .Select(op => new AdminOrderProductDetailsViewModel
+                 {
+                     ImageUrl = op.Product.Images.FirstOrDefault(i => i.IsThumbnail)!.ThumbnailUrl!,
+                     ProductName = op.Product.Name,
+                     UnitPrice = op.UnitPrice,
+                     Quantity = op.Quantity,
+                 })
+                 .ToArray(),
+            Shipment = new AdminOrderShipmentDetailsViewModel
+            {
+                CourierName = order.Shipment.Courier.GetDisplayName(),
+                ShipmentNumber = order.Shipment.ShipmentNumber,
+                ShippingPrice = order.Shipment.ShippingPrice,
+                Face = order.Shipment.Face,
+                Phone = order.Shipment.Phone,
+                Email = order.Shipment.Email,
+                City = order.Shipment.City,
+                PostCode = order.Shipment.PostCode,
+                Address = order.Shipment.Address,
+                PriorityFrom = order.Shipment.PriorityFrom,
+                PriorityTo = order.Shipment.PriorityTo,
+                TrackingEvents = order.Shipment.Events
+                     .OrderBy(e => e.Time)
+                     .Select(e => new AdminOrderShipmentEventViewModel
+                     {
+                         CityName = e.CityName,
+                         DestinationDetails = e.DestinationDetails!,
+                         OfficeName = e.OfficeName,
+                         Time = e.Time,
+                     })
+                     .ToArray(),
+                ExpectedDeliveryDate = order.Shipment.ExpectedDeliveryDate,
+                Currency = order.Shipment.Currency,
+                AwbUrl = order.Shipment.AwbUrl,
+                Services = order.Shipment.Services
+                    .Select(s => new AdminOrderShipmentServiceViewModel
+                    {
+                        Count = s.Count,
+                        Currency = s.Currency,
+                        Price = s.Price,
+                        Description = s.Description,
+                        PaymentSide = s.PaymentSide,
+                        Type = s.Type
+                    })
+                    .ToArray()
+            }
+        };
+
+        return ServiceResult<AdminOrderDetailsViewModel>.Ok(model);
+    }
 
     public async Task<ServiceResult> AcceptOrderAsync(Guid orderId)
     {

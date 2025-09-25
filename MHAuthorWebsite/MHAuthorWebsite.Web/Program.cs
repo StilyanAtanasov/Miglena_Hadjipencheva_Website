@@ -161,8 +161,11 @@ app.Use(async (context, next) =>
         "font-src 'self' " +
                 "https://fonts.gstatic.com https://site-assets.fontawesome.com; " +
         "img-src 'self' data: " +
-                "https://res.cloudinary.com;" +
-        "frame-src 'self' https://delivery.econt.com https://delivery.econt.com;";
+                "https://res.cloudinary.com; " +
+        "frame-src 'self' " +
+                "https://delivery.econt.com " +
+                "https://delivery.econt.com " +
+                "https://ee.econt.com;";
 
     await next();
 });

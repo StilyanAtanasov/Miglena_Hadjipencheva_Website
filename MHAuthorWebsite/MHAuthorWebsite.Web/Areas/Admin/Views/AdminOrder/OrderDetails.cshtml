@@ -1,0 +1,162 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Order
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Econt
+@using MHAuthorWebsite.Data.Models.Enums
+@using MHAuthorWebsite.Data.Models
+@using MHAuthorWebsite.Data.Common.Extensions
+
+@model AdminOrderDetailsViewModel
+
+@{
+	ViewData["Title"] = $"Поръчка № {Model.OrderId}";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/profile/order-details.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/admin-order-details.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+
+	<div class="section-heading flex-row">
+		<h3 class="title">@ViewData["Title"]</h3>
+		<p class="status-message"><strong>@Model.Status</strong></p>
+	</div>
+
+	<section class="info-section flex-row">
+		<article class="order-summary">
+			<h4 class="heading">Основна информация</h4>
+			<p class="flex-row"><strong>№</strong> @Model.OrderId</p>
+			<p class="flex-row"><strong>Дата на поръчка:</strong> @Model.OrderDate.ToString("dd MMM yyyy, HH:mm ч.")</p>
+			<p class="flex-row"><strong>Обща стойност:</strong> @((Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice).ToString("F2")) @Currency</p>
+			<p class="flex-row"><strong>Статус: </strong>@Model.Status</p>
+		</article>
+
+		<article class="courier-info">
+			<h4 class="heading">Информация за доставка</h4>
+			@if (Model.Shipment.ShipmentNumber is not null)
+			{
+				<p class="flex-row">
+					<strong>№ на пратката:</strong> @Model.Shipment.ShipmentNumber
+					<a class="shipment-tracker-link link active flex-row"
+					   href="@(EcontTrackerUrl)/@Model.Shipment.ShipmentNumber">
+						Проследи
+						<i class="fa-regular fa-arrow-right"></i>
+					</a>
+				</p>
+			}
+
+			<p class="flex-row"><strong>Куриер:</strong> @Model.Shipment.CourierName</p>
+			<p class="flex-row"><strong>Лице:</strong> @Model.Shipment.Face | @Model.Shipment.Phone | @Model.Shipment.Email</p>
+			@if (!string.IsNullOrWhiteSpace(Model.Shipment.Address))
+			{
+				<p class="flex-row"><strong>Адрес:</strong> @Model.Shipment.Address, @Model.Shipment.City, @Model.Shipment.PostCode</p>
+			}
+
+			<p class="flex-row"><strong>Цена на доставка:</strong> @Model.Shipment.ShippingPrice @Model.Shipment.Currency</p>
+
+			@if (Model.Shipment.ExpectedDeliveryDate.HasValue)
+			{
+				<p class="flex-row"><strong>Очаквана доставка:</strong> @Model.Shipment.ExpectedDeliveryDate.Value.ToString("dd MMM yyyy")</p>
+			}
+
+			@{
+				bool hasPriorityFrom = !string.IsNullOrWhiteSpace(Model.Shipment.PriorityFrom);
+				bool hasPriorityTo = !string.IsNullOrWhiteSpace(Model.Shipment.PriorityTo);
+			}
+			@if (hasPriorityFrom || hasPriorityTo)
+			{
+				<p class="flex-row"><strong>Доставката да бъде</strong> @(hasPriorityFrom ? $"от: {Model.Shipment.PriorityFrom} ч." : "") @(hasPriorityTo ? $"до: {Model.Shipment.PriorityTo} ч." : "")</p>
+			}
+		</article>
+	</section>
+
+	<section class="shipment-info-section flex-row">
+		@if (Model.Shipment.Services.Any())
+		{
+			<article class="shipment-services">
+				<h4 class="heading">Услуги</h4>
+				<div class="flex-column">
+					@foreach (AdminOrderShipmentServiceViewModel service in Model.Shipment.Services)
+					{
+						<div class="service-item flex-column">
+							<p><strong>Тип:</strong> @service.Type</p>
+							<p><strong>Описание:</strong> @service.Description</p>
+							<p><strong>Брой:</strong> @service.Count</p>
+							<p><strong>Цена:</strong> @service.Price.ToString("F2") @service.Currency</p>
+							<p><strong>Платец:</strong> @service.PaymentSide</p>
+							<hr />
+						</div>
+					}
+				</div>
+			</article>
+		}
+
+		<section class="tracking-events">
+			<h4 class="heading">Проследи пратка</h4>
+			@if (Model.Shipment.TrackingEvents.Any() 
+			     && Model.Status != OrderStatus.Rejected.GetDisplayName() 
+			     && Model.Status != OrderStatus.Terminated.GetDisplayName())
+			{
+				<ul class="tracking-list">
+					@foreach (AdminOrderShipmentEventViewModel ev in Model.Shipment.TrackingEvents)
+					{
+						<li class="tracking-row flex-row">
+							<span class="tracking-dot"></span>
+							<p class="tracking-text">
+								<strong>@ev.Time.ToString("dd MMM yyyy, HH:mm ч."):</strong>
+								@if (!string.IsNullOrWhiteSpace(ev.DestinationDetails))
+								{
+									<span> @ev.DestinationDetails</span>
+								}
+								@if (!string.IsNullOrWhiteSpace(ev.OfficeName))
+								{
+									<span> (@ev.OfficeName)</span>
+								}
+								@if (!string.IsNullOrWhiteSpace(ev.CityName))
+								{
+									<span>, @ev.CityName</span>
+								}
+							</p>
+
+						</li>
+					}
+				</ul>
+			}
+			else
+			{
+				<p>Няма актуализации за проследяване.</p>
+			}
+		</section>
+
+		@if (Model.Shipment.AwbUrl is not null 
+		     && Model.Status != OrderStatus.Rejected.GetDisplayName() 
+		     && Model.Status != OrderStatus.Terminated.GetDisplayName())
+		{
+
+			<article class="shipment-awb">
+				<h4 class="heading">Товарителница</h4>
+				<div class="flex-row">
+					<iframe class="awb-doc" src="@(Model.Shipment.AwbUrl)" alt="Товарителница"></iframe>
+				</div>
+			</article>
+		}
+	</section>
+
+	<section class="ordered-products">
+		<h4 class="heading">Продукти</h4>
+		<div class="flex-row">
+			@foreach (AdminOrderProductDetailsViewModel product in Model.Products)
+			{
+				<div class="product-item flex-column">
+					<div class="product-image-box">
+						<img src="@product.ImageUrl" alt="" />
+						<div class="quantity-badge">@(product.Quantity)x</div>
+					</div>
+					<p><strong>@product.ProductName</strong></p>
+					<p>Ед. цена: @product.UnitPrice.ToString("F2")</p>
+				</div>
+			}
+		</div>
+	</section>
+</section>

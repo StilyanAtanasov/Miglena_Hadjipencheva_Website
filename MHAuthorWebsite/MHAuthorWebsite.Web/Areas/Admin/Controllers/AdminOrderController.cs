@@ -1,6 +1,7 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
+using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MHAuthorWebsite.Web.Areas.Admin.Controllers;
@@ -16,6 +17,15 @@ public class AdminOrderController : AdminBaseController
     {
         ICollection<AllOrdersListItemViewModel> orders = await _adminOrderService.GetAllOrders();
         return View(orders);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> OrderDetails(Guid orderId)
+    {
+        ServiceResult<AdminOrderDetailsViewModel> sr = await _adminOrderService.GetOrderDetailsAsync(orderId);
+        if (!sr.Found) return NotFound();
+
+        return View(sr.Result);
     }
 
     [HttpPost]

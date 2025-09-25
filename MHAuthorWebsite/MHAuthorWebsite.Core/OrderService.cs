@@ -196,14 +196,14 @@ public class OrderService : IOrderService
             OrderDate = order.Date,
             Status = order.Status.GetDisplayName(),
             Products = order.OrderedProducts
-                .Select(op => new OrderProductDetailsViewModel
-                {
-                    ImageUrl = op.Product.Images.FirstOrDefault(i => i.IsThumbnail)!.ThumbnailUrl!,
-                    ProductName = op.Product.Name,
-                    UnitPrice = op.UnitPrice,
-                    Quantity = op.Quantity,
-                })
-                .ToArray(),
+                 .Select(op => new OrderProductDetailsViewModel
+                 {
+                     ImageUrl = op.Product.Images.FirstOrDefault(i => i.IsThumbnail)!.ThumbnailUrl!,
+                     ProductName = op.Product.Name,
+                     UnitPrice = op.UnitPrice,
+                     Quantity = op.Quantity,
+                 })
+                 .ToArray(),
             Shipment = new OrderShipmentDetailsViewModel
             {
                 CourierName = order.Shipment.Courier.GetDisplayName(),
@@ -218,15 +218,15 @@ public class OrderService : IOrderService
                 PriorityFrom = order.Shipment.PriorityFrom,
                 PriorityTo = order.Shipment.PriorityTo,
                 TrackingEvents = order.Shipment.Events
-                    .OrderBy(e => e.Time)
-                    .Select(e => new OrderShipmentEventViewModel
-                    {
-                        CityName = e.CityName,
-                        DestinationDetails = e.DestinationDetails!,
-                        OfficeName = e.OfficeName,
-                        Time = e.Time,
-                    })
-                    .ToArray(),
+                     .OrderBy(e => e.Time)
+                     .Select(e => new OrderShipmentEventViewModel
+                     {
+                         CityName = e.CityName,
+                         DestinationDetails = e.DestinationDetails!,
+                         OfficeName = e.OfficeName,
+                         Time = e.Time,
+                     })
+                     .ToArray(),
                 ExpectedDeliveryDate = order.Shipment.ExpectedDeliveryDate,
                 Currency = order.Shipment.Currency
             }

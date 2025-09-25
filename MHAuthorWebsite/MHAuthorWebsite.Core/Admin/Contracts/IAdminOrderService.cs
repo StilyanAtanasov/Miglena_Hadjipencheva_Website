@@ -7,6 +7,8 @@ public interface IAdminOrderService
 {
     Task<ICollection<AllOrdersListItemViewModel>> GetAllOrders();
 
+    Task<ServiceResult<AdminOrderDetailsViewModel>> GetOrderDetailsAsync(Guid orderId);
+
     Task<ServiceResult> AcceptOrderAsync(Guid orderId);
 
     Task<ServiceResult> RejectOrderAsync(Guid orderId);
