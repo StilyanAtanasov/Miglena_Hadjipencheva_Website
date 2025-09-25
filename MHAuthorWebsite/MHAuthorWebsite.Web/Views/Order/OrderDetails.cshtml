@@ -133,7 +133,7 @@
 		<div class="flex-row">
 			@foreach (OrderProductDetailsViewModel product in Model.Products)
 			{
-				<div class="product-item">
+				<div class="product-item flex-column">
 					<div class="product-image-box">
 						<img src="@product.ImageUrl" alt="" />
 						<div class="quantity-badge">@(product.Quantity)x</div>
