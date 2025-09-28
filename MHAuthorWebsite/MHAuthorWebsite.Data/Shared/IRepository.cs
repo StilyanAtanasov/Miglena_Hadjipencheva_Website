@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using MHAuthorWebsite.Data.Shared.Filters.Contracts;
+using System.Linq.Expressions;
 
 namespace MHAuthorWebsite.Data.Shared;
 
@@ -6,10 +7,12 @@ public interface IRepository : IDisposable, IAsyncDisposable
 {
     // READ-ONLY (non-tracking)
     IQueryable<T> AllReadonly<T>() where T : class;
+    IQueryable<T> AllReadonly<T>(IFilter<T> filter) where T : class;
     IQueryable<T> WhereReadonly<T>(Expression<Func<T, bool>> predicate) where T : class;
 
     // Tracking (read + write)
     IQueryable<T> All<T>() where T : class;
+    IQueryable<T> All<T>(IFilter<T> filter) where T : class;
     IQueryable<T> Where<T>(Expression<Func<T, bool>> predicate) where T : class;
 
     // Fetching single entity

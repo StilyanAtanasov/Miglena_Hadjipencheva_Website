@@ -1,11 +1,12 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Data.Shared.Filters.Criteria;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 
 public interface IAdminOrderService
 {
-    Task<ICollection<AllOrdersListItemViewModel>> GetAllOrders();
+    Task<ICollection<AllOrdersListItemViewModel>> GetAllOrders(AllOrdersFilterCriteria filter);
 
     Task<ServiceResult<AdminOrderDetailsViewModel>> GetOrderDetailsAsync(Guid orderId);
 

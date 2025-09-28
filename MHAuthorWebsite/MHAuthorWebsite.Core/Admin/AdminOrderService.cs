@@ -7,6 +7,8 @@ using MHAuthorWebsite.Data.Common.Extensions;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
+using MHAuthorWebsite.Data.Shared.Filters;
+using MHAuthorWebsite.Data.Shared.Filters.Criteria;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,9 +28,9 @@ public class AdminOrderService : OrderService, IAdminOrderService
         : base(repository, userManager, econtService)
         => _adminEcontService = adminEcontService;
 
-    public async Task<ICollection<AllOrdersListItemViewModel>> GetAllOrders()
+    public async Task<ICollection<AllOrdersListItemViewModel>> GetAllOrders(AllOrdersFilterCriteria filter)
         => await Repository
-            .AllReadonly<Order>()
+            .AllReadonly(new AllOrdersFilter(filter))
             .Include(o => o.OrderedProducts)
             .Include(o => o.User)
             .Include(o => o.Shipment)

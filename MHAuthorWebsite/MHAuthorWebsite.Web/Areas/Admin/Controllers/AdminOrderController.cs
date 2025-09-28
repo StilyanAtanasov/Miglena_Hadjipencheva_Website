@@ -1,8 +1,12 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Data.Common.Extensions;
+using MHAuthorWebsite.Data.Models.Enums;
+using MHAuthorWebsite.Data.Shared.Filters.Criteria;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
 using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MHAuthorWebsite.Web.Areas.Admin.Controllers;
 
@@ -13,9 +17,17 @@ public class AdminOrderController : AdminBaseController
     public AdminOrderController(IAdminOrderService adminOrderService) => _adminOrderService = adminOrderService;
 
     [HttpGet]
-    public async Task<IActionResult> AllOrders()
+    public async Task<IActionResult> AllOrders([FromQuery] AllOrdersFilterCriteria filter)
     {
-        ICollection<AllOrdersListItemViewModel> orders = await _adminOrderService.GetAllOrders();
+        ICollection<AllOrdersListItemViewModel> orders = await _adminOrderService.GetAllOrders(filter);
+        List<OrderStatus?> statuses = new() { null, OrderStatus.InReview, OrderStatus.Accepted, OrderStatus.Rejected, OrderStatus.Terminated };
+
+        ViewData["StatusList"] = new SelectList(
+            statuses.Select(s => new { Value = s?.ToString() ?? "", Text = s?.GetDisplayName() ?? "Всички" }),
+            "Value",
+            "Text",
+            filter.Status ?? ""
+        );
         return View(orders);
     }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MHAuthorWebsite.Data.Shared.Filters.Contracts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq.Expressions;
 
@@ -16,15 +17,17 @@ public abstract class EfRepository : IRepository
     protected DbSet<T> DbSet<T>() where T : class => _context.Set<T>();
 
     // READ-ONLY (no tracking)
-    public IQueryable<T> AllReadonly<T>() where T : class =>
-        DbSet<T>().AsNoTracking();
+    public IQueryable<T> AllReadonly<T>() where T : class => DbSet<T>().AsNoTracking();
+
+    public IQueryable<T> AllReadonly<T>(IFilter<T> filter) where T : class => filter.Apply(DbSet<T>().AsNoTracking());
 
     public IQueryable<T> WhereReadonly<T>(Expression<Func<T, bool>> predicate) where T : class =>
         DbSet<T>().Where(predicate).AsNoTracking();
 
     // TRACKING queries
-    public IQueryable<T> All<T>() where T : class =>
-        DbSet<T>();
+    public IQueryable<T> All<T>() where T : class => DbSet<T>();
+
+    public IQueryable<T> All<T>(IFilter<T> filter) where T : class => filter.Apply(DbSet<T>());
 
     public IQueryable<T> Where<T>(Expression<Func<T, bool>> predicate) where T : class =>
         DbSet<T>().Where(predicate);

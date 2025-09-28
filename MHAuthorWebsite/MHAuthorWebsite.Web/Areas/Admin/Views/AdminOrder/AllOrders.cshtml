@@ -6,6 +6,8 @@
 @{
 	ViewData["Title"] = "Управление на поръчките";
 	ViewData["CurrentPage"] = Pages.Admin.AllOrders;
+
+	string currentStatus = Context.Request.Query["status"].ToString();
 }
 
 @section Styles
@@ -15,6 +17,10 @@
 
 <div class="page-wrapper flex-column">
 	<h1 class="title">@ViewData["Title"]</h1>
+
+	<form asp-controller="AdminOrder" asp-action="AllOrders" method="get">
+		<select id="filter" data-param-name="status" asp-items="@((SelectList)ViewData["StatusList"]!)" name="status" class="btn-top-left"></select>
+	</form>
 
 	<table class="table">
 		<thead>
@@ -28,38 +34,53 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var order in Model)
+			@if (Model.Any())
+			{
+				@foreach (var order in Model)
+				{
+					<tr>
+						<td>@order.Id</td>
+						<td class="align-center">@order.CustomerName</td>
+						<td class="align-center"><strong>@order.TotalAmount.ToString("F2") @order.Currency</strong></td>
+						<td class="align-center">@order.OrderDate</td>
+						<td class="align-center"><strong>@order.Status.GetDisplayName()</strong></td>
+						<td class="action-btns flex-row">
+							@if (order.Status == OrderStatus.InReview)
+							{
+								<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Accept" asp-route-orderId="@order.Id">
+									<button class="btn btn-orange flex-row" type="submit">
+										<i class="fa-solid fa-memo-circle-check"></i> Приеми
+									</button>
+								</form>
+								<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Reject" asp-route-orderId="@order.Id">
+									<button class="btn btn-red flex-row" type="submit"><i class="fa-solid fa-ban"></i> Отхвърли</button>
+								</form>
+							}
+							else if (order.Status == OrderStatus.Accepted)
+							{
+								<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Terminate" asp-route-orderId="@order.Id">
+									<button class="btn btn-red flex-row" type="submit"><i class="fa-solid fa-stop"></i> Прекрати</button>
+								</form>
+							}
+							<a class="btn btn-blue link flex-row" asp-area="Admin" asp-controller="AdminOrder" asp-action="OrderDetails" asp-route-orderId="@order.Id">
+								<i class="fa-solid fa-memo-circle-info"></i> Детайли
+							</a>
+						</td>
+					</tr>
+				}
+			}
+			else
 			{
 				<tr>
-					<td>@order.Id</td>
-					<td class="align-center">@order.CustomerName</td>
-					<td class="align-center"><strong>@order.TotalAmount.ToString("F2") @order.Currency</strong></td>
-					<td class="align-center">@order.OrderDate</td>
-					<td class="align-center"><strong>@order.Status.GetDisplayName()</strong></td>
-					<td class="action-btns flex-row">
-						@if (order.Status == OrderStatus.InReview)
-						{
-							<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Accept" asp-route-orderId="@order.Id">
-								<button class="btn btn-orange flex-row" type="submit">
-									<i class="fa-solid fa-memo-circle-check"></i> Приеми
-								</button>
-							</form>
-							<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Reject" asp-route-orderId="@order.Id">
-								<button class="btn btn-red flex-row" type="submit"><i class="fa-solid fa-ban"></i> Отхвърли</button>
-							</form>
-						}
-						else if (order.Status == OrderStatus.Accepted)
-						{
-							<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Terminate" asp-route-orderId="@order.Id">
-								<button class="btn btn-red flex-row" type="submit"><i class="fa-solid fa-stop"></i> Прекрати</button>
-							</form>
-						}
-						<a class="btn btn-blue link flex-row" asp-area="Admin" asp-controller="AdminOrder" asp-action="OrderDetails" asp-route-orderId="@order.Id">
-							<i class="fa-solid fa-memo-circle-info"></i> Детайли
-						</a>
+					<td colspan="6" class="align-center">
+						<h3>Няма намерени резултати!</h3>
 					</td>
 				</tr>
 			}
 		</tbody>
 	</table>
 </div>
+
+@section Scripts {
+	<script src="~/js/filter.js"></script>
+}
