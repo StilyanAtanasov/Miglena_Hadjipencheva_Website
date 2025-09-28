@@ -38,6 +38,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
                 CustomerName = o.Shipment.Face, // TODO Check if user has their data deleted
                 OrderDate = o.Date,
                 TotalAmount = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity),
+                Currency = o.Shipment.Currency,
                 Status = o.Status
             })
             .ToArrayAsync();

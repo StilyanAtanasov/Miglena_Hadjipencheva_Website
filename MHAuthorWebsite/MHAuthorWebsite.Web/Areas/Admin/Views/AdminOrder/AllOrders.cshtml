@@ -33,9 +33,9 @@
 				<tr>
 					<td>@order.Id</td>
 					<td class="align-center">@order.CustomerName</td>
-					<td class="align-center">@order.TotalAmount</td>
+					<td class="align-center"><strong>@order.TotalAmount.ToString("F2") @order.Currency</strong></td>
 					<td class="align-center">@order.OrderDate</td>
-					<td class="align-center">@order.Status.GetDisplayName()</td>
+					<td class="align-center"><strong>@order.Status.GetDisplayName()</strong></td>
 					<td class="action-btns flex-row">
 						@if (order.Status == OrderStatus.InReview)
 						{

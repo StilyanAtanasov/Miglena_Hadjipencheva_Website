@@ -12,5 +12,7 @@ public class AllOrdersListItemViewModel
 
     public decimal TotalAmount { get; set; }
 
+    public string Currency { get; set; } = null!;
+
     public OrderStatus Status { get; set; }
 }
