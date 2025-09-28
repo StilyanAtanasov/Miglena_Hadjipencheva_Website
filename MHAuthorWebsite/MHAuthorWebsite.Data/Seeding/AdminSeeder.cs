@@ -30,7 +30,8 @@ public static class AdminSeeder
             {
                 UserName = adminEmail,
                 Email = adminEmail,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                Name = "Системен администратор"
             };
 
             IdentityResult result = await userManager.CreateAsync(adminUser, adminPassword);

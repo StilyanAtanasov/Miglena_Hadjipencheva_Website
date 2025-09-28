@@ -8,78 +8,78 @@
 
 @section Styles
 {
-	<link rel="stylesheet" href="~/css/admin/products-list.css" />
+	<link rel="stylesheet" href="~/css/admin/admin-table.css" />
 }
 
 <section class="page-wrapper flex-column">
 	<h1 class="title">@ViewData["Title"]</h1>
-	<a class="btn link flex-row btn-add-product" asp-area="Admin" asp-controller="AdminProduct" asp-action="AddProduct">
+	<a class="btn link flex-row btn-top-left" asp-area="Admin" asp-controller="AdminProduct" asp-action="AddProduct">
 		<i class="fa-solid fa-plus"></i>
 		Добави продукт
 	</a>
 
 	<table class="table">
 		<thead>
-		<tr>
-			<th>Име</th>
-			<th>Категория</th>
-			<th class="price-column">Цена</th>
-			<th class="quantity-column">Количество</th>
-			<th class="actions-column">Действия</th>
-		</tr>
+			<tr>
+				<th>Име</th>
+				<th class="align-center">Категория</th>
+				<th class="align-center">Цена</th>
+				<th class="align-center">Количество</th>
+				<th class="align-end">Действия</th>
+			</tr>
 		</thead>
 		<tbody>
-		@if (!Model.Any())
-		{
-			<tr>
-				<td colspan="6">Няма добавени продукти.</td>
-			</tr>
-		}
-		else
-		{
-			foreach (ProductListViewModel product in Model)
+			@if (!Model.Any())
 			{
 				<tr>
-
-					@if (product.IsPublic)
-					{
-						<td><a class="link active" data-trigger="load-unlimited" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></td>
-					}
-					else
-					{
-						<td>@product.Name</td>
-					}
-
-					<td>@product.ProductTypeName</td>
-					<td class="price-column">@product.Price.ToString("F2") лв.</td>
-					<td class="quantity-column">@product.StockQuantity</td>
-					<td class="actions-column action-btns flex-row">
-						<form asp-area="Admin" asp-controller="AdminProduct" asp-action="TogglePublicity" asp-route-productId="@product.Id" method="post">
-							@if(product.IsPublic)
-							{
-								<button data-trigger="load-unlimited" type="submit" class="btn btn-publicity flex-row"> <i class="fa-regular fa-lock-keyhole"></i> Скрий</button>
-							}
-							else
-							{
-								<button data-trigger="load-unlimited" type="submit" class="btn btn-publicity flex-row"> <i class="fa-regular fa-lock-keyhole-open"></i> Публикувай</button>
-							}
-						</form>
-
-						<a data-trigger="load-unlimited" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="@product.Id" class="btn link btn-edit flex-row">
-							<i class="fa-regular fa-pen-to-square"></i>
-							Редактирай
-						</a>
-
-						<form asp-area="Admin" asp-controller="AdminProduct" asp-action="DeleteProduct" asp-route-productId="@product.Id" method="post">
-							<button data-trigger="load-unlimited" type="submit" class="btn btn-delete flex-row" onclick="return confirm('Сигурни ли сте, че искате да изтриете продукта?')">
-								<i class="fa-regular fa-trash-can"></i>
-								Изтрий
-							</button>
-						</form>
-					</td>
+					<td colspan="6">Няма добавени продукти.</td>
 				</tr>
 			}
-		}
+			else
+			{
+				foreach (ProductListViewModel product in Model)
+				{
+					<tr>
+
+						@if (product.IsPublic)
+						{
+							<td><a class="link active" data-trigger="load-unlimited" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></td>
+						}
+						else
+						{
+							<td>@product.Name</td>
+						}
+
+						<td class="align-center">@product.ProductTypeName</td>
+						<td class="align-center">@product.Price.ToString("F2") лв.</td>
+						<td class="align-center">@product.StockQuantity</td>
+						<td class="actions-column action-btns flex-row">
+							<form asp-area="Admin" asp-controller="AdminProduct" asp-action="TogglePublicity" asp-route-productId="@product.Id" method="post">
+								@if (product.IsPublic)
+								{
+									<button data-trigger="load-unlimited" type="submit" class="btn btn-blue flex-row"> <i class="fa-regular fa-lock-keyhole"></i> Скрий</button>
+								}
+								else
+								{
+									<button data-trigger="load-unlimited" type="submit" class="btn btn-blue flex-row"> <i class="fa-regular fa-lock-keyhole-open"></i> Публикувай</button>
+								}
+							</form>
+
+							<a data-trigger="load-unlimited" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="@product.Id" class="btn link btn-orange flex-row">
+								<i class="fa-regular fa-pen-to-square"></i>
+								Редактирай
+							</a>
+
+							<form asp-area="Admin" asp-controller="AdminProduct" asp-action="DeleteProduct" asp-route-productId="@product.Id" method="post">
+								<button data-trigger="load-unlimited" type="submit" class="btn btn-red flex-row" onclick="return confirm('Сигурни ли сте, че искате да изтриете продукта?')">
+									<i class="fa-regular fa-trash-can"></i>
+									Изтрий
+								</button>
+							</form>
+						</td>
+					</tr>
+				}
+			}
 		</tbody>
 	</table>
 </section>

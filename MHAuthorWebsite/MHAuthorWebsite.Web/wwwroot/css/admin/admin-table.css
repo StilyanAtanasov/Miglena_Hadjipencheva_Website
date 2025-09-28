@@ -1,0 +1,69 @@
+.page-wrapper {
+  width: 90%;
+  margin-left: 5%;
+}
+
+.btn-top-left {
+  align-self: flex-end;
+}
+
+.table {
+  width: 100%;
+  border: 0.15rem solid var(--color-secondary);
+  border-radius: 1.5rem;
+  margin-top: 1.5rem;
+  overflow: hidden;
+  font-size: 1.8rem;
+  border-spacing: 0;
+}
+
+.table th,
+.table td {
+  padding: 1.4rem 2.5rem;
+  text-align: left;
+}
+
+.table th {
+  border-bottom: 0.1rem solid var(--color-secondary);
+}
+
+.table td:not(:nth-last-child) {
+  border-bottom: 0.1rem solid var(--color-secondary);
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: var(--color-secondary-lighter);
+}
+
+.table tbody tr:hover {
+  background-color: var(--color-tertiary-lighter);
+}
+
+.table .action-btns {
+  justify-content: flex-end;
+}
+
+.table .action-btns .btn:hover {
+  transform: scale(1.05);
+}
+
+.table .action-btns .btn-blue {
+  background-color: var(--color-tertiary);
+  color: var(--color-primary);
+}
+
+.table .action-btns .btn-orange {
+  background-color: var(--color-orange);
+}
+
+.table .action-btns .btn-red {
+  background-color: var(--color-error);
+}
+
+.table .align-center {
+  text-align: center;
+}
+
+.table .align-end {
+  text-align: end;
+}

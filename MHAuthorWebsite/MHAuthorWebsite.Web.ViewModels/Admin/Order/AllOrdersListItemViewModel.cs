@@ -1,10 +1,10 @@
-﻿namespace MHAuthorWebsite.Web.ViewModels.Admin.Order;
+﻿using MHAuthorWebsite.Data.Models.Enums;
+
+namespace MHAuthorWebsite.Web.ViewModels.Admin.Order;
 
 public class AllOrdersListItemViewModel
 {
     public Guid Id { get; set; }
-
-    public string OrderNumber { get; set; } = null!;
 
     public string CustomerName { get; set; } = null!;
 
@@ -12,5 +12,5 @@ public class AllOrdersListItemViewModel
 
     public decimal TotalAmount { get; set; }
 
-    public string Status { get; set; } = null!;
+    public OrderStatus Status { get; set; }
 }

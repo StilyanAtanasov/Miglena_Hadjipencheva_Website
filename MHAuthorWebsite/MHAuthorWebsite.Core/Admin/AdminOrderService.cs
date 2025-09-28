@@ -8,7 +8,6 @@ using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
-using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
@@ -36,11 +35,10 @@ public class AdminOrderService : OrderService, IAdminOrderService
             .Select(o => new AllOrdersListItemViewModel
             {
                 Id = o.Id,
-                OrderNumber = o.Shipment.OrderNumber,
-                CustomerName = o.User.UserName!, // TODO Check if user has their data deleted
+                CustomerName = o.Shipment.Face, // TODO Check if user has their data deleted
                 OrderDate = o.Date,
                 TotalAmount = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity),
-                Status = o.Status.GetDisplayName()
+                Status = o.Status
             })
             .ToArrayAsync();
 

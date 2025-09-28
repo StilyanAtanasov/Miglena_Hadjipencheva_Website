@@ -19,33 +19,6 @@ main {
   width: 100%;
 }
 
-.table {
-  border: 0.15rem solid var(--color-secondary);
-  border-radius: 1.5rem;
-  margin-top: 1.5rem;
-  overflow: hidden;
-  font-size: 1.8rem;
-  border-spacing: 0;
-}
-
-.table th,
-.table td {
-  padding: 1.4rem 2.5rem;
-  text-align: left;
-}
-
-.table th {
-  border-bottom: 0.1rem solid var(--color-secondary);
-}
-
-.table td:not(:nth-last-child) {
-  border-bottom: 0.1rem solid var(--color-secondary);
-}
-
-.table tbody tr:nth-child(even) {
-  background-color: var(--color-secondary-lighter);
-}
-
-.table tbody tr:hover {
-  background-color: var(--color-tertiary-lighter);
+.title {
+  margin-bottom: 4rem;
 }
