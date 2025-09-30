@@ -21,9 +21,10 @@ public class CartController : BaseController
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> Add([FromBody] AddCartItemViewModel model)
     {
-        if (!IsUserAuthenticated()) return Unauthorized();
+        if (!IsUserAuthenticated()) return StatusCode(401);
         if (model.ProductId == Guid.Empty || model.Quantity <= 0) return BadRequest("Invalid cart item data.");
 
         ServiceResult result = await _cartService.AddItemToCartAsync(GetUserId()!, model.ProductId, model.Quantity);
