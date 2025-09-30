@@ -2,11 +2,6 @@
 
 import { pushNotification } from "./notification.js";
 
-new TomSelect("#order-by-select", {
-  create: false,
-  plugins: ["dropdown_input"],
-});
-
 document.addEventListener(`DOMContentLoaded`, function () {
   document.getElementById(`order-by-select`).addEventListener(`change`, async function () {
     const orderType = this.value;

@@ -4,7 +4,6 @@ using MHAuthorWebsite.Data.Common.Extensions;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared.Filters.Criteria;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
-using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -20,14 +19,15 @@ public class AdminOrderController : AdminBaseController
     public async Task<IActionResult> AllOrders([FromQuery] AllOrdersFilterCriteria filter)
     {
         ICollection<AllOrdersListItemViewModel> orders = await _adminOrderService.GetAllOrders(filter);
-        List<OrderStatus?> statuses = new() { null, OrderStatus.InReview, OrderStatus.Accepted, OrderStatus.Rejected, OrderStatus.Terminated };
+        IEnumerable<OrderStatus?> statuses = Enum.GetValues<OrderStatus>().Cast<OrderStatus?>().Prepend(null);
 
         ViewData["StatusList"] = new SelectList(
-            statuses.Select(s => new { Value = s?.ToString() ?? "", Text = s?.GetDisplayName() ?? "Всички" }),
+            statuses.Select(s => new { Value = s?.ToString() ?? "All", Text = s?.GetDisplayName() ?? "Всички" }),
             "Value",
             "Text",
-            filter.Status ?? ""
+            filter.Status ?? "All"
         );
+
         return View(orders);
     }
 

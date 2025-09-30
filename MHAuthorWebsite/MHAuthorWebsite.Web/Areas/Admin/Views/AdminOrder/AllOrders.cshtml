@@ -6,20 +6,21 @@
 @{
 	ViewData["Title"] = "Управление на поръчките";
 	ViewData["CurrentPage"] = Pages.Admin.AllOrders;
-
-	string currentStatus = Context.Request.Query["status"].ToString();
 }
 
 @section Styles
 {
-	<link rel="stylesheet" href="~/css/admin/admin-table.css" />
+	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true"/>
+	<link rel="stylesheet" href="~/css/admin/admin-table.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
 	<h1 class="title">@ViewData["Title"]</h1>
 
-	<form asp-controller="AdminOrder" asp-action="AllOrders" method="get">
-		<select id="filter" data-param-name="status" asp-items="@((SelectList)ViewData["StatusList"]!)" name="status" class="btn-top-left"></select>
+	<form asp-controller="AdminOrder" asp-action="AllOrders" method="get" class="flex-row element-top-left">
+		<label class="subheading"><strong>Статус:</strong></label>
+		<select class="filter select-main" data-param-name="status" asp-items="@((SelectList)ViewData["StatusList"]!)" name="status"></select>
 	</form>
 
 	<table class="table">
@@ -82,5 +83,7 @@
 </div>
 
 @section Scripts {
-	<script src="~/js/filter.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+	<script src="~/js/elements/filter.js" asp-append-version="true"></script>
+	<script src="~/js/elements/select.js" asp-append-version="true"></script>
 }

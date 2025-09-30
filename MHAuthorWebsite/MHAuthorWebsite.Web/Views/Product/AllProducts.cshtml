@@ -7,6 +7,7 @@
 	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true"/>
 	<link rel="stylesheet" href="~/css/store.css" asp-append-version="true" />
 }
 
@@ -33,7 +34,7 @@
 		<div class="shop-action-btns flex-row">
 			<div class="shop-action-btn flex-row">
 				<label>Подреди по:</label>
-				<select id="order-by-select" autocomplete="off" name="orderType" asp-items="@selectItems"></select>
+				<select id="order-by-select" class="select-main" autocomplete="off" name="orderType" asp-items="@selectItems"></select>
 			</div>
 		</div>
 	}
@@ -45,7 +46,7 @@
 			{
 				<div class="product flex-column clickable" data-details-url="@Url.Action("Details", "Product", new { productId = product.Id })">
 					<div class="product-image-container flex-row">
-						<img class="product-image" src="@product.ImageUrl" alt="@(product.ImageAlt ?? product.Name)" />
+						<img class="product-image" src="@product.ImageUrl" alt="@(product.ImageAlt)" />
 					</div>
 					<div class="product-title-container">
 						<h4 class="product-title"><a data-trigger="load-unlimited" class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
@@ -118,8 +119,9 @@
 
 @section Scripts {
 	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
-	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script src="~/js/elements/select.js" asp-append-version="true"></script>
 	<script src="~/js/click.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/store.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/add-to-cart.js" asp-append-version="true"></script>
 }

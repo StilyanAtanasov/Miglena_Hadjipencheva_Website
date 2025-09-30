@@ -3,7 +3,11 @@
   margin-left: 5%;
 }
 
-.btn-top-left {
+.element-top-left {
+  align-self: flex-start;
+}
+
+.element-top-right {
   align-self: flex-end;
 }
 
