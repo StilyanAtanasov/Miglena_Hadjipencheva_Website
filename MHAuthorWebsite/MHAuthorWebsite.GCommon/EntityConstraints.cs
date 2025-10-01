@@ -130,10 +130,19 @@ public static class EntityConstraints
         public const byte NameMaxLength = 50;
     }
 
-    public static class Comment
+    public static class ProductComment
     {
         public const byte TextMinLength = 2;
         public const ushort TextMaxLength = 2000;
+
+        public const short RatingMinValue = 1;
+        public const short RatingMaxValue = 5;
+    }
+
+    public static class ProductCommentImage
+    {
+        public const byte UrlMaxLength = 255;
+        public const byte AltTextMaxLength = 150;
     }
 
     public static class CartItem

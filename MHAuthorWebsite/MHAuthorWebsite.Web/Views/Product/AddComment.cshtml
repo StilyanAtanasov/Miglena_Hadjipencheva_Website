@@ -1,0 +1,36 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@model AddProductCommentViewModel
+
+@{
+	ViewData["Title"] = "Добави коментар";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+}
+
+<div class="page-wrapper flex-column">
+	<section class="modal-invisible large flex-column">
+		<h1 class="title">@ViewData["Title"]</h1>
+
+		<form class="input-form flex-column" asp-controller="Product" asp-action="AddComment" method="post">
+			<input type="hidden" asp-for="ProductId" value="@Model.ProductId"/>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Text">Съдържание:</label>
+				<input class="form-input" asp-for="Text"/>
+				<span class="input-error" asp-validation-for="Text"></span>
+			</div>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Rating">Рейтинг:</label>
+				<input type="hidden" asp-for="Rating" type="number"/>
+				<span class="input-error" asp-validation-for="Rating"></span>
+			</div>
+
+			<button data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">Запази</button>
+		</form>
+	</section>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

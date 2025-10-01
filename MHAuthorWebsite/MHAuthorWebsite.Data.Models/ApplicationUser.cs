@@ -14,9 +14,13 @@ public class ApplicationUser : IdentityUser
 
     public DateTime LastActive { get; set; } = DateTime.UtcNow;
 
-    public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
+    public ICollection<ProductComment> ProductComments { get; set; } = new HashSet<ProductComment>();
+
+    public ICollection<ProductCommentReaction> ProductCommentsReactions { get; set; } = new HashSet<ProductCommentReaction>();
 
     public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
 
     public ICollection<Product> LikedProducts { get; set; } = new HashSet<Product>();
+
+    public ICollection<Cart> Carts { get; set; } = new HashSet<Cart>();
 }

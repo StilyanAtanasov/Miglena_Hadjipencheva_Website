@@ -71,4 +71,21 @@ public class ProductController : BaseController
 
         return StatusCode(200);
     }
+
+    [HttpGet]
+    public IActionResult AddComment(Guid productId)
+    => View(new AddProductCommentViewModel { ProductId = productId });
+
+
+    [HttpPost]
+    public async Task<IActionResult> AddComment(AddProductCommentViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        ServiceResult result = await _productService.AddCommentAsync(GetUserId()!, model);
+        if (result.IsBadRequest) return BadRequest();
+        if (!result.HasPermission) return BadRequest();
+
+        return RedirectToAction(nameof(Details), new { productId = model.ProductId });
+    }
 }

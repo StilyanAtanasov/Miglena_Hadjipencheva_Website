@@ -4,6 +4,7 @@ using MHAuthorWebsite.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MHAuthorWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251001130846_ImproveCommentModels")]
+    partial class ImproveCommentModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,11 +108,9 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Carts");
                 });
@@ -867,17 +868,6 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.ToTable("ProductsLikes", (string)null);
                 });
 
-            modelBuilder.Entity("MHAuthorWebsite.Data.Models.Cart", b =>
-                {
-                    b.HasOne("MHAuthorWebsite.Data.Models.ApplicationUser", "User")
-                        .WithMany("Carts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.CartItem", b =>
                 {
                     b.HasOne("MHAuthorWebsite.Data.Models.Cart", "Cart")
@@ -1152,8 +1142,6 @@ namespace MHAuthorWebsite.Data.Migrations
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("Carts");
-
                     b.Navigation("Orders");
 
                     b.Navigation("ProductComments");

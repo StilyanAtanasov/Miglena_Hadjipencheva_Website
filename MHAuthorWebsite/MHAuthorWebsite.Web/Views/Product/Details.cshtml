@@ -109,6 +109,36 @@
 		</section>
 	}
 
+	<!-- Comments Section -->
+
+	<section class="comments-info flex-column">
+		<h4 class="heading">Коментари</h4>
+
+		@if (Model.Comments.Any())
+		{
+			<div>
+				@foreach (ProductCommentViewModel c in Model.Comments)
+				{
+					<p>@c.Rating</p>
+					<div>
+						<p><strong>@c.UserName:</strong></p>
+						<p>@c.Date</p>
+					</div>
+					<div>
+						<p><strong>@c.VerifiedPurchase</strong></p>
+						<p>@c.Text</p>
+					</div>
+				}
+			</div>
+		}
+		else
+		{
+			<p>Все още няма коментари за този продукт.</p>
+			<a class="link active" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">Добави коментар</a>
+		}
+	</section>
+
+
 	<form class="hidden">@Html.AntiForgeryToken()</form>
 </div>
 

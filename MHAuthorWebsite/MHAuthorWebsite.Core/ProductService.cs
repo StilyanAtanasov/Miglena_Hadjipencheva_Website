@@ -33,6 +33,8 @@ public class ProductService : IProductService
                 .Include(p => p.Attributes)
                 .Include(p => p.Images)
                 .Include(p => p.Likes)
+                .Include(p => p.Comments)
+                    .ThenInclude(c => c.User)
                 .FirstOrDefaultAsync(p => !p.IsDeleted && p.Id == productId);
 
             if (product is null) return ServiceResult<ProductDetailsViewModel>.NotFound();
@@ -59,6 +61,16 @@ public class ProductService : IProductService
                     {
                         Label = a.Key,
                         Value = a.Value
+                    })
+                    .ToArray(),
+                Comments = product.Comments
+                    .Select(c => new ProductCommentViewModel
+                    {
+                        Rating = c.Rating,
+                        Text = c.Text,
+                        UserName = c.User.UserName!,
+                        Date = c.Date,
+                        VerifiedPurchase = c.VerifiedPurchase
                     })
                     .ToArray()
             };
@@ -120,6 +132,37 @@ public class ProductService : IProductService
 
         if (product.Likes.All(u => u.Id != userId)) product.Likes.Add(user);
         else product.Likes.Remove(user);
+
+        await _repository.SaveChangesAsync();
+        return ServiceResult.Ok();
+    }
+
+    public async Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model)
+    {
+        Product? product = await _repository
+            .All<Product>()
+            .Include(p => p.Orders)
+                .ThenInclude(op => op.Order)
+            .FirstOrDefaultAsync(p => p.Id == model.ProductId);
+        if (product is null) return ServiceResult.BadRequest();
+
+        ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+        if (user is null) return ServiceResult.Forbidden();
+
+        if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null))
+            return ServiceResult.BadRequest();
+
+        // TODO Add validation for parent comment and for max comments per product per user
+
+        product.Comments.Add(new ProductComment
+        {
+            UserId = userId,
+            ParentCommentId = model.ParentCommentId,
+            Rating = model.Rating,
+            Text = model.Text,
+            VerifiedPurchase = product.Orders.Any(o => o.Order.UserId == userId),
+            Date = DateTime.UtcNow
+        });
 
         await _repository.SaveChangesAsync();
         return ServiceResult.Ok();

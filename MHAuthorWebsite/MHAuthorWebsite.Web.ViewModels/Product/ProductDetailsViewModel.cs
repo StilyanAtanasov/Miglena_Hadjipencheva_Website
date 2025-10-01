@@ -18,5 +18,7 @@ public class ProductDetailsViewModel
 
     public ICollection<ProductDetailsImage> Images { get; set; } = new HashSet<ProductDetailsImage>();
 
-    public ICollection<ProductAttributeDetailsViewModel> Attributes { get; set; } = new List<ProductAttributeDetailsViewModel>();
+    public ICollection<ProductAttributeDetailsViewModel> Attributes { get; set; } = new HashSet<ProductAttributeDetailsViewModel>();
+
+    public ICollection<ProductCommentViewModel> Comments { get; set; } = new HashSet<ProductCommentViewModel>();
 }

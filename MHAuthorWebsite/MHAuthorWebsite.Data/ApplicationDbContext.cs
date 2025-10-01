@@ -12,7 +12,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
     }
 
-    public DbSet<Comment> Comments { get; set; } = null!;
+    public DbSet<ProductComment> ProductComments { get; set; } = null!;
+
+    public DbSet<ProductCommentReaction> ProductCommentsReactions { get; set; } = null!;
+
+    public DbSet<ProductCommentImage> ProductCommentsImages { get; set; } = null!;
 
     public DbSet<Image> Images { get; set; } = null!;
 

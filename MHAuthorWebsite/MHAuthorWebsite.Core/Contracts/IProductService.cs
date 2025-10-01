@@ -16,4 +16,6 @@ public interface IProductService
     Task<ICollection<LikedProductViewModel>> GetLikedProductsReadonlyAsync(string userId);
 
     Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId);
+
+    Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model);
 }
