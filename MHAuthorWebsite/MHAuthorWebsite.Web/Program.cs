@@ -140,9 +140,9 @@ app.Use(async (context, next) =>
     context.Response.Headers["Content-Security-Policy"] =
         "default-src 'self'; " +
         "connect-src 'self' " +
-                "ws: wss: http://localhost:* https://localhost:*;" +
-        "script-src 'self'" +
-                " https://site-assets.fontawesome.com " +
+                "ws: wss: http://localhost:* https://localhost:*; " +
+        "script-src 'self' " +
+                "https://site-assets.fontawesome.com " +
                 "https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js " +
                 "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js; " +
         "script-src-elem 'self' " +

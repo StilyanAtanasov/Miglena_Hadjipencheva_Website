@@ -63,7 +63,7 @@
 				<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
 			</div>
 			<div class="order-btns flex-row">
-				<button type="button" data-role="remove-item" data-item-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")">
+				<button type="button" id="like-button" data-product-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")">
 					<span class="fa-stack">
 						<i class="fa-regular fa-heart fa-stack-2x"></i>
 						<i class="fa-solid fa-heart fa-stack-2x"></i>
@@ -121,15 +121,31 @@
 					<p class="average-rating">@Model.Comments.Average(c => c.Rating).ToString("F1") / @RatingMaxValue.ToString("F1")</p>
 					<span>@Model.Comments.Count ревюта</span>
 				</div>
+
+				<div id="rating-stats" class="rating-stats flex-column" data-count="@Model.Comments.Count">
+					@for (int i = RatingMaxValue; i >= 1; i--)
+					{
+						int count = Model.Comments.Count(c => c.Rating == i);
+						<div class="rating-bar flex-row" data-count="@count">
+							<span>@i <i class="fa-solid fa-star star-icon"></i></span>
+							<div class="bar-container">
+								<div class="bar-fill"></div>
+							</div>
+							<span>(@(count))</span>
+						</div>
+					}
+				</div>
 				
-				<a class="btn link" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">Напиши ревю</a>
+				<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">
+					<i class="fa-solid fa-feather"></i> Напиши ревю
+				</a>
 			</section>
 			<section class="comments flex-column">
 				@foreach (ProductCommentViewModel c in Model.Comments)
 				{
 					<div class="comment flex-row">
 						<p>@c.Rating</p>
-						<div>
+						<div class="comment-info">
 							<p>@c.UserName</p>
 							<p class="date">@c.Date.Date.ToString("dd.MM.yyyy")</p>
 						</div>

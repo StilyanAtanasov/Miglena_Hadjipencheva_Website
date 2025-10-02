@@ -170,13 +170,32 @@ table tr:last-child td:last-child {
 }
 
 /* --- Comments --- */
+.comments-info .star-icon {
+  color: var(--color-orange);
+}
+
 .comments-info .comments-overview {
   gap: 10rem;
+  margin: 4rem 0 8rem 0;
 }
 
 .comments-info .comments-overview .average-rating {
   font-size: 5.5rem;
   font-weight: 600;
+}
+
+.comments-info .comments-overview .rating-stats .bar-container {
+  width: 30rem;
+  height: 1rem;
+  border-radius: 5rem;
+  overflow: hidden;
+  background-color: var(--color-secondary-light);
+}
+
+.comments-info .comments-overview .rating-stats .bar-container .bar-fill {
+  background-color: var(--color-secondary);
+  width: var(--bar-width, 0%);
+  height: 100%;
 }
 
 .comments-info .comments {
@@ -185,9 +204,17 @@ table tr:last-child td:last-child {
   gap: 3rem;
 }
 
+.comments-info .comments hr {
+  opacity: 0.6;
+}
+
 .comments-info .comments .comment {
-  width: 50%;
+  width: 100%;
   gap: 5rem;
+}
+
+.comments-info .comments .comment .comment-info {
+  flex-shrink: 0;
 }
 
 .comments-info .comments .comment:last-of-type + hr {
@@ -196,16 +223,17 @@ table tr:last-child td:last-child {
 
 .comments-info .comments .comment .date {
   padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   width: fit-content;
   background-color: var(--color-secondary-lighter);
   font-size: 1.5rem;
   opacity: 0.9;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .comments-info .comments .comment .verified-badge {
   font-weight: 500;
+  margin-bottom: 1rem;
 }
 
 .comments-info .comments .comment .verified-badge i {
