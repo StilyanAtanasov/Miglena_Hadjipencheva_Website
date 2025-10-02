@@ -1,5 +1,6 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
 
 @model ProductDetailsViewModel
 
@@ -78,14 +79,14 @@
 	<hr />
 
 	<!-- Details Section -->
-	<section class="details-info flex-column">
+	<article class="details-info flex-column">
 		<h4 class="heading">Информация за продукта</h4>
-		<article class="info-article flex-column">
+		<section class="info-article flex-column">
 			<h5 class="subheading">Описание:</h5>
 			<div id="description-editor" class="form-input"></div>
 			<input type="hidden" asp-for="Description" id="descriptionInput" />
-		</article>
-	</section>
+		</section>
+	</article>
 
 	<hr />
 
@@ -110,33 +111,49 @@
 	}
 
 	<!-- Comments Section -->
-
-	<section class="comments-info flex-column">
+	<article class="comments-info flex-column">
 		<h4 class="heading">Коментари</h4>
 
 		@if (Model.Comments.Any())
 		{
-			<div>
+			<section class="comments-overview flex-row">
+				<div class="flex-column">
+					<p class="average-rating">@Model.Comments.Average(c => c.Rating).ToString("F1") / @RatingMaxValue.ToString("F1")</p>
+					<span>@Model.Comments.Count ревюта</span>
+				</div>
+				
+				<a class="btn link" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">Напиши ревю</a>
+			</section>
+			<section class="comments flex-column">
 				@foreach (ProductCommentViewModel c in Model.Comments)
 				{
-					<p>@c.Rating</p>
-					<div>
-						<p><strong>@c.UserName:</strong></p>
-						<p>@c.Date</p>
+					<div class="comment flex-row">
+						<p>@c.Rating</p>
+						<div>
+							<p>@c.UserName</p>
+							<p class="date">@c.Date.Date.ToString("dd.MM.yyyy")</p>
+						</div>
+						<div>
+							@if (c.VerifiedPurchase)
+							{
+								<p class="verified-badge flex-row"><i class="fa-solid fa-badge-check"></i> Потвърдена поръчка!</p>
+							}
+							<p>@c.Text</p>
+						</div>
 					</div>
-					<div>
-						<p><strong>@c.VerifiedPurchase</strong></p>
-						<p>@c.Text</p>
-					</div>
+
+					<hr />
 				}
-			</div>
+			</section>
 		}
 		else
 		{
-			<p>Все още няма коментари за този продукт.</p>
-			<a class="link active" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">Добави коментар</a>
+			<section>
+				<p>Все още няма коментари за този продукт. Бъди първия написал ревю!</p>
+				<a class="link active" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">Добави коментар</a>
+			</section>
 		}
-	</section>
+	</article>
 
 
 	<form class="hidden">@Html.AntiForgeryToken()</form>

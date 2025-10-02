@@ -68,7 +68,7 @@ public class ProductService : IProductService
                     {
                         Rating = c.Rating,
                         Text = c.Text,
-                        UserName = c.User.UserName!,
+                        UserName = c.User.Name!,
                         Date = c.Date,
                         VerifiedPurchase = c.VerifiedPurchase
                     })
@@ -149,9 +149,9 @@ public class ProductService : IProductService
         ApplicationUser? user = await _userManager.FindByIdAsync(userId);
         if (user is null) return ServiceResult.Forbidden();
 
-        if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null))
-            return ServiceResult.BadRequest();
-
+        /* if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null))
+             return ServiceResult.BadRequest();
+ */
         // TODO Add validation for parent comment and for max comments per product per user
 
         product.Comments.Add(new ProductComment
@@ -160,7 +160,7 @@ public class ProductService : IProductService
             ParentCommentId = model.ParentCommentId,
             Rating = model.Rating,
             Text = model.Text,
-            VerifiedPurchase = product.Orders.Any(o => o.Order.UserId == userId),
+            VerifiedPurchase = product.Orders.Any(o => o.Order.UserId == userId), // TODO confirm order is received
             Date = DateTime.UtcNow
         });
 

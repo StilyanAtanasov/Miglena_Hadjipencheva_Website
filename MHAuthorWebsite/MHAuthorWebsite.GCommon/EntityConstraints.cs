@@ -132,7 +132,7 @@ public static class EntityConstraints
 
     public static class ProductComment
     {
-        public const byte TextMinLength = 2;
+        public const byte TextMinLength = 10;
         public const ushort TextMaxLength = 2000;
 
         public const short RatingMinValue = 1;

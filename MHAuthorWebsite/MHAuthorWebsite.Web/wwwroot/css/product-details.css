@@ -1,12 +1,12 @@
 .page-wrapper {
-  padding: 8rem 15rem;
+  padding: 8rem 30rem;
 }
 
 .hero-info {
   justify-content: start;
   height: calc(100vh - 10rem);
   align-items: flex-start;
-  gap: 10rem;
+  gap: 5rem;
   width: 70%;
 }
 
@@ -30,7 +30,7 @@
   align-items: flex-start;
   justify-content: space-between;
   padding: 2rem 5rem;
-  gap: 18rem;
+  gap: 5rem;
   width: 95%;
 }
 
@@ -82,7 +82,8 @@
 }
 
 .details-info,
-.additional-info {
+.additional-info,
+.comments-info {
   align-items: center;
   gap: 3rem;
   font-size: 2rem;
@@ -168,7 +169,50 @@ table tr:last-child td:last-child {
   }
 }
 
-/* --- Responsive --- */
+/* --- Comments --- */
+.comments-info .comments-overview {
+  gap: 10rem;
+}
+
+.comments-info .comments-overview .average-rating {
+  font-size: 5.5rem;
+  font-weight: 600;
+}
+
+.comments-info .comments {
+  width: 100%;
+  align-items: flex-start;
+  gap: 3rem;
+}
+
+.comments-info .comments .comment {
+  width: 50%;
+  gap: 5rem;
+}
+
+.comments-info .comments .comment:last-of-type + hr {
+  display: none;
+}
+
+.comments-info .comments .comment .date {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  width: fit-content;
+  background-color: var(--color-secondary-lighter);
+  font-size: 1.5rem;
+  opacity: 0.9;
+  margin-top: 1rem;
+}
+
+.comments-info .comments .comment .verified-badge {
+  font-weight: 500;
+}
+
+.comments-info .comments .comment .verified-badge i {
+  color: var(--color-success);
+}
+
+/* --- Responsive design --- */
 @media (max-width: 1200px) {
   .title {
     font-size: 3rem;
