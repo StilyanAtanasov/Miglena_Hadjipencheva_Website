@@ -119,7 +119,7 @@
 			<section class="comments-overview flex-row">
 				<div class="flex-column">
 					<p class="average-rating">@Model.Comments.Average(c => c.Rating).ToString("F1") / @RatingMaxValue.ToString("F1")</p>
-					<span>@Model.Comments.Count ревюта</span>
+					<span class="ratings-count">@Model.Comments.Count @(Model.Comments.Count > 1 ? "ревюта" : "ревю")</span>
 				</div>
 
 				<div id="rating-stats" class="rating-stats flex-column" data-count="@Model.Comments.Count">
@@ -127,7 +127,7 @@
 					{
 						int count = Model.Comments.Count(c => c.Rating == i);
 						<div class="rating-bar flex-row" data-count="@count">
-							<span>@i <i class="fa-solid fa-star star-icon"></i></span>
+							<span class="rating-label flex-row"><span>@i</span> <i class="fa-solid fa-star star-icon"></i></span>
 							<div class="bar-container">
 								<div class="bar-fill"></div>
 							</div>

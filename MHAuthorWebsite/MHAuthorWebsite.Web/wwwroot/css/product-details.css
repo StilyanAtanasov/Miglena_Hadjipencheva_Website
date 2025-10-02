@@ -179,9 +179,29 @@ table tr:last-child td:last-child {
   margin: 4rem 0 8rem 0;
 }
 
+.comments-info .comments-overview .ratings-count {
+  font-size: 1.8rem;
+  text-align: center;
+  opacity: 0.9;
+}
+
 .comments-info .comments-overview .average-rating {
   font-size: 5.5rem;
   font-weight: 600;
+}
+
+.comments-info .comments-overview .rating-stats {
+  gap: 0.3rem;
+  font-size: 1.8rem;
+}
+
+.comments-info .comments-overview .rating-stats .rating-bar .rating-label {
+  width: 4rem;
+  gap: 0rem;
+}
+
+.comments-info .comments-overview .rating-stats .rating-bar .rating-label span {
+  width: 1.5rem;
 }
 
 .comments-info .comments-overview .rating-stats .bar-container {
