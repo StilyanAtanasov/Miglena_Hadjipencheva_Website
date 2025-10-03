@@ -179,10 +179,15 @@ table tr:last-child td:last-child {
   margin: 4rem 0 8rem 0;
 }
 
+.comments-info .comments-overview .stars {
+  transform: translateY(-1rem);
+}
+
 .comments-info .comments-overview .ratings-count {
   font-size: 1.8rem;
   text-align: center;
   opacity: 0.9;
+  margin-top: -0.5rem;
 }
 
 .comments-info .comments-overview .average-rating {
@@ -221,7 +226,7 @@ table tr:last-child td:last-child {
 .comments-info .comments {
   width: 100%;
   align-items: flex-start;
-  gap: 3rem;
+  gap: 4rem;
 }
 
 .comments-info .comments hr {
@@ -230,7 +235,7 @@ table tr:last-child td:last-child {
 
 .comments-info .comments .comment {
   width: 100%;
-  gap: 5rem;
+  gap: 8rem;
 }
 
 .comments-info .comments .comment .comment-info {
@@ -239,6 +244,11 @@ table tr:last-child td:last-child {
 
 .comments-info .comments .comment:last-of-type + hr {
   display: none;
+}
+
+.comments-info .comments .comment .comment-info i {
+  font-size: 3.2rem;
+  color: var(--color-secondary);
 }
 
 .comments-info .comments .comment .date {
@@ -251,13 +261,33 @@ table tr:last-child td:last-child {
   margin-top: 0.5rem;
 }
 
-.comments-info .comments .comment .verified-badge {
-  font-weight: 500;
+.comments-info .comments .comment .rating-box {
+  gap: 3rem;
   margin-bottom: 1rem;
+}
+
+.comments-info .comments .comment .verified-badge {
+  font-weight: 600;
+  font-size: 1.8rem;
 }
 
 .comments-info .comments .comment .verified-badge i {
   color: var(--color-success);
+}
+
+.no-comments-section {
+  align-items: center;
+}
+
+.no-comments-section .message {
+  font-size: 2.2rem;
+  font-weight: 500;
+  letter-spacing: 0.15rem;
+}
+
+.no-comments-section .message i {
+  font-size: 5rem;
+  color: var(--color-secondary);
 }
 
 /* --- Responsive design --- */

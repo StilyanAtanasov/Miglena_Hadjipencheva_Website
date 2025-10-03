@@ -1,0 +1,18 @@
+.stars {
+  position: relative;
+  height: 3rem;
+  width: 15rem;
+}
+
+.stars .stars-row {
+  position: absolute;
+  inset: 0;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.stars .stars-filled {
+  width: 0%;
+  font-size: 1.01em;
+  overflow: hidden;
+}

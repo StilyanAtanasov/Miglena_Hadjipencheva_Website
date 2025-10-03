@@ -1,0 +1,18 @@
+﻿@model (decimal average, short ratingMaxValue)
+
+<div class="stars" data-percent="@(Math.Ceiling(Model.average / Model.ratingMaxValue * 100))">
+	<div class="stars-row stars-base flex-row">
+		<i class="fa-regular fa-star star-icon"></i>
+		<i class="fa-regular fa-star star-icon"></i>
+		<i class="fa-regular fa-star star-icon"></i>
+		<i class="fa-regular fa-star star-icon"></i>
+		<i class="fa-regular fa-star star-icon"></i>
+	</div>
+	<div class="stars-row stars-filled flex-row">
+		<i class="fa-solid fa-star star-icon"></i>
+		<i class="fa-solid fa-star star-icon"></i>
+		<i class="fa-solid fa-star star-icon"></i>
+		<i class="fa-solid fa-star star-icon"></i>
+		<i class="fa-solid fa-star star-icon"></i>
+	</div>
+</div>

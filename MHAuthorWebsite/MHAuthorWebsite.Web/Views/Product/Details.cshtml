@@ -15,6 +15,7 @@
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/stars.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/slider.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/product-details.css" asp-append-version="true" />
 }
@@ -116,9 +117,12 @@
 
 		@if (Model.Comments.Any())
 		{
+			decimal average = (decimal) Model.Comments.Average(c => c.Rating);
+
 			<section class="comments-overview flex-row">
 				<div class="flex-column">
-					<p class="average-rating">@Model.Comments.Average(c => c.Rating).ToString("F1") / @RatingMaxValue.ToString("F1")</p>
+					<p class="average-rating">@average.ToString("F1") / @RatingMaxValue.ToString("F1")</p>
+					@await Html.PartialAsync("_Stars", (average, RatingMaxValue))
 					<span class="ratings-count">@Model.Comments.Count @(Model.Comments.Count > 1 ? "ревюта" : "ревю")</span>
 				</div>
 
@@ -144,16 +148,19 @@
 				@foreach (ProductCommentViewModel c in Model.Comments)
 				{
 					<div class="comment flex-row">
-						<p>@c.Rating</p>
 						<div class="comment-info">
+							<i class="fa-regular fa-comment-dots"></i>
 							<p>@c.UserName</p>
 							<p class="date">@c.Date.Date.ToString("dd.MM.yyyy")</p>
 						</div>
 						<div>
-							@if (c.VerifiedPurchase)
-							{
-								<p class="verified-badge flex-row"><i class="fa-solid fa-badge-check"></i> Потвърдена поръчка!</p>
-							}
+							<div class="rating-box flex-row">
+								@await Html.PartialAsync("_Stars", ((decimal)c.Rating, RatingMaxValue))
+								@if (c.VerifiedPurchase)
+								{
+									<p class="verified-badge flex-row"><i class="fa-solid fa-badge-check"></i> Потвърдена поръчка!</p>
+								}
+							</div>
 							<p>@c.Text</p>
 						</div>
 					</div>
@@ -164,9 +171,14 @@
 		}
 		else
 		{
-			<section>
-				<p>Все още няма коментари за този продукт. Бъди първия написал ревю!</p>
-				<a class="link active" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">Добави коментар</a>
+			<section class="no-comments-section flex-column">
+				<div class="message flex-row">
+					<i class="fa-solid fa-face-pensive"></i>
+					<p>Все още няма коментари за този продукт. Бъди първия написал ревю!</p>
+				</div>
+				<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">
+					<i class="fa-solid fa-feather"></i> Напиши ревю
+				</a>
 			</section>
 		}
 	</article>
@@ -180,6 +192,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/elements/stars.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/elements/slider.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/product-details.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/add-to-cart.js" asp-append-version="true"></script>

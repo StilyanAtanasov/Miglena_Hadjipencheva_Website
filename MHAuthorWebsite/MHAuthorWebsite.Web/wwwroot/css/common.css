@@ -118,8 +118,9 @@ button.italic {
   cursor: pointer;
   border: 0.16rem solid var(--color-secondary);
   background-color: var(--color-secondary-light);
-  border-radius: 0.8rem;
-  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  padding: 0.5rem 1.5rem;
+  width: fit-content;
 }
 
 .btn.order:not(:disabled):hover {
@@ -128,8 +129,8 @@ button.italic {
   border-color: var(--color-dark);
 }
 
-button.btn.remove:hover {
-  transform: scale(1.1);
+.btn:hover {
+  transform: scale(1.05);
   color: var(--color-secondary);
 }
 
