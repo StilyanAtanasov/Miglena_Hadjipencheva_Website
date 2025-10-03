@@ -88,4 +88,16 @@ public class ProductController : BaseController
 
         return RedirectToAction(nameof(Details), new { productId = model.ProductId });
     }
+
+    [HttpPost]
+    public async Task<IActionResult> ReactToComment([FromBody] ReactToCommentViewModel model)
+    {
+        if (!ModelState.IsValid) return BadRequest();
+
+        ServiceResult<ICollection<ProductCommentReactionViewModel>> sr = await _productService.ReactToComment(GetUserId()!, model.CommentId, model.ReactionType);
+        if (sr.IsBadRequest) return BadRequest();
+        if (!sr.HasPermission) return Forbid();
+
+        return Ok(sr.Result);
+    }
 }

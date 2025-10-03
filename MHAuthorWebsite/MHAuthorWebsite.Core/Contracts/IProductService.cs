@@ -1,5 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using System.Linq.Expressions;
 
@@ -18,4 +19,6 @@ public interface IProductService
     Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId);
 
     Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model);
+
+    Task<ServiceResult<ICollection<ProductCommentReactionViewModel>>> ReactToComment(string userId, Guid commentId, CommentReaction reactionType);
 }

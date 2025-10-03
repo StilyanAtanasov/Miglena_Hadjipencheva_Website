@@ -13,6 +13,42 @@ document.addEventListener(`DOMContentLoaded`, async function () {
     b.querySelector(`.bar-container .bar-fill`).style.width = `${(ratingCount / ratingsCount) * 100}%`;
   });
 
+  // --- Comment reactions ---
+  document.querySelectorAll(`.comment-reactions button`).forEach(b => {
+    b.addEventListener(`click`, async function () {
+      const reactionsBox = b.closest(`.comment-reactions`);
+
+      const reactionType = +b.dataset.reactionType;
+      const commentId = reactionsBox.dataset.commentId;
+
+      if ((!reactionType && reactionType !== 0) || !commentId) pushNotification(`Възникна неочаквана грешка!`, `error`);
+
+      const response = await fetch(`/Product/ReactToComment/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
+        },
+        body: JSON.stringify({ commentId, reactionType }),
+      });
+
+      if (response.ok) {
+        const reactions = await response.json();
+        reactions.forEach(r => {
+          reactionsBox.querySelector(`[data-reaction-type="${r.reaction}"] .reaction-count`).textContent = r.count;
+        });
+
+        b.querySelector(`i`).classList.toggle(`fa-solid`);
+        b.querySelector(`i`).classList.toggle(`fa-regular`);
+        reactionsBox.querySelectorAll(`button i`).forEach(i => {
+          if (!b.contains(i)) {
+            i.classList.replace(`fa-solid`, `fa-regular`);
+          }
+        });
+      } else pushNotification(`Възникна неочаквана грешка!`, `error`);
+    });
+  });
+
   // --- Like button ---
   document.getElementById(`like-button`).addEventListener(`click`, async function (e) {
     const itemId = e.target.closest(`button`).dataset.productId;

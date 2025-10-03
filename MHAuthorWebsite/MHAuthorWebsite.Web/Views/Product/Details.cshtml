@@ -1,6 +1,7 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
+@using MHAuthorWebsite.Data.Models.Enums
 
 @model ProductDetailsViewModel
 
@@ -117,7 +118,7 @@
 
 		@if (Model.Comments.Any())
 		{
-			decimal average = (decimal) Model.Comments.Average(c => c.Rating);
+			decimal average = (decimal)Model.Comments.Average(c => c.Rating);
 
 			<section class="comments-overview flex-row">
 				<div class="flex-column">
@@ -139,7 +140,7 @@
 						</div>
 					}
 				</div>
-				
+
 				<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">
 					<i class="fa-solid fa-feather"></i> Напиши ревю
 				</a>
@@ -153,7 +154,7 @@
 							<p>@c.UserName</p>
 							<p class="date">@c.Date.Date.ToString("dd.MM.yyyy")</p>
 						</div>
-						<div>
+						<div class="comment-main">
 							<div class="rating-box flex-row">
 								@await Html.PartialAsync("_Stars", ((decimal)c.Rating, RatingMaxValue))
 								@if (c.VerifiedPurchase)
@@ -162,6 +163,16 @@
 								}
 							</div>
 							<p>@c.Text</p>
+							<div class="comment-reactions flex-row" data-comment-id="@c.Id">
+								<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Like)">
+									<i class="@(c.UserReaction == CommentReaction.Like ? "fa-solid" : "fa-regular") fa-thumbs-up"></i>
+									<span class="reaction-count">@c.Likes</span>
+								</button>
+								<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Dislike)">
+									<i class="@(c.UserReaction == CommentReaction.Dislike ? "fa-solid" : "fa-regular") fa-thumbs-down"></i>
+									<span class="reaction-count">@c.Dislikes</span>
+								</button>
+							</div>
 						</div>
 					</div>
 

@@ -242,6 +242,10 @@ table tr:last-child td:last-child {
   flex-shrink: 0;
 }
 
+.comments-info .comments .comment .comment-main {
+  gap: 2rem;
+}
+
 .comments-info .comments .comment:last-of-type + hr {
   display: none;
 }
@@ -269,10 +273,19 @@ table tr:last-child td:last-child {
 .comments-info .comments .comment .verified-badge {
   font-weight: 600;
   font-size: 1.8rem;
+  gap: 0.7rem;
 }
 
 .comments-info .comments .comment .verified-badge i {
   color: var(--color-success);
+}
+
+.comment .comment-main .comment-reactions {
+  margin-top: 1.5rem;
+}
+
+.comment .comment-main .comment-reactions a {
+  cursor: pointer;
 }
 
 .no-comments-section {

@@ -129,9 +129,11 @@ button.italic {
   border-color: var(--color-dark);
 }
 
-.btn:hover {
+.btn:hover,
+.btn-none:hover {
   transform: scale(1.05);
   color: var(--color-secondary);
+  cursor: pointer;
 }
 
 .btn-none {

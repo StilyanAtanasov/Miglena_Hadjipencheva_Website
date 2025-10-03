@@ -1,6 +1,10 @@
-﻿namespace MHAuthorWebsite.Web.ViewModels.Product;
+﻿using MHAuthorWebsite.Data.Models.Enums;
+
+namespace MHAuthorWebsite.Web.ViewModels.Product;
 public class ProductCommentViewModel
 {
+    public Guid Id { get; set; }
+
     public short Rating { get; set; }
 
     public string Text { get; set; } = null!;
@@ -10,4 +14,10 @@ public class ProductCommentViewModel
     public DateTime Date { get; set; }
 
     public bool VerifiedPurchase { get; set; }
+
+    public int Likes { get; set; }
+
+    public int Dislikes { get; set; }
+
+    public CommentReaction? UserReaction { get; set; }
 }
