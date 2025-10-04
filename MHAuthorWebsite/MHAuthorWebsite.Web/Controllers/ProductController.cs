@@ -4,17 +4,24 @@ using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Web.Utils;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
 namespace MHAuthorWebsite.Web.Controllers;
 
 public class ProductController : BaseController
 {
     private readonly IProductService _productService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ProductController(IProductService productService) => _productService = productService;
+    public ProductController(IProductService productService, UserManager<ApplicationUser> userManager)
+    {
+        _productService = productService;
+        _userManager = userManager;
+    }
 
     [AllowAnonymous]
     [HttpGet("Product/Details/{productId}")]
@@ -73,8 +80,13 @@ public class ProductController : BaseController
     }
 
     [HttpGet]
-    public IActionResult AddComment(Guid productId)
-    => View(new AddProductCommentViewModel { ProductId = productId });
+    public async Task<IActionResult> AddComment(Guid productId, Guid? parentCommentId)
+    {
+        if (parentCommentId is null && (await _userManager.GetUsersInRoleAsync(AdminRoleName)).Any(u => u.Id == GetUserId()))
+            return Unauthorized();
+
+        return View(new AddProductCommentViewModel { ProductId = productId, ParentCommentId = parentCommentId });
+    }
 
 
     [HttpPost]
@@ -84,7 +96,7 @@ public class ProductController : BaseController
 
         ServiceResult result = await _productService.AddCommentAsync(GetUserId()!, model);
         if (result.IsBadRequest) return BadRequest();
-        if (!result.HasPermission) return BadRequest();
+        if (!result.HasPermission) return StatusCode(403);
 
         return RedirectToAction(nameof(Details), new { productId = model.ProductId });
     }

@@ -6,9 +6,9 @@ using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
 namespace MHAuthorWebsite.Core;
 
@@ -71,6 +71,7 @@ public class ProductService : IProductService
                     .Select(c => new ProductCommentViewModel
                     {
                         Id = c.Id,
+                        ParentCommentId = c.ParentCommentId,
                         Rating = c.Rating,
                         Text = c.Text,
                         UserName = c.User.Name!,
@@ -78,7 +79,8 @@ public class ProductService : IProductService
                         VerifiedPurchase = c.VerifiedPurchase,
                         Likes = c.Reactions.Count(r => r.Reaction == CommentReaction.Like),
                         Dislikes = c.Reactions.Count(r => r.Reaction == CommentReaction.Dislike),
-                        UserReaction = userId == null ? null : c.Reactions.FirstOrDefault(r => r.UserId == userId)?.Reaction
+                        UserReaction = userId == null ? null : c.Reactions.FirstOrDefault(r => r.UserId == userId)?.Reaction,
+                        IsWriterAdmin = _userManager.IsInRoleAsync(c.User, AdminRoleName).GetAwaiter().GetResult()
                     })
                     .ToArray()
             };
@@ -155,7 +157,13 @@ public class ProductService : IProductService
         if (product is null) return ServiceResult.BadRequest();
 
         ApplicationUser? user = await _userManager.FindByIdAsync(userId);
-        if (user is null) return ServiceResult.Forbidden();
+        if (user is null || (await _userManager.IsInRoleAsync(user, AdminRoleName) && model.ParentCommentId is null)) return ServiceResult.Forbidden();
+
+        ProductComment? parentComment = model.ParentCommentId != null
+            ? await _repository.All<ProductComment>().FirstOrDefaultAsync(c => c.Id == model.ParentCommentId)
+            : null;
+
+        if (model.ParentCommentId is not null && parentComment is null) return ServiceResult.BadRequest();
 
         /* if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null))
              return ServiceResult.BadRequest();
@@ -187,8 +195,7 @@ public class ProductService : IProductService
         bool isValidReaction = Enum.IsDefined(typeof(CommentReaction), reactionType);
         if (!isValidReaction) return ServiceResult<ICollection<ProductCommentReactionViewModel>>.BadRequest();
 
-        ApplicationUser? user = await _userManager.FindByIdAsync(userId);
-        if (user is null) return ServiceResult<ICollection<ProductCommentReactionViewModel>>.Forbidden();
+        if (comment.UserId == userId) return ServiceResult<ICollection<ProductCommentReactionViewModel>>.Forbidden();
 
         if (comment.Reactions.All(r => r.UserId != userId))
         {

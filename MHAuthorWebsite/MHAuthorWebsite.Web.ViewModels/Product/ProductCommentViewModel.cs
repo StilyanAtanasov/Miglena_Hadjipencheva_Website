@@ -5,7 +5,9 @@ public class ProductCommentViewModel
 {
     public Guid Id { get; set; }
 
-    public short Rating { get; set; }
+    public Guid? ParentCommentId { get; set; }
+
+    public short? Rating { get; set; }
 
     public string Text { get; set; } = null!;
 
@@ -20,4 +22,6 @@ public class ProductCommentViewModel
     public int Dislikes { get; set; }
 
     public CommentReaction? UserReaction { get; set; }
+
+    public bool IsWriterAdmin { get; set; }
 }

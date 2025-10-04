@@ -1,7 +1,8 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
 @using MHAuthorWebsite.Data.Models.Enums
+@using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Roles
 
 @model ProductDetailsViewModel
 
@@ -118,19 +119,23 @@
 
 		@if (Model.Comments.Any())
 		{
-			decimal average = (decimal)Model.Comments.Average(c => c.Rating);
+			decimal average = (decimal)Model.Comments
+				.Where(c => c.ParentCommentId == null)
+				.Average(c => c.Rating)!;
+
+			int baseCommentsCount = Model.Comments.Count(c => c.ParentCommentId == null);
 
 			<section class="comments-overview flex-row">
 				<div class="flex-column">
 					<p class="average-rating">@average.ToString("F1") / @RatingMaxValue.ToString("F1")</p>
 					@await Html.PartialAsync("_Stars", (average, RatingMaxValue))
-					<span class="ratings-count">@Model.Comments.Count @(Model.Comments.Count > 1 ? "ревюта" : "ревю")</span>
+					<span class="ratings-count">@baseCommentsCount @(baseCommentsCount > 1 ? "ревюта" : "ревю")</span>
 				</div>
 
-				<div id="rating-stats" class="rating-stats flex-column" data-count="@Model.Comments.Count">
+				<div id="rating-stats" class="rating-stats flex-column" data-count="@baseCommentsCount">
 					@for (int i = RatingMaxValue; i >= 1; i--)
 					{
-						int count = Model.Comments.Count(c => c.Rating == i);
+						int count = Model.Comments.Count(c => c.ParentCommentId == null && c.Rating == i);
 						<div class="rating-bar flex-row" data-count="@count">
 							<span class="rating-label flex-row"><span>@i</span> <i class="fa-solid fa-star star-icon"></i></span>
 							<div class="bar-container">
@@ -141,40 +146,99 @@
 					}
 				</div>
 
-				<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">
-					<i class="fa-solid fa-feather"></i> Напиши ревю
-				</a>
+				@if (User.IsInRole(AdminRoleName))
+				{
+					<a class="btn link flex-row disabled" tabindex="-1" aria-disabled="true" tabindex="-1">
+						<i class="fa-solid fa-feather"></i> Напиши ревю
+					</a>
+				}
+				else
+				{
+					<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">
+						<i class="fa-solid fa-feather"></i> Напиши ревю
+					</a>
+				}
+
 			</section>
+
 			<section class="comments flex-column">
-				@foreach (ProductCommentViewModel c in Model.Comments)
+				@foreach (ProductCommentViewModel c in Model.Comments.Where(c => c.ParentCommentId == null))
 				{
 					<div class="comment flex-row">
 						<div class="comment-info">
-							<i class="fa-regular fa-comment-dots"></i>
+							<i class="fa-regular fa-message-dots"></i>
 							<p>@c.UserName</p>
 							<p class="date">@c.Date.Date.ToString("dd.MM.yyyy")</p>
 						</div>
+						<hr class="vertical comment-divider" />
 						<div class="comment-main">
 							<div class="rating-box flex-row">
-								@await Html.PartialAsync("_Stars", ((decimal)c.Rating, RatingMaxValue))
+								@await Html.PartialAsync("_Stars", ((decimal)c.Rating!, RatingMaxValue))
 								@if (c.VerifiedPurchase)
 								{
 									<p class="verified-badge flex-row"><i class="fa-solid fa-badge-check"></i> Потвърдена поръчка!</p>
 								}
 							</div>
 							<p>@c.Text</p>
-							<div class="comment-reactions flex-row" data-comment-id="@c.Id">
-								<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Like)">
-									<i class="@(c.UserReaction == CommentReaction.Like ? "fa-solid" : "fa-regular") fa-thumbs-up"></i>
-									<span class="reaction-count">@c.Likes</span>
-								</button>
-								<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Dislike)">
-									<i class="@(c.UserReaction == CommentReaction.Dislike ? "fa-solid" : "fa-regular") fa-thumbs-down"></i>
-									<span class="reaction-count">@c.Dislikes</span>
-								</button>
+							<div class="comment-actions flex-row">
+								<div class="comment-reactions flex-row" data-comment-id="@c.Id">
+									<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Like)">
+										<i class="@(c.UserReaction == CommentReaction.Like ? "fa-solid" : "fa-regular") fa-thumbs-up"></i>
+										<span class="reaction-count">@c.Likes</span>
+									</button>
+									<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Dislike)">
+										<i class="@(c.UserReaction == CommentReaction.Dislike ? "fa-solid" : "fa-regular") fa-thumbs-down"></i>
+										<span class="reaction-count">@c.Dislikes</span>
+									</button>
+								</div>
+								<div>
+									<a asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id" asp-route-parentCommentId="@c.Id" class="btn-none link">
+										<i class="fa-regular fa-reply"></i>
+										@(Model.Comments.Count(r => r.ParentCommentId == c.Id))
+									</a>
+								</div>
 							</div>
 						</div>
 					</div>
+					 
+					@foreach (ProductCommentViewModel reply in Model.Comments.Where(r => r.ParentCommentId == c.Id))
+					{
+						<div class="comment reply flex-row">
+							<div class="comment-info flex-column">
+								<div class="flex-row">
+									<i class="fa-regular fa-reply"></i>
+									@if (reply.IsWriterAdmin)
+									{
+										<p class="role-badge flex-row">Администратор</p>
+									}
+								</div>
+								<p>@reply.UserName</p>
+								<p class="date">@reply.Date.Date.ToString("dd.MM.yyyy")</p>
+							</div>
+							<hr class="vertical comment-divider" />
+							<div class="comment-main">
+								<div class="rating-box flex-row">
+									@if (reply is { VerifiedPurchase: true, IsWriterAdmin: false })
+									{
+										<p class="verified-badge flex-row"><i class="fa-solid fa-badge-check"></i> Потвърдена поръчка!</p>
+									}
+								</div>
+								<p>@reply.Text</p>
+								<div class="comment-actions flex-row">
+									<div class="comment-reactions flex-row" data-comment-id="@reply.Id">
+										<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Like)">
+											<i class="@(reply.UserReaction == CommentReaction.Like ? "fa-solid" : "fa-regular") fa-thumbs-up"></i>
+											<span class="reaction-count">@reply.Likes</span>
+										</button>
+										<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Dislike)">
+											<i class="@(reply.UserReaction == CommentReaction.Dislike ? "fa-solid" : "fa-regular") fa-thumbs-down"></i>
+											<span class="reaction-count">@reply.Dislikes</span>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					}
 
 					<hr />
 				}

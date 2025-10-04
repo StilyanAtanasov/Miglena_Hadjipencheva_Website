@@ -1,6 +1,4 @@
-﻿using MHAuthorWebsite.Data.Models.Enums;
-
-namespace MHAuthorWebsite.Web.ViewModels.Product;
+﻿namespace MHAuthorWebsite.Web.ViewModels.Product;
 
 public class ProductCommentReactionViewModel
 {

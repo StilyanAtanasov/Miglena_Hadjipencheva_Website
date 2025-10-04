@@ -45,6 +45,8 @@ document.addEventListener(`DOMContentLoaded`, async function () {
             i.classList.replace(`fa-solid`, `fa-regular`);
           }
         });
+      } else if (response.status === 403) {
+        pushNotification(`Не може да реагирате на свой коментар!`, `warning`);
       } else pushNotification(`Възникна неочаквана грешка!`, `error`);
     });
   });

@@ -235,10 +235,17 @@ table tr:last-child td:last-child {
 
 .comments-info .comments .comment {
   width: 100%;
-  gap: 8rem;
+  gap: 1rem;
+}
+
+.comments-info .comments .comment .comment-divider {
+  height: 10rem;
+  height: -webkit-fill-available;
+  margin: 0 1rem 0 5rem;
 }
 
 .comments-info .comments .comment .comment-info {
+  width: 20rem;
   flex-shrink: 0;
 }
 
@@ -255,7 +262,8 @@ table tr:last-child td:last-child {
   color: var(--color-secondary);
 }
 
-.comments-info .comments .comment .date {
+.comments-info .comments .comment .date,
+.comments-info .comments .comment .role-badge {
   padding: 0.5rem 1rem;
   border-radius: 1rem;
   width: fit-content;
@@ -280,12 +288,25 @@ table tr:last-child td:last-child {
   color: var(--color-success);
 }
 
-.comment .comment-main .comment-reactions {
+.comment .comment-main .comment-actions {
   margin-top: 1.5rem;
+  gap: 3rem;
 }
 
 .comment .comment-main .comment-reactions a {
   cursor: pointer;
+}
+
+.comment.reply {
+  margin-left: 8rem;
+}
+
+.comments-info .comments .comment .comment-info {
+  gap: 0.5rem;
+}
+
+.comments-info .comments .comment.reply .comment-info i {
+  font-size: 2.8rem;
 }
 
 .no-comments-section {
@@ -315,6 +336,16 @@ table tr:last-child td:last-child {
 }
 
 @media (max-width: 600px) {
+  .page-wrapper {
+    padding: 8rem 5rem;
+  }
+
+  .details-info,
+  .additional-info,
+  .comments-info {
+    padding: 1.5rem 3rem;
+  }
+
   .main,
   .hero-info {
     flex-direction: column;
@@ -357,5 +388,18 @@ table tr:last-child td:last-child {
 
   .btn.like {
     font-size: 1.6rem;
+  }
+
+  .comments-info .comments-overview {
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  .comments-info .comments .comment {
+    gap: 3rem;
+  }
+
+  .comments-info .comments .comment.reply {
+    margin-left: 5rem;
   }
 }

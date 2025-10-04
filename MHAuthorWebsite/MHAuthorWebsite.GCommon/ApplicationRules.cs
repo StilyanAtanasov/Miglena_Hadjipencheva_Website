@@ -10,6 +10,11 @@ public static class ApplicationRules
         public const string Currency = "BGN";
     }
 
+    public static class Roles
+    {
+        public const string AdminRoleName = "Admin";
+    }
+
     public static class DataCollection
     {
         public const byte UsersActivityForPeriod = 30; // Days

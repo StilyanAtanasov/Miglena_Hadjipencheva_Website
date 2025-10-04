@@ -11,9 +11,9 @@ public class ProductComment
     [Comment("Primary key")]
     public Guid Id { get; set; }
 
-    [Required]
     [Range(RatingMinValue, RatingMaxValue)]
-    public short Rating { get; set; }
+    [Comment("User rating, but null since replies do not share rating!")]
+    public short? Rating { get; set; }
 
     [Required]
     [MaxLength(TextMaxLength)]

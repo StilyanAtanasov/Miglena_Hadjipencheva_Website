@@ -9,9 +9,8 @@ public class AddProductCommentViewModel
 
     public Guid? ParentCommentId { get; set; }
 
-    [Required]
     [Range(RatingMinValue, RatingMaxValue)]
-    public short Rating { get; set; }
+    public short? Rating { get; set; }
 
     [Required]
     [StringLength(TextMaxLength, MinimumLength = TextMinLength)]
