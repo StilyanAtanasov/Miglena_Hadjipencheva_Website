@@ -80,12 +80,17 @@ public class ProductController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> AddComment(Guid productId, Guid? parentCommentId)
+    public async Task<IActionResult> AddComment(Guid productId, string targetName, Guid? parentCommentId)
     {
         if (parentCommentId is null && (await _userManager.GetUsersInRoleAsync(AdminRoleName)).Any(u => u.Id == GetUserId()))
             return Unauthorized();
 
-        return View(new AddProductCommentViewModel { ProductId = productId, ParentCommentId = parentCommentId });
+        return View(new AddProductCommentViewModel
+        {
+            ProductId = productId,
+            ParentCommentId = parentCommentId,
+            TargetName = targetName
+        });
     }
 
 
@@ -93,6 +98,11 @@ public class ProductController : BaseController
     public async Task<IActionResult> AddComment(AddProductCommentViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
+        if (model.ParentCommentId is null && model.Rating is null)
+        {
+            ModelState.AddModelError(nameof(model.Rating), "Рейтингът е задължителен!");
+            return View(model);
+        }
 
         ServiceResult result = await _productService.AddCommentAsync(GetUserId()!, model);
         if (result.IsBadRequest) return BadRequest();
@@ -108,7 +118,7 @@ public class ProductController : BaseController
 
         ServiceResult<ICollection<ProductCommentReactionViewModel>> sr = await _productService.ReactToComment(GetUserId()!, model.CommentId, model.ReactionType);
         if (sr.IsBadRequest) return BadRequest();
-        if (!sr.HasPermission) return Forbid();
+        if (!sr.HasPermission) return StatusCode(403);
 
         return Ok(sr.Result);
     }

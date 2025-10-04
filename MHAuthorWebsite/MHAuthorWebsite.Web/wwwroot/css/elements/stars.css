@@ -2,6 +2,7 @@
   position: relative;
   height: 3rem;
   width: 15rem;
+  color: var(--color-orange);
 }
 
 .stars .stars-row {

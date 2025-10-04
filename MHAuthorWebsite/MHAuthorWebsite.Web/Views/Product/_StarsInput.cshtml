@@ -1,0 +1,11 @@
+﻿@model (short MaxValue, string InputName)
+
+<div class="stars">
+	<div class="stars-row flex-row">
+		@for (int i = 1; i <= Model.MaxValue; i++)
+		{
+			<i data-index="@i" class="fa-regular fa-star star-icon"></i>
+		}
+	</div>
+	<input class="rating-input" type="hidden" name="@Model.InputName" />
+</div>

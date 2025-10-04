@@ -15,4 +15,6 @@ public class AddProductCommentViewModel
     [Required]
     [StringLength(TextMaxLength, MinimumLength = TextMinLength)]
     public string Text { get; set; } = null!;
+
+    public string TargetName { get; set; } = null!;
 }

@@ -154,11 +154,11 @@
 				}
 				else
 				{
-					<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">
+					<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment"
+					   asp-route-productId="@Model.Id" asp-route-targetName="@Model.Name">
 						<i class="fa-solid fa-feather"></i> Напиши ревю
 					</a>
 				}
-
 			</section>
 
 			<section class="comments flex-column">
@@ -179,7 +179,7 @@
 									<p class="verified-badge flex-row"><i class="fa-solid fa-badge-check"></i> Потвърдена поръчка!</p>
 								}
 							</div>
-							<p>@c.Text</p>
+							<p class="text">@c.Text</p>
 							<div class="comment-actions flex-row">
 								<div class="comment-reactions flex-row" data-comment-id="@c.Id">
 									<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Like)">
@@ -192,7 +192,9 @@
 									</button>
 								</div>
 								<div>
-									<a asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id" asp-route-parentCommentId="@c.Id" class="btn-none link">
+									<a  class="btn-none link" asp-controller="Product" asp-action="AddComment" 
+									   asp-route-productId="@Model.Id" asp-route-parentCommentId="@c.Id"
+									   asp-route-targetName="@c.UserName">
 										<i class="fa-regular fa-reply"></i>
 										@(Model.Comments.Count(r => r.ParentCommentId == c.Id))
 									</a>
@@ -223,7 +225,7 @@
 										<p class="verified-badge flex-row"><i class="fa-solid fa-badge-check"></i> Потвърдена поръчка!</p>
 									}
 								</div>
-								<p>@reply.Text</p>
+								<p class="text">@reply.Text</p>
 								<div class="comment-actions flex-row">
 									<div class="comment-reactions flex-row" data-comment-id="@reply.Id">
 										<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Like)">
@@ -251,7 +253,8 @@
 					<i class="fa-solid fa-face-pensive"></i>
 					<p>Все още няма коментари за този продукт. Бъди първия написал ревю!</p>
 				</div>
-				<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment" asp-route-productId="@Model.Id">
+				<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment"
+				   asp-route-productId="@Model.Id" asp-route-targetName="@Model.Name">
 					<i class="fa-solid fa-feather"></i> Напиши ревю
 				</a>
 			</section>

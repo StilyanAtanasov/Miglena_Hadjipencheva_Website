@@ -1,11 +1,14 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
 @model AddProductCommentViewModel
 
 @{
-	ViewData["Title"] = "Добави коментар";
+	ViewData["Title"] = Model.ParentCommentId is null 
+		? $"Добави коментар за {Model.TargetName}" : $"Отговори на {Model.TargetName}";
 }
 
 @section Styles {
+	<link rel="stylesheet" href="~/css/elements/stars.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 }
 
@@ -16,27 +19,30 @@
 		<form class="input-form flex-column" asp-controller="Product" asp-action="AddComment" method="post">
 			<input type="hidden" asp-for="ProductId" value="@Model.ProductId"/>
 			<input type="hidden" asp-for="ParentCommentId" value="@Model.ParentCommentId"/>
-
-			<div class="form-input-box flex-column">
-				<label class="form-label" asp-for="Text">Съдържание:</label>
-				<input class="form-input" asp-for="Text"/>
-				<span class="input-error" asp-validation-for="Text"></span>
-			</div>
 			
 			@if(Model.ParentCommentId == null)
 			{
 				<div class="form-input-box flex-column">
 					<label class="form-label" asp-for="Rating">Рейтинг:</label>
-					<input type="hidden" asp-for="Rating" type="number"/>
+					@await Html.PartialAsync("_StarsInput", (RatingMaxValue, nameof(Model.Rating)))
 					<span class="input-error" asp-validation-for="Rating"></span>
 				</div>
 			}
 
-			<button data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">Запази</button>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Text">Коментар:</label>
+				<textarea class="form-input" asp-for="Text"></textarea>
+				<span class="input-error" asp-validation-for="Text"></span>
+			</div>
+
+			<button data-trigger="load-unlimited" type="submit" class="btn link submit-btn flex-row">
+				<i class="fa-solid fa-comment-plus"></i> Запази
+			</button>
 		</form>
 	</section>
 </div>
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script src="~/js/elements/stars-input.js" asp-append-version="true"></script>
 }
