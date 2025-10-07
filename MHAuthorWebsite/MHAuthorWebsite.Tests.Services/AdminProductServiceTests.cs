@@ -66,7 +66,7 @@ public class AdminProductServiceTests
             Price = 20.99m,
             ProductTypeId = _defaultProduct.ProductTypeId,
             StockQuantity = 5,
-            ImageUrls = new List<ImageUploadResultDto>
+            ImageUrls = new List<ProductImageUploadResultDto>
             {
                 new ()
                 {

@@ -180,6 +180,12 @@
 								}
 							</div>
 							<p class="text">@c.Text</p>
+							<div class="images flex-row">
+								@foreach (string imageUrl in c.ImageUrls)
+								{
+									<img class="comment-image" src="@imageUrl" alt="Comment Image" />
+								}
+							</div>
 							<div class="comment-actions flex-row">
 								<div class="comment-reactions flex-row" data-comment-id="@c.Id">
 									<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Like)">

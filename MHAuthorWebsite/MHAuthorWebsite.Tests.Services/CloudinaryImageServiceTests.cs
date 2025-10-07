@@ -74,7 +74,7 @@ public class CloudinaryImageServiceTests
             });
 
         // Act
-        ServiceResult<ICollection<ImageUploadResultDto>> sr = await
+        ServiceResult<ICollection<ProductImageUploadResultDto>> sr = await
             _imageService.UploadImageWithPreviewAsync(formFiles, 1);
 
         // Assert
@@ -93,7 +93,7 @@ public class CloudinaryImageServiceTests
         ICollection<IFormFile> formFiles = new HashSet<IFormFile>(); // Empty collection
 
         // Act
-        ServiceResult<ICollection<ImageUploadResultDto>> sr = await
+        ServiceResult<ICollection<ProductImageUploadResultDto>> sr = await
             _imageService.UploadImageWithPreviewAsync(formFiles, 1);
 
         // Assert
@@ -111,10 +111,10 @@ public class CloudinaryImageServiceTests
         };
 
         // Act
-        ServiceResult<ICollection<ImageUploadResultDto>> sr1 = await
+        ServiceResult<ICollection<ProductImageUploadResultDto>> sr1 = await
             _imageService.UploadImageWithPreviewAsync(formFiles, -1); // Negative index
 
-        ServiceResult<ICollection<ImageUploadResultDto>> sr2 = await
+        ServiceResult<ICollection<ProductImageUploadResultDto>> sr2 = await
             _imageService.UploadImageWithPreviewAsync(formFiles, 100); // Index out of range
 
         // Assert

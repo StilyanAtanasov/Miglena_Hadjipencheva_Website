@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
@@ -39,6 +40,8 @@ public class ProductService : IProductService
                     .ThenInclude(c => c.User)
                 .Include(p => p.Comments)
                     .ThenInclude(c => c.Reactions)
+                .Include(p => p.Comments)
+                    .ThenInclude(c => c.Images)
                 .FirstOrDefaultAsync(p => !p.IsDeleted && p.Id == productId);
 
             if (product is null) return ServiceResult<ProductDetailsViewModel>.NotFound();
@@ -80,7 +83,8 @@ public class ProductService : IProductService
                         Likes = c.Reactions.Count(r => r.Reaction == CommentReaction.Like),
                         Dislikes = c.Reactions.Count(r => r.Reaction == CommentReaction.Dislike),
                         UserReaction = userId == null ? null : c.Reactions.FirstOrDefault(r => r.UserId == userId)?.Reaction,
-                        IsWriterAdmin = _userManager.IsInRoleAsync(c.User, AdminRoleName).GetAwaiter().GetResult()
+                        IsWriterAdmin = _userManager.IsInRoleAsync(c.User, AdminRoleName).GetAwaiter().GetResult(),
+                        ImageUrls = c.Images.Select(i => i.ImageUrl).ToArray()
                     })
                     .ToArray()
             };
@@ -147,7 +151,7 @@ public class ProductService : IProductService
         return ServiceResult.Ok();
     }
 
-    public async Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model)
+    public async Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model, ICollection<ImageUploadResultDto> images)
     {
         Product? product = await _repository
             .All<Product>()
@@ -177,7 +181,13 @@ public class ProductService : IProductService
             Rating = model.Rating,
             Text = model.Text,
             VerifiedPurchase = product.Orders.Any(o => o.Order.UserId == userId), // TODO confirm order is received
-            Date = DateTime.UtcNow
+            Date = DateTime.UtcNow,
+            Images = images.Select(i => new ProductCommentImage
+            {
+                ImageUrl = i.ImageUrl,
+                PublicId = i.PublicId,
+                AltText = model.TargetName
+            }).ToList()
         });
 
         await _repository.SaveChangesAsync();

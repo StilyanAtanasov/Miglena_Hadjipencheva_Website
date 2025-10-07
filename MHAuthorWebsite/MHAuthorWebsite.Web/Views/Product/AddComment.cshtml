@@ -3,7 +3,7 @@
 @model AddProductCommentViewModel
 
 @{
-	ViewData["Title"] = Model.ParentCommentId is null 
+	ViewData["Title"] = Model.ParentCommentId is null
 		? $"Добави коментар за {Model.TargetName}" : $"Отговори на {Model.TargetName}";
 }
 
@@ -16,11 +16,12 @@
 	<section class="modal-invisible large flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 
-		<form class="input-form flex-column" asp-controller="Product" asp-action="AddComment" method="post">
-			<input type="hidden" asp-for="ProductId" value="@Model.ProductId"/>
-			<input type="hidden" asp-for="ParentCommentId" value="@Model.ParentCommentId"/>
-			
-			@if(Model.ParentCommentId == null)
+		<form class="input-form flex-column" asp-controller="Product" asp-action="AddComment" method="post" enctype="multipart/form-data">
+			<input type="hidden" asp-for="ProductId" value="@Model.ProductId" />
+			<input type="hidden" asp-for="ParentCommentId" value="@Model.ParentCommentId" />
+			<input type="hidden" asp-for="TargetName" value="@Model.TargetName" />
+
+			@if (Model.ParentCommentId == null)
 			{
 				<div class="form-input-box flex-column">
 					<label class="form-label" asp-for="Rating">Рейтинг:</label>
@@ -34,6 +35,15 @@
 				<textarea class="form-input" asp-for="Text"></textarea>
 				<span class="input-error" asp-validation-for="Text"></span>
 			</div>
+
+			@if (Model.ParentCommentId == null)
+			{
+				<div class="form-input-box flex-column">
+					<label class="form-label" asp-for="Images">Изображения:</label>
+					<input type="file" class="form-input" asp-for="Images" multiple accept="image/*"></input>
+					<span class="input-error" asp-validation-for="Images"></span>
+				</div>
+			}
 
 			<button data-trigger="load-unlimited" type="submit" class="btn link submit-btn flex-row">
 				<i class="fa-solid fa-comment-plus"></i> Запази

@@ -5,6 +5,10 @@
   color: var(--color-orange);
 }
 
+.stars i {
+  width: 3rem;
+}
+
 .stars .stars-row {
   position: absolute;
   inset: 0;
@@ -14,6 +18,6 @@
 
 .stars .stars-filled {
   width: 0%;
-  font-size: 1.01em;
+  font-size: 1em;
   overflow: hidden;
 }

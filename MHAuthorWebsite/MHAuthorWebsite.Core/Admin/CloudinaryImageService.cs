@@ -22,12 +22,50 @@ public class CloudinaryImageService : IImageService
         _repository = repository;
     }
 
-    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images, int titleImageId)
+    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<IFormFile> images, string folder, short width)
     {
-        if (images.Count == 0 || images.Any(i => i.Length == 0) || titleImageId > images.Count - 1 || titleImageId < 0)
+        if (images.Count == 0 || images.Any(i => i.Length == 0))
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure();
 
-        List<ImageUploadResultDto> results = new();
+        IEnumerable<Task<ImageUploadResult>> uploadTasks = images.Select(image =>
+        {
+            string fileName = Path.GetFileNameWithoutExtension(image.FileName);
+            string timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+
+            ImageUploadParams fullUploadParams = new()
+            {
+                File = new FileDescription(image.FileName, image.OpenReadStream()),
+                Folder = folder,
+                PublicId = $"{fileName}_{timestamp}",
+                Format = "avif",
+                Type = "private",
+                Transformation = new Transformation()
+                    .Width(width)
+                    .Crop("limit")
+                    .FetchFormat("avif")
+            };
+
+            return _cloudinaryService.UploadAsync(fullUploadParams);
+        });
+
+        ImageUploadResult[] fullUploads = await Task.WhenAll(uploadTasks);
+
+        return ServiceResult<ICollection<ImageUploadResultDto>>.Ok(fullUploads
+            .Select(fullUpload => new ImageUploadResultDto
+            {
+                ImageUrl = fullUpload.SecureUrl.AbsoluteUri,
+                PublicId = fullUpload.PublicId
+            })
+            .ToArray());
+    }
+
+    // TODO Use better approach fro abstraction
+    public async Task<ServiceResult<ICollection<ProductImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images, int titleImageId)
+    {
+        if (images.Count == 0 || images.Any(i => i.Length == 0) || titleImageId > images.Count - 1 || titleImageId < 0)
+            return ServiceResult<ICollection<ProductImageUploadResultDto>>.Failure();
+
+        List<ProductImageUploadResultDto> results = new();
 
         for (int i = 0; i < images.Count; i++)
         {
@@ -82,7 +120,7 @@ public class CloudinaryImageService : IImageService
                 previewUpload = await _cloudinaryService.UploadAsync(previewUploadParams);
             }
 
-            results.Add(new ImageUploadResultDto
+            results.Add(new ProductImageUploadResultDto
             {
                 OriginalUrl = fullUpload.SecureUrl.AbsoluteUri,
                 PreviewUrl = previewUpload?.SecureUrl.AbsoluteUri ?? null,
@@ -92,7 +130,7 @@ public class CloudinaryImageService : IImageService
             });
         }
 
-        return ServiceResult<ICollection<ImageUploadResultDto>>.Ok(results.ToArray());
+        return ServiceResult<ICollection<ProductImageUploadResultDto>>.Ok(results.ToArray());
     }
 
     public async Task<ServiceResult<Guid?>> LinkImagesToProductAsync(ICollection<IFormFile> images, int? titleImageIndex, Guid productId)

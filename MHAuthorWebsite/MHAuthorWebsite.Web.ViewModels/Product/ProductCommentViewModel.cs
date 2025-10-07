@@ -24,4 +24,6 @@ public class ProductCommentViewModel
     public CommentReaction? UserReaction { get; set; }
 
     public bool IsWriterAdmin { get; set; }
+
+    public ICollection<string> ImageUrls { get; set; } = new HashSet<string>();
 }

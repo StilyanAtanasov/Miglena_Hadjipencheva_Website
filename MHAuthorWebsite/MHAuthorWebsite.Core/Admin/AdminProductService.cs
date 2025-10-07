@@ -36,7 +36,7 @@ public class AdminProductService : ProductService, IAdminProductService
 
             for (int i = 0; i < model.ImageUrls.Count; i++)
             {
-                ImageUploadResultDto imageResult = model.ImageUrls.ElementAt(i);
+                ProductImageUploadResultDto imageResult = model.ImageUrls.ElementAt(i);
 
                 Image image = new()
                 {

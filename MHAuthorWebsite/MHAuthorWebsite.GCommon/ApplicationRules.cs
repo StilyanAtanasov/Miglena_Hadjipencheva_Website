@@ -10,6 +10,12 @@ public static class ApplicationRules
         public const string Currency = "BGN";
     }
 
+    public static class CommentImages
+    {
+        public const int ImageMaxWidth = 1300;
+        public const int ImagePreviewMaxWidth = 250;
+    }
+
     public static class Roles
     {
         public const string AdminRoleName = "Admin";
@@ -71,6 +77,9 @@ public static class ApplicationRules
     {
         public const string ImageFolder = $"{Application.ProjectName}/products/originals";
         public const string ThumbnailFolder = $"{Application.ProjectName}/products/thumbnails";
+
+        public const string CommentImagesFolder = $"{Application.ProjectName}/comments/images";
+        public const string CommentImagePreviewsFolder = $"{Application.ProjectName}/comments/previews";
     }
 
     public static class Econt

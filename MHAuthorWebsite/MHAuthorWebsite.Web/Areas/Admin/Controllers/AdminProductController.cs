@@ -63,7 +63,7 @@ public class AdminProductController : AdminBaseController
 
         if (delta.Length > DescriptionDeltaMaxLength)
         {
-            ModelState.AddModelError(nameof(model.Description), "HTML съдържанието е прекалено голямо.");
+            ModelState.AddModelError(nameof(model.Description), "Съдържанието е прекалено голямо.");
             await PrepareViewBagForAddProduct();
             return View(model);
         }
@@ -71,7 +71,7 @@ public class AdminProductController : AdminBaseController
         if (model.TitleImageId > model.Images.Count - 1 || model.TitleImageId < 0)
             return BadRequest("Invalid title image id!");
 
-        ServiceResult<ICollection<ImageUploadResultDto>> imageResult = await _imageService.UploadImageWithPreviewAsync(model.Images, model.TitleImageId);
+        ServiceResult<ICollection<ProductImageUploadResultDto>> imageResult = await _imageService.UploadImageWithPreviewAsync(model.Images, model.TitleImageId);
         if (!imageResult.Success) return StatusCode(500);
         if (imageResult.Result is null || !imageResult.Result.Any()) return StatusCode(500);
 

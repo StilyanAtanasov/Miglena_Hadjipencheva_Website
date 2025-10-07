@@ -1,4 +1,6 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Web.Utils;
@@ -7,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
+using static MHAuthorWebsite.GCommon.ApplicationRules.CommentImages;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
@@ -15,11 +19,13 @@ namespace MHAuthorWebsite.Web.Controllers;
 public class ProductController : BaseController
 {
     private readonly IProductService _productService;
+    private readonly IImageService _imageService;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public ProductController(IProductService productService, UserManager<ApplicationUser> userManager)
+    public ProductController(IProductService productService, IImageService imageService, UserManager<ApplicationUser> userManager)
     {
         _productService = productService;
+        _imageService = imageService;
         _userManager = userManager;
     }
 
@@ -93,7 +99,6 @@ public class ProductController : BaseController
         });
     }
 
-
     [HttpPost]
     public async Task<IActionResult> AddComment(AddProductCommentViewModel model)
     {
@@ -104,7 +109,10 @@ public class ProductController : BaseController
             return View(model);
         }
 
-        ServiceResult result = await _productService.AddCommentAsync(GetUserId()!, model);
+        ServiceResult<ICollection<ImageUploadResultDto>> srImages = await _imageService.UploadImagesAsync(model.Images, CommentImagesFolder, ImageMaxWidth);
+        if (!srImages.Success) return StatusCode(500);
+
+        ServiceResult result = await _productService.AddCommentAsync(GetUserId()!, model, srImages.Result!);
         if (result.IsBadRequest) return BadRequest();
         if (!result.HasPermission) return StatusCode(403);
 

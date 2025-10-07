@@ -6,14 +6,15 @@ namespace MHAuthorWebsite.Core.Admin.Contracts;
 
 public interface IImageService
 {
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<IFormFile> images, string folder, short width);
+
     /// <summary>
     ///     Uploads an image to the specified path.
     /// </summary>
     /// <param name="images">The image files to upload.</param>
     /// <param name="titleImageId">The ID of the title image.</param>
-    /// <param name="productId">The ID of the product.</param>
     /// <returns>The URL of the uploaded image.</returns>
-    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images,
+    Task<ServiceResult<ICollection<ProductImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images,
         int titleImageId);
 
     /// <summary>

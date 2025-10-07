@@ -238,6 +238,18 @@ table tr:last-child td:last-child {
   gap: 1rem;
 }
 
+.comments-info .comments .comment .images {
+  height: 10rem;
+  gap: 2rem;
+  object-fit: contain;
+  margin: 1rem 0;
+}
+
+.comments-info .comments .comment .images .comment-image {
+  height: 100%;
+  border-radius: 1.5rem;
+}
+
 .comments-info .comments .comment .text {
   white-space: break-line;
 }

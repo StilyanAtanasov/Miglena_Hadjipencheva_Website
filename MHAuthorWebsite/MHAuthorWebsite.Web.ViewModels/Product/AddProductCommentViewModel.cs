@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace MHAuthorWebsite.Web.ViewModels.Product;
 using static GCommon.EntityConstraints.ProductComment;
@@ -17,4 +18,7 @@ public class AddProductCommentViewModel
     public string Text { get; set; } = null!;
 
     public string TargetName { get; set; } = null!;
+
+    [Required]
+    public ICollection<IFormFile> Images { get; set; } = new HashSet<IFormFile>();
 }

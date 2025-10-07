@@ -1,4 +1,6 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+﻿using CloudinaryDotNet.Actions;
+using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Web.ViewModels.Product;
@@ -18,7 +20,7 @@ public interface IProductService
 
     Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId);
 
-    Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model);
+    Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model, ICollection<ImageUploadResultDto> images);
 
     Task<ServiceResult<ICollection<ProductCommentReactionViewModel>>> ReactToComment(string userId, Guid commentId, CommentReaction reactionType);
 }
