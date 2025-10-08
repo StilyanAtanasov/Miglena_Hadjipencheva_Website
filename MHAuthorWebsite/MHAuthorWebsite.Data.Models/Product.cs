@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
@@ -43,7 +42,14 @@ public class Product
 
     public ProductType ProductType { get; set; } = null!;
 
-    public ICollection<Image> Images { get; set; } = new HashSet<Image>();
+    [Required]
+    [Comment("Foreign key to the thumbnail image stored in ProductsImages")]
+    [ForeignKey(nameof(ThumbnailImage))]
+    public Guid ThumbnailImageId { get; set; }
+
+    public ProductImage ThumbnailImage { get; set; } = null!;
+
+    public ICollection<ProductImage> Images { get; set; } = new HashSet<ProductImage>();
 
     public ICollection<ProductAttribute> Attributes { get; set; } = new HashSet<ProductAttribute>();
 

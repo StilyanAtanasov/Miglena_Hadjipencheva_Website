@@ -66,15 +66,12 @@ public class AdminProductServiceTests
             Price = 20.99m,
             ProductTypeId = _defaultProduct.ProductTypeId,
             StockQuantity = 5,
-            ImageUrls = new List<ProductImageUploadResultDto>
+            ImageUrls = new List<ImageUploadResultDto>
             {
                 new ()
                 {
-                    OriginalUrl = "image.jpg",
-                    PreviewUrl = "thumb.jpg",
                     PublicId = "public-id",
-                    ThumbnailPublicId = "thumb-public-id",
-                    IsThumbnail = true
+                    ImageUrl = "image.jpg",
                 }
             },
             Attributes = new List<AttributeValueForm>
@@ -185,7 +182,7 @@ public class AdminProductServiceTests
             Price = 15.99m,
             StockQuantity = 8,
             ProductTypeName = _defaultProduct.ProductType.Name,
-            Attributes = _defaultProduct.Attributes.Select(a => new AttributeValueForm
+            Attributes = _defaultProduct.Attributes.Select(_ => new AttributeValueForm
             {
                 Value = "New value",
             }).ToArray()
@@ -409,14 +406,20 @@ public class AdminProductServiceTests
             IsPublic = true,
             ProductType = productType,
             Price = 10.99m,
-            Images = new List<Image>
+            Weight = 0.5m,
+            ThumbnailImage = new ProductImage
+            {
+                Id = Guid.NewGuid(),
+                AltText = "Thumb",
+                PublicId = "thumb-public-id",
+                ImageUrl = "thumb.jpg"
+            },
+            Images = new List<ProductImage>
             {
                 new ()
                 {
                     Id = Guid.NewGuid(),
-                    IsThumbnail = true,
-                    ThumbnailUrl = "thumb.jpg",
-                    AltText = "Thumb",
+                    AltText = "image 1",
                     PublicId = "public-id",
                     ImageUrl = "image.jpg"
                 }

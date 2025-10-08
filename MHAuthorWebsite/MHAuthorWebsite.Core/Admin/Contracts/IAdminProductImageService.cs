@@ -1,27 +1,15 @@
 ﻿using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Contracts;
 using Microsoft.AspNetCore.Http;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 
-public interface IImageService
+public interface IAdminProductImageService : IImageService
 {
-    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<IFormFile> images, string folder, short width);
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<IFormFile> images);
 
-    /// <summary>
-    ///     Uploads an image to the specified path.
-    /// </summary>
-    /// <param name="images">The image files to upload.</param>
-    /// <param name="titleImageId">The ID of the title image.</param>
-    /// <returns>The URL of the uploaded image.</returns>
-    Task<ServiceResult<ICollection<ProductImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images,
-        int titleImageId);
-
-    /// <summary>
-    ///     Deletes an image from the specified path.
-    /// </summary>
-    /// <param name="publicId">The public id of the image to delete.</param>
-    Task<ServiceResult> DeleteImageAsync(string publicId);
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(IFormFile image);
 
     /// <summary>
     /// Deletes a product image identified by the specified image ID.

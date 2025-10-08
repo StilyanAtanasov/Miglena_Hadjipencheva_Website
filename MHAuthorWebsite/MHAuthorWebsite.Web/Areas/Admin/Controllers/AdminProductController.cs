@@ -17,10 +17,10 @@ public class AdminProductController : AdminBaseController
 {
     private readonly IAdminProductTypeService _productTypeService;
     private readonly IAdminProductService _productService;
-    private readonly IImageService _imageService;
+    private readonly IAdminProductImageService _imageService;
 
     public AdminProductController
-        (IAdminProductTypeService productTypeService, IAdminProductService productService, IImageService imageService)
+        (IAdminProductTypeService productTypeService, IAdminProductService productService, IAdminProductImageService imageService)
     {
         _productTypeService = productTypeService;
         _productService = productService;
@@ -71,9 +71,13 @@ public class AdminProductController : AdminBaseController
         if (model.TitleImageId > model.Images.Count - 1 || model.TitleImageId < 0)
             return BadRequest("Invalid title image id!");
 
-        ServiceResult<ICollection<ProductImageUploadResultDto>> imageResult = await _imageService.UploadImageWithPreviewAsync(model.Images, model.TitleImageId);
+        ServiceResult<ICollection<ImageUploadResultDto>> imageResult = await _imageService.UploadProductImagesAsync(model.Images);
         if (!imageResult.Success) return StatusCode(500);
         if (imageResult.Result is null || !imageResult.Result.Any()) return StatusCode(500);
+
+        ServiceResult<ICollection<ImageUploadResultDto>> thumbnailUploadResult = await _imageService.UploadProductThumbnailAsync(model.Images.ElementAt(model.TitleImageId));
+        if (!thumbnailUploadResult.Success) return StatusCode(500);
+        if (thumbnailUploadResult.Result is null || !thumbnailUploadResult.Result.Any()) return StatusCode(500);
 
         AddProductDto dto = new AddProductDto
         {
@@ -83,6 +87,7 @@ public class AdminProductController : AdminBaseController
             StockQuantity = model.StockQuantity,
             ProductTypeId = model.ProductTypeId,
             ImageUrls = imageResult.Result,
+            Thumbnail = thumbnailUploadResult.Result.First(),
             Attributes = model.Attributes,
             Weight = model.Weight
         };
@@ -139,6 +144,7 @@ public class AdminProductController : AdminBaseController
         string delta = model.Description;
         string plainText = ExtractPlainTextFromQuillDelta(delta);
 
+        // TODO FIX BUG - this check does not work
         if (plainText.Length > DescriptionTextMaxLength)
         {
             ModelState.AddModelError(nameof(model.Description), "Описание не трябва да надвишава 4000 символа текст.");
@@ -188,8 +194,10 @@ public class AdminProductController : AdminBaseController
                 newTitleImageId = imageResult.Result.Value;
         }
 
+
         ServiceResult updateTitleImageResult = await _imageService.UpdateProductTitleImageAsync(productId, newTitleImageId!.Value);
         if (!updateTitleImageResult.Success) return StatusCode(500);
+
 
         if (images.Deleted.Any())
             foreach (Guid id in images.Deleted)

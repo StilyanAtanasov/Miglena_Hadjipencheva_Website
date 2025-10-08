@@ -113,18 +113,23 @@ public class CartServiceTests
             IsDeleted = false,
             IsPublic = true,
             ProductTypeId = 1,
-            Images = new List<Image>
+            ThumbnailImage = new ProductImage
+            {
+                Id = Guid.NewGuid(),
+                AltText = "Thumb",
+                PublicId = "thumb-public-id",
+                ImageUrl = "thumb.jpg"
+            },
+            Images = new List<ProductImage>
             {
                 new ()
                 {
                     Id = Guid.NewGuid(),
-                    IsThumbnail = true,
-                    ThumbnailUrl = "thumb.jpg",
-                    AltText = "Thumb",
-                    ImageUrl = "image.jpg",
-                    PublicId = "public-id"
+                    AltText = "image 1",
+                    PublicId = "public-id",
+                    ImageUrl = "image.jpg"
                 }
-            }
+            },
         };
 
         _dbContext.Products.Add(newProduct);
@@ -248,18 +253,23 @@ public class CartServiceTests
             IsDeleted = false,
             IsPublic = true,
             ProductType = new ProductType { Id = 1, Name = "Books" },
-            Images = new List<Image>
+            ThumbnailImage = new ProductImage
+            {
+                Id = Guid.NewGuid(),
+                AltText = "Thumb",
+                PublicId = "thumb-public-id",
+                ImageUrl = "thumb.jpg"
+            },
+            Images = new List<ProductImage>
             {
                 new ()
                 {
                     Id = Guid.NewGuid(),
-                    IsThumbnail = true,
-                    ThumbnailUrl = "thumb.jpg",
-                    AltText = "Thumb",
-                    ImageUrl = "image.jpg",
-                    PublicId = "public-id"
+                    AltText = "image 1",
+                    PublicId = "public-id",
+                    ImageUrl = "image.jpg"
                 }
-            }
+            },
         };
 
         CartItem cartItem = new()

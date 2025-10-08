@@ -103,10 +103,13 @@ public static class EntityConstraints
         public const string PriceSqlType = "decimal(18, 2)";
     }
 
-    public static class Image
+    public static class ProductImage
     {
         public const byte UrlMaxLength = 255;
         public const byte AltTextMaxLength = 150;
+
+        public const byte ThumbnailWidth = 250;
+        public const short OriginalWidth = 1500;
     }
 
     public static class ProductAttribute

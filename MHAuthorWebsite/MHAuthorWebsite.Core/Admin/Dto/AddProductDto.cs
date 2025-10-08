@@ -16,7 +16,9 @@ public class AddProductDto
 
     public int ProductTypeId { get; set; }
 
-    public ICollection<ProductImageUploadResultDto> ImageUrls { get; set; } = null!;
+    public ImageUploadResultDto Thumbnail { get; set; } = null!;
+
+    public ICollection<ImageUploadResultDto> ImageUrls { get; set; } = null!;
 
     public ICollection<AttributeValueForm> Attributes { get; set; } = new HashSet<AttributeValueForm>();
 }

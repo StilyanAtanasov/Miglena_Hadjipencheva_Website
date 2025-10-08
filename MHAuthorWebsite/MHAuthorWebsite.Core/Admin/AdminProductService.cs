@@ -36,21 +36,26 @@ public class AdminProductService : ProductService, IAdminProductService
 
             for (int i = 0; i < model.ImageUrls.Count; i++)
             {
-                ProductImageUploadResultDto imageResult = model.ImageUrls.ElementAt(i);
+                ImageUploadResultDto imageResult = model.ImageUrls.ElementAt(i);
 
-                Image image = new()
+                ProductImage image = new()
                 {
                     ProductId = product.Id,
                     AltText = product.Name, // TODO Probably use the image title
-                    ImageUrl = imageResult.OriginalUrl,
-                    ThumbnailUrl = imageResult.PreviewUrl,
-                    PublicId = imageResult.PublicId,
-                    ThumbnailPublicId = imageResult.ThumbnailPublicId,
-                    IsThumbnail = imageResult.IsThumbnail
+                    ImageUrl = imageResult.ImageUrl,
+                    PublicId = imageResult.PublicId
                 };
 
                 await _repository.AddAsync(image);
             }
+
+            product.ThumbnailImage = new ProductImage
+            {
+                ProductId = product.Id,
+                AltText = product.Name, // TODO Probably use the image title
+                ImageUrl = model.Thumbnail.ImageUrl,
+                PublicId = model.Thumbnail.PublicId
+            };
 
             if (model.Attributes.Count > 0) // ToDO Check if category has attributes
             {
@@ -105,7 +110,7 @@ public class AdminProductService : ProductService, IAdminProductService
                 {
                     Id = i.Id,
                     Url = i.ImageUrl,
-                    IsTitle = i.IsThumbnail,
+                    IsTitle = i.Id == product.ThumbnailImageId,
                 })
                 .ToArray(),
             Attributes = product.Attributes
@@ -230,9 +235,8 @@ public class AdminProductService : ProductService, IAdminProductService
 
     public async Task<ICollection<Guid>> GetImagesByProductId(Guid productId)
         => await _repository
-                .WhereReadonly<Image>(i => i.ProductId == productId)
+                .WhereReadonly<ProductImage>(i => i.ProductId == productId)
                 .IgnoreQueryFilters()
                 .Select(i => i.Id)
                 .ToArrayAsync();
-
 }

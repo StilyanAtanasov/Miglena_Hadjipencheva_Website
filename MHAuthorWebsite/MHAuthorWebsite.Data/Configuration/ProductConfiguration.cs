@@ -1,5 +1,4 @@
 ﻿using MHAuthorWebsite.Data.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
@@ -35,6 +34,12 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasOne(p => p.ProductType)
             .WithMany(pt => pt.Products)
             .HasForeignKey(p => p.ProductTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasOne(p => p.ThumbnailImage)
+            .WithOne()
+            .HasForeignKey<Product>(p => p.ThumbnailImageId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder

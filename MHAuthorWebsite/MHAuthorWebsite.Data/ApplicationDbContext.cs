@@ -18,7 +18,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<ProductCommentImage> ProductCommentsImages { get; set; } = null!;
 
-    public DbSet<Image> Images { get; set; } = null!;
+    public DbSet<ProductImage> ProductsImages { get; set; } = null!;
 
     public DbSet<Order> Orders { get; set; } = null!;
 
