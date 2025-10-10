@@ -42,12 +42,7 @@ public class Product
 
     public ProductType ProductType { get; set; } = null!;
 
-    [Required]
-    [Comment("Foreign key to the thumbnail image stored in ProductsImages")]
-    [ForeignKey(nameof(ThumbnailImage))]
-    public Guid ThumbnailImageId { get; set; }
-
-    public ProductImage ThumbnailImage { get; set; } = null!;
+    public ProductThumbnail Thumbnail { get; set; } = null!;
 
     public ICollection<ProductImage> Images { get; set; } = new HashSet<ProductImage>();
 

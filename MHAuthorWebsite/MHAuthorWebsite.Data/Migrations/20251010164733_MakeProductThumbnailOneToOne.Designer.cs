@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MHAuthorWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251008190631_ImproveProductImageStore")]
-    partial class ImproveProductImageStore
+    [Migration("20251010164733_MakeProductThumbnailOneToOne")]
+    partial class MakeProductThumbnailOneToOne
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -241,10 +241,6 @@ namespace MHAuthorWebsite.Data.Migrations
                         .HasColumnType("int")
                         .HasComment("Quantity in stock");
 
-                    b.Property<Guid>("ThumbnailImageId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasComment("Foreign key to the thumbnail image stored in ProductsImages");
-
                     b.Property<decimal>("Weight")
                         .HasColumnType("decimal(18, 3)")
                         .HasComment("Product's weight");
@@ -252,9 +248,6 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductTypeId");
-
-                    b.HasIndex("ThumbnailImageId")
-                        .IsUnique();
 
                     b.ToTable("Products");
                 });
@@ -520,6 +513,30 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductsImages");
+                });
+
+            modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductThumbnail", b =>
+                {
+                    b.Property<Guid>("ImageId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Foreign key to ProductImage");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Foreign key to Product");
+
+                    b.Property<Guid>("ImageOriginalId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Foreign key to the original image");
+
+                    b.HasKey("ImageId", "ProductId");
+
+                    b.HasIndex("ImageOriginalId");
+
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
+                    b.ToTable("ProductsThumbnails");
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductType", b =>
@@ -933,15 +950,7 @@ namespace MHAuthorWebsite.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MHAuthorWebsite.Data.Models.ProductImage", "ThumbnailImage")
-                        .WithOne()
-                        .HasForeignKey("MHAuthorWebsite.Data.Models.Product", "ThumbnailImageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("ProductType");
-
-                    b.Navigation("ThumbnailImage");
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductAttribute", b =>
@@ -1053,6 +1062,33 @@ namespace MHAuthorWebsite.Data.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductThumbnail", b =>
+                {
+                    b.HasOne("MHAuthorWebsite.Data.Models.ProductImage", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MHAuthorWebsite.Data.Models.ProductImage", "ImageOriginal")
+                        .WithMany()
+                        .HasForeignKey("ImageOriginalId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MHAuthorWebsite.Data.Models.Product", "Product")
+                        .WithOne("Thumbnail")
+                        .HasForeignKey("MHAuthorWebsite.Data.Models.ProductThumbnail", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Image");
+
+                    b.Navigation("ImageOriginal");
 
                     b.Navigation("Product");
                 });
@@ -1189,6 +1225,9 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.Navigation("Images");
 
                     b.Navigation("Orders");
+
+                    b.Navigation("Thumbnail")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductAttributeDefinition", b =>

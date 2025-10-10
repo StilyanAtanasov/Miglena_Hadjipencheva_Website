@@ -51,7 +51,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
             .WhereReadonly<Order>(o => o.Id == orderId)
             .Include(o => o.OrderedProducts)
                 .ThenInclude(op => op.Product)
-                    .ThenInclude(p => p.ThumbnailImage)
+                    .ThenInclude(p => p.Thumbnail)
             .Include(o => o.Shipment)
                 .ThenInclude(s => s.Events)
             .Include(o => o.Shipment)
@@ -68,7 +68,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
             Products = order.OrderedProducts
                  .Select(op => new AdminOrderProductDetailsViewModel
                  {
-                     ImageUrl = op.Product.ThumbnailImage.ImageUrl,
+                     ImageUrl = op.Product.Thumbnail.Image.ImageUrl,
                      ProductName = op.Product.Name,
                      UnitPrice = op.UnitPrice,
                      Quantity = op.Quantity,

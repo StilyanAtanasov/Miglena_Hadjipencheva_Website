@@ -4,6 +4,7 @@ using MHAuthorWebsite.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MHAuthorWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251010160229_FixImageStorageApproach")]
+    partial class FixImageStorageApproach
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -530,8 +533,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("ImageOriginalId");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductsThumbnails");
                 });
@@ -1078,8 +1080,8 @@ namespace MHAuthorWebsite.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("MHAuthorWebsite.Data.Models.Product", "Product")
-                        .WithOne("Thumbnail")
-                        .HasForeignKey("MHAuthorWebsite.Data.Models.ProductThumbnail", "ProductId")
+                        .WithMany("ThumbnailImages")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1223,8 +1225,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.Navigation("Orders");
 
-                    b.Navigation("Thumbnail")
-                        .IsRequired();
+                    b.Navigation("ThumbnailImages");
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductAttributeDefinition", b =>

@@ -113,13 +113,6 @@ public class CartServiceTests
             IsDeleted = false,
             IsPublic = true,
             ProductTypeId = 1,
-            ThumbnailImage = new ProductImage
-            {
-                Id = Guid.NewGuid(),
-                AltText = "Thumb",
-                PublicId = "thumb-public-id",
-                ImageUrl = "thumb.jpg"
-            },
             Images = new List<ProductImage>
             {
                 new ()
@@ -253,13 +246,6 @@ public class CartServiceTests
             IsDeleted = false,
             IsPublic = true,
             ProductType = new ProductType { Id = 1, Name = "Books" },
-            ThumbnailImage = new ProductImage
-            {
-                Id = Guid.NewGuid(),
-                AltText = "Thumb",
-                PublicId = "thumb-public-id",
-                ImageUrl = "thumb.jpg"
-            },
             Images = new List<ProductImage>
             {
                 new ()

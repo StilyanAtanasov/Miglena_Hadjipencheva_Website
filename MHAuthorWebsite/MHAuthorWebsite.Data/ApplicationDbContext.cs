@@ -20,6 +20,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<ProductImage> ProductsImages { get; set; } = null!;
 
+    public DbSet<ProductThumbnail> ProductsThumbnails { get; set; } = null!;
+
     public DbSet<Order> Orders { get; set; } = null!;
 
     public DbSet<OrderProduct> OrdersProducts { get; set; } = null!;

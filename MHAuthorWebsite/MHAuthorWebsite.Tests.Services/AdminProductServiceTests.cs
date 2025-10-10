@@ -407,12 +407,16 @@ public class AdminProductServiceTests
             ProductType = productType,
             Price = 10.99m,
             Weight = 0.5m,
-            ThumbnailImage = new ProductImage
+            Thumbnail = new ProductThumbnail
             {
-                Id = Guid.NewGuid(),
-                AltText = "Thumb",
-                PublicId = "thumb-public-id",
-                ImageUrl = "thumb.jpg"
+                Image = new ProductImage
+                {
+                    Id = Guid.NewGuid(),
+                    AltText = "Thumb",
+                    PublicId = "thumb-public-id",
+                    ImageUrl = "thumb.jpg"
+                },
+                ImageOriginalId = Guid.NewGuid()
             },
             Images = new List<ProductImage>
             {

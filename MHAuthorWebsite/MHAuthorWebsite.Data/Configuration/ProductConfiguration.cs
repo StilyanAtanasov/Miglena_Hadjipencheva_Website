@@ -37,12 +37,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
-            .HasOne(p => p.ThumbnailImage)
-            .WithOne()
-            .HasForeignKey<Product>(p => p.ThumbnailImageId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder
             .Property(p => p.IsPublic)
             .HasDefaultValue(IsPublicDefaultValue);
 
@@ -52,5 +46,10 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder
             .HasQueryFilter(p => !p.IsDeleted && p.IsPublic);
+
+        builder
+            .HasOne(p => p.Thumbnail)
+            .WithOne(t => t.Product)
+            .HasForeignKey<ProductThumbnail>(t => t.ProductId);
     }
 }

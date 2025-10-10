@@ -265,13 +265,6 @@ public class ProductServiceTests
             IsPublic = true,
             ProductType = productType,
             Price = 10.99m,
-            ThumbnailImage = new ProductImage
-            {
-                Id = Guid.NewGuid(),
-                AltText = "Thumb",
-                PublicId = "thumb-public-id",
-                ImageUrl = "thumb.jpg"
-            },
             Images = new List<ProductImage>
             {
                 new ()

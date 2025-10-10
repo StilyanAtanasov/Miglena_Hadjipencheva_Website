@@ -79,7 +79,7 @@ public class CartService : ICartService
                     .ThenInclude(p => p.ProductType)
             .Include(c => c.CartItems)
                  .ThenInclude(ci => ci.Product)
-                    .ThenInclude(p => p.ThumbnailImage)
+                    .ThenInclude(p => p.Thumbnail)
             .FirstOrDefaultAsync();
         if (cart is null) return new CartViewModel();
 
@@ -96,8 +96,8 @@ public class CartService : ICartService
                 UnitPrice = ci.Price,
                 IsDiscontinued = ci.Product.IsDeleted || !ci.Product.IsPublic,
                 IsAvailable = ci.Product is { StockQuantity: > 0, IsDeleted: false, IsPublic: true },
-                ThumbnailUrl = ci.Product.ThumbnailImage.ImageUrl,
-                ThumbnailAlt = ci.Product.ThumbnailImage.AltText,
+                ThumbnailUrl = ci.Product.Thumbnail.Image.ImageUrl,
+                ThumbnailAlt = ci.Product.Thumbnail.Image.AltText,
             })
             .ToArray();
 

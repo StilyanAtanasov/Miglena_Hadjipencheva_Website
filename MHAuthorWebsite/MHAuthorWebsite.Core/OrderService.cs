@@ -34,10 +34,11 @@ public class OrderService : IOrderService
             .WhereReadonly<CartItem>(ci => ci.Cart.UserId == userId && ci.IsSelected && ci.Product.IsPublic && ci.Product.StockQuantity >= ci.Quantity)
             .Include(ci => ci.Cart)
             .Include(ci => ci.Product)
-                .ThenInclude(p => p.ThumbnailImage)
+                .ThenInclude(p => p.Thumbnail)
+                    .ThenInclude(t => t.Image)
             .Select(ci => new SelectedProductViewModel
             {
-                ImageUrl = ci.Product.ThumbnailImage.ImageUrl,
+                ImageUrl = ci.Product.Thumbnail.Image.ImageUrl,
                 Name = ci.Product.Name,
                 TotalPrice = ci.Product.Price * ci.Quantity,
                 Quantity = ci.Quantity,
@@ -158,7 +159,7 @@ public class OrderService : IOrderService
         .WhereReadonly<Order>(o => o.UserId == userId)
         .Include(o => o.OrderedProducts)
             .ThenInclude(op => op.Product)
-                .ThenInclude(p => p.ThumbnailImage)
+                .ThenInclude(p => p.Thumbnail)
         .OrderByDescending(o => o.Date)
         .Select(o => new MyOrdersViewModel
         {
@@ -169,7 +170,7 @@ public class OrderService : IOrderService
             Products = o.OrderedProducts
                 .Select(op => new MyOrdersOrderProductViewModel
                 {
-                    ImageUrl = op.Product.ThumbnailImage.ImageUrl,
+                    ImageUrl = op.Product.Thumbnail.Image.ImageUrl,
                     Quantity = op.Quantity,
                 })
                 .ToArray()
@@ -182,7 +183,7 @@ public class OrderService : IOrderService
             .WhereReadonly<Order>(o => o.Id == orderId)
             .Include(o => o.OrderedProducts)
                 .ThenInclude(op => op.Product)
-                    .ThenInclude(p => p.ThumbnailImage)
+                    .ThenInclude(p => p.Thumbnail)
             .Include(o => o.Shipment)
                 .ThenInclude(s => s.Events)
             .FirstOrDefaultAsync();
@@ -198,7 +199,7 @@ public class OrderService : IOrderService
             Products = order.OrderedProducts
                  .Select(op => new OrderProductDetailsViewModel
                  {
-                     ImageUrl = op.Product.ThumbnailImage.ImageUrl,
+                     ImageUrl = op.Product.Thumbnail.Image.ImageUrl,
                      ProductName = op.Product.Name,
                      UnitPrice = op.UnitPrice,
                      Quantity = op.Quantity,

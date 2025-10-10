@@ -95,12 +95,12 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
     {
         Product product = await _repository
             .All<Product>()
-            .Include(p => p.ThumbnailImage)
+            .Include(p => p.Thumbnail)
             .IgnoreQueryFilters()
             .Where(p => p.Id == productId && !p.IsDeleted)
             .FirstAsync();
 
-        if (product.ThumbnailImageId == newTitleImageId) return ServiceResult.Ok();
+        if (product.Thumbnail.Image.Id == newTitleImageId) return ServiceResult.Ok();
 
         ProductImage? newTitleImage = await _repository
             .All<ProductImage>()
@@ -114,15 +114,20 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
         ServiceResult<ICollection<ImageUploadResultDto>> sr = await UploadProductThumbnailAsync(newTitleImage.ImageUrl);
         if (!sr.Success) return ServiceResult.Failure();
 
-        string oldPublicId = product.ThumbnailImage.PublicId;
+        string oldPublicId = product.Thumbnail.Image.PublicId;
 
-        product.ThumbnailImage = sr.Result!.Select(r => new ProductImage
+        product.Thumbnail = new ProductThumbnail
         {
+            ImageOriginalId = newTitleImage.Id,
             ProductId = productId,
-            AltText = newTitleImage.AltText,
-            ImageUrl = r.ImageUrl,
-            PublicId = r.PublicId
-        }).First();
+            Image = new ProductImage
+            {
+                ProductId = productId,
+                AltText = product.Name,
+                ImageUrl = sr.Result!.First().ImageUrl,
+                PublicId = sr.Result!.First().PublicId
+            }
+        };
 
         ServiceResult r = await _imageService.DeleteImageAsync(oldPublicId);
         if (!r.Success) return ServiceResult.Failure();

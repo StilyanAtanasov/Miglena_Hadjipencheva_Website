@@ -18,6 +18,8 @@ public class AddProductDto
 
     public ImageUploadResultDto Thumbnail { get; set; } = null!;
 
+    public int ThumbnailOriginalImageIndex { get; set; }
+
     public ICollection<ImageUploadResultDto> ImageUrls { get; set; } = null!;
 
     public ICollection<AttributeValueForm> Attributes { get; set; } = new HashSet<AttributeValueForm>();

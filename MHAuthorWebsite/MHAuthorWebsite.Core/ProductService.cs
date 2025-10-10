@@ -34,6 +34,7 @@ public class ProductService : IProductService
                 .AllReadonly<Product>()
                 .Include(p => p.ProductType)
                 .Include(p => p.Attributes)
+                .Include(p => p.Thumbnail)
                 .Include(p => p.Images)
                 .Include(p => p.Likes)
                 .Include(p => p.Comments)
@@ -56,7 +57,8 @@ public class ProductService : IProductService
                 IsLiked = userId != null && product.Likes.Any(u => u.Id == userId),
                 ProductTypeName = product.ProductType.Name,
                 Images = product.Images
-                    .OrderByDescending(i => i.Id == product.ThumbnailImageId)
+                    .Where(i => i.Id != product.Thumbnail.ImageId)
+                    .OrderByDescending(i => i.Id == product.Thumbnail.ImageOriginalId)
                     .Select(i => new ProductDetailsImage
                     {
                         ImageUrl = i.ImageUrl,
@@ -100,7 +102,7 @@ public class ProductService : IProductService
     public async Task<ICollection<LikedProductViewModel>> GetLikedProductsReadonlyAsync(string userId) =>
         await _repository
             .WhereReadonly<Product>(p => p.Likes.Any(u => u.Id == userId))
-            .Include(p => p.ThumbnailImage)
+            .Include(p => p.Thumbnail)
             .Include(p => p.ProductType)
             .Select(p => new LikedProductViewModel
             {
@@ -109,8 +111,8 @@ public class ProductService : IProductService
                 Price = p.Price,
                 CategoryName = p.ProductType.Name,
                 IsInStock = p.StockQuantity > 0,
-                ThumbnailUrl = p.ThumbnailImage.ImageUrl,
-                ThumbnailAlt = p.ThumbnailImage.AltText,
+                ThumbnailUrl = p.Thumbnail.Image.ImageUrl,
+                ThumbnailAlt = p.Thumbnail.Image.AltText,
             })
             .ToArrayAsync();
 
@@ -119,7 +121,7 @@ public class ProductService : IProductService
         await _repository
             .GetPagedAsync(page, PageSize, true, null, sortType.expression, sortType.descending)
             .Include(p => p.ProductType)
-            .Include(p => p.ThumbnailImage)
+            .Include(p => p.Thumbnail)
             .Select(p => new ProductCardViewModel
             {
                 Id = p.Id,
@@ -128,8 +130,8 @@ public class ProductService : IProductService
                 IsAvailable = p.StockQuantity > 0,
                 ProductType = p.ProductType.Name,
                 IsLiked = userId != null && p.Likes.Any(u => u.Id == userId),
-                ImageUrl = p.ThumbnailImage.ImageUrl,
-                ImageAlt = p.ThumbnailImage.AltText
+                ImageUrl = p.Thumbnail.Image.ImageUrl,
+                ImageAlt = p.Thumbnail.Image.AltText
             })
             .ToArrayAsync();
 

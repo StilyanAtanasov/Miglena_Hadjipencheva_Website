@@ -34,28 +34,35 @@ public class AdminProductService : ProductService, IAdminProductService
             await _repository.AddAsync(product);
             await _repository.SaveChangesAsync();
 
-            for (int i = 0; i < model.ImageUrls.Count; i++)
-            {
-                ImageUploadResultDto imageResult = model.ImageUrls.ElementAt(i);
-
-                ProductImage image = new()
-                {
-                    ProductId = product.Id,
-                    AltText = product.Name, // TODO Probably use the image title
-                    ImageUrl = imageResult.ImageUrl,
-                    PublicId = imageResult.PublicId
-                };
-
-                await _repository.AddAsync(image);
-            }
-
-            product.ThumbnailImage = new ProductImage
+            ProductImage[] images = model.ImageUrls.Select(i => new ProductImage
             {
                 ProductId = product.Id,
-                AltText = product.Name, // TODO Probably use the image title
+                AltText = product.Name,
+                ImageUrl = i.ImageUrl,
+                PublicId = i.PublicId
+            }).ToArray();
+
+            await _repository.AddRangeAsync(images);
+
+            ProductImage thumbnailImage = new ProductImage
+            {
+                ProductId = product.Id,
+                AltText = model.Name,
                 ImageUrl = model.Thumbnail.ImageUrl,
                 PublicId = model.Thumbnail.PublicId
             };
+
+            await _repository.AddAsync(thumbnailImage);
+            await _repository.SaveChangesAsync();
+
+            ProductThumbnail thumbnail = new ProductThumbnail
+            {
+                ProductId = product.Id,
+                ImageId = thumbnailImage.Id,
+                ImageOriginalId = images[model.ThumbnailOriginalImageIndex].Id
+            };
+
+            product.Thumbnail = thumbnail;
 
             if (model.Attributes.Count > 0) // ToDO Check if category has attributes
             {
@@ -106,11 +113,12 @@ public class AdminProductService : ProductService, IAdminProductService
             ProductTypeName = product.ProductType.Name,
             Weight = product.Weight,
             Images = product.Images
+                .Where(i => i.Id != product.Thumbnail.ImageId)
                 .Select(i => new ProductImageViewModel
                 {
                     Id = i.Id,
                     Url = i.ImageUrl,
-                    IsTitle = i.Id == product.ThumbnailImageId,
+                    IsTitle = i.Id == product.Thumbnail.ImageOriginalId,
                 })
                 .ToArray(),
             Attributes = product.Attributes

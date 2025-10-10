@@ -8,6 +8,7 @@ using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Seeding;
 using MHAuthorWebsite.Data.Shared;
+using MHAuthorWebsite.GCommon;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,7 @@ builder.Services.AddAuthentication()
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
+builder.Services.AddScoped<IAdminProductImageService, CloudinaryAdminProductImageService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 builder.Services.AddScoped<IAdminProductTypeService, AdminProductTypeService>();
@@ -103,6 +105,8 @@ if (new[] { cloudName, apiKey, apiSecret }.Any(string.IsNullOrWhiteSpace))
 builder.Services.AddSingleton(new Cloudinary(new Account(cloudName, apiKey, apiSecret)));
 
 var app = builder.Build();
+
+AppEnvironment.Initialize(app.Environment.EnvironmentName);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

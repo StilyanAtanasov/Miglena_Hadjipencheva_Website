@@ -89,7 +89,8 @@ public class AdminProductController : AdminBaseController
             ImageUrls = imageResult.Result,
             Thumbnail = thumbnailUploadResult.Result.First(),
             Attributes = model.Attributes,
-            Weight = model.Weight
+            Weight = model.Weight,
+            ThumbnailOriginalImageIndex = model.TitleImageId
         };
 
         ServiceResult productResult = await _productService.AddProductAsync(dto);

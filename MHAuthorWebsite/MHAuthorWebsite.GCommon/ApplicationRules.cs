@@ -1,4 +1,6 @@
-﻿namespace MHAuthorWebsite.GCommon;
+﻿using static MHAuthorWebsite.GCommon.AppEnvironment;
+
+namespace MHAuthorWebsite.GCommon;
 
 public static class ApplicationRules
 {
@@ -75,11 +77,11 @@ public static class ApplicationRules
 
     public static class Cloudinary
     {
-        public const string ImageFolder = $"{Application.ProjectName}/products/originals";
-        public const string ThumbnailFolder = $"{Application.ProjectName}/products/thumbnails";
+        public static readonly string ImageFolder = $"{Application.ProjectName}/{EnvironmentName}/products/originals";
+        public static readonly string ThumbnailFolder = $"{Application.ProjectName}/{EnvironmentName}/products/thumbnails";
 
-        public const string CommentImagesFolder = $"{Application.ProjectName}/comments/images";
-        public const string CommentImagePreviewsFolder = $"{Application.ProjectName}/comments/previews";
+        public static readonly string CommentImagesFolder = $"{Application.ProjectName}/{EnvironmentName}/comments/images";
+        public static readonly string CommentImagePreviewsFolder = $"{Application.ProjectName}/{EnvironmentName}/comments/previews";
     }
 
     public static class Econt
