@@ -12,6 +12,7 @@ using MHAuthorWebsite.Data.Shared.Filters.Criteria;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
 
 namespace MHAuthorWebsite.Core.Admin;
@@ -24,8 +25,9 @@ public class AdminOrderService : OrderService, IAdminOrderService
         (IApplicationRepository repository,
         UserManager<ApplicationUser> userManager,
         IEcontService econtService,
-        IAdminEcontService adminEcontService)
-        : base(repository, userManager, econtService)
+        IAdminEcontService adminEcontService,
+        IConfiguration configuration)
+        : base(repository, userManager, econtService, configuration)
         => _adminEcontService = adminEcontService;
 
     public async Task<ICollection<AllOrdersListItemViewModel>> GetAllOrders(AllOrdersFilterCriteria filter)

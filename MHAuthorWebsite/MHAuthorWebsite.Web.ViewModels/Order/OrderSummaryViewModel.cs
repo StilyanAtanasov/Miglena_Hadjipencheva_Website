@@ -9,4 +9,6 @@ public class OrderSummaryViewModel
     public decimal Subtotal => SelectedProducts.Sum(sp => sp.TotalPrice);
 
     public decimal TotalWeight => SelectedProducts.Sum(sp => sp.TotalWeight);
+
+    public int EcontShopId { get; set; }
 }

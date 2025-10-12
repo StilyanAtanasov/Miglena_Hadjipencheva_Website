@@ -8,6 +8,7 @@ using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
 
@@ -18,12 +19,15 @@ public class OrderService : IOrderService
     protected readonly IApplicationRepository Repository;
     protected readonly UserManager<ApplicationUser> UserManager;
     protected readonly IEcontService EcontService;
+    protected readonly IConfiguration Config;
 
-    public OrderService(IApplicationRepository repository, UserManager<ApplicationUser> userManager, IEcontService econtService)
+    public OrderService(IApplicationRepository repository, UserManager<ApplicationUser> userManager,
+        IEcontService econtService, IConfiguration config)
     {
         Repository = repository;
         UserManager = userManager;
         EcontService = econtService;
+        Config = config;
     }
 
     public async Task<OrderSummaryViewModel> GetOrderSummary(string userId)
@@ -54,7 +58,8 @@ public class OrderService : IOrderService
                 Name = user.Name!,
                 PhoneNumber = user.PhoneNumber
             },
-            SelectedProducts = selectedProducts
+            SelectedProducts = selectedProducts,
+            EcontShopId = Config.GetValue<int>("EcontApiShopId")
         };
     }
 

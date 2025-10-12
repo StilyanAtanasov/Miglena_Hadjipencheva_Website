@@ -86,7 +86,6 @@ public static class ApplicationRules
 
     public static class Econt
     {
-        public const int ShopId = 8661922;
         public const string ShipmentCalcUrl = "https://delivery.econt.com/customer_info.php";
         public const string UpdateOrderEndpoint = "https://delivery.econt.com/services/OrdersService.updateOrder.json";
         public const string CreateAwbEndpoint = "https://delivery.econt.com/services/OrdersService.createAWB.json";

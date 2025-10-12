@@ -60,7 +60,7 @@ public class EcontService : IEcontService
 
         using HttpRequestMessage request = new(HttpMethod.Post, endpoint);
         request.Headers.TryAddWithoutValidation("Authorization", Config["EcontApiSecret"]!);
-        request.Headers.Add("X-ID-Shop", ShopId.ToString());
+        request.Headers.Add("X-ID-Shop", Config["EcontApiShopId"]);
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
         HttpResponseMessage response = await Http.SendAsync(request);
