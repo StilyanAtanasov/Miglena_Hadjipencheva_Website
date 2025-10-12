@@ -79,7 +79,7 @@ public class AdminProductController : AdminBaseController
         if (!thumbnailUploadResult.Success) return StatusCode(500);
         if (thumbnailUploadResult.Result is null || !thumbnailUploadResult.Result.Any()) return StatusCode(500);
 
-        AddProductDto dto = new AddProductDto
+        AddProductDto dto = new()
         {
             Name = model.Name,
             Description = model.Description,
@@ -195,10 +195,8 @@ public class AdminProductController : AdminBaseController
                 newTitleImageId = imageResult.Result.Value;
         }
 
-
         ServiceResult updateTitleImageResult = await _imageService.UpdateProductTitleImageAsync(productId, newTitleImageId!.Value);
         if (!updateTitleImageResult.Success) return StatusCode(500);
-
 
         if (images.Deleted.Any())
             foreach (Guid id in images.Deleted)
@@ -221,7 +219,7 @@ public class AdminProductController : AdminBaseController
         if (!result.Found) return NotFound();
         if (!result.Success) return StatusCode(500);
 
-        ICollection<Guid> productImageIds = await _productService.GetImagesByProductId(productId);
+        ICollection<Guid> productImageIds = await _productService.GetImageIdsByProductId(productId);
         foreach (Guid id in productImageIds)
         {
             ServiceResult deleteImagesResult = await _imageService.DeleteProductImageByIdAsync(id);

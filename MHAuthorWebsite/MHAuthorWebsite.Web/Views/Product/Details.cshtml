@@ -101,16 +101,18 @@
 
 			<table>
 				<tbody>
-					@foreach (ProductAttributeDetailsViewModel a in Model.Attributes.Where(a => a.Value != null))
-					{
-						<tr>
-							<td>@a.Label</td>
-							<td>@a.Value</td>
-						</tr>
-					}
+				@foreach (ProductAttributeDetailsViewModel a in Model.Attributes.Where(a => a.Value != null))
+				{
+					<tr>
+						<td>@a.Label</td>
+						<td>@a.Value</td>
+					</tr>
+				}
 				</tbody>
 			</table>
 		</section>
+
+		<hr />
 	}
 
 	<!-- Comments Section -->

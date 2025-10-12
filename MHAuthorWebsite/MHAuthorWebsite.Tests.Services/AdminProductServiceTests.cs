@@ -71,7 +71,7 @@ public class AdminProductServiceTests
                 new ()
                 {
                     PublicId = "public-id",
-                    ImageUrl = "image.jpg",
+                    ImageUrl = "image.jpg"
                 }
             },
             Attributes = new List<AttributeValueForm>
@@ -82,7 +82,14 @@ public class AdminProductServiceTests
                     Value = "Fiction",
                     AttributeDefinitionId = _defaultProduct.ProductType.AttributeDefinitions.First().Id,
                 }
-            }
+            },
+            Thumbnail = new ImageUploadResultDto
+            {
+                PublicId = "thumb-public-id",
+                ImageUrl = "thumb.jpg"
+            },
+            ThumbnailOriginalImageIndex = 0,
+            Weight = 0.2m
         };
 
         // Act
@@ -99,8 +106,8 @@ public class AdminProductServiceTests
         Assert.IsTrue(result.Success);
         Assert.IsNotNull(addedProduct);
         Assert.AreEqual(model.Name, addedProduct!.Name);
-        Assert.That(addedProduct.Images.Count, Is.EqualTo(1));
-        Assert.That(addedProduct.Images.First().PublicId, Is.EqualTo("public-id"));
+        Assert.That(addedProduct.Images.Count, Is.EqualTo(2));
+        Assert.That(addedProduct.Images.Any(i => i.PublicId == "public-id") && addedProduct.Images.Any(i => i.PublicId == "thumb-public-id"));
         Assert.That(addedProduct.Attributes.Count, Is.EqualTo(1));
         Assert.That(addedProduct.Attributes.First().Value, Is.EqualTo("Fiction"));
         Assert.IsFalse(addedProduct.IsDeleted);
@@ -317,6 +324,8 @@ public class AdminProductServiceTests
     {
         // Arrange
         _dbContext.RemoveRange(_dbContext.ProductAttributes);
+        _dbContext.RemoveRange(_dbContext.ProductsThumbnails);
+        _dbContext.RemoveRange(_dbContext.ProductsImages);
         _dbContext.RemoveRange(_dbContext.Products);
         await _dbContext.SaveChangesAsync();
 
@@ -396,6 +405,8 @@ public class AdminProductServiceTests
             }
         };
 
+        Guid originalImageId = Guid.NewGuid();
+
         Product product = new()
         {
             Id = Guid.NewGuid(),
@@ -416,13 +427,13 @@ public class AdminProductServiceTests
                     PublicId = "thumb-public-id",
                     ImageUrl = "thumb.jpg"
                 },
-                ImageOriginalId = Guid.NewGuid()
+                ImageOriginalId = originalImageId
             },
             Images = new List<ProductImage>
             {
                 new ()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = originalImageId,
                     AltText = "image 1",
                     PublicId = "public-id",
                     ImageUrl = "image.jpg"

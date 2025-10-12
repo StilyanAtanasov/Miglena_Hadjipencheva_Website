@@ -1,4 +1,4 @@
-﻿/*using CloudinaryDotNet.Actions;
+﻿using CloudinaryDotNet.Actions;
 using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
@@ -15,10 +15,11 @@ namespace MHAuthorWebsite.Tests.Services;
 
 public class CloudinaryImageServiceTests
 {
-    private IImageService _imageService = null!;
+    private IAdminProductImageService _adminProductImageService = null!;
     private ApplicationDbContext _dbContext = null!;
 
     private Mock<ICloudinaryService> _cloudinaryMock = null!;
+    private Mock<IImageService> _imageServiceMock = null!;
 
     private ProductImage _defaultImage = null!;
     private Product _defaultProduct = null!;
@@ -31,9 +32,10 @@ public class CloudinaryImageServiceTests
             .Options;
 
         _cloudinaryMock = new Mock<ICloudinaryService>();
+        _imageServiceMock = new Mock<IImageService>();
 
         _dbContext = new ApplicationDbContext(options);
-        _imageService = new CloudinaryImageService(_cloudinaryMock.Object, new ApplicationRepository(_dbContext));
+        _adminProductImageService = new CloudinaryAdminProductImageService(new ApplicationRepository(_dbContext), _imageServiceMock.Object, _cloudinaryMock.Object);
 
         // Arrange
         _defaultImage = await SeedImageAsync();
@@ -53,7 +55,7 @@ public class CloudinaryImageServiceTests
         Assert.Pass();
     }
 
-    *//* ----- UploadImageWithPreviewAsync ----- *//*
+    /* ----- UploadImageWithPreviewAsync ----- */
 
     [Test]
     public async Task UploadImageWithPreviewAsync_ReturnsOk_WhenAllDataValid()
@@ -76,7 +78,7 @@ public class CloudinaryImageServiceTests
 
         // Act
         ServiceResult<ICollection<ProductImageUploadResultDto>> sr = await
-            _imageService.UploadImageWithPreviewAsync(formFiles, 1);
+            _adminProductImageService.UploadImageWithPreviewAsync(formFiles, 1);
 
         // Assert
         Assert.IsTrue(sr.Success);
@@ -95,7 +97,7 @@ public class CloudinaryImageServiceTests
 
         // Act
         ServiceResult<ICollection<ProductImageUploadResultDto>> sr = await
-            _imageService.UploadImageWithPreviewAsync(formFiles, 1);
+            _adminProductImageService.UploadImageWithPreviewAsync(formFiles, 1);
 
         // Assert
         Assert.IsFalse(sr.Success);
@@ -113,17 +115,17 @@ public class CloudinaryImageServiceTests
 
         // Act
         ServiceResult<ICollection<ProductImageUploadResultDto>> sr1 = await
-            _imageService.UploadImageWithPreviewAsync(formFiles, -1); // Negative index
+            _adminProductImageService.UploadImageWithPreviewAsync(formFiles, -1); // Negative index
 
         ServiceResult<ICollection<ProductImageUploadResultDto>> sr2 = await
-            _imageService.UploadImageWithPreviewAsync(formFiles, 100); // Index out of range
+            _adminProductImageService.UploadImageWithPreviewAsync(formFiles, 100); // Index out of range
 
         // Assert
         Assert.IsFalse(sr1.Success);
         Assert.IsFalse(sr2.Success);
     }
 
-    *//* ----- LinkImagesToProductAsync ----- *//*
+    /* ----- LinkImagesToProductAsync ----- */
 
     [Test]
     public async Task LinkImagesToProductAsync_ReturnsFailure_WhenImageCollectionIsInvalid()
@@ -132,7 +134,7 @@ public class CloudinaryImageServiceTests
         ICollection<IFormFile> formFiles = new HashSet<IFormFile>(); // Empty collection
 
         // Act
-        ServiceResult<Guid?> sr = await _imageService.LinkImagesToProductAsync(formFiles, 0, Guid.NewGuid());
+        ServiceResult<Guid?> sr = await _adminProductImageService.LinkImagesToProductAsync(formFiles, 0, Guid.NewGuid());
 
         // Assert
         Assert.IsFalse(sr.Success);
@@ -150,10 +152,10 @@ public class CloudinaryImageServiceTests
 
         // Act
         ServiceResult<Guid?> sr1 = await
-            _imageService.LinkImagesToProductAsync(formFiles, -1, Guid.NewGuid()); // Negative index
+            _adminProductImageService.LinkImagesToProductAsync(formFiles, -1, Guid.NewGuid()); // Negative index
 
         ServiceResult<Guid?> sr2 = await
-            _imageService.LinkImagesToProductAsync(formFiles, 100, Guid.NewGuid()); // Index out of range
+            _adminProductImageService.LinkImagesToProductAsync(formFiles, 100, Guid.NewGuid()); // Index out of range
 
         // Assert
         Assert.IsFalse(sr1.Success);
@@ -172,7 +174,7 @@ public class CloudinaryImageServiceTests
 
         // Act
         ServiceResult<Guid?> sr = await
-            _imageService.LinkImagesToProductAsync(formFiles, 1, Guid.NewGuid());
+            _adminProductImageService.LinkImagesToProductAsync(formFiles, 1, Guid.NewGuid());
 
         // Assert
         Assert.IsFalse(sr.Success);
@@ -201,22 +203,22 @@ public class CloudinaryImageServiceTests
 
         // Act
         ServiceResult<Guid?> sr = await
-            _imageService.LinkImagesToProductAsync(formFiles, titleImageIndex, _defaultProduct.Id);
+            _adminProductImageService.LinkImagesToProductAsync(formFiles, titleImageIndex, _defaultProduct.Id);
 
         // Assert
-        Image titleImage = _dbContext.Images
+        ProductImage titleImage = _dbContext.ProductsImages
                 .AsNoTracking()
                 .First(i => i.PublicId == $"publicId{titleImageIndex + 1}"); // The publicId indexer starts at 1
 
         Assert.IsTrue(sr.Success);
         Assert.IsNotNull(sr.Result);
         Assert.That(sr.Result!.Value, Is.Not.EqualTo(Guid.Empty));
-        Assert.That(_dbContext.Images.Count, Is.EqualTo(3));
+        Assert.That(_dbContext.ProductsImages.Count, Is.EqualTo(3));
         Assert.That(_defaultProduct.Images.Count, Is.EqualTo(3));
         Assert.That(sr.Result.Value, Is.EqualTo(titleImage.Id));
     }
 
-    *//* ----- DeleteImageAsync ----- *//*
+    /* ----- DeleteImageAsync ----- */
 
     [Test]
     public async Task DeleteImageAsync_ReturnsOk_WhenImageExists()
@@ -227,7 +229,7 @@ public class CloudinaryImageServiceTests
             .ReturnsAsync(new DeletionResult { Result = "ok" });
 
         // Act
-        ServiceResult result = await _imageService.DeleteImageAsync(_defaultImage.PublicId);
+        ServiceResult result = await _adminProductImageService.DeleteImageAsync(_defaultImage.PublicId);
 
         // Assert
         Assert.IsTrue(result.Success);
@@ -242,18 +244,18 @@ public class CloudinaryImageServiceTests
             .ReturnsAsync(new DeletionResult { Result = "error" });
 
         // Act
-        ServiceResult result = await _imageService.DeleteImageAsync(_defaultImage.PublicId);
+        ServiceResult result = await _adminProductImageService.DeleteImageAsync(_defaultImage.PublicId);
 
         // Assert
         Assert.IsFalse(result.Success);
     }
 
-    *//* ----- DeleteProductImageByIdAsync ----- *//*
+    /* ----- DeleteProductImageByIdAsync ----- */
     [Test]
     public async Task DeleteProductImageByIdAsync_ReturnsNotFound_OnInvalidImageId()
     {
         // Act
-        ServiceResult result = await _imageService.DeleteProductImageByIdAsync(Guid.NewGuid());
+        ServiceResult result = await _adminProductImageService.DeleteProductImageByIdAsync(Guid.NewGuid());
 
         // Assert
         Assert.IsFalse(result.Success);
@@ -263,230 +265,188 @@ public class CloudinaryImageServiceTests
     public async Task DeleteProductImageByIdAsync_ReturnsOk_WhenAllOperationsSucceed()
     {
         // Arrange
-        _cloudinaryMock
-            .Setup(c => c.DestroyAsync(It.IsAny<DeletionParams>()))
-            .ReturnsAsync(new DeletionResult { Result = "ok" });
+        _imageServiceMock
+            .Setup(c => c.DeleteImageAsync(It.IsAny<string>()))
+            .ReturnsAsync(ServiceResult.Ok());
 
-        // Act
-        ServiceResult result = await _imageService.DeleteProductImageByIdAsync(_defaultImage.Id);
+        ProductImage newImage = new()
+        {
+            ImageUrl = "https://example.com/new-image.jpg",
+            PublicId = "new-image-id",
+            AltText = "New Image",
+            ProductId = _defaultProduct.Id,
+        };
 
-        // Assert
-        Assert.IsTrue(result.Success);
-        Assert.That(_dbContext.Images.Count, Is.EqualTo(0));
-    }
-    // TODO Uncomment 
-    *//*[Test]
-    public async Task DeleteProductImageByIdAsync_ReturnsOk_WhenImageHasThumbnail()
-    {
-        // Arrange
-        _cloudinaryMock
-            .Setup(c => c.DestroyAsync(It.IsAny<DeletionParams>()))
-            .ReturnsAsync(new DeletionResult { Result = "ok" });
-
-        _defaultImage.IsThumbnail = true;
+        _dbContext.ProductsImages.Add(newImage);
         await _dbContext.SaveChangesAsync();
 
         // Act
-        ServiceResult result = await _imageService.DeleteProductImageByIdAsync(_defaultImage.Id);
+        ServiceResult result = await _adminProductImageService.DeleteProductImageByIdAsync(newImage.Id);
 
         // Assert
         Assert.IsTrue(result.Success);
-        Assert.That(_dbContext.Images.Count, Is.EqualTo(0));
+        Assert.That(_dbContext.ProductsImages.IgnoreQueryFilters().Count, Is.EqualTo(2)); // Only the default images - product image + thumbnail
+        Assert.That(!_dbContext.ProductsImages.Any(pi => pi.Id == newImage.Id));
     }
-
-
-    [Test]
-    public async Task DeleteProductImageByIdAsync_ReturnsFailure_OnDeleteThumbnailError_ButImagesAreDeletedFromDb()
-    {
-        // Arrange
-        _cloudinaryMock
-            .Setup(c => c.DestroyAsync(It.IsAny<DeletionParams>()))
-            .ReturnsAsync(new DeletionResult { Result = "error" });
-
-        _defaultImage.IsThumbnail = true;
-        await _dbContext.SaveChangesAsync();
-
-        // Act
-        ServiceResult result = await _imageService.DeleteProductImageByIdAsync(_defaultImage.Id);
-
-        // Assert
-        Assert.IsFalse(result.Success);
-        Assert.That(_dbContext.Images.Count, Is.EqualTo(0));
-    }*//*
 
     [Test]
     public async Task DeleteProductImageByIdAsync_ReturnsFailure_OnDeleteImageAsyncError_ButImagesAreDeletedFromDb()
     {
         // Arrange
-        _cloudinaryMock
-            .Setup(c => c.DestroyAsync(It.IsAny<DeletionParams>()))
-            .ReturnsAsync(new DeletionResult { Result = "error" });
+        _imageServiceMock
+            .Setup(c => c.DeleteImageAsync(It.IsAny<string>()))
+            .ReturnsAsync(ServiceResult.Failure());
+
+        ProductImage newImage = new()
+        {
+            ImageUrl = "https://example.com/new-image.jpg",
+            PublicId = "new-image-id",
+            AltText = "New Image",
+            ProductId = _defaultProduct.Id,
+        };
+
+        _dbContext.ProductsImages.Add(newImage);
+        await _dbContext.SaveChangesAsync();
 
         // Act
-        ServiceResult result = await _imageService.DeleteProductImageByIdAsync(_defaultImage.Id);
+        ServiceResult result = await _adminProductImageService.DeleteProductImageByIdAsync(newImage.Id);
 
         // Assert
         Assert.IsFalse(result.Success);
-        Assert.That(_dbContext.Images.Count, Is.EqualTo(0));
+        Assert.That(_dbContext.ProductsImages.IgnoreQueryFilters().Count, Is.EqualTo(2)); // Only the default images - product image + thumbnail
+        Assert.That(!_dbContext.ProductsImages.Any(pi => pi.Id == newImage.Id));
     }
 
-    *//* ----- UpdateProductTitleImageAsync ----- *//*
+    /* ----- UpdateProductTitleImageAsync ----- */
 
     [Test]
     public async Task UpdateProductTitleImageAsync_ReturnsFailure_WhenImageIdIsInvalid()
     {
         // Act
-        ServiceResult result = await _imageService.UpdateProductTitleImageAsync(_defaultProduct.Id, new Guid());
+        ServiceResult result = await _adminProductImageService.UpdateProductTitleImageAsync(_defaultProduct.Id, new Guid());
 
         // Assert
         Assert.IsFalse(result.Success);
     }
 
     [Test]
-    public async Task UpdateProductTitleImageAsync_ReturnsOk_WhenCurrentTitleImageIsNotFound()
+    public async Task UpdateProductTitleImageAsync_ReturnsOk_OnCorrectData()
     {
         // Arrange 
         _cloudinaryMock
             .Setup(c => c.UploadAsync(It.IsAny<ImageUploadParams>()))
             .ReturnsAsync(() => new ImageUploadResult
             {
-                PublicId = "thumbnailId",
+                PublicId = "thumbnail-public-id",
                 SecureUrl = new Uri("https://example.com/thumbnail.jpg")
             });
 
+        _imageServiceMock
+            .Setup(i => i.DeleteImageAsync(It.IsAny<string>()))
+            .ReturnsAsync(ServiceResult.Ok());
+
+        ProductImage newImage = new()
+        {
+            ImageUrl = "https://example.com/new-image.jpg",
+            PublicId = "new-image-id",
+            AltText = "New Image",
+            ProductId = _defaultProduct.Id,
+        };
+
+        _dbContext.ProductsImages.Add(newImage);
+        await _dbContext.SaveChangesAsync();
+
+        Guid oldThumbnailId = _defaultProduct.Thumbnail.ImageId;
+
         // Act
-        ServiceResult result = await _imageService.UpdateProductTitleImageAsync(_defaultProduct.Id, _defaultImage.Id);
+        ServiceResult result = await _adminProductImageService.UpdateProductTitleImageAsync(_defaultProduct.Id, newImage.Id);
 
         // Assert
-        Image? updatedImage = await _dbContext.Images
-            .AsNoTracking()
-            .FirstOrDefaultAsync(i => i.Id == _defaultImage.Id);
+        ProductImage? oldThumbnail = await _dbContext.ProductsImages
+             .AsNoTracking()
+             .FirstOrDefaultAsync(i => i.Id == oldThumbnailId);
 
         Assert.IsTrue(result.Success);
-        Assert.IsNotNull(updatedImage);
-        Assert.That(updatedImage!.IsThumbnail, Is.True);
-        Assert.That(updatedImage.ThumbnailPublicId, Is.EqualTo("thumbnailId"));
-        Assert.That(updatedImage.ThumbnailUrl, Is.EqualTo("https://example.com/thumbnail.jpg"));
+        Assert.IsNull(oldThumbnail);
+        Assert.That(_dbContext.ProductsImages.Count, Is.EqualTo(3)); // Two original images(_defaultImage & newImage) + only one new thumbnail
+        Assert.That(_defaultProduct.Thumbnail.ImageId, Is.Not.EqualTo(oldThumbnailId));
     }
 
-    // TODO Uncomment 
-    *//* [Test]
-     public async Task UpdateProductTitleImageAsync_ReturnsOk_WhenCurrentTitleImageIsFound()
-     {
-         // Arrange 
-         _cloudinaryMock
-             .Setup(c => c.UploadAsync(It.IsAny<ImageUploadParams>()))
-             .ReturnsAsync(() => new ImageUploadResult
-             {
-                 PublicId = "thumbnailId",
-                 SecureUrl = new Uri("https://example.com/thumbnail.jpg")
-             });
+    /* ----- Helper methods ----- */
 
-         _cloudinaryMock
-             .Setup(c => c.DestroyAsync(It.IsAny<DeletionParams>()))
-             .ReturnsAsync(new DeletionResult { Result = "ok" });
-
-         _defaultImage.IsThumbnail = true;
-         _defaultImage.ThumbnailPublicId = "oldThumbnailId";
-         _defaultImage.ThumbnailUrl = "https://example.com/old-thumbnail.jpg";
-
-         Image newImage = new()
-         {
-             ImageUrl = "https://example.com/new-image.jpg",
-             PublicId = "new-image-id",
-             AltText = "New Image",
-             ProductId = _defaultProduct.Id,
-         };
-
-         _dbContext.Images.Add(newImage);
-         await _dbContext.SaveChangesAsync();
-
-         // Act
-         ServiceResult result = await _imageService.UpdateProductTitleImageAsync(_defaultProduct.Id, newImage.Id);
-
-         // Assert
-         Image? oldImage = await _dbContext.Images
-             .AsNoTracking()
-             .FirstOrDefaultAsync(i => i.Id == _defaultImage.Id);
-
-         Image? newImageUpdated = await _dbContext.Images
-             .AsNoTracking()
-             .FirstOrDefaultAsync(i => i.Id == newImage.Id);
-
-         Assert.IsTrue(result.Success);
-         Assert.IsNotNull(oldImage);
-         Assert.IsNotNull(newImageUpdated);
-         Assert.That(oldImage!.IsThumbnail, Is.False);
-         Assert.That(oldImage.ThumbnailPublicId, Is.Null);
-         Assert.That(oldImage.ThumbnailUrl, Is.Null);
-         Assert.That(newImageUpdated!.IsThumbnail, Is.True);
-         Assert.That(newImageUpdated.ThumbnailPublicId, Is.Not.Null);
-         Assert.That(newImageUpdated.ThumbnailUrl, Is.Not.Null);
-     }*/
-
-/* ----- Helper methods ----- *//*
-
-private async Task<ProductImage> SeedImageAsync()
-{
-    ProductImage image = new()
+    private async Task<ProductImage> SeedImageAsync()
     {
-        Id = Guid.NewGuid(),
-        ImageUrl = "https://example.com/test-image.jpg",
-        PublicId = "test-image-id",
-        AltText = "Test Image"
-    };
-
-    _dbContext.ProductsImages.Add(image);
-    await _dbContext.SaveChangesAsync();
-    return image;
-}
-
-private async Task<Product> SeedProductAsync(ProductImage image)
-{
-    ProductType productType = new()
-    {
-        Id = 1,
-        Name = "Books"
-    };
-
-    Product product = new()
-    {
-        Id = Guid.NewGuid(),
-        Name = "Test Product",
-        Description = "Test Description",
-        StockQuantity = 10,
-        IsDeleted = false,
-        IsPublic = true,
-        ProductType = productType,
-        Price = 10.99m,
-        Images = new List<ProductImage> { image },
-        Attributes = new List<ProductAttribute>
+        ProductImage image = new()
         {
-            new ()
-            {
-                Id = 1,
-                Key = "Author",
-                Value = "John Doe"
-            }
-        },
-    };
+            Id = Guid.NewGuid(),
+            ImageUrl = "https://example.com/test-image.jpg",
+            PublicId = "test-image-id",
+            AltText = "Test Image"
+        };
 
-    _dbContext.ProductTypes.Add(productType);
-    _dbContext.Products.Add(product);
-    await _dbContext.SaveChangesAsync();
+        _dbContext.ProductsImages.Add(image);
+        await _dbContext.SaveChangesAsync();
+        return image;
+    }
 
-    return product;
-}
-
-private IFormFile CreateInMemoryFormFile(string fileName, string contentType, string content)
-{
-    byte[] contentBytes = System.Text.Encoding.UTF8.GetBytes(content);
-    MemoryStream stream = new MemoryStream(contentBytes);
-
-    return new FormFile(stream, 0, stream.Length, "file", fileName)
+    private async Task<Product> SeedProductAsync(ProductImage image)
     {
-        Headers = new HeaderDictionary(),
-        ContentType = contentType
-    };
+        ProductType productType = new()
+        {
+            Id = 1,
+            Name = "Books"
+        };
+
+        Product product = new()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Product",
+            Description = "Test Description",
+            StockQuantity = 10,
+            IsDeleted = false,
+            IsPublic = true,
+            ProductType = productType,
+            Price = 10.99m,
+            Images = new List<ProductImage> { image },
+            Attributes = new List<ProductAttribute>
+            {
+                new ()
+                {
+                    Id = 1,
+                    Key = "Author",
+                    Value = "John Doe"
+                }
+            },
+            Thumbnail = new ProductThumbnail
+            {
+                Image = new ProductImage
+                {
+                    Id = Guid.NewGuid(),
+                    ImageUrl = "https://example.com/thumbnail.jpg",
+                    PublicId = "thumbnail-id",
+                    AltText = "Thumbnail Image"
+                },
+                ImageOriginalId = image.Id
+            },
+            Weight = 0.5m
+        };
+
+        _dbContext.ProductTypes.Add(productType);
+        _dbContext.Products.Add(product);
+        await _dbContext.SaveChangesAsync();
+
+        return product;
+    }
+
+    private IFormFile CreateInMemoryFormFile(string fileName, string contentType, string content)
+    {
+        byte[] contentBytes = System.Text.Encoding.UTF8.GetBytes(content);
+        MemoryStream stream = new(contentBytes);
+
+        return new FormFile(stream, 0, stream.Length, "file", fileName)
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = contentType
+        };
+    }
 }
-}*/

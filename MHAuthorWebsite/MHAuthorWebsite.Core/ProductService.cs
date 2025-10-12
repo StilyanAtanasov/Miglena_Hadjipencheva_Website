@@ -35,6 +35,7 @@ public class ProductService : IProductService
                 .Include(p => p.ProductType)
                 .Include(p => p.Attributes)
                 .Include(p => p.Thumbnail)
+                    .ThenInclude(t => t.Image)
                 .Include(p => p.Images)
                 .Include(p => p.Likes)
                 .Include(p => p.Comments)
@@ -103,6 +104,7 @@ public class ProductService : IProductService
         await _repository
             .WhereReadonly<Product>(p => p.Likes.Any(u => u.Id == userId))
             .Include(p => p.Thumbnail)
+                .ThenInclude(t => t.Image)
             .Include(p => p.ProductType)
             .Select(p => new LikedProductViewModel
             {
@@ -122,6 +124,7 @@ public class ProductService : IProductService
             .GetPagedAsync(page, PageSize, true, null, sortType.expression, sortType.descending)
             .Include(p => p.ProductType)
             .Include(p => p.Thumbnail)
+                .ThenInclude(t => t.Image)
             .Select(p => new ProductCardViewModel
             {
                 Id = p.Id,

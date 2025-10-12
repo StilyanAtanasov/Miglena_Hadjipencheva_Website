@@ -160,6 +160,7 @@ public class OrderService : IOrderService
         .Include(o => o.OrderedProducts)
             .ThenInclude(op => op.Product)
                 .ThenInclude(p => p.Thumbnail)
+                    .ThenInclude(t => t.Image)
         .OrderByDescending(o => o.Date)
         .Select(o => new MyOrdersViewModel
         {
@@ -184,6 +185,7 @@ public class OrderService : IOrderService
             .Include(o => o.OrderedProducts)
                 .ThenInclude(op => op.Product)
                     .ThenInclude(p => p.Thumbnail)
+                        .ThenInclude(t => t.Image)
             .Include(o => o.Shipment)
                 .ThenInclude(s => s.Events)
             .FirstOrDefaultAsync();

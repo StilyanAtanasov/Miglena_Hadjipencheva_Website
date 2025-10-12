@@ -255,6 +255,8 @@ public class ProductServiceTests
             Name = "Books"
         };
 
+        Guid originalImageId = Guid.NewGuid();
+
         Product product = new()
         {
             Id = Guid.NewGuid(),
@@ -265,11 +267,22 @@ public class ProductServiceTests
             IsPublic = true,
             ProductType = productType,
             Price = 10.99m,
+            Thumbnail = new ProductThumbnail
+            {
+                ImageOriginalId = originalImageId,
+                Image = new ProductImage
+                {
+                    Id = Guid.NewGuid(),
+                    AltText = "thumbnail",
+                    PublicId = "thumb-public-id",
+                    ImageUrl = "thumb.jpg"
+                }
+            },
             Images = new List<ProductImage>
             {
                 new ()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = originalImageId,
                     AltText = "image 1",
                     PublicId = "public-id",
                     ImageUrl = "image.jpg"

@@ -52,6 +52,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
             .Include(o => o.OrderedProducts)
                 .ThenInclude(op => op.Product)
                     .ThenInclude(p => p.Thumbnail)
+                        .ThenInclude(t => t.Image)
             .Include(o => o.Shipment)
                 .ThenInclude(s => s.Events)
             .Include(o => o.Shipment)

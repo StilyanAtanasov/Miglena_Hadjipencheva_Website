@@ -44,7 +44,7 @@ public class AdminProductService : ProductService, IAdminProductService
 
             await _repository.AddRangeAsync(images);
 
-            ProductImage thumbnailImage = new ProductImage
+            ProductImage thumbnailImage = new()
             {
                 ProductId = product.Id,
                 AltText = model.Name,
@@ -55,7 +55,7 @@ public class AdminProductService : ProductService, IAdminProductService
             await _repository.AddAsync(thumbnailImage);
             await _repository.SaveChangesAsync();
 
-            ProductThumbnail thumbnail = new ProductThumbnail
+            ProductThumbnail thumbnail = new()
             {
                 ProductId = product.Id,
                 ImageId = thumbnailImage.Id,
@@ -99,6 +99,7 @@ public class AdminProductService : ProductService, IAdminProductService
                 .ThenInclude(a => a.AttributeDefinition)
             .Include(p => p.ProductType)
             .Include(p => p.Images)
+            .Include(p => p.Thumbnail)
             .FirstOrDefaultAsync(p => p.Id == productId);
 
         if (product is null) return ServiceResult<EditProductFormViewModel>.NotFound();
@@ -241,7 +242,7 @@ public class AdminProductService : ProductService, IAdminProductService
         }
     }
 
-    public async Task<ICollection<Guid>> GetImagesByProductId(Guid productId)
+    public async Task<ICollection<Guid>> GetImageIdsByProductId(Guid productId)
         => await _repository
                 .WhereReadonly<ProductImage>(i => i.ProductId == productId)
                 .IgnoreQueryFilters()

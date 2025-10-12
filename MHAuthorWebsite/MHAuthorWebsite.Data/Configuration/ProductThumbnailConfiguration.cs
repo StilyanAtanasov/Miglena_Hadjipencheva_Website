@@ -24,5 +24,8 @@ public class ProductThumbnailConfiguration : IEntityTypeConfiguration<ProductThu
             .WithMany()
             .HasForeignKey(pt => pt.ImageOriginalId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasQueryFilter(pt => !pt.Product.IsDeleted);
     }
 }

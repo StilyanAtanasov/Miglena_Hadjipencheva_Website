@@ -237,6 +237,8 @@ public class CartServiceTests
 
     private async Task<(Cart cart, CartItem item)> SeedCartAsync(string userId, int quantity = 1)
     {
+        Guid originalImageId = Guid.NewGuid();
+
         Product product = new()
         {
             Id = Guid.NewGuid(),
@@ -246,11 +248,22 @@ public class CartServiceTests
             IsDeleted = false,
             IsPublic = true,
             ProductType = new ProductType { Id = 1, Name = "Books" },
+            Thumbnail = new ProductThumbnail
+            {
+                ImageOriginalId = originalImageId,
+                Image = new ProductImage
+                {
+                    Id = Guid.NewGuid(),
+                    AltText = "thumbnail",
+                    PublicId = "thumb-public-id",
+                    ImageUrl = "thumb.jpg"
+                }
+            },
             Images = new List<ProductImage>
             {
                 new ()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = originalImageId,
                     AltText = "image 1",
                     PublicId = "public-id",
                     ImageUrl = "image.jpg"

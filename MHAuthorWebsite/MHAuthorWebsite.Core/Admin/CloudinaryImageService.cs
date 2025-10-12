@@ -4,9 +4,7 @@ using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Data.Shared;
 using Microsoft.AspNetCore.Http;
-using System;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 
 namespace MHAuthorWebsite.Core.Admin;
@@ -14,13 +12,8 @@ namespace MHAuthorWebsite.Core.Admin;
 public class CloudinaryImageService : IImageService
 {
     private readonly ICloudinaryService _cloudinaryService;
-    private readonly IApplicationRepository _repository;
 
-    public CloudinaryImageService(ICloudinaryService cloudinaryService, IApplicationRepository repository)
-    {
-        _cloudinaryService = cloudinaryService;
-        _repository = repository;
-    }
+    public CloudinaryImageService(ICloudinaryService cloudinaryService) => _cloudinaryService = cloudinaryService;
 
     public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<IFormFile> images, string folder, short width)
     {

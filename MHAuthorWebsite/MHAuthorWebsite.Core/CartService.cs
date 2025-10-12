@@ -80,6 +80,7 @@ public class CartService : ICartService
             .Include(c => c.CartItems)
                  .ThenInclude(ci => ci.Product)
                     .ThenInclude(p => p.Thumbnail)
+                        .ThenInclude(t => t.Image)
             .FirstOrDefaultAsync();
         if (cart is null) return new CartViewModel();
 
