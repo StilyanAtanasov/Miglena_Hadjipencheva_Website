@@ -103,14 +103,14 @@ public class AdminProductServiceTests
             .Include(p => p.Attributes)
             .FirstOrDefaultAsync(p => p.Name == model.Name);
 
-        Assert.IsTrue(result.Success);
-        Assert.IsNotNull(addedProduct);
-        Assert.AreEqual(model.Name, addedProduct!.Name);
+        Assert.That(result.Success, Is.True);
+        Assert.That(addedProduct, Is.Not.Null);
+        Assert.That(addedProduct!.Name, Is.EqualTo(model.Name));
         Assert.That(addedProduct.Images.Count, Is.EqualTo(2));
         Assert.That(addedProduct.Images.Any(i => i.PublicId == "public-id") && addedProduct.Images.Any(i => i.PublicId == "thumb-public-id"));
         Assert.That(addedProduct.Attributes.Count, Is.EqualTo(1));
         Assert.That(addedProduct.Attributes.First().Value, Is.EqualTo("Fiction"));
-        Assert.IsFalse(addedProduct.IsDeleted);
+        Assert.That(addedProduct.IsDeleted, Is.False);
     }
 
     [Test]
@@ -144,8 +144,8 @@ public class AdminProductServiceTests
             .Include(p => p.Attributes)
             .FirstOrDefaultAsync(p => p.Name == model.Name);
 
-        Assert.IsFalse(result.Success);
-        Assert.IsNull(addedProduct);
+        Assert.That(result.Success, Is.False);
+        Assert.That(addedProduct, Is.Null);
         Assert.That(_dbContext.Products.Count(), Is.EqualTo(1));
     }
 
@@ -156,9 +156,9 @@ public class AdminProductServiceTests
         ServiceResult<EditProductFormViewModel> sr = await _adminProductService.GetProductForEditAsync(_defaultProduct.Id);
 
         // Assert
-        Assert.IsTrue(sr.Success);
-        Assert.IsTrue(sr.HasResult());
-        Assert.AreEqual(_defaultProduct.Id, sr.Result!.Id);
+        Assert.That(sr.Success, Is.True);
+        Assert.That(sr.HasResult(), Is.True);
+        Assert.That(sr.Result!.Id, Is.EqualTo(_defaultProduct.Id));
         Assert.That(sr.Result.Images.Count, Is.EqualTo(1));
         Assert.That(sr.Result.Attributes.Count, Is.EqualTo(1));
         Assert.That(sr.Result.Images.First().Id, Is.EqualTo(_defaultProduct.Images.First().Id));
@@ -205,12 +205,12 @@ public class AdminProductServiceTests
             .Include(p => p.Attributes)
             .FirstOrDefaultAsync(p => p.Id == model.Id);
 
-        Assert.IsTrue(result.Success);
-        Assert.IsNotNull(updatedProduct);
-        Assert.AreEqual(model.Name, updatedProduct!.Name);
-        Assert.AreEqual(model.Description, updatedProduct.Description);
-        Assert.AreEqual(model.Price, updatedProduct.Price);
-        Assert.AreEqual(model.StockQuantity, updatedProduct.StockQuantity);
+        Assert.That(result.Success, Is.True);
+        Assert.That(updatedProduct, Is.Not.Null);
+        Assert.That(updatedProduct!.Name, Is.EqualTo(model.Name));
+        Assert.That(updatedProduct.Description, Is.EqualTo(model.Description));
+        Assert.That(updatedProduct.Price, Is.EqualTo(model.Price));
+        Assert.That(updatedProduct.StockQuantity, Is.EqualTo(model.StockQuantity));
         Assert.That(updatedProduct.Attributes.Count, Is.EqualTo(1));
         Assert.That(updatedProduct.Attributes.First().Value, Is.EqualTo("New value"));
     }
@@ -228,8 +228,8 @@ public class AdminProductServiceTests
         ServiceResult result = await _adminProductService.UpdateProductAsync(model);
 
         // Assert
-        Assert.IsFalse(result.Success);
-        Assert.IsFalse(result.Found);
+        Assert.That(result.Success, Is.False);
+        Assert.That(result.Found, Is.False);
     }
 
     [Test]
@@ -248,11 +248,10 @@ public class AdminProductServiceTests
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(p => p.Id == _defaultProduct.Id);
 
-        Assert.IsTrue(result.Success);
+        Assert.That(result.Success, Is.True);
         Assert.IsNull(deletedProduct);
-
-        Assert.IsNotNull(deletedProductNotNull);
-        Assert.IsTrue(deletedProductNotNull!.IsDeleted);
+        Assert.That(deletedProductNotNull, Is.Not.Null);
+        Assert.That(deletedProductNotNull!.IsDeleted, Is.True);
     }
 
     [Test]

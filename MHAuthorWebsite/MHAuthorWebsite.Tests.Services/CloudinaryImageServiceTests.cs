@@ -137,7 +137,7 @@ public class CloudinaryImageServiceTests
         ServiceResult<Guid?> sr = await _adminProductImageService.LinkImagesToProductAsync(formFiles, 0, Guid.NewGuid());
 
         // Assert
-        Assert.IsFalse(sr.Success);
+        Assert.That(sr.Success, Is.False);
     }
 
     [Test]
@@ -158,8 +158,8 @@ public class CloudinaryImageServiceTests
             _adminProductImageService.LinkImagesToProductAsync(formFiles, 100, Guid.NewGuid()); // Index out of range
 
         // Assert
-        Assert.IsFalse(sr1.Success);
-        Assert.IsFalse(sr2.Success);
+        Assert.That(sr1.Success, Is.False);
+        Assert.That(sr2.Success, Is.False);
     }
 
     [Test]
@@ -177,7 +177,7 @@ public class CloudinaryImageServiceTests
             _adminProductImageService.LinkImagesToProductAsync(formFiles, 1, Guid.NewGuid());
 
         // Assert
-        Assert.IsFalse(sr.Success);
+        Assert.That(sr.Success, Is.False);
     }
 
     [Test]
@@ -210,8 +210,8 @@ public class CloudinaryImageServiceTests
                 .AsNoTracking()
                 .First(i => i.PublicId == $"publicId{titleImageIndex + 1}"); // The publicId indexer starts at 1
 
-        Assert.IsTrue(sr.Success);
-        Assert.IsNotNull(sr.Result);
+        Assert.That(sr.Success, Is.True);
+        Assert.That(sr.Result, Is.Not.Null);
         Assert.That(sr.Result!.Value, Is.Not.EqualTo(Guid.Empty));
         Assert.That(_dbContext.ProductsImages.Count, Is.EqualTo(3));
         Assert.That(_defaultProduct.Images.Count, Is.EqualTo(3));
@@ -232,7 +232,7 @@ public class CloudinaryImageServiceTests
         ServiceResult result = await _adminProductImageService.DeleteImageAsync(_defaultImage.PublicId);
 
         // Assert
-        Assert.IsTrue(result.Success);
+        Assert.That(result.Success, Is.True);
     }
 
     [Test]
@@ -247,7 +247,7 @@ public class CloudinaryImageServiceTests
         ServiceResult result = await _adminProductImageService.DeleteImageAsync(_defaultImage.PublicId);
 
         // Assert
-        Assert.IsFalse(result.Success);
+        Assert.That(result.Success, Is.False);
     }
 
     /* ----- DeleteProductImageByIdAsync ----- */
@@ -258,7 +258,7 @@ public class CloudinaryImageServiceTests
         ServiceResult result = await _adminProductImageService.DeleteProductImageByIdAsync(Guid.NewGuid());
 
         // Assert
-        Assert.IsFalse(result.Success);
+        Assert.That(result.Success, Is.False);
     }
 
     [Test]
@@ -284,7 +284,7 @@ public class CloudinaryImageServiceTests
         ServiceResult result = await _adminProductImageService.DeleteProductImageByIdAsync(newImage.Id);
 
         // Assert
-        Assert.IsTrue(result.Success);
+        Assert.That(result.Success, Is.True);
         Assert.That(_dbContext.ProductsImages.IgnoreQueryFilters().Count, Is.EqualTo(2)); // Only the default images - product image + thumbnail
         Assert.That(!_dbContext.ProductsImages.Any(pi => pi.Id == newImage.Id));
     }
@@ -312,7 +312,7 @@ public class CloudinaryImageServiceTests
         ServiceResult result = await _adminProductImageService.DeleteProductImageByIdAsync(newImage.Id);
 
         // Assert
-        Assert.IsFalse(result.Success);
+        Assert.That(result.Success, Is.False);
         Assert.That(_dbContext.ProductsImages.IgnoreQueryFilters().Count, Is.EqualTo(2)); // Only the default images - product image + thumbnail
         Assert.That(!_dbContext.ProductsImages.Any(pi => pi.Id == newImage.Id));
     }
@@ -326,7 +326,7 @@ public class CloudinaryImageServiceTests
         ServiceResult result = await _adminProductImageService.UpdateProductTitleImageAsync(_defaultProduct.Id, new Guid());
 
         // Assert
-        Assert.IsFalse(result.Success);
+        Assert.That(result.Success, Is.False);
     }
 
     [Test]
@@ -366,8 +366,8 @@ public class CloudinaryImageServiceTests
              .AsNoTracking()
              .FirstOrDefaultAsync(i => i.Id == oldThumbnailId);
 
-        Assert.IsTrue(result.Success);
-        Assert.IsNull(oldThumbnail);
+        Assert.That(result.Success, Is.True);
+        Assert.That(oldThumbnail, Is.Null);
         Assert.That(_dbContext.ProductsImages.Count, Is.EqualTo(3)); // Two original images(_defaultImage & newImage) + only one new thumbnail
         Assert.That(_defaultProduct.Thumbnail.ImageId, Is.Not.EqualTo(oldThumbnailId));
     }

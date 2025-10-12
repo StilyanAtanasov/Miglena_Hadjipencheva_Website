@@ -54,7 +54,7 @@ public class ShipmentUpdateService : BackgroundService
                     if (!sr.Success) continue;
 
                     EcontShipmentStatusDto shipmentInfo = sr.Result!;
-                    if (shipmentInfo.TrackingEvents.Count > order.Shipment.Events.Count(e => e.Source == ShipmentEventSource.Econt))
+                    if (shipmentInfo.TrackingEvents!.Count > order.Shipment.Events.Count(e => e.Source == ShipmentEventSource.Econt))
                     {
                         repository.Attach(order.Shipment);
 
