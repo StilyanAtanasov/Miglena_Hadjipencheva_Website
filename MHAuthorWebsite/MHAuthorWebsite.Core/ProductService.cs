@@ -87,7 +87,7 @@ public class ProductService : IProductService
                         Dislikes = c.Reactions.Count(r => r.Reaction == CommentReaction.Dislike),
                         UserReaction = userId == null ? null : c.Reactions.FirstOrDefault(r => r.UserId == userId)?.Reaction,
                         IsWriterAdmin = _userManager.IsInRoleAsync(c.User, AdminRoleName).GetAwaiter().GetResult(),
-                        ImageUrls = c.Images.Select(i => i.ImageUrl).ToArray()
+                        ImageUrls = c.Images.Select(i => i.PreviewUrl).ToArray()
                     })
                     .ToArray()
             };

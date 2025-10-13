@@ -163,6 +163,8 @@
 				}
 			</section>
 
+			<hr class="comment-section-divider"/>
+
 			<section class="comments flex-column">
 				@foreach (ProductCommentViewModel c in Model.Comments.Where(c => c.ParentCommentId == null))
 				{

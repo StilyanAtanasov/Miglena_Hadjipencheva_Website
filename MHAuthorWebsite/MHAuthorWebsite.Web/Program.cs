@@ -9,6 +9,7 @@ using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Seeding;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.GCommon;
+using MHAuthorWebsite.Web.Infrastructure.Initialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -205,10 +206,16 @@ defaults: new { controller = "AdminDashboard", action = "Dashboard" });
 
 app.MapRazorPages();
 
-using (var scope = app.Services.CreateScope())
+using (IServiceScope scope = app.Services.CreateScope())
 {
     IServiceProvider services = scope.ServiceProvider;
     await AdminSeeder.SeedAsync(services);
+
+    // TODO : Remove after initial image upload -> next patch
+    ApplicationDbContext db = services.GetRequiredService<ApplicationDbContext>();
+    IImageService imageService = services.GetRequiredService<IImageService>();
+
+    await DbInitializer.GenerateCommentImagesPreviewsAsync(db, imageService);
 }
 
 app.Run();

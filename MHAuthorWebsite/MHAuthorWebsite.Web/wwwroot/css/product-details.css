@@ -170,13 +170,17 @@ table tr:last-child td:last-child {
 }
 
 /* --- Comments --- */
+.comments-info {
+  gap: 5rem;
+}
+
 .comments-info .star-icon {
   color: var(--color-orange);
 }
 
 .comments-info .comments-overview {
   gap: 10rem;
-  margin: 4rem 0 8rem 0;
+  margin-top: 4rem;
 }
 
 .comments-info .comments-overview .stars {
@@ -227,6 +231,10 @@ table tr:last-child td:last-child {
   width: 100%;
   align-items: flex-start;
   gap: 4rem;
+}
+
+.comments-info .comment-section-divider {
+  width: 70%;
 }
 
 .comments-info .comments hr {

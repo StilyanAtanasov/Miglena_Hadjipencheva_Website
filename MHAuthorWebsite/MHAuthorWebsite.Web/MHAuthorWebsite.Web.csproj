@@ -36,6 +36,7 @@
     <ProjectReference Include="..\MHAuthorWebsite.Data.Common\MHAuthorWebsite.Data.Common.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Data\MHAuthorWebsite.Data.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Web.Common\MHAuthorWebsite.Web.Common.csproj" />
+    <ProjectReference Include="..\MHAuthorWebsite.Web.Infrastructure\MHAuthorWebsite.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Web.ViewModels\MHAuthorWebsite.Web.ViewModels.csproj" />
   </ItemGroup>
 
