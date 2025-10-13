@@ -2,7 +2,6 @@
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Econt
 @using MHAuthorWebsite.Data.Models.Enums
-@using MHAuthorWebsite.Data.Models
 @using MHAuthorWebsite.Data.Common.Extensions
 
 @model AdminOrderDetailsViewModel
@@ -20,8 +19,33 @@
 
 	<div class="section-heading flex-row">
 		<h3 class="title">@ViewData["Title"]</h3>
-		<p class="status-message"><strong>@Model.Status</strong></p>
+		<p class="status-message"><strong>@Model.Status.GetDisplayName()</strong></p>
 	</div>
+
+	<section class="action-buttons flex-row">
+		<a class="btn btn-blue link flex-row" asp-area="Admin" asp-controller="AdminOrder" asp-action="AllOrders">
+			<i class="fa-solid fa-arrow-left"></i> Всички поръчки
+		</a>
+		<div class="flex-row">
+			@if (Model.Status == OrderStatus.InReview)
+			{
+				<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Accept" asp-route-orderId="@Model.OrderId">
+					<button class="btn btn-orange flex-row" type="submit">
+						<i class="fa-solid fa-memo-circle-check"></i> Приеми
+					</button>
+				</form>
+				<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Reject" asp-route-orderId="@Model.OrderId">
+					<button class="btn btn-red flex-row" type="submit"><i class="fa-solid fa-ban"></i> Отхвърли</button>
+				</form>
+			}
+			else if (Model.Status == OrderStatus.Accepted)
+			{
+				<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Terminate" asp-route-orderId="@Model.OrderId">
+					<button class="btn btn-red flex-row" type="submit"><i class="fa-solid fa-stop"></i> Прекрати</button>
+				</form>
+			}
+		</div>
+	</section>
 
 	<section class="info-section flex-row">
 		<article class="order-summary">
@@ -29,7 +53,7 @@
 			<p class="flex-row"><strong>№</strong> @Model.OrderId</p>
 			<p class="flex-row"><strong>Дата на поръчка:</strong> @Model.OrderDate.ToString("dd MMM yyyy, HH:mm ч.")</p>
 			<p class="flex-row"><strong>Обща стойност:</strong> @((Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice).ToString("F2")) @Currency</p>
-			<p class="flex-row"><strong>Статус: </strong>@Model.Status</p>
+			<p class="flex-row"><strong>Статус: </strong>@Model.Status.GetDisplayName()</p>
 		</article>
 
 		<article class="courier-info">
@@ -94,9 +118,9 @@
 
 		<section class="tracking-events">
 			<h4 class="heading">Проследи пратка</h4>
-			@if (Model.Shipment.TrackingEvents.Any() 
-			     && Model.Status != OrderStatus.Rejected.GetDisplayName() 
-			     && Model.Status != OrderStatus.Terminated.GetDisplayName())
+			@if (Model.Shipment.TrackingEvents.Any()
+						&& Model.Status != OrderStatus.Rejected
+						&& Model.Status != OrderStatus.Terminated)
 			{
 				<ul class="tracking-list">
 					@foreach (AdminOrderShipmentEventViewModel ev in Model.Shipment.TrackingEvents)
@@ -129,9 +153,9 @@
 			}
 		</section>
 
-		@if (Model.Shipment.AwbUrl is not null 
-		     && Model.Status != OrderStatus.Rejected.GetDisplayName() 
-		     && Model.Status != OrderStatus.Terminated.GetDisplayName())
+		@if (Model.Shipment.AwbUrl is not null
+				&& Model.Status != OrderStatus.Rejected
+				&& Model.Status != OrderStatus.Terminated)
 		{
 
 			<article class="shipment-awb">
@@ -148,15 +172,19 @@
 		<div class="flex-row">
 			@foreach (AdminOrderProductDetailsViewModel product in Model.Products)
 			{
-				<div class="product-item flex-column">
+				<div class="product-item flex-column clickable" data-url="@Url.Action("Details", "Product", new { productId = product.Id })">
 					<div class="product-image-box">
 						<img src="@product.ImageUrl" alt="" />
 						<div class="quantity-badge">@(product.Quantity)x</div>
 					</div>
 					<p><strong>@product.ProductName</strong></p>
-					<p>Ед. цена: @product.UnitPrice.ToString("F2")</p>
+					<p>Ед. цена: @product.UnitPrice.ToString("F2") @Currency</p>
 				</div>
 			}
 		</div>
 	</section>
 </section>
+
+@section Scripts {
+	<script src="~/js/click.js" asp-append-version="true"></script>
+}

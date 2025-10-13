@@ -51,19 +51,6 @@
   transform: scale(1.05);
 }
 
-.table .action-btns .btn-blue {
-  background-color: var(--color-tertiary);
-  color: var(--color-primary);
-}
-
-.table .action-btns .btn-orange {
-  background-color: var(--color-orange);
-}
-
-.table .action-btns .btn-red {
-  background-color: var(--color-error);
-}
-
 .table .align-center {
   text-align: center;
 }

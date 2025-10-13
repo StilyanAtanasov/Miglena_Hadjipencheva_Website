@@ -10,6 +10,8 @@ public static class ApplicationRules
         public const string WebsiteName = "Миглена Хаджипенчева"; // TODO Use this for Layout and branding
 
         public const string Currency = "BGN";
+
+        public const string CurrentVersion = "1.0.0";
     }
 
     public static class CommentImages

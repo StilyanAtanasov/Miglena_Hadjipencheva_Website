@@ -261,14 +261,22 @@
 					<i class="fa-solid fa-face-pensive"></i>
 					<p>Все още няма коментари за този продукт. Бъди първия написал ревю!</p>
 				</div>
-				<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment"
-				   asp-route-productId="@Model.Id" asp-route-targetName="@Model.Name">
-					<i class="fa-solid fa-feather"></i> Напиши ревю
-				</a>
+				@if (User.IsInRole(AdminRoleName))
+				{
+					<a class="btn link flex-row disabled" tabindex="-1" aria-disabled="true" tabindex="-1">
+						<i class="fa-solid fa-feather"></i> Напиши ревю
+					</a>
+				}
+				else
+				{
+					<a class="btn link flex-row" asp-controller="Product" asp-action="AddComment"
+					   asp-route-productId="@Model.Id" asp-route-targetName="@Model.Name">
+						<i class="fa-solid fa-feather"></i> Напиши ревю
+					</a>
+				}
 			</section>
 		}
 	</article>
-
 
 	<form class="hidden">@Html.AntiForgeryToken()</form>
 </div>

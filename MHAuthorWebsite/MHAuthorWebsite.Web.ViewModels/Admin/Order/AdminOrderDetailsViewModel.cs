@@ -1,4 +1,6 @@
-﻿namespace MHAuthorWebsite.Web.ViewModels.Admin.Order;
+﻿using MHAuthorWebsite.Data.Models.Enums;
+
+namespace MHAuthorWebsite.Web.ViewModels.Admin.Order;
 
 public class AdminOrderDetailsViewModel
 {
@@ -6,7 +8,7 @@ public class AdminOrderDetailsViewModel
 
     public DateTime OrderDate { get; set; }
 
-    public string Status { get; set; } = null!;
+    public OrderStatus Status { get; set; }
 
     public AdminOrderShipmentDetailsViewModel Shipment { get; set; } = null!;
 
