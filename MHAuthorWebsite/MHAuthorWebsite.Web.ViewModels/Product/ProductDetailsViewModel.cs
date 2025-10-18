@@ -1,4 +1,6 @@
-﻿namespace MHAuthorWebsite.Web.ViewModels.Product;
+﻿using MHAuthorWebsite.Web.ViewModels.ProductComment;
+
+namespace MHAuthorWebsite.Web.ViewModels.Product;
 
 public class ProductDetailsViewModel
 {
@@ -20,5 +22,5 @@ public class ProductDetailsViewModel
 
     public ICollection<ProductAttributeDetailsViewModel> Attributes { get; set; } = new HashSet<ProductAttributeDetailsViewModel>();
 
-    public ICollection<ProductCommentViewModel> Comments { get; set; } = new HashSet<ProductCommentViewModel>();
+    public ICollection<ProductBaseCommentViewModel> Comments { get; set; } = new HashSet<ProductBaseCommentViewModel>();
 }

@@ -48,13 +48,14 @@ builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
 builder.Services.AddScoped<IAdminProductImageService, CloudinaryAdminProductImageService>();
+builder.Services.AddScoped<ICommentImageService, CloudinaryCommentImageService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 builder.Services.AddScoped<IAdminProductTypeService, AdminProductTypeService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 
 builder.Services.AddScoped<IProductService, ProductService>();
-
+builder.Services.AddScoped<IProductCommentService, ProductCommentService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();

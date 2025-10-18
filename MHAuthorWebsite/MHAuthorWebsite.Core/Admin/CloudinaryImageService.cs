@@ -4,6 +4,7 @@ using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Dto;
 using Microsoft.AspNetCore.Http;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 

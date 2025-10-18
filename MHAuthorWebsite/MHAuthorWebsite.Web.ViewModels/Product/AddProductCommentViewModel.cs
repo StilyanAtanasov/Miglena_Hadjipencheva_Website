@@ -10,6 +10,8 @@ public class AddProductCommentViewModel
 
     public Guid? ParentCommentId { get; set; }
 
+    public Guid? ReplyCommentId { get; set; }
+
     [Range(RatingMinValue, RatingMaxValue)]
     public short? Rating { get; set; }
 

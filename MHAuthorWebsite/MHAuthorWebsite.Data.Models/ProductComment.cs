@@ -43,6 +43,11 @@ public class ProductComment
 
     public ProductComment? ParentComment { get; set; }
 
+    [ForeignKey(nameof(ParentReply))]
+    public Guid? ParentReplyId { get; set; }
+
+    public ProductComment? ParentReply { get; set; }
+
     [Required]
     public bool VerifiedPurchase { get; set; }
 

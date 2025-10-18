@@ -18,6 +18,8 @@ public static class ApplicationRules
     {
         public const int ImageMaxWidth = 1300;
         public const int ImagePreviewMaxWidth = 250;
+
+        public const int MaxImagesPerComment = 5;
     }
 
     public static class Roles

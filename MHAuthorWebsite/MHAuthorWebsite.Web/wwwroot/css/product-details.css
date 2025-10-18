@@ -197,6 +197,7 @@ table tr:last-child td:last-child {
 .comments-info .comments-overview .average-rating {
   font-size: 5.5rem;
   font-weight: 600;
+  text-align: center;
 }
 
 .comments-info .comments-overview .rating-stats {
@@ -234,7 +235,7 @@ table tr:last-child td:last-child {
 }
 
 .comments-info .comment-section-divider {
-  width: 70%;
+  width: 80%;
 }
 
 .comments-info .comments hr {
@@ -244,6 +245,10 @@ table tr:last-child td:last-child {
 .comments-info .comments .comment {
   width: 100%;
   gap: 1rem;
+}
+
+.comments-info .comments .comment .stars {
+  transform: translateX(-0.6rem);
 }
 
 .comments-info .comments .comment .images {
@@ -331,6 +336,21 @@ table tr:last-child td:last-child {
 
 .comments-info .comments .comment.reply .comment-info i {
   font-size: 2.8rem;
+}
+
+.comments-info .comments .comment.reply .reply-person {
+  margin-bottom: 0.5rem;
+}
+
+.comments-info .comments .comment.reply .reply-person i {
+  color: var(--color-secondary);
+}
+
+.comments-info .comments .comment.reply .reply-person hr {
+  width: 80%;
+  border-color: var(--color-secondary);
+  transform: translateY(-0.5rem);
+  opacity: 1;
 }
 
 .no-comments-section {

@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Web.ViewModels.Product;
+﻿using MHAuthorWebsite.Core.Dto;
+using MHAuthorWebsite.Web.ViewModels.Product;
 
 namespace MHAuthorWebsite.Core.Admin.Dto;
 

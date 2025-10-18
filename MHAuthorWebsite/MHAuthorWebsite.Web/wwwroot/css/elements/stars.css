@@ -1,12 +1,13 @@
 .stars {
   position: relative;
   height: 3rem;
-  width: 15rem;
+  width: 17rem;
   color: var(--color-orange);
 }
 
 .stars i {
   width: 3rem;
+  flex-shrink: 0;
 }
 
 .stars .stars-row {
@@ -14,6 +15,7 @@
   inset: 0;
   flex-shrink: 0;
   height: 100%;
+  gap: 0.5rem;
 }
 
 .stars .stars-filled {

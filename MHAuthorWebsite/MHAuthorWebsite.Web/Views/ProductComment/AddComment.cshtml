@@ -1,5 +1,6 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
+@using static MHAuthorWebsite.GCommon.ApplicationRules.CommentImages
 @model AddProductCommentViewModel
 
 @{
@@ -9,6 +10,8 @@
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/elements/stars.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/image-preview.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/product-comment-form.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 }
 
@@ -16,9 +19,10 @@
 	<section class="modal-invisible large flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 
-		<form class="input-form flex-column" asp-controller="Product" asp-action="AddComment" method="post" enctype="multipart/form-data">
+		<form class="input-form flex-column" asp-controller="ProductComment" asp-action="AddComment" method="post" enctype="multipart/form-data">
 			<input type="hidden" asp-for="ProductId" value="@Model.ProductId" />
 			<input type="hidden" asp-for="ParentCommentId" value="@Model.ParentCommentId" />
+			<input type="hidden" asp-for="ReplyCommentId" value="@Model.ReplyCommentId" />
 			<input type="hidden" asp-for="TargetName" value="@Model.TargetName" />
 
 			@if (Model.ParentCommentId == null)
@@ -40,9 +44,11 @@
 			{
 				<div class="form-input-box flex-column">
 					<label class="form-label" asp-for="Images">Изображения:</label>
-					<input type="file" class="form-input" asp-for="Images" multiple accept="image/*"></input>
-					<span class="input-error" asp-validation-for="Images"></span>
+					<input type="file" id="imageInput"  class="form-input" asp-for="Images" multiple accept="image/*"></input>
+					<span id="image-error" S class="input-error" asp-validation-for="Images" data-max-images="@MaxImagesPerComment"></span>
 				</div>
+
+				<div id="previewContainer" class="form-box preview-container flex-row"></div>
 			}
 
 			<button data-trigger="load-unlimited" type="submit" class="btn link submit-btn flex-row">
@@ -55,4 +61,5 @@
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
 	<script src="~/js/elements/stars-input.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/add-comment.js" asp-append-version="true"></script>
 }

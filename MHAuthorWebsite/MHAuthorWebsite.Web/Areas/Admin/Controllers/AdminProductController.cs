@@ -1,6 +1,7 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Web.Dto.Product;
 using MHAuthorWebsite.Web.ViewModels.Product;

@@ -1,0 +1,59 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.ProductComment
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MHAuthorWebsite.Data.Models.Enums
+
+@model ICollection<ProductCommentReplyViewModel>
+
+@foreach (ProductCommentReplyViewModel reply in Model)
+{
+	<div class="comment reply flex-row">
+		<div class="comment-info flex-column">
+			@if (reply.IsWriterAdmin)
+			{
+				<p class="role-badge flex-row">Администратор</p>
+			}
+			<div class="flex-row">
+				<i class="fa-regular fa-reply"></i>
+				<p>@reply.UserName</p>
+			</div>
+			<p class="date">@reply.Date.Date.ToString("dd.MM.yyyy")</p>
+		</div>
+		<hr class="vertical comment-divider" />
+		<div class="comment-main">
+			<div class="rating-box flex-row">
+				@if (reply is { VerifiedPurchase: true, IsWriterAdmin: false })
+				{
+					<p class="verified-badge flex-row"><i class="fa-solid fa-badge-check"></i> Потвърдена поръчка!</p>
+				}
+			</div>
+			@if (reply.ReplyCommentWriterName is not null)
+			{
+				<div class="reply-person">
+					<p class="flex-row"><i class="fa-solid fa-user-message"></i> <em><strong>Re:</strong> @reply.ReplyCommentWriterName</em></p>
+					<hr />
+				</div>
+			}
+			<p class="text">@reply.Text</p>
+			<div class="comment-actions flex-row">
+				<div class="comment-reactions flex-row" data-comment-id="@reply.Id">
+					<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Like)">
+						<i class="@(reply.UserReaction == CommentReaction.Like ? "fa-solid" : "fa-regular") fa-thumbs-up"></i>
+						<span class="reaction-count">@reply.Likes</span>
+					</button>
+					<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Dislike)">
+						<i class="@(reply.UserReaction == CommentReaction.Dislike ? "fa-solid" : "fa-regular") fa-thumbs-down"></i>
+						<span class="reaction-count">@reply.Dislikes</span>
+					</button>
+				</div>
+
+				<div>
+					<a class="btn-none link" asp-controller="ProductComment" asp-action="AddComment"
+					   asp-route-productId="@reply.ProductId" asp-route-parentCommentId="@reply.ParentCommentId"
+					   asp-route-replyCommentId="@reply.Id" asp-route-targetName="@reply.UserName">
+						<i class="fa-regular fa-reply"></i>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+}

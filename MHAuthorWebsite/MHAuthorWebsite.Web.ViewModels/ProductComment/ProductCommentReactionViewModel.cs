@@ -1,4 +1,4 @@
-﻿namespace MHAuthorWebsite.Web.ViewModels.Product;
+﻿namespace MHAuthorWebsite.Web.ViewModels.ProductComment;
 
 public class ProductCommentReactionViewModel
 {

@@ -1,10 +1,10 @@
-﻿using MHAuthorWebsite.Core.Admin.Dto;
-using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Product;
+using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -41,6 +41,13 @@ public class ProductService : IProductService
                 .Include(p => p.Comments)
                     .ThenInclude(c => c.User)
                 .Include(p => p.Comments)
+                    .ThenInclude(c => c.Replies)
+                        .ThenInclude(c => c.ParentReply)
+                            .ThenInclude(r => r!.User)
+                .Include(p => p.Comments)
+                    .ThenInclude(c => c.Replies)
+                        .ThenInclude(r => r.User)
+                .Include(p => p.Comments)
                     .ThenInclude(c => c.Reactions)
                 .Include(p => p.Comments)
                     .ThenInclude(c => c.Images)
@@ -74,20 +81,38 @@ public class ProductService : IProductService
                     })
                     .ToArray(),
                 Comments = product.Comments
-                    .Select(c => new ProductCommentViewModel
+                    .Where(c => c.ParentCommentId == null)
+                    .Select(c => new ProductBaseCommentViewModel
                     {
                         Id = c.Id,
-                        ParentCommentId = c.ParentCommentId,
-                        Rating = c.Rating,
+                        Rating = c.Rating!.Value,
+                        ProductId = c.ProductId,
                         Text = c.Text,
-                        UserName = c.User.Name!,
+                        UserName = userId != null && userId == c.UserId ? "Вие" : c.User.Name!,
                         Date = c.Date,
                         VerifiedPurchase = c.VerifiedPurchase,
                         Likes = c.Reactions.Count(r => r.Reaction == CommentReaction.Like),
                         Dislikes = c.Reactions.Count(r => r.Reaction == CommentReaction.Dislike),
                         UserReaction = userId == null ? null : c.Reactions.FirstOrDefault(r => r.UserId == userId)?.Reaction,
-                        IsWriterAdmin = _userManager.IsInRoleAsync(c.User, AdminRoleName).GetAwaiter().GetResult(),
-                        ImageUrls = c.Images.Select(i => i.PreviewUrl).ToArray()
+                        ImageUrls = c.Images.Select(i => i.PreviewUrl).ToArray(),
+                        Replies = c.Replies.Select(r => new ProductCommentReplyViewModel
+                        {
+                            Id = r.Id,
+                            Text = r.Text,
+                            UserName = userId != null && userId == r.UserId ? "Вие" : r.User.Name!,
+                            Date = r.Date,
+                            VerifiedPurchase = r.VerifiedPurchase,
+                            Likes = r.Reactions.Count(x => x.Reaction == CommentReaction.Like),
+                            Dislikes = r.Reactions.Count(x => x.Reaction == CommentReaction.Dislike),
+                            UserReaction = userId == null ? null : r.Reactions.FirstOrDefault(x => x.UserId == userId)?.Reaction,
+                            IsWriterAdmin = _userManager.IsInRoleAsync(r.User, AdminRoleName).GetAwaiter().GetResult(),
+                            ParentCommentId = r.ParentCommentId,
+                            ProductId = r.ProductId,
+                            ReplyCommentWriterName = r.ParentReply is not null ?
+                                userId != null && userId == r.ParentReply!.UserId ? "Вие" : r.ParentReply!.User.Name!
+                                : null
+
+                        }).ToArray()
                     })
                     .ToArray()
             };
@@ -155,98 +180,5 @@ public class ProductService : IProductService
 
         await _repository.SaveChangesAsync();
         return ServiceResult.Ok();
-    }
-
-    public async Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model, ICollection<ImageUploadResultDto> images)
-    {
-        Product? product = await _repository
-            .All<Product>()
-            .Include(p => p.Orders)
-                .ThenInclude(op => op.Order)
-            .FirstOrDefaultAsync(p => p.Id == model.ProductId);
-        if (product is null) return ServiceResult.BadRequest();
-
-        ApplicationUser? user = await _userManager.FindByIdAsync(userId);
-        if (user is null || (await _userManager.IsInRoleAsync(user, AdminRoleName) && model.ParentCommentId is null)) return ServiceResult.Forbidden();
-
-        ProductComment? parentComment = model.ParentCommentId != null
-            ? await _repository.All<ProductComment>().FirstOrDefaultAsync(c => c.Id == model.ParentCommentId)
-            : null;
-
-        if (model.ParentCommentId is not null && parentComment is null) return ServiceResult.BadRequest();
-
-        /* if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null))
-             return ServiceResult.BadRequest();
- */
-        // TODO Add validation for parent comment and for max comments per product per user
-
-        product.Comments.Add(new ProductComment
-        {
-            UserId = userId,
-            ParentCommentId = model.ParentCommentId,
-            Rating = model.Rating,
-            Text = model.Text,
-            VerifiedPurchase = product.Orders.Any(o => o.Order.UserId == userId), // TODO confirm order is received
-            Date = DateTime.UtcNow,
-            Images = images.Select(i => new ProductCommentImage
-            {
-                ImageUrl = i.ImageUrl,
-                PublicId = i.PublicId,
-                AltText = model.TargetName
-            }).ToList()
-        });
-
-        await _repository.SaveChangesAsync();
-        return ServiceResult.Ok();
-    }
-
-    public async Task<ServiceResult<ICollection<ProductCommentReactionViewModel>>> ReactToComment(string userId, Guid commentId, CommentReaction reactionType)
-    {
-        ProductComment? comment = await _repository
-            .All<ProductComment>()
-            .Include(c => c.Reactions)
-            .FirstOrDefaultAsync(c => c.Id == commentId);
-        if (comment is null) return ServiceResult<ICollection<ProductCommentReactionViewModel>>.BadRequest();
-
-        bool isValidReaction = Enum.IsDefined(typeof(CommentReaction), reactionType);
-        if (!isValidReaction) return ServiceResult<ICollection<ProductCommentReactionViewModel>>.BadRequest();
-
-        if (comment.UserId == userId) return ServiceResult<ICollection<ProductCommentReactionViewModel>>.Forbidden();
-
-        if (comment.Reactions.All(r => r.UserId != userId))
-        {
-            comment.Reactions.Add(new ProductCommentReaction
-            {
-                UserId = userId,
-                Reaction = reactionType,
-                CommentId = commentId,
-                CreatedAt = DateTime.Now
-            });
-        }
-        else
-        {
-            ProductCommentReaction existingReaction = comment.Reactions.First(r => r.UserId == userId);
-            if (existingReaction.Reaction == reactionType) comment.Reactions.Remove(existingReaction);
-            else
-            {
-                existingReaction.Reaction = reactionType;
-                existingReaction.CreatedAt = DateTime.Now;
-            }
-        }
-
-        await _repository.SaveChangesAsync();
-
-        IEnumerable<CommentReaction> allReactions = Enum.GetValues(typeof(CommentReaction))
-            .Cast<CommentReaction>();
-
-        ICollection<ProductCommentReactionViewModel> reactions = allReactions
-            .Select(r => new ProductCommentReactionViewModel
-            {
-                Reaction = (int)r,
-                Count = comment.Reactions.Count(x => x.Reaction == r)
-            })
-            .ToArray();
-
-        return ServiceResult<ICollection<ProductCommentReactionViewModel>>.Ok(reactions);
     }
 }

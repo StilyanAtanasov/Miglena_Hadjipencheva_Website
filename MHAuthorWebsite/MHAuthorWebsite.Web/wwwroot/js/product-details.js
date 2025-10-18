@@ -23,7 +23,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
       if ((!reactionType && reactionType !== 0) || !commentId) pushNotification(`Възникна неочаквана грешка!`, `error`);
 
-      const response = await fetch(`/Product/ReactToComment/`, {
+      const response = await fetch(`/ProductComment/ReactToComment/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

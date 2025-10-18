@@ -1,0 +1,62 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.ProductComment
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MHAuthorWebsite.Data.Models.Enums
+@using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
+
+@model ICollection<ProductBaseCommentViewModel>
+
+<section class="comments flex-column">
+	@foreach (ProductBaseCommentViewModel c in Model)
+	{
+		<div class="comment flex-row">
+			<div class="comment-info">
+				<div class="flex-row">
+					<i class="fa-regular fa-message-dots"></i>
+					<p>@c.UserName</p>
+				</div>
+				<p class="date">@c.Date.Date.ToString("dd.MM.yyyy")</p>
+			</div>
+			<hr class="vertical comment-divider" />
+			<div class="comment-main">
+				<div class="rating-box flex-row">
+					@await Html.PartialAsync("_Stars", ((decimal)c.Rating, RatingMaxValue))
+					@if (c.VerifiedPurchase)
+					{
+						<p class="verified-badge flex-row"><i class="fa-solid fa-badge-check"></i> Потвърдена поръчка!</p>
+					}
+				</div>
+				<p class="text">@c.Text</p>
+				<div class="images flex-row">
+					@foreach (string imageUrl in c.ImageUrls)
+					{
+						<img class="comment-image" src="@imageUrl" alt="Comment Image" />
+					}
+				</div>
+				<div class="comment-actions flex-row">
+					<div class="comment-reactions flex-row" data-comment-id="@c.Id">
+						<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Like)">
+							<i class="@(c.UserReaction == CommentReaction.Like ? "fa-solid" : "fa-regular") fa-thumbs-up"></i>
+							<span class="reaction-count">@c.Likes</span>
+						</button>
+						<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Dislike)">
+							<i class="@(c.UserReaction == CommentReaction.Dislike ? "fa-solid" : "fa-regular") fa-thumbs-down"></i>
+							<span class="reaction-count">@c.Dislikes</span>
+						</button>
+					</div>
+					<div>
+						<a class="btn-none link" asp-controller="ProductComment" asp-action="AddComment"
+						   asp-route-productId="@c.ProductId" asp-route-parentCommentId="@c.Id"
+						   asp-route-targetName="@c.UserName">
+							<i class="fa-regular fa-reply"></i>
+							@(c.Replies.Count)
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@await Html.PartialAsync("_CommentReplies.cshtml", c.Replies)
+
+		<hr />
+	}
+</section>
