@@ -100,13 +100,13 @@
 
 			<table>
 				<tbody>
-				@foreach (ProductAttributeDetailsViewModel a in Model.Attributes.Where(a => a.Value != null))
-				{
-					<tr>
-						<td>@a.Label</td>
-						<td>@a.Value</td>
-					</tr>
-				}
+					@foreach (ProductAttributeDetailsViewModel a in Model.Attributes.Where(a => a.Value != null))
+					{
+						<tr>
+							<td>@a.Label</td>
+							<td>@a.Value</td>
+						</tr>
+					}
 				</tbody>
 			</table>
 		</section>
@@ -120,22 +120,17 @@
 
 		@if (Model.Comments.Any())
 		{
-			decimal average = (decimal)Model.Comments
-				.Average(c => c.Rating);
-
-			int baseCommentsCount = Model.Comments.Count();
-
 			<section class="comments-overview flex-row">
 				<div class="flex-column">
-					<p class="average-rating">@average.ToString("F1") / @RatingMaxValue.ToString("F1")</p>
-					@await Html.PartialAsync("_Stars", (average, RatingMaxValue))
-					<span class="ratings-count">@baseCommentsCount @(baseCommentsCount > 1 ? "ревюта" : "ревю")</span>
+					<p class="average-rating">@Model.AverageRating.ToString("F1") / @RatingMaxValue.ToString("F1")</p>
+					@await Html.PartialAsync("_Stars", (Model.AverageRating, RatingMaxValue))
+					<span class="ratings-count">@Model.TotalBaseComments @(Model.TotalBaseComments > 1 ? "ревюта" : "ревю")</span>
 				</div>
 
-				<div id="rating-stats" class="rating-stats flex-column" data-count="@baseCommentsCount">
+				<div id="rating-stats" class="rating-stats flex-column" data-count="@Model.TotalBaseComments">
 					@for (int i = RatingMaxValue; i >= 1; i--)
 					{
-						int count = Model.Comments.Count(c => c.Rating == i);
+						int count = Model.CommentsCountByStarsRating[i];
 						<div class="rating-bar flex-row" data-count="@count">
 							<span class="rating-label flex-row"><span>@i</span> <i class="fa-solid fa-star star-icon"></i></span>
 							<div class="bar-container">
@@ -161,9 +156,19 @@
 				}
 			</section>
 
-			<hr class="comment-section-divider"/>
+			<hr class="comment-section-divider" />
 
-			@await Html.PartialAsync("~/Views/ProductComment/_ProductComments.cshtml", Model.Comments)
+			<section id="comments" class="comments flex-column">
+				@await Html.PartialAsync("~/Views/ProductComment/_ProductComments.cshtml", Model.Comments)
+			</section>
+
+			if (Model.HasMoreComments)
+			{
+				<button id="more-comments-btn" data-product-id="@Model.Id" class="btn-none link">
+					<i class="fa-regular fa-circle-chevron-down"></i>
+					Още коментари
+				</button>
+			}
 		}
 		else
 		{

@@ -299,7 +299,11 @@ table tr:last-child td:last-child {
   background-color: var(--color-secondary-lighter);
   font-size: 1.5rem;
   opacity: 0.9;
-  margin-top: 0.5rem;
+  margin-top: 1.2rem;
+}
+
+.comments-info .comments .comment.reply .date {
+  margin-top: 0.2rem;
 }
 
 .comments-info .comments .comment .rating-box {
@@ -330,6 +334,10 @@ table tr:last-child td:last-child {
   margin-left: 8rem;
 }
 
+.comments .load-replies-btn {
+  margin: 1.5rem 0 0 26rem;
+}
+
 .comments-info .comments .comment .comment-info {
   gap: 0.5rem;
 }
@@ -340,6 +348,8 @@ table tr:last-child td:last-child {
 
 .comments-info .comments .comment.reply .reply-person {
   margin-bottom: 0.5rem;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
 .comments-info .comments .comment.reply .reply-person i {
@@ -351,6 +361,7 @@ table tr:last-child td:last-child {
   border-color: var(--color-secondary);
   transform: translateY(-0.5rem);
   opacity: 1;
+  margin: 0;
 }
 
 .no-comments-section {

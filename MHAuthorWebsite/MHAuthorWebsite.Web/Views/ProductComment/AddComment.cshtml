@@ -1,6 +1,6 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
-@using static MHAuthorWebsite.GCommon.ApplicationRules.CommentImages
+@using static MHAuthorWebsite.GCommon.ApplicationRules.ProductCommentImages
 @model AddProductCommentViewModel
 
 @{
@@ -44,8 +44,8 @@
 			{
 				<div class="form-input-box flex-column">
 					<label class="form-label" asp-for="Images">Изображения:</label>
-					<input type="file" id="imageInput"  class="form-input" asp-for="Images" multiple accept="image/*"></input>
-					<span id="image-error" S class="input-error" asp-validation-for="Images" data-max-images="@MaxImagesPerComment"></span>
+					<input type="file" id="imageInput" class="form-input" asp-for="Images" multiple accept="image/*"></input>
+					<span id="image-error" class="input-error" asp-validation-for="Images" data-max-images="@MaxImagesPerComment"></span>
 				</div>
 
 				<div id="previewContainer" class="form-box preview-container flex-row"></div>

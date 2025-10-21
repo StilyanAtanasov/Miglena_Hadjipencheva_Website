@@ -14,12 +14,18 @@ public static class ApplicationRules
         public const string CurrentVersion = "1.0.0";
     }
 
-    public static class CommentImages
+    public static class ProductComment
     {
-        public const int ImageMaxWidth = 1300;
-        public const int ImagePreviewMaxWidth = 250;
+        public const byte CommentPageCount = 3;
+        public const byte CommentRepliesPageCount = 3;
+    }
 
-        public const int MaxImagesPerComment = 5;
+    public static class ProductCommentImages
+    {
+        public const short ImageMaxWidth = 1300;
+        public const byte ImagePreviewMaxWidth = 250;
+
+        public const byte MaxImagesPerComment = 5;
     }
 
     public static class Roles

@@ -1,12 +1,12 @@
 .stars {
   position: relative;
   height: 3rem;
-  width: 17rem;
+  width: 14.75rem;
   color: var(--color-orange);
 }
 
 .stars i {
-  width: 3rem;
+  width: 2.5rem;
   flex-shrink: 0;
 }
 

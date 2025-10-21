@@ -5,7 +5,7 @@ using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
 using Microsoft.AspNetCore.Http;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
-using static MHAuthorWebsite.GCommon.ApplicationRules.CommentImages;
+using static MHAuthorWebsite.GCommon.ApplicationRules.ProductCommentImages;
 
 namespace MHAuthorWebsite.Core;
 

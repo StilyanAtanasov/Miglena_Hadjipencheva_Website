@@ -21,6 +21,5 @@ public class AddProductCommentViewModel
 
     public string TargetName { get; set; } = null!;
 
-    [Required]
-    public ICollection<IFormFile> Images { get; set; } = new HashSet<IFormFile>();
+    public ICollection<IFormFile>? Images { get; set; }
 }

@@ -2,6 +2,7 @@
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Web.Utils.Extensions;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Identity;
@@ -50,7 +51,7 @@ public class ProductCommentController : BaseController
         }
 
         ServiceResult<ICollection<ProductCommentImagesUploadDto>>? srImages = null;
-        if (model.ParentCommentId is null)
+        if (model.ParentCommentId is null && model.Images is not null)
         {
             srImages = await _imageService.UploadCommentImagesAsync(model.Images);
             if (!srImages.Success) return StatusCode(500);
@@ -73,5 +74,37 @@ public class ProductCommentController : BaseController
         if (!sr.HasPermission) return StatusCode(403);
 
         return Ok(sr.Result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> LoadComments(Guid productId, int page)
+    {
+        ServiceResult<CommentPageViewModel> sr = await _productCommentService.LoadCommentsReadonlyAsync(productId, page, GetUserId());
+        if (sr.IsBadRequest) return BadRequest();
+
+        bool hasMore = sr.Result!.HasMoreComments;
+        string html = await this.RenderViewAsync(
+            "_ProductComments",
+            sr.Result!.Comments,
+            partial: true
+        );
+
+        return Json(new { Comments = html, HasMoreComments = hasMore });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> LoadReplies(Guid productId, Guid commentId, int page)
+    {
+        ServiceResult<ReplyPageViewModel> sr = await _productCommentService.LoadRepliesReadonlyAsync(productId, commentId, page, GetUserId());
+        if (sr.IsBadRequest) return BadRequest();
+
+        bool hasMore = sr.Result!.HasMoreReplies;
+        string html = await this.RenderViewAsync(
+            "_CommentReplies",
+            sr.Result!.Replies,
+            partial: true
+        );
+
+        return Json(new { Replies = html, HasMoreReplies = hasMore });
     }
 }

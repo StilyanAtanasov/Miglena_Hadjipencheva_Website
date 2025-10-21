@@ -5,7 +5,7 @@ using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
-using static MHAuthorWebsite.GCommon.ApplicationRules.CommentImages;
+using static MHAuthorWebsite.GCommon.ApplicationRules.ProductCommentImages;
 
 namespace MHAuthorWebsite.Web.Infrastructure.Initialization;
 

@@ -18,6 +18,14 @@ public class ProductDetailsViewModel
 
     public bool IsLiked { get; set; }
 
+    public decimal AverageRating { get; set; }
+
+    public int TotalBaseComments { get; set; }
+
+    public Dictionary<int, int> CommentsCountByStarsRating { get; set; } = null!;
+
+    public bool HasMoreComments { get; set; }
+
     public ICollection<ProductDetailsImage> Images { get; set; } = new HashSet<ProductDetailsImage>();
 
     public ICollection<ProductAttributeDetailsViewModel> Attributes { get; set; } = new HashSet<ProductAttributeDetailsViewModel>();

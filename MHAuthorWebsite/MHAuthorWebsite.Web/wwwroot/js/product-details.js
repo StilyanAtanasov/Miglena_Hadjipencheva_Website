@@ -1,5 +1,6 @@
 import { initQuill } from "./editor.js";
 import { pushNotification } from "./notification.js";
+import { calculateStarsFill } from "./elements/stars.js";
 
 document.addEventListener(`DOMContentLoaded`, async function () {
   await initQuill(false, false);
@@ -12,6 +13,48 @@ document.addEventListener(`DOMContentLoaded`, async function () {
     const ratingCount = b.dataset.count;
     b.querySelector(`.bar-container .bar-fill`).style.width = `${(ratingCount / ratingsCount) * 100}%`;
   });
+
+  let currentCommentsPage = 1;
+  const moreCommentsBtnEl = document.getElementById(`more-comments-btn`);
+  const productId = moreCommentsBtnEl.dataset.productId;
+
+  moreCommentsBtnEl.addEventListener(`click`, async function () {
+    const response = await fetch(`/ProductComment/LoadComments?productId=${productId}&page=${++currentCommentsPage}`, {
+      method: "POST",
+      headers: {
+        RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      document.getElementById(`comments`).insertAdjacentHTML(`beforeend`, data.comments);
+      !data.hasMoreComments && (moreCommentsBtnEl.style.display = `none`);
+      calculateStarsFill();
+    } else {
+      pushNotification(`Грешка при зареждането на коментарите!`, `error`);
+    }
+  });
+
+  let currentRepliesPage = 1;
+  document.querySelectorAll(`.load-replies-btn`).forEach(b =>
+    b.addEventListener(`click`, async function () {
+      const response = await fetch(`/ProductComment/LoadReplies?productId=${productId}&commentId=${b.dataset.commentId}&page=${++currentRepliesPage}`, {
+        method: "POST",
+        headers: {
+          RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        b.insertAdjacentHTML(`beforebegin`, data.replies);
+        !data.hasMoreReplies && (b.style.display = `none`);
+      } else {
+        pushNotification(`Грешка при зареждането на отговорите!`, `error`);
+      }
+    })
+  );
 
   // --- Comment reactions ---
   document.querySelectorAll(`.comment-reactions button`).forEach(b => {

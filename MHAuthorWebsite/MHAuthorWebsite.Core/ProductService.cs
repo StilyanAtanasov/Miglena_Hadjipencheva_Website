@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
+using static MHAuthorWebsite.GCommon.ApplicationRules.ProductComment;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
 namespace MHAuthorWebsite.Core;
@@ -64,6 +65,13 @@ public class ProductService : IProductService
                 IsInStock = product.StockQuantity > 0,
                 IsLiked = userId != null && product.Likes.Any(u => u.Id == userId),
                 ProductTypeName = product.ProductType.Name,
+                HasMoreComments = product.Comments.Count > CommentPageCount,
+                AverageRating = (decimal)Math.Round(product.Comments.Where(c => c.ParentCommentId is null).Average(c => c.Rating ?? 0), 2),
+                TotalBaseComments = product.Comments.Count(c => c.ParentCommentId is null),
+                CommentsCountByStarsRating = Enumerable.Range(1, 5)
+                    .ToDictionary(
+                        star => star,
+                        star => product.Comments.Count(c => c.Rating == star)),
                 Images = product.Images
                     .Where(i => i.Id != product.Thumbnail.ImageId)
                     .OrderByDescending(i => i.Id == product.Thumbnail.ImageOriginalId)
@@ -82,6 +90,11 @@ public class ProductService : IProductService
                     .ToArray(),
                 Comments = product.Comments
                     .Where(c => c.ParentCommentId == null)
+                    .OrderBy(c => c.Reactions.Count(r => r.Reaction == CommentReaction.Like))
+                    .ThenByDescending(c => c.Rating)
+                    .ThenByDescending(c => c.Date)
+                    .ThenBy(c => c.Replies.Count)
+                    .Take(CommentPageCount)
                     .Select(c => new ProductBaseCommentViewModel
                     {
                         Id = c.Id,
@@ -91,28 +104,36 @@ public class ProductService : IProductService
                         UserName = userId != null && userId == c.UserId ? "Вие" : c.User.Name!,
                         Date = c.Date,
                         VerifiedPurchase = c.VerifiedPurchase,
-                        Likes = c.Reactions.Count(r => r.Reaction == CommentReaction.Like),
-                        Dislikes = c.Reactions.Count(r => r.Reaction == CommentReaction.Dislike),
+                        Likes = c.Reactions
+                            .Count(r => r.Reaction == CommentReaction.Like),
+                        Dislikes = c.Reactions
+                            .Count(r => r.Reaction == CommentReaction.Dislike),
                         UserReaction = userId == null ? null : c.Reactions.FirstOrDefault(r => r.UserId == userId)?.Reaction,
-                        ImageUrls = c.Images.Select(i => i.PreviewUrl).ToArray(),
-                        Replies = c.Replies.Select(r => new ProductCommentReplyViewModel
-                        {
-                            Id = r.Id,
-                            Text = r.Text,
-                            UserName = userId != null && userId == r.UserId ? "Вие" : r.User.Name!,
-                            Date = r.Date,
-                            VerifiedPurchase = r.VerifiedPurchase,
-                            Likes = r.Reactions.Count(x => x.Reaction == CommentReaction.Like),
-                            Dislikes = r.Reactions.Count(x => x.Reaction == CommentReaction.Dislike),
-                            UserReaction = userId == null ? null : r.Reactions.FirstOrDefault(x => x.UserId == userId)?.Reaction,
-                            IsWriterAdmin = _userManager.IsInRoleAsync(r.User, AdminRoleName).GetAwaiter().GetResult(),
-                            ParentCommentId = r.ParentCommentId,
-                            ProductId = r.ProductId,
-                            ReplyCommentWriterName = r.ParentReply is not null ?
-                                userId != null && userId == r.ParentReply!.UserId ? "Вие" : r.ParentReply!.User.Name!
-                                : null
-
-                        }).ToArray()
+                        ImageUrls = c.Images
+                            .Select(i => i.PreviewUrl)
+                            .ToArray(),
+                        HasMoreReplies = c.Replies.Count > CommentRepliesPageCount,
+                        TotalRepliesCount = c.Replies.Count,
+                        Replies = c.Replies
+                            .OrderBy(r => r.Reactions.Count(re => re.Reaction == CommentReaction.Like))
+                            .Take(CommentRepliesPageCount)
+                            .Select(r => new ProductCommentReplyViewModel
+                            {
+                                Id = r.Id,
+                                Text = r.Text,
+                                UserName = userId != null && userId == r.UserId ? "Вие" : r.User.Name!,
+                                Date = r.Date,
+                                VerifiedPurchase = r.VerifiedPurchase,
+                                Likes = r.Reactions.Count(x => x.Reaction == CommentReaction.Like),
+                                Dislikes = r.Reactions.Count(x => x.Reaction == CommentReaction.Dislike),
+                                UserReaction = userId == null ? null : r.Reactions.FirstOrDefault(x => x.UserId == userId)?.Reaction,
+                                IsWriterAdmin = _userManager.IsInRoleAsync(r.User, AdminRoleName).GetAwaiter().GetResult(),
+                                ParentCommentId = r.ParentCommentId,
+                                ProductId = r.ProductId,
+                                ReplyCommentWriterName = r.ParentReply is not null ?
+                                    userId != null && userId == r.ParentReply!.UserId ? "Вие" : r.ParentReply!.User.Name!
+                                    : null
+                            }).ToArray()
                     })
                     .ToArray()
             };
