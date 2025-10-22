@@ -36,11 +36,11 @@
 			<p class="text">@reply.Text</p>
 			<div class="comment-actions flex-row">
 				<div class="comment-reactions flex-row" data-comment-id="@reply.Id">
-					<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Like)">
+					<button class="react-btn btn-none link" data-reaction-type="@((int)CommentReaction.Like)">
 						<i class="@(reply.UserReaction == CommentReaction.Like ? "fa-solid" : "fa-regular") fa-thumbs-up"></i>
 						<span class="reaction-count">@reply.Likes</span>
 					</button>
-					<button class="btn-none link" data-reaction-type="@((int)CommentReaction.Dislike)">
+					<button class="react-btn btn-none link" data-reaction-type="@((int)CommentReaction.Dislike)">
 						<i class="@(reply.UserReaction == CommentReaction.Dislike ? "fa-solid" : "fa-regular") fa-thumbs-down"></i>
 						<span class="reaction-count">@reply.Dislikes</span>
 					</button>

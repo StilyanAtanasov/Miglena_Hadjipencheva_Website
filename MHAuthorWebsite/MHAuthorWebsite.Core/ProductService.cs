@@ -66,7 +66,11 @@ public class ProductService : IProductService
                 IsLiked = userId != null && product.Likes.Any(u => u.Id == userId),
                 ProductTypeName = product.ProductType.Name,
                 HasMoreComments = product.Comments.Count > CommentPageCount,
-                AverageRating = (decimal)Math.Round(product.Comments.Where(c => c.ParentCommentId is null).Average(c => c.Rating ?? 0), 2),
+                AverageRating = product.Comments.Any(c => c.ParentCommentId is null && c.Rating.HasValue)
+                    ? (decimal)Math.Round(product.Comments
+                        .Where(c => c.ParentCommentId is null && c.Rating.HasValue)
+                        .Average(c => c.Rating!.Value), 2)
+                    : 0m,
                 TotalBaseComments = product.Comments.Count(c => c.ParentCommentId is null),
                 CommentsCountByStarsRating = Enumerable.Range(1, 5)
                     .ToDictionary(

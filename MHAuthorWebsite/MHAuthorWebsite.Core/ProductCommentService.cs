@@ -8,6 +8,7 @@ using MHAuthorWebsite.Web.ViewModels.Product;
 using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ProductComment;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
@@ -51,7 +52,7 @@ public class ProductCommentService : IProductCommentService
             UserId = userId,
             ParentCommentId = model.ParentCommentId,
             Rating = model.Rating,
-            Text = model.Text,
+            Text = Regex.Replace(model.Text.Trim(), @"(\r?\n\s*){2,}", "\n"),
             VerifiedPurchase = product.Orders.Any(o => o.Order.UserId == userId), // TODO confirm order is received
             Date = DateTime.UtcNow,
             Images = images is not null ? images.Select(i => new ProductCommentImage
@@ -120,7 +121,7 @@ public class ProductCommentService : IProductCommentService
         return ServiceResult<ICollection<ProductCommentReactionViewModel>>.Ok(reactions);
     }
 
-    public async Task<ServiceResult<CommentPageViewModel>> LoadCommentsReadonlyAsync(Guid productId, int page, string? userId)
+    public async Task<ServiceResult<CommentPageViewModel>> LoadCommentsReadonlyAsync(Guid productId, int page, int? ratingFilter, string? userId)
     {
         Product? product = await _repository
             .AllReadonly<Product>()
@@ -140,12 +141,11 @@ public class ProductCommentService : IProductCommentService
             .FirstOrDefaultAsync(p => p.Id == productId);
 
         if (product is null) return ServiceResult<CommentPageViewModel>.BadRequest();
-
         CommentPageViewModel model = new()
         {
-            HasMoreComments = product.Comments.Count(c => c.ParentCommentId == null) > page * CommentPageCount,
+            HasMoreComments = product.Comments.Count(c => c.ParentCommentId == null && (!ratingFilter.HasValue || c.Rating == ratingFilter.Value)) > page * CommentPageCount,
             Comments = product.Comments
-                .Where(c => c.ParentCommentId == null)
+                .Where(c => c.ParentCommentId == null && (!ratingFilter.HasValue || c.Rating == ratingFilter.Value))
                 .OrderBy(c => c.Reactions.Count(r => r.Reaction == CommentReaction.Like))
                 .ThenByDescending(c => c.Rating)
                 .ThenByDescending(c => c.Date)

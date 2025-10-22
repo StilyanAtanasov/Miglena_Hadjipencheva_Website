@@ -12,7 +12,7 @@ public interface IProductCommentService
 
     Task<ServiceResult<ICollection<ProductCommentReactionViewModel>>> ReactToComment(string userId, Guid commentId, CommentReaction reactionType);
 
-    Task<ServiceResult<CommentPageViewModel>> LoadCommentsReadonlyAsync(Guid productId, int page, string? userId);
+    Task<ServiceResult<CommentPageViewModel>> LoadCommentsReadonlyAsync(Guid productId, int page, int? ratingFilter, string? userId);
 
     Task<ServiceResult<ReplyPageViewModel>> LoadRepliesReadonlyAsync(Guid productId, Guid commentId, int page, string? userId);
 }

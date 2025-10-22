@@ -131,7 +131,7 @@
 					@for (int i = RatingMaxValue; i >= 1; i--)
 					{
 						int count = Model.CommentsCountByStarsRating[i];
-						<div class="rating-bar flex-row" data-count="@count">
+						<div class="rating-bar flex-row" data-count="@count" data-rating="@i">
 							<span class="rating-label flex-row"><span>@i</span> <i class="fa-solid fa-star star-icon"></i></span>
 							<div class="bar-container">
 								<div class="bar-fill"></div>
@@ -169,6 +169,13 @@
 					Още коментари
 				</button>
 			}
+
+			<section id="no-comment-results" class="flex-column hidden">
+				<div class="message flex-row">
+					<i class="fa-solid fa-filter"></i>
+					<p class="message">Няма намерени коментари по зададените от Вас критерии.</p>
+				</div>
+			</section>
 		}
 		else
 		{

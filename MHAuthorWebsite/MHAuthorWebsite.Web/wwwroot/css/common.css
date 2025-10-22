@@ -4,6 +4,7 @@
   --font-primary: "Sofia Sans Condensed";
   --color-dark: rgba(24, 23, 23, 0.879);
   --color-grey: rgba(97, 97, 97, 0.923);
+  --color-light-grey: rgba(240, 240, 240, 0.721);
   --color-primary: #fcfcfc;
   --color-secondary: rgb(58, 5, 58);
   --color-secondary-light: rgb(248, 223, 248);
@@ -13,8 +14,10 @@
   --color-tertiary-light: rgb(39, 103, 231);
   --color-tertiary-lighter: rgb(130, 250, 248);
   --color-error: rgb(255, 73, 73);
-  --color-success: rgb(57, 208, 57);
+  --color-success: rgb(34, 201, 34);
   --color-orange: rgb(255, 191, 0);
+  --color-yellow: rgb(255, 242, 0);
+  --color-yellow-green: rgb(153, 255, 0);
 }
 
 * {

@@ -77,9 +77,9 @@ public class ProductCommentController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> LoadComments(Guid productId, int page)
+    public async Task<IActionResult> LoadComments(Guid productId, int page, int? ratingFilter)
     {
-        ServiceResult<CommentPageViewModel> sr = await _productCommentService.LoadCommentsReadonlyAsync(productId, page, GetUserId());
+        ServiceResult<CommentPageViewModel> sr = await _productCommentService.LoadCommentsReadonlyAsync(productId, page, ratingFilter, GetUserId());
         if (sr.IsBadRequest) return BadRequest();
 
         bool hasMore = sr.Result!.HasMoreComments;
