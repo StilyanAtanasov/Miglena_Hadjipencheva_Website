@@ -24,6 +24,41 @@ public class ProductCommentService : IProductCommentService
         _repository = repository;
         _userManager = userManager;
     }
+
+    public async Task<ServiceResult<ProductCommentDetailsViewModel>> GetCommentDetailsReadonlyAsync(Guid commentId, string? userId)
+    {
+        ProductCommentDetailsViewModel? comment = await _repository
+            .AllReadonly<ProductComment>()
+            .Where(c => c.Id == commentId)
+            .Include(c => c.User)
+            .Include(c => c.Reactions)
+            .Include(c => c.Images)
+            .Select(c => new ProductCommentDetailsViewModel
+            {
+                Id = c.Id,
+                ProductId = c.ProductId,
+                Rating = c.Rating!.Value,
+                Text = c.Text,
+                UserName = c.User.Name!,
+                Date = c.Date,
+                VerifiedPurchase = c.VerifiedPurchase,
+                Likes = c.Reactions.Count(r => r.Reaction == CommentReaction.Like),
+                Dislikes = c.Reactions.Count(r => r.Reaction == CommentReaction.Dislike),
+                ImageUrls = c.Images.Select(i => i.ImageUrl).ToArray(),
+                PreviewUrls = c.Images.Select(i => i.PreviewUrl).ToArray(),
+                UserReaction =
+                    userId == null ? null : c.Reactions
+                        .Where(r => r.UserId == userId)
+                        .Select(r => (CommentReaction?)r.Reaction)
+                        .FirstOrDefault()
+            })
+            .FirstOrDefaultAsync();
+
+        return comment is null
+            ? ServiceResult<ProductCommentDetailsViewModel>.NotFound()
+            : ServiceResult<ProductCommentDetailsViewModel>.Ok(comment);
+    }
+
     public async Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model, ICollection<ProductCommentImagesUploadDto>? images)
     {
         Product? product = await _repository

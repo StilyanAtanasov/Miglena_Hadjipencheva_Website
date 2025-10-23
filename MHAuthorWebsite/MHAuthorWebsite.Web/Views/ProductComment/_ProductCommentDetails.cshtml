@@ -1,0 +1,45 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.ProductComment
+@model ProductCommentDetailsViewModel
+
+<section class="comment-details-section">
+	<div class="comment-gallery">
+		<div class="main-image">
+			<img src="@Model.ImageUrls.FirstOrDefault()" alt="Main comment image" id="main-comment-image" />
+		</div>
+		<div class="image-previews">
+			@foreach (var preview in Model.PreviewUrls)
+			{
+				<img src="@preview" alt="Preview image" class="preview-thumb" />
+			}
+		</div>
+	</div>
+
+	<div class="comment-info">
+		<div class="comment-header">
+			<span class="comment-user">@Model.UserName</span>
+			<span class="comment-date">@Model.Date.ToString("dd.MM.yyyy")</span>
+			@if (Model.VerifiedPurchase)
+			{
+				<span class="verified">✔ Потвърдена покупка</span>
+			}
+		</div>
+
+		<div class="comment-rating">
+			@for (int i = 1; i <= 5; i++)
+			{
+				<i class="fa-solid fa-star @(i <= Model.Rating ? "filled" : "")"></i>
+			}
+		</div>
+
+		<p class="comment-text">@Model.Text</p>
+
+		<div class="comment-reactions">
+			<span class="like-count">
+				<i class="fa-solid fa-thumbs-up"></i> @Model.Likes
+			</span>
+			<span class="dislike-count">
+				<i class="fa-solid fa-thumbs-down"></i> @Model.Dislikes
+			</span>
+		</div>
+	</div>
+</section>

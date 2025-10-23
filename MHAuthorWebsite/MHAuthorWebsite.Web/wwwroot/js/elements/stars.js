@@ -18,8 +18,7 @@ export const calculateStarsFill = () => {
 
   starsContainers.forEach(s => {
     const percent = +s.dataset.percent;
-    const gapRem = 0.5;
-    const gapPx = parseFloat(getComputedStyle(s.querySelector(`.stars-row`)).gap);
+    const gapPx = parseFloat(getComputedStyle(s.querySelector(`.stars-row`)).columnGap);
     const totalWidth = s.offsetWidth;
 
     const distFromStarCenter = distanceFromStarCenter(percent, 5);

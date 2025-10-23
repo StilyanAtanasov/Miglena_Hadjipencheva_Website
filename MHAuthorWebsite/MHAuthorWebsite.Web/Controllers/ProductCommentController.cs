@@ -7,7 +7,6 @@ using MHAuthorWebsite.Web.ViewModels.Product;
 using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
 namespace MHAuthorWebsite.Web.Controllers;
@@ -23,6 +22,16 @@ public class ProductCommentController : BaseController
         _productCommentService = productCommentService;
         _imageService = imageService;
         _userManager = userManager;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Details(Guid commentId)
+    {
+        ServiceResult<ProductCommentDetailsViewModel> sr =
+            await _productCommentService.GetCommentDetailsReadonlyAsync(commentId, GetUserId());
+        if (!sr.Found) return NotFound();
+
+        return PartialView("_ProductCommentDetails", sr.Result);
     }
 
     [HttpGet]
@@ -76,7 +85,7 @@ public class ProductCommentController : BaseController
         return Ok(sr.Result);
     }
 
-    [HttpPost]
+    [HttpGet]
     public async Task<IActionResult> LoadComments(Guid productId, int page, int? ratingFilter)
     {
         ServiceResult<CommentPageViewModel> sr = await _productCommentService.LoadCommentsReadonlyAsync(productId, page, ratingFilter, GetUserId());
@@ -92,7 +101,7 @@ public class ProductCommentController : BaseController
         return Json(new { Comments = html, HasMoreComments = hasMore });
     }
 
-    [HttpPost]
+    [HttpGet]
     public async Task<IActionResult> LoadReplies(Guid productId, Guid commentId, int page)
     {
         ServiceResult<ReplyPageViewModel> sr = await _productCommentService.LoadRepliesReadonlyAsync(productId, commentId, page, GetUserId());

@@ -1,6 +1,7 @@
 import { initQuill } from "./editor.js";
 import { pushNotification } from "./notification.js";
 import { calculateStarsFill } from "./elements/stars.js";
+import { openModal, replaceBody } from "./elements/modal.js";
 
 document.addEventListener(`DOMContentLoaded`, async function () {
   await initQuill(false, false);
@@ -21,18 +22,29 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
     const reactionBtn = e.target.closest(`.react-btn`);
     if (reactionBtn) reactToComment(reactionBtn);
+
+    // Load comment details
+    const imagesContainer = e.target.closest(`.comment .images`);
+    if (imagesContainer) loadProductDetails(imagesContainer.dataset.commentId);
   });
+
+  async function loadProductDetails(commentId) {
+    const response = await fetch(`/ProductComment/Details?commentId=${commentId}`);
+
+    if (response.ok) {
+      const html = await response.text();
+      replaceBody(html);
+      openModal();
+    } else {
+      pushNotification(`Възникна грешка при зареждане на коментара!`, `error`);
+    }
+  }
 
   moreCommentsBtnEl.addEventListener(`click`, () => loadComments(productId, currentCommentsPage + 1, currentRatingFilter));
 
   // - Load comments -
   async function loadComments(productId, page, ratingFilter) {
-    const response = await fetch(`/ProductComment/LoadComments?productId=${productId}&page=${page}${ratingFilter ? "&ratingFilter=" + ratingFilter : ""}`, {
-      method: "POST",
-      headers: {
-        RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
-      },
-    });
+    const response = await fetch(`/ProductComment/LoadComments?productId=${productId}&page=${page}${ratingFilter ? "&ratingFilter=" + ratingFilter : ""}`);
 
     if (response.ok) {
       const data = await response.json();
@@ -79,12 +91,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
   // - Load replies -
   async function loadCommentReplies(productId, commentId, page, loadBtn) {
-    const response = await fetch(`/ProductComment/LoadReplies?productId=${productId}&commentId=${commentId}&page=${page}`, {
-      method: "POST",
-      headers: {
-        RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
-      },
-    });
+    const response = await fetch(`/ProductComment/LoadReplies?productId=${productId}&commentId=${commentId}&page=${page}`);
 
     if (response.ok) {
       const data = await response.json();

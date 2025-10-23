@@ -15,11 +15,14 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/modal.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/stars.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/slider.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/product-comment-details.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/product-details.css" asp-append-version="true" />
 }
+
 <div class="page-wrapper">
 	<section class="main flex-row">
 		<section class="hero-info flex-row">
@@ -100,13 +103,13 @@
 
 			<table>
 				<tbody>
-					@foreach (ProductAttributeDetailsViewModel a in Model.Attributes.Where(a => a.Value != null))
-					{
-						<tr>
-							<td>@a.Label</td>
-							<td>@a.Value</td>
-						</tr>
-					}
+				@foreach (ProductAttributeDetailsViewModel a in Model.Attributes.Where(a => a.Value != null))
+				{
+					<tr>
+						<td>@a.Label</td>
+						<td>@a.Value</td>
+					</tr>
+				}
 				</tbody>
 			</table>
 		</section>
@@ -204,13 +207,17 @@
 	<form class="hidden">@Html.AntiForgeryToken()</form>
 </div>
 
+@await Html.PartialAsync("_Modal")
+
 @section Scripts {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/elements/modal.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/elements/stars.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/elements/slider.js" asp-append-version="true"></script>
-	<script type="module" src="~/js/product-details.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/add-to-cart.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/product-comment-details.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/product-details.js" asp-append-version="true"></script>
 }

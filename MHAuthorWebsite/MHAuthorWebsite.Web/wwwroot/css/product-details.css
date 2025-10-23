@@ -283,12 +283,13 @@ table tr:last-child td:last-child {
 .comments-info .comments .comment .images {
   gap: 2rem;
   object-fit: contain;
+  height: 10rem;
+  margin: 1rem 0;
 }
 
 .comments-info .comments .comment .images .comment-image {
-  height: 10rem;
+  height: 100%;
   border-radius: 1.5rem;
-  margin: 1rem 0;
 }
 
 .comments-info .comments .comment .text {
