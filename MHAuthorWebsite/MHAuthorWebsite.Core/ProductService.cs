@@ -118,6 +118,7 @@ public class ProductService : IProductService
                             .ToArray(),
                         HasMoreReplies = c.Replies.Count > CommentRepliesPageCount,
                         TotalRepliesCount = c.Replies.Count,
+                        IsUserAuthor = userId == c.UserId,
                         Replies = c.Replies
                             .OrderBy(r => r.Reactions.Count(re => re.Reaction == CommentReaction.Like))
                             .Take(CommentRepliesPageCount)

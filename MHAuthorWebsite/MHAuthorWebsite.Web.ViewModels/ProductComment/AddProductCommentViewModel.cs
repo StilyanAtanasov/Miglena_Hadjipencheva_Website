@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment;
 
-namespace MHAuthorWebsite.Web.ViewModels.Product;
-using static GCommon.EntityConstraints.ProductComment;
+namespace MHAuthorWebsite.Web.ViewModels.ProductComment;
 
 public class AddProductCommentViewModel
 {

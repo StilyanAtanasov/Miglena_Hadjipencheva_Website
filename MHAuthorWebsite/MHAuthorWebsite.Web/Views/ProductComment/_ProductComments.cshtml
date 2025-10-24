@@ -54,6 +54,15 @@
 						@(c.TotalRepliesCount)
 					</a>
 				</div>
+				@if (c.IsUserAuthor)
+				{
+					<div>
+						<a class="btn-none link" asp-controller="ProductComment" asp-action="Edit"
+						   asp-route-commentId="@c.Id">
+							<i class="fa-regular fa-pen"></i>
+						</a>
+					</div>
+				}
 			</div>
 		</div>
 	</div>

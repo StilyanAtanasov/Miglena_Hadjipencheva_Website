@@ -12,6 +12,8 @@ public interface IProductCommentService
 
     Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model, ICollection<ProductCommentImagesUploadDto>? images);
 
+    Task<ServiceResult<EditProductCommentViewModel>> GetCommentForEditReadonlyAsync(string userId, Guid commentId);
+
     Task<ServiceResult<ICollection<ProductCommentReactionViewModel>>> ReactToComment(string userId, Guid commentId, CommentReaction reactionType);
 
     Task<ServiceResult<CommentPageViewModel>> LoadCommentsReadonlyAsync(Guid productId, int page, int? ratingFilter, string? userId);

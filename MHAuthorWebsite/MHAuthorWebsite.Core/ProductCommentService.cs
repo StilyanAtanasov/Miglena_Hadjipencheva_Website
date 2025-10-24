@@ -4,7 +4,6 @@ using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Product;
 using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -111,6 +110,34 @@ public class ProductCommentService : IProductCommentService
         return ServiceResult.Ok();
     }
 
+    public async Task<ServiceResult<EditProductCommentViewModel>> GetCommentForEditReadonlyAsync(string userId, Guid commentId)
+    {
+        ProductComment? comment = await _repository
+            .All<ProductComment>()
+            .Include(c => c.Images)
+            .FirstOrDefaultAsync(c => c.Id == commentId && c.UserId == userId);
+
+        if (comment is null) return ServiceResult<EditProductCommentViewModel>.NotFound();
+        if (comment.UserId != userId) return ServiceResult<EditProductCommentViewModel>.BadRequest();
+
+        EditProductCommentViewModel model = new()
+        {
+            CommentId = comment.Id,
+            ProductId = comment.ProductId,
+            ParentCommentId = comment.ParentCommentId,
+            ReplyCommentId = comment.ParentReplyId,
+            Rating = comment.Rating,
+            Text = comment.Text,
+            ImagePreviewUrls = comment.Images.Select(i => new EditProductCommentImageViewModel()
+            {
+                ImageId = i.Id,
+                PreviewUrl = i.PreviewUrl,
+            }).ToArray()
+        };
+
+        return ServiceResult<EditProductCommentViewModel>.Ok(model);
+    }
+
     public async Task<ServiceResult<ICollection<ProductCommentReactionViewModel>>> ReactToComment(string userId, Guid commentId, CommentReaction reactionType)
     {
         ProductComment? comment = await _repository
@@ -212,6 +239,7 @@ public class ProductCommentService : IProductCommentService
                         .ToArray(),
                     HasMoreReplies = c.Replies.Count > CommentRepliesPageCount,
                     TotalRepliesCount = c.Replies.Count,
+                    IsUserAuthor = userId == c.UserId,
                     Replies = c.Replies
                         .OrderBy(r => r.Reactions.Count(re => re.Reaction == CommentReaction.Like))
                         .Take(CommentRepliesPageCount)
@@ -274,6 +302,7 @@ public class ProductCommentService : IProductCommentService
                         ? null
                         : r.Reactions.FirstOrDefault(x => x.UserId == userId)?.Reaction,
                     IsWriterAdmin = _userManager.IsInRoleAsync(r.User, AdminRoleName).GetAwaiter().GetResult(),
+                    IsUserAuthor = userId == r.UserId,
                     ParentCommentId = r.ParentCommentId,
                     ProductId = r.ProductId,
                     ReplyCommentWriterName = r.ParentReply is not null

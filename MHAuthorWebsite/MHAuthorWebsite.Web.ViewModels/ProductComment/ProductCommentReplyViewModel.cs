@@ -27,4 +27,6 @@ public class ProductCommentReplyViewModel
     public CommentReaction? UserReaction { get; set; }
 
     public bool IsWriterAdmin { get; set; }
+
+    public bool IsUserAuthor { get; set; }
 }

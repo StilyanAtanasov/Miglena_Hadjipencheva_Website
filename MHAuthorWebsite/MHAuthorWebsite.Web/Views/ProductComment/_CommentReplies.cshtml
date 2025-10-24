@@ -53,6 +53,16 @@
 						<i class="fa-regular fa-reply"></i>
 					</a>
 				</div>
+
+				@if (reply.IsUserAuthor)
+				{
+					<div>
+						<a class="btn-none link" asp-controller="ProductComment" asp-action="Edit"
+						   asp-route-commentId="@reply.Id">
+							<i class="fa-regular fa-pen"></i>
+						</a>
+					</div>
+				}
 			</div>
 		</div>
 	</div>

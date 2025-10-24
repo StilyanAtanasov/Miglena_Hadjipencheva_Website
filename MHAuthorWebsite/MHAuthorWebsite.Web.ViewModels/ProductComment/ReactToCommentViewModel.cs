@@ -1,6 +1,6 @@
 ﻿using MHAuthorWebsite.Data.Models.Enums;
 
-namespace MHAuthorWebsite.Web.ViewModels.Product;
+namespace MHAuthorWebsite.Web.ViewModels.ProductComment;
 
 public class ReactToCommentViewModel
 {

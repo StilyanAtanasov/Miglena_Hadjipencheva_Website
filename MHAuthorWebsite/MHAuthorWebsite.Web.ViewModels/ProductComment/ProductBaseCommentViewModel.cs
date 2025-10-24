@@ -26,6 +26,8 @@ public class ProductBaseCommentViewModel
 
     public int TotalRepliesCount { get; set; }
 
+    public bool IsUserAuthor { get; set; }
+
     public CommentReaction? UserReaction { get; set; }
 
     public ICollection<string> ImageUrls { get; set; } = new HashSet<string>();

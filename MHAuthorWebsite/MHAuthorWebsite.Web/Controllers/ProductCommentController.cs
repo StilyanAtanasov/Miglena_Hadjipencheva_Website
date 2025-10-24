@@ -3,7 +3,6 @@ using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Web.Utils.Extensions;
-using MHAuthorWebsite.Web.ViewModels.Product;
 using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -71,6 +70,16 @@ public class ProductCommentController : BaseController
         if (!result.HasPermission) return StatusCode(403);
 
         return RedirectToAction(nameof(Details), "Product", new { productId = model.ProductId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(Guid commentId)
+    {
+        ServiceResult<EditProductCommentViewModel> sr = await _productCommentService.GetCommentForEditReadonlyAsync(GetUserId()!, commentId);
+        if (!sr.Found) return NotFound();
+        if (!sr.HasPermission) return StatusCode(403);
+
+        return View(sr.Result);
     }
 
     [HttpPost]
