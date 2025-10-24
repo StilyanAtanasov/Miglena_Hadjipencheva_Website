@@ -24,7 +24,5 @@ public class ProductCommentDetailsViewModel
 
     public CommentReaction? UserReaction { get; set; }
 
-    public ICollection<string> ImageUrls { get; set; } = new HashSet<string>();
-
-    public ICollection<string> PreviewUrls { get; set; } = new HashSet<string>();
+    public ICollection<ProductCommentImageViewModel> Images { get; set; } = new HashSet<ProductCommentImageViewModel>();
 }

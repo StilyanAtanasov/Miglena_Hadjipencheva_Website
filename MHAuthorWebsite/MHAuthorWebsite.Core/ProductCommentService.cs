@@ -44,8 +44,13 @@ public class ProductCommentService : IProductCommentService
                 VerifiedPurchase = c.VerifiedPurchase,
                 Likes = c.Reactions.Count(r => r.Reaction == CommentReaction.Like),
                 Dislikes = c.Reactions.Count(r => r.Reaction == CommentReaction.Dislike),
-                ImageUrls = c.Images.Select(i => i.ImageUrl).ToArray(),
-                PreviewUrls = c.Images.Select(i => i.PreviewUrl).ToArray(),
+                Images = c.Images
+                    .Select(i => new ProductCommentImageViewModel
+                    {
+                        ImageUrl = i.ImageUrl,
+                        ImagePreviewUrl = i.PreviewUrl
+                    })
+                    .ToArray(),
                 UserReaction =
                     userId == null ? null : c.Reactions
                         .Where(r => r.UserId == userId)
