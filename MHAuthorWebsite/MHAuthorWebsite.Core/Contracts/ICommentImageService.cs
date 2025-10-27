@@ -6,7 +6,7 @@ namespace MHAuthorWebsite.Core.Contracts;
 
 public interface ICommentImageService : IImageService
 {
-    Task<ServiceResult<ICollection<ProductCommentImagesUploadDto>>> UploadCommentImagesAsync(ICollection<string> imageUrls);
-
     Task<ServiceResult<ICollection<ProductCommentImagesUploadDto>>> UploadCommentImagesAsync(ICollection<IFormFile> images);
+
+    Task<ServiceResult> DeleteCommentImagesAsync(ICollection<string> publicIds);
 }

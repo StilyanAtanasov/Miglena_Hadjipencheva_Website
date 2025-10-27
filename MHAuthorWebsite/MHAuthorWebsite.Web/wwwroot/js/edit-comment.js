@@ -31,6 +31,8 @@ imageInput?.addEventListener(`change`, function () {
     reader.onload = function (e) {
       const imgWrapper = createFileImageWrapper(e.target.result, file);
       previewContainer.appendChild(imgWrapper);
+
+      if (previewContainer.innerHTML.trim() != ``) previewContainer.classList.remove(`hidden`);
     };
 
     selectedFiles.push(file);
@@ -54,16 +56,17 @@ function remove(file, imgWrapper) {
       selectedFiles.splice(index, 1);
       imgWrapper.remove();
       updateFileInput();
-      return;
+    } else {
+      // - Handle existing images removal
+      const imgUrl = imgWrapper.dataset.id;
+      if (imgUrl && !removedImages.includes(imgUrl)) {
+        removedImages.push(imgUrl);
+        addHiddenRemovedImageInput(imgUrl);
+        imgWrapper.remove();
+      }
     }
 
-    // - Handle existing images removal
-    const imgUrl = imgWrapper.dataset.id;
-    if (imgUrl && !removedImages.includes(imgUrl)) {
-      removedImages.push(imgUrl);
-      addHiddenRemovedImageInput(imgUrl);
-      imgWrapper.remove();
-    }
+    if (previewContainer.innerHTML.trim() == ``) previewContainer.classList.add(`hidden`);
   } catch {
     pushNotification(`Възникна неочаквана грешка!`, `error`);
   }

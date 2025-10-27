@@ -83,6 +83,30 @@ public class ProductCommentController : BaseController
     }
 
     [HttpPost]
+    public async Task<IActionResult> Edit(EditProductCommentViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        ServiceResult<ICollection<ProductCommentImagesUploadDto>>? uploadSr =
+            model.NewImages is not null && model.NewImages.Count > 0
+            ? await _imageService.UploadCommentImagesAsync(model.NewImages)
+            : null;
+        if (uploadSr is not null && !uploadSr.Success) return StatusCode(500);
+
+        ServiceResult<ICollection<string>> sr = await _productCommentService.EditCommentAsync(GetUserId()!, model, uploadSr?.Result, model.RemovedImagesUrls?.Select(Guid.Parse).ToArray());
+        if (sr.IsBadRequest) return BadRequest();
+        if (!sr.HasPermission) return StatusCode(403);
+
+        ServiceResult? deleteImagesSr =
+            sr.Result is not null && sr.Result.Count > 0
+            ? await _imageService.DeleteCommentImagesAsync(sr.Result!)
+            : null;
+        if (deleteImagesSr is not null && !deleteImagesSr.Success) return StatusCode(500);
+
+        return RedirectToAction(nameof(Details), "Product", new { productId = model.ProductId });
+    }
+
+    [HttpPost]
     public async Task<IActionResult> ReactToComment([FromBody] ReactToCommentViewModel model)
     {
         if (!ModelState.IsValid) return BadRequest();

@@ -138,6 +138,52 @@ public class ProductCommentService : IProductCommentService
         return ServiceResult<EditProductCommentViewModel>.Ok(model);
     }
 
+    public async Task<ServiceResult<ICollection<string>>> EditCommentAsync(string userId, EditProductCommentViewModel model, ICollection<ProductCommentImagesUploadDto>? newImages, ICollection<Guid>? removedImagesUrls)
+    {
+        ProductComment? comment = await _repository
+            .All<ProductComment>()
+            .Include(c => c.Images)
+            .FirstOrDefaultAsync(c => c.Id == model.CommentId && c.UserId == userId);
+
+        if (comment is null) return ServiceResult<ICollection<string>>.BadRequest();
+        if (comment.UserId != userId) return ServiceResult<ICollection<string>>.BadRequest();
+
+        comment.Rating = model.Rating;
+        comment.Text = model.Text;
+
+        if (newImages is not null && newImages.Count > 0)
+        {
+            foreach (ProductCommentImagesUploadDto imageDto in newImages)
+            {
+                comment.Images.Add(new ProductCommentImage
+                {
+                    ImageUrl = imageDto.Image.ImageUrl,
+                    PublicId = imageDto.Image.PublicId,
+                    AltText = model.Text,
+                    PreviewUrl = imageDto.Preview.ImageUrl,
+                    PreviewPublicId = imageDto.Preview.PublicId
+                });
+            }
+        }
+
+        ICollection<string> publicIdsToDelete = new HashSet<string>();
+        if (removedImagesUrls is not null && removedImagesUrls.Count > 0)
+        {
+            ICollection<ProductCommentImage> imagesToRemove = comment.Images
+                .Where(i => removedImagesUrls.Contains(i.Id))
+                .ToArray();
+
+            foreach (ProductCommentImage image in imagesToRemove)
+            {
+                publicIdsToDelete.Add(image.PublicId);
+                comment.Images.Remove(image);
+            }
+        }
+
+        await _repository.SaveChangesAsync();
+        return ServiceResult<ICollection<string>>.Ok(publicIdsToDelete);
+    }
+
     public async Task<ServiceResult<ICollection<ProductCommentReactionViewModel>>> ReactToComment(string userId, Guid commentId, CommentReaction reactionType)
     {
         ProductComment? comment = await _repository
@@ -256,6 +302,7 @@ public class ProductCommentService : IProductCommentService
                                 ? null
                                 : r.Reactions.FirstOrDefault(x => x.UserId == userId)?.Reaction,
                             IsWriterAdmin = _userManager.IsInRoleAsync(r.User, AdminRoleName).GetAwaiter().GetResult(),
+                            IsUserAuthor = userId == r.UserId,
                             ParentCommentId = r.ParentCommentId,
                             ProductId = r.ProductId,
                             ReplyCommentWriterName = r.ParentReply is not null
@@ -306,7 +353,7 @@ public class ProductCommentService : IProductCommentService
                     ParentCommentId = r.ParentCommentId,
                     ProductId = r.ProductId,
                     ReplyCommentWriterName = r.ParentReply is not null
-                        ? userId != null && userId == r.ParentReply!.UserId ? "Вие" : r.ParentReply!.User.Name!
+                        ? userId == r.ParentReply!.UserId ? "Вие" : r.ParentReply!.User.Name!
                         : null
                 }).ToArray()
         };

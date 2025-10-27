@@ -126,17 +126,18 @@ public class ProductService : IProductService
                             {
                                 Id = r.Id,
                                 Text = r.Text,
-                                UserName = userId != null && userId == r.UserId ? "Вие" : r.User.Name!,
+                                UserName = userId == r.UserId ? "Вие" : r.User.Name!,
                                 Date = r.Date,
                                 VerifiedPurchase = r.VerifiedPurchase,
                                 Likes = r.Reactions.Count(x => x.Reaction == CommentReaction.Like),
                                 Dislikes = r.Reactions.Count(x => x.Reaction == CommentReaction.Dislike),
                                 UserReaction = userId == null ? null : r.Reactions.FirstOrDefault(x => x.UserId == userId)?.Reaction,
                                 IsWriterAdmin = _userManager.IsInRoleAsync(r.User, AdminRoleName).GetAwaiter().GetResult(),
+                                IsUserAuthor = userId == r.UserId,
                                 ParentCommentId = r.ParentCommentId,
                                 ProductId = r.ProductId,
                                 ReplyCommentWriterName = r.ParentReply is not null ?
-                                    userId != null && userId == r.ParentReply!.UserId ? "Вие" : r.ParentReply!.User.Name!
+                                    userId == r.ParentReply!.UserId ? "Вие" : r.ParentReply!.User.Name!
                                     : null
                             }).ToArray()
                     })
