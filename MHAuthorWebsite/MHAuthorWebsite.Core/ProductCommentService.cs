@@ -360,4 +360,29 @@ public class ProductCommentService : IProductCommentService
 
         return ServiceResult<ReplyPageViewModel>.Ok(model);
     }
+
+    public async Task<ServiceResult> DeleteCommentAsync(string userId, Guid commentId)
+    {
+        ProductComment? comment = _repository
+            .All<ProductComment>()
+            .Include(c => c.Replies)
+            .FirstOrDefault(c => c.Id == commentId && c.UserId == userId);
+
+        if (comment is null) return ServiceResult.BadRequest();
+        if (comment.UserId != userId) return ServiceResult.Forbidden();
+
+        comment.IsDeleted = true;
+        foreach (ProductComment reply in comment.Replies) reply.IsDeleted = true;
+
+
+        await _repository.SaveChangesAsync();
+
+        return ServiceResult.Ok();
+    }
+
+    public async Task<decimal> GetAverageRatingAsync(Guid productId)
+        => await _repository
+            .AllReadonly<ProductComment>()
+            .Where(c => c.ProductId == productId)
+            .AverageAsync(c => (decimal?)c.Rating) ?? 0m;
 }

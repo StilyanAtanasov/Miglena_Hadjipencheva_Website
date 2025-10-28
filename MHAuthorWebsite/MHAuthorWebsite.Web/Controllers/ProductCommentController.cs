@@ -107,6 +107,20 @@ public class ProductCommentController : BaseController
     }
 
     [HttpPost]
+    public async Task<IActionResult> Delete(Guid commentId)
+    {
+        ServiceResult sr = await _productCommentService.DeleteCommentAsync(GetUserId()!, commentId);
+        if (sr.IsBadRequest) return BadRequest();
+        if (!sr.HasPermission) return StatusCode(403);
+
+        return Ok();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAverageRating(Guid productId)
+        => Ok(await _productCommentService.GetAverageRatingAsync(productId));
+
+    [HttpPost]
     public async Task<IActionResult> ReactToComment([FromBody] ReactToCommentViewModel model)
     {
         if (!ModelState.IsValid) return BadRequest();

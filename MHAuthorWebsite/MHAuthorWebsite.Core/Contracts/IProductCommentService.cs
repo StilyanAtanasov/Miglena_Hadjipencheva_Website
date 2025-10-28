@@ -21,4 +21,8 @@ public interface IProductCommentService
     Task<ServiceResult<CommentPageViewModel>> LoadCommentsReadonlyAsync(Guid productId, int page, int? ratingFilter, string? userId);
 
     Task<ServiceResult<ReplyPageViewModel>> LoadRepliesReadonlyAsync(Guid productId, Guid commentId, int page, string? userId);
+
+    Task<ServiceResult> DeleteCommentAsync(string userId, Guid commentId);
+
+    Task<decimal> GetAverageRatingAsync(Guid productId);
 }

@@ -8,7 +8,7 @@
 
 @foreach (ProductBaseCommentViewModel c in Model)
 {
-	<div class="comment flex-row">
+	<div class="comment flex-row" data-rating="@c.Rating">
 		<div class="comment-info">
 			<div class="flex-row">
 				<i class="fa-regular fa-message-dots"></i>
@@ -61,6 +61,10 @@
 						   asp-route-commentId="@c.Id">
 							<i class="fa-regular fa-pen"></i>
 						</a>
+
+						<button class="delete-btn btn-none link" data-comment-id="@c.Id" data-product-id="@c.ProductId">
+							<i class="fa-regular fa-trash"></i>
+						</button>
 					</div>
 				}
 			</div>

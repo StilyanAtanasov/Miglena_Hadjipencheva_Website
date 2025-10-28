@@ -1,7 +1,7 @@
 "use strict";
 
 import { initQuill } from "./editor.js";
-import { pushNotification } from "./notification.js";
+import { pushNotification, showPopupAsync } from "./notification.js";
 import { calculateStarsFill } from "./elements/stars.js";
 import { openModal, replaceBody } from "./elements/modal.js";
 import { reactToComment } from "./react-to-product-comment.js";
@@ -19,19 +19,33 @@ document.addEventListener(`DOMContentLoaded`, async function () {
   const noResultsContainer = document.getElementById(`no-comment-results`);
 
   // - Listeners -
-  commentsContainer.addEventListener(`click`, function (e) {
+  commentsContainer.addEventListener(`click`, async function (e) {
     const loadRepliesBtn = e.target.closest(`.load-replies-btn`);
-    if (loadRepliesBtn) loadCommentReplies(productId, loadRepliesBtn.dataset.commentId, currentRepliesPage + 1, loadRepliesBtn);
+    if (loadRepliesBtn) loadCommentRepliesAsync(productId, loadRepliesBtn.dataset.commentId, currentRepliesPage + 1, loadRepliesBtn);
 
     const reactionBtn = e.target.closest(`.react-btn`);
     if (reactionBtn) reactToComment(reactionBtn);
 
     // Load comment details
     const imagesContainer = e.target.closest(`.comment .images`);
-    if (imagesContainer) loadProductDetails(imagesContainer.dataset.commentId);
+    if (imagesContainer) loadCommentDetailsAsync(imagesContainer.dataset.commentId);
+
+    // Delete comment
+    const deleteBtn = e.target.closest(`.delete-btn`);
+    if (deleteBtn) {
+      await showPopupAsync({
+        icon: `warning`,
+        title: `Изтриване на коментар`,
+        text: `Коментарът не може да бъде възстановен!`,
+        onConfirm: deleteCommentAsync,
+        onConfirmArgs: [deleteBtn.dataset.commentId, deleteBtn.dataset.productId, deleteBtn.closest(`.comment`)],
+        showCancelButton: true,
+        allowOutsideClick: true,
+      });
+    }
   });
 
-  async function loadProductDetails(commentId) {
+  async function loadCommentDetailsAsync(commentId) {
     const response = await fetch(`/ProductComment/Details?commentId=${commentId}`);
 
     if (response.ok) {
@@ -43,10 +57,44 @@ document.addEventListener(`DOMContentLoaded`, async function () {
     }
   }
 
-  moreCommentsBtnEl.addEventListener(`click`, () => loadComments(productId, currentCommentsPage + 1, currentRatingFilter));
+  async function deleteCommentAsync(commentId, productId, commentElement) {
+    const response = await fetch(`/ProductComment/Delete?commentId=${commentId}`, {
+      method: "POST",
+      headers: {
+        RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
+      },
+    });
+
+    if (response.ok) {
+      if (!commentElement.classList.contains(`reply`)) {
+        debugger;
+        const nextElement = commentElement.nextElementSibling;
+        if (nextElement && nextElement.tagName === `HR`) nextElement.remove();
+
+        const newAverateRating = await (await fetch(`/ProductComment/GetAverageRating?productId=${productId}`)).json();
+
+        document.getElementById(`average-rating-number`).textContent = newAverateRating.toFixed(1);
+        document.querySelector(`.ratings-count span`).textContent = +document.querySelector(`.ratings-count span`).textContent - 1;
+
+        const rating = +commentElement.dataset.rating;
+        const bar = document.querySelector(`.rating-bar[data-rating="${rating}"]`);
+        const newCount = +bar.dataset.count - 1;
+
+        bar.querySelector(`.rating-count`).textContent = `(${newCount})`;
+        bar.dataset.count = newCount;
+
+        fillCommentStats();
+      }
+
+      commentElement.remove();
+      showPopupAsync({ title: `Коментарът е изтрит успешно!`, confirmButtonText: `OK` });
+    } else pushNotification(`Възникна грешка при изтриването на коментара!`, `error`);
+  }
+
+  moreCommentsBtnEl.addEventListener(`click`, () => loadCommentsAsync(productId, currentCommentsPage + 1, currentRatingFilter));
 
   // - Load comments -
-  async function loadComments(productId, page, ratingFilter) {
+  async function loadCommentsAsync(productId, page, ratingFilter) {
     const response = await fetch(`/ProductComment/LoadComments?productId=${productId}&page=${page}${ratingFilter ? "&ratingFilter=" + ratingFilter : ""}`);
 
     if (response.ok) {
@@ -78,22 +126,26 @@ document.addEventListener(`DOMContentLoaded`, async function () {
   const allRatingsCount = +ratingStatsSection.dataset.count;
   const ratingBarElements = ratingStatsSection.querySelectorAll(`.rating-bar`);
 
-  ratingBarElements.forEach(b => {
-    const ratingsCount = b.dataset.count;
-    const rating = +b.dataset.rating;
+  function fillCommentStats() {
+    ratingBarElements.forEach(b => {
+      const ratingsCount = b.dataset.count;
+      const rating = +b.dataset.rating;
 
-    b.querySelector(`.bar-container .bar-fill`).style.width = `${(ratingsCount / allRatingsCount) * 100}%`;
-    b.addEventListener(`click`, function () {
-      if (currentRatingFilter == rating) return loadComments(productId, 1, null);
+      b.querySelector(`.bar-container .bar-fill`).style.width = `${(ratingsCount / allRatingsCount) * 100}%`;
+      b.addEventListener(`click`, function () {
+        if (currentRatingFilter == rating) return loadCommentsAsync(productId, 1, null);
 
-      loadComments(productId, 1, rating);
-      ratingBarElements.forEach(el => el.classList.add(`faded`));
-      b.classList.remove(`faded`);
+        loadCommentsAsync(productId, 1, rating);
+        ratingBarElements.forEach(el => el.classList.add(`faded`));
+        b.classList.remove(`faded`);
+      });
     });
-  });
+  }
+
+  fillCommentStats();
 
   // - Load replies -
-  async function loadCommentReplies(productId, commentId, page, loadBtn) {
+  async function loadCommentRepliesAsync(productId, commentId, page, loadBtn) {
     const response = await fetch(`/ProductComment/LoadReplies?productId=${productId}&commentId=${commentId}&page=${page}`);
 
     if (response.ok) {

@@ -125,9 +125,9 @@
 		{
 			<section class="comments-overview flex-row">
 				<div class="flex-column">
-					<p class="average-rating">@Model.AverageRating.ToString("F1") / @RatingMaxValue.ToString("F1")</p>
+					<p class="average-rating"><span id="average-rating-number">@Model.AverageRating.ToString("F1")</span> / @RatingMaxValue.ToString("F1")</p>
 					@await Html.PartialAsync("_Stars", (Model.AverageRating, RatingMaxValue))
-					<span class="ratings-count">@Model.TotalBaseComments @(Model.TotalBaseComments > 1 ? "ревюта" : "ревю")</span>
+					<span class="ratings-count"><span>@Model.TotalBaseComments</span> @(Model.TotalBaseComments > 1 ? "ревюта" : "ревю")</span>
 				</div>
 
 				<div id="rating-stats" class="rating-stats flex-column" data-count="@Model.TotalBaseComments">
@@ -139,7 +139,7 @@
 							<div class="bar-container">
 								<div class="bar-fill"></div>
 							</div>
-							<span>(@(count))</span>
+							<span class="rating-count">(@(count))</span>
 						</div>
 					}
 				</div>
