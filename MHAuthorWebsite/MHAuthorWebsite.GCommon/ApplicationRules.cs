@@ -18,6 +18,9 @@ public static class ApplicationRules
     {
         public const byte CommentPageCount = 3;
         public const byte CommentRepliesPageCount = 3;
+
+        public const byte MaxRepliesTimeFrameHours = 1;
+        public const byte MaxRepliesForTimeFrame = 3;
     }
 
     public static class ProductCommentImages

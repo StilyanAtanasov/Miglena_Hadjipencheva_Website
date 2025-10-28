@@ -17,6 +17,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
   const productId = moreCommentsBtnEl.dataset.productId;
   const commentsContainer = document.getElementById(`comments`);
   const noResultsContainer = document.getElementById(`no-comment-results`);
+  const isRateLimitedForReplies = document.getElementById(`comments`).dataset.isRateLimitedForReplies == `True`;
 
   // - Listeners -
   commentsContainer.addEventListener(`click`, async function (e) {
@@ -25,6 +26,18 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
     const reactionBtn = e.target.closest(`.react-btn`);
     if (reactionBtn) reactToComment(reactionBtn);
+
+    const replyBtn = e.target.closest(`.reply-btn`);
+    if (replyBtn && isRateLimitedForReplies) {
+      e.preventDefault();
+      showPopupAsync({
+        title: `Не сега...`,
+        text: `Вие добавихте прекалено много отговори за кратък период. Моля, опитайте пак по-късно!`,
+        icon: `warning`,
+        confirmButtonText: `OK`,
+        allowOutsideClick: true,
+      });
+    }
 
     // Load comment details
     const imagesContainer = e.target.closest(`.comment .images`);

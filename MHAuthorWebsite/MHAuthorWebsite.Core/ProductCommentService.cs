@@ -69,6 +69,7 @@ public class ProductCommentService : IProductCommentService
             .All<Product>()
             .Include(p => p.Orders)
                 .ThenInclude(op => op.Order)
+            .Include(p => p.Comments)
             .FirstOrDefaultAsync(p => p.Id == model.ProductId);
         if (product is null) return ServiceResult.BadRequest();
 
@@ -81,10 +82,18 @@ public class ProductCommentService : IProductCommentService
 
         if (model.ParentCommentId is not null && parentComment is null) return ServiceResult.BadRequest();
 
-        /* if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null))
-             return ServiceResult.BadRequest();
- */
-        // TODO Add validation for parent comment and for max comments per product per user
+        if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null) && model.ParentCommentId == null)
+            return ServiceResult.Failure(new() { ["Limit"] = "Всеки потребител има право на един базов коментар за продукт!" });
+
+        if (product.Comments
+                .Count(c => c.UserId == userId && c.ParentCommentId != null
+                                               && c.Date > DateTime.UtcNow
+                                                   .AddHours(-MaxRepliesTimeFrameHours)) > MaxRepliesForTimeFrame
+             && model.ParentCommentId != null)
+            return ServiceResult.Failure(new()
+            {
+                ["RateLimit"] = "Вие добавихте прекалено много отговори за кратък период. Моля, опитайте пак по-късно!"
+            });
 
         product.Comments.Add(new ProductComment
         {

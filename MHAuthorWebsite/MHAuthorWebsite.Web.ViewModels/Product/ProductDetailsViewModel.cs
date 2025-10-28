@@ -26,7 +26,11 @@ public class ProductDetailsViewModel
 
     public bool HasMoreComments { get; set; }
 
-    public ICollection<ProductDetailsImage> Images { get; set; } = new HashSet<ProductDetailsImage>();
+    public bool CanWriteMoreComments { get; set; }
+
+    public bool IsRateLimitedForReplies { get; set; }
+
+    public ICollection<ProductDetailsImageViewModel> Images { get; set; } = new HashSet<ProductDetailsImageViewModel>();
 
     public ICollection<ProductAttributeDetailsViewModel> Attributes { get; set; } = new HashSet<ProductAttributeDetailsViewModel>();
 

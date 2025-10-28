@@ -33,7 +33,7 @@
 				}
 
 				<div class="slides flex-row">
-					@foreach (ProductDetailsImage image in Model.Images)
+					@foreach (ProductDetailsImageViewModel image in Model.Images)
 					{
 						<div class="slide flex-row">
 							<div class="slide-content flex-row">
@@ -144,7 +144,7 @@
 					}
 				</div>
 
-				@if (User.IsInRole(AdminRoleName))
+				@if (User.IsInRole(AdminRoleName) || !Model.CanWriteMoreComments)
 				{
 					<a class="btn link flex-row disabled" tabindex="-1" aria-disabled="true" tabindex="-1">
 						<i class="fa-solid fa-feather"></i> Напиши ревю
@@ -161,7 +161,7 @@
 
 			<hr class="comment-section-divider" />
 
-			<section id="comments" class="comments flex-column">
+			<section id="comments" class="comments flex-column" data-is-rate-limited-for-replies="@Model.IsRateLimitedForReplies">
 				@await Html.PartialAsync("~/Views/ProductComment/_ProductComments.cshtml", Model.Comments)
 			</section>
 

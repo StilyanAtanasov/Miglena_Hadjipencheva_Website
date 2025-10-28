@@ -64,6 +64,11 @@ public class ProductService : IProductService
                 Price = product.Price,
                 IsInStock = product.StockQuantity > 0,
                 IsLiked = userId != null && product.Likes.Any(u => u.Id == userId),
+                CanWriteMoreComments = !product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null),
+                IsRateLimitedForReplies = product.Comments
+                    .Count(c => c.UserId == userId && c.ParentCommentId != null
+                                                   && c.Date > DateTime.UtcNow
+                                                       .AddHours(-MaxRepliesTimeFrameHours)) > MaxRepliesForTimeFrame,
                 ProductTypeName = product.ProductType.Name,
                 HasMoreComments = product.Comments.Count > CommentPageCount,
                 AverageRating = product.Comments.Any(c => c.ParentCommentId is null && c.Rating.HasValue)
@@ -79,7 +84,7 @@ public class ProductService : IProductService
                 Images = product.Images
                     .Where(i => i.Id != product.Thumbnail.ImageId)
                     .OrderByDescending(i => i.Id == product.Thumbnail.ImageOriginalId)
-                    .Select(i => new ProductDetailsImage
+                    .Select(i => new ProductDetailsImageViewModel
                     {
                         ImageUrl = i.ImageUrl,
                         AltText = i.AltText

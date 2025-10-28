@@ -65,9 +65,14 @@ public class ProductCommentController : BaseController
             if (!srImages.Success) return StatusCode(500);
         }
 
-        ServiceResult result = await _productCommentService.AddCommentAsync(GetUserId()!, model, srImages?.Result);
-        if (result.IsBadRequest) return BadRequest();
-        if (!result.HasPermission) return StatusCode(403);
+        ServiceResult sr = await _productCommentService.AddCommentAsync(GetUserId()!, model, srImages?.Result);
+        if (!sr.Success)
+        {
+            if (sr.Errors.TryGetValue("Limit", out var limitError)) return StatusCode(500, limitError);
+            if (sr.Errors.TryGetValue("RateLimit", out var rateLimitError)) return StatusCode(429, rateLimitError);
+            if (sr.IsBadRequest) return BadRequest();
+            if (!sr.HasPermission) return StatusCode(403);
+        }
 
         return RedirectToAction(nameof(Details), "Product", new { productId = model.ProductId });
     }
@@ -76,7 +81,7 @@ public class ProductCommentController : BaseController
     public async Task<IActionResult> Edit(Guid commentId)
     {
         ServiceResult<EditProductCommentViewModel> sr = await _productCommentService.GetCommentForEditReadonlyAsync(GetUserId()!, commentId);
-        if (!sr.Found) return NotFound();
+        if (sr.IsBadRequest) return BadRequest();
         if (!sr.HasPermission) return StatusCode(403);
 
         return View(sr.Result);
