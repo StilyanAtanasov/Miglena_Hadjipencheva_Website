@@ -83,6 +83,10 @@ document.addEventListener(`DOMContentLoaded`, async function () {
         bar.querySelector(`.rating-count`).textContent = `(${newCount})`;
         bar.dataset.count = newCount;
 
+        const ratingMaxValue = document.querySelector(`.quick-stats`).dataset.ratingMaxValue;
+        document.querySelector(`.quick-stats .stars`).dataset.percent = (newAverateRating / ratingMaxValue) * 100;
+
+        calculateStarsFill();
         fillCommentStats();
       }
 
