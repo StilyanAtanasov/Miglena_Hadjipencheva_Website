@@ -24,6 +24,9 @@ public class ProductComment
     [Comment("Created at")]
     public DateTime Date { get; set; }
 
+    [Comment("Last edited at")]
+    public DateTime? LastEdited { get; set; }
+
     [Required]
     [Comment("Foreign key to User")]
     [ForeignKey(nameof(User))]

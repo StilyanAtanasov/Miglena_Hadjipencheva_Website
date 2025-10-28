@@ -328,11 +328,19 @@ table tr:last-child td:last-child {
   background-color: var(--color-secondary-lighter);
   font-size: 1.5rem;
   opacity: 0.9;
-  margin-top: 1.2rem;
 }
 
 .comments-info .comments .comment.reply .date {
   margin-top: 0.2rem;
+}
+
+.comments-info .comments .comment .dates {
+  margin-top: 1.2rem;
+}
+
+.comments-info .comments .comment .dates .edited-date i {
+  font-size: 1.5rem;
+  color: var(--color-grey);
 }
 
 .comments-info .comments .comment .rating-box {
@@ -371,7 +379,7 @@ table tr:last-child td:last-child {
   gap: 0.5rem;
 }
 
-.comments-info .comments .comment.reply .comment-info i {
+.comments-info .comment.reply .comment-info i {
   font-size: 2.8rem;
 }
 

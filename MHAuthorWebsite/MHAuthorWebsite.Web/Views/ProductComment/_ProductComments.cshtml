@@ -14,7 +14,15 @@
 				<i class="fa-regular fa-message-dots"></i>
 				<p>@c.UserName</p>
 			</div>
-			<p class="date">@c.Date.Date.ToString("dd.MM.yyyy")</p>
+			<div class="dates flex-row">
+				<p class="date">@c.Date.Date.ToString("dd.MM.yyyy")</p>
+				@if(c.LastEdited.HasValue)
+				{
+					<span class="edited-date" title="Последно редактиран на @c.LastEdited.Value.Date.ToString("dd.MM.yyyy")">
+						<i class="fa-regular fa-pen"></i>
+					</span>
+				}
+			</div>
 		</div>
 		<hr class="vertical comment-divider" />
 		<div class="comment-main">

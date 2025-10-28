@@ -18,6 +18,8 @@ public class ProductCommentReplyViewModel
 
     public DateTime Date { get; set; }
 
+    public DateTime? LastEdited { get; set; }
+
     public bool VerifiedPurchase { get; set; }
 
     public int Likes { get; set; }

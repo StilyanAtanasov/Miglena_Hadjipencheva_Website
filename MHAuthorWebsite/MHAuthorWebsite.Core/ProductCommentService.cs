@@ -150,6 +150,7 @@ public class ProductCommentService : IProductCommentService
 
         comment.Rating = model.Rating;
         comment.Text = model.Text;
+        comment.LastEdited = DateTime.Now;
 
         if (newImages is not null && newImages.Count > 0)
         {
@@ -273,6 +274,7 @@ public class ProductCommentService : IProductCommentService
                     Text = c.Text,
                     UserName = userId != null && userId == c.UserId ? "Вие" : c.User.Name!,
                     Date = c.Date,
+                    LastEdited = c.LastEdited,
                     VerifiedPurchase = c.VerifiedPurchase,
                     Likes = c.Reactions
                         .Count(r => r.Reaction == CommentReaction.Like),
@@ -295,6 +297,7 @@ public class ProductCommentService : IProductCommentService
                             Text = r.Text,
                             UserName = userId != null && userId == r.UserId ? "Вие" : r.User.Name!,
                             Date = r.Date,
+                            LastEdited = r.LastEdited,
                             VerifiedPurchase = r.VerifiedPurchase,
                             Likes = r.Reactions.Count(x => x.Reaction == CommentReaction.Like),
                             Dislikes = r.Reactions.Count(x => x.Reaction == CommentReaction.Dislike),
@@ -342,6 +345,7 @@ public class ProductCommentService : IProductCommentService
                     Text = r.Text,
                     UserName = userId != null && userId == r.UserId ? "Вие" : r.User.Name!,
                     Date = r.Date,
+                    LastEdited = r.LastEdited,
                     VerifiedPurchase = r.VerifiedPurchase,
                     Likes = r.Reactions.Count(x => x.Reaction == CommentReaction.Like),
                     Dislikes = r.Reactions.Count(x => x.Reaction == CommentReaction.Dislike),

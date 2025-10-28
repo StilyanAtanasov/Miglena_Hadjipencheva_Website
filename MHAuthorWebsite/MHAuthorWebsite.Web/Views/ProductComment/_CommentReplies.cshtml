@@ -16,7 +16,15 @@
 				<i class="fa-regular fa-reply"></i>
 				<p>@reply.UserName</p>
 			</div>
-			<p class="date">@reply.Date.Date.ToString("dd.MM.yyyy")</p>
+			<div class="dates flex-row">
+				<p class="date">@reply.Date.Date.ToString("dd.MM.yyyy")</p>
+				@if (reply.LastEdited.HasValue)
+				{
+					<span class="edited-date" title="Последно редактиран на @reply.LastEdited.Value.Date.ToString("dd.MM.yyyy")">
+						<i class="fa-regular fa-pen"></i>
+					</span>
+				}
+			</div>
 		</div>
 		<hr class="vertical comment-divider" />
 		<div class="comment-main">
