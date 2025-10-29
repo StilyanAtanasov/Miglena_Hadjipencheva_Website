@@ -13,6 +13,8 @@ using MHAuthorWebsite.Web.Infrastructure.Initialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,11 +39,50 @@ builder.Services.AddAuthentication()
     {
         googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
         googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+
+        googleOptions.CallbackPath = "/signin-google";
+        googleOptions.Events.OnCreatingTicket = ctx =>
+        {
+            ClaimsIdentity identity = (ClaimsIdentity)ctx.Principal!.Identity!;
+            string email = ctx.User.GetProperty("email").GetString()!;
+            string name = ctx.User.GetProperty("name").GetString()!;
+
+            // Add claims
+            identity.AddClaim(new Claim(ClaimTypes.Email, email));
+            identity.AddClaim(new Claim(ClaimTypes.Name, name));
+            return Task.CompletedTask;
+        };
     })
     .AddMicrosoftAccount(microsoftOptions =>
     {
         microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"]!;
         microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"]!;
+        microsoftOptions.CallbackPath = "/signin-microsoft";
+
+        microsoftOptions.Events.OnCreatingTicket = ctx =>
+        {
+            ClaimsIdentity identity = (ClaimsIdentity)ctx.Principal!.Identity!;
+
+            string? email = null;
+            if (ctx.User.TryGetProperty("mail", out var mailProp) && mailProp.ValueKind != JsonValueKind.Null)
+                email = mailProp.GetString();
+            else if (ctx.User.TryGetProperty("userPrincipalName", out var upnProp) && upnProp.ValueKind != JsonValueKind.Null)
+                email = upnProp.GetString();
+
+            if (!string.IsNullOrEmpty(email))
+                identity.AddClaim(new Claim(ClaimTypes.Email, email));
+
+            string? name = null;
+            if (ctx.User.TryGetProperty("displayName", out var nameProp) && nameProp.ValueKind != JsonValueKind.Null)
+                name = nameProp.GetString();
+            else if (ctx.User.TryGetProperty("givenName", out var givenProp) && givenProp.ValueKind != JsonValueKind.Null)
+                name = givenProp.GetString();
+
+            if (!string.IsNullOrEmpty(name))
+                identity.AddClaim(new Claim(ClaimTypes.Name, name));
+
+            return Task.CompletedTask;
+        };
     });
 
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
