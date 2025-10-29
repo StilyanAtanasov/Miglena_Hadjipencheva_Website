@@ -54,6 +54,10 @@ html {
 
 .customer-info-form form .form-element > label {
   color: var(--color-dark);
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: clip;
+  white-space: nowrap;
 }
 
 .customer-info-form form .form-element > input,
