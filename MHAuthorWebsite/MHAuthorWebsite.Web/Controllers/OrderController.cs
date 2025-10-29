@@ -15,6 +15,8 @@ public class OrderController : BaseController
     public async Task<IActionResult> Index()
     {
         OrderSummaryViewModel model = await _orderService.GetOrderSummary(GetUserId()!);
+        if (model.SelectedProducts.Count == 0) return RedirectToAction("Index", "Cart");
+
         return View(model);
     }
 
