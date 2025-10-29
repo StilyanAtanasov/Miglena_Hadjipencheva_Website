@@ -41,6 +41,11 @@ public static class ApplicationRules
         public const byte UsersActivityForPeriod = 30; // Days
     }
 
+    public static class Order
+    {
+        public const byte SuccessPageMaxViewDelaySeconds = 20;
+    }
+
     public static class OrderSystemEventsMessages
     {
         public const string AwaitingApproval = "Поръчката е създадена успешно и очаква да бъде одобрена!";

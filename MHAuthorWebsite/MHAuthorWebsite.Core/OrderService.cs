@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Order;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
 
 namespace MHAuthorWebsite.Core;
@@ -63,7 +64,7 @@ public class OrderService : IOrderService
         };
     }
 
-    public async Task<ServiceResult> Order(string userId, EcontDeliveryDetailsViewModel model)
+    public async Task<ServiceResult<Guid>> Order(string userId, EcontDeliveryDetailsViewModel model)
     {
         CartItem[] cartItems = await Repository
             .Where<CartItem>(ci => ci.Cart.UserId == userId && ci.IsSelected && ci.Product.IsPublic && ci.Product.StockQuantity >= ci.Quantity)
@@ -106,7 +107,7 @@ public class OrderService : IOrderService
         };
 
         ServiceResult<EcontOrderDto> sr = await EcontService.UpdateOrderAsync(orderDto);
-        if (!sr.Success) return ServiceResult.Failure();
+        if (!sr.Success) return ServiceResult<Guid>.Failure();
 
         EcontOrderDto createdOrder = sr.Result!;
 
@@ -156,7 +157,7 @@ public class OrderService : IOrderService
         Repository.DeleteRange(cartItems);
         await Repository.SaveChangesAsync();
 
-        return ServiceResult.Ok();
+        return ServiceResult<Guid>.Ok(order.Id);
     }
 
     public async Task<ICollection<MyOrdersViewModel>> GetUserOrders(string userId) =>
@@ -242,4 +243,9 @@ public class OrderService : IOrderService
 
         return ServiceResult<OrderDetailsViewModel>.Ok(model);
     }
+
+    public async Task<bool> CanAccessSuccessPage(string userId, Guid orderId)
+        => await Repository
+            .AllReadonly<Order>()
+            .AnyAsync(o => o.Id == orderId && o.UserId == userId && o.Date > DateTime.UtcNow.AddSeconds(-SuccessPageMaxViewDelaySeconds));
 }

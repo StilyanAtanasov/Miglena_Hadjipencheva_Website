@@ -97,7 +97,8 @@ form.addEventListener(`submit`, async function (e) {
   });
 
   if (response.ok) {
-    pushNotification(`Поръчката Ви е успешно приета и се обработва!`, `success`);
+    const orderId = await response.json();
+    window.location = `/Order/OrderAccepted?orderId=${orderId}`;
   } else {
     pushNotification(`Грешка при създаването на поръчка!`, `error`);
   }

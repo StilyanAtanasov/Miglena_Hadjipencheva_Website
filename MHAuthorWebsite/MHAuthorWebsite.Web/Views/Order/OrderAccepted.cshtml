@@ -1,0 +1,28 @@
+﻿@{
+	ViewData["Title"] = "Приета поръчка";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/order-accepted.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+	<h1 class="title">Малко остана...</h1>
+
+	<video autoplay muted playsinline class="success-animation">
+		<source src="~/videos/success.webm" type="video/webm">
+	</video>
+	<div class="success-message flex-column">
+		<h2 class="heading">Вашата поръчка е приета успешно и ще бъде обработена в най-кратък срок!</h2>
+		<p class="thanks">Благодарим Ви, че избрахте Миглена Хаджипенчева!</p>
+	</div>
+	<nav class="navigation-btns flex-row">
+		<a asp-controller="Home" asp-action="Index" class="btn flex-row">
+			<i class="fa-regular fa-house"></i> Начало
+		</a>
+		<a asp-controller="Order" asp-action="MyOrders" class="btn flex-row">
+			<i class="fa-regular fa-truck-fast"></i>
+			Моите поръчки
+		</a>
+	</nav>
+</section>

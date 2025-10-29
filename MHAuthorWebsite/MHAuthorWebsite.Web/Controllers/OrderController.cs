@@ -23,10 +23,19 @@ public class OrderController : BaseController
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        ServiceResult result = await _orderService.Order(GetUserId()!, model);
+        ServiceResult<Guid> result = await _orderService.Order(GetUserId()!, model);
         if (!result.Success) return StatusCode(500);
 
-        return RedirectToAction(nameof(Index), "Cart");
+        return Ok(result.Result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> OrderAccepted(Guid orderId)
+    {
+        bool canAccess = await _orderService.CanAccessSuccessPage(GetUserId()!, orderId);
+        if (!canAccess) return RedirectToAction(nameof(MyOrders));
+
+        return View();
     }
 
     [HttpGet]
