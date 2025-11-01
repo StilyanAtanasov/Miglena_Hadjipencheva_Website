@@ -18,6 +18,8 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsStaging()) builder.Configuration.AddEnvironmentVariables(prefix: "Staging__");
+
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -198,13 +200,13 @@ app.Use(async (context, next) =>
                 "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js " +
                 "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js " +
                 "https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.esm.js " +
-                "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js; " +
+        "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js; " +
         "style-src 'self' https://fonts.googleapis.com https://site-assets.fontawesome.com " +
                 "https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css " +
                 "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css " +
                 "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css " +
                 "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css " +
-                "https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css; " +
+        "https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css; " +
         "font-src 'self' " +
                 "https://fonts.gstatic.com https://site-assets.fontawesome.com; " +
         "img-src 'self' data: " +

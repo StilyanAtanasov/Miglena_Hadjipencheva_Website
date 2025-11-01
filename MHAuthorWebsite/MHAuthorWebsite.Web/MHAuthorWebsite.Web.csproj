@@ -7,6 +7,10 @@
     <UserSecretsId>aspnet-MHAuthorWebsite.Web-3a6f148e-a64e-41b3-8d3d-3584cfb0b8e3</UserSecretsId>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+	</PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Controllers\ProductTypeController.cs\**" />
     <Content Remove="Controllers\ProductTypeController.cs\**" />

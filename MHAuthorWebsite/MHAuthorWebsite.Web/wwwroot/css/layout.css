@@ -94,7 +94,6 @@ footer .social-media li:hover {
   transform: scale(1.4);
 }
 
-/* --- Responsive --- */
 .bars {
   width: 3rem;
   height: 3rem;
@@ -139,6 +138,46 @@ footer .social-media li:hover {
   transform: rotate(-45deg);
 }
 
+/* --- Popup button --- */
+.popup-btn-box {
+  position: fixed;
+  bottom: 8rem;
+  right: 5rem;
+  z-index: 1001;
+  gap: 2rem;
+  align-items: flex-end;
+}
+
+.popup-btn-box .popup-btn-text {
+  background-color: var(--color-secondary-light);
+  padding: 0.5rem 3rem;
+  font-size: 2.2rem;
+  border-radius: 2rem;
+  margin-left: 5rem;
+  display: block;
+}
+
+.popup-btn-box .popup-btn-text.invisible {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.popup-btn-box .popup-btn {
+  background-color: var(--color-secondary-light);
+  padding: 0.6rem 1rem;
+  font-size: 2.2rem;
+  border-radius: 50%;
+  border: none;
+}
+
+.popup-btn-box.staging-notice .popup-btn-text,
+.popup-btn-box.staging-notice .popup-btn {
+  background-color: var(--color-error);
+  color: var(--color-primary);
+}
+
+/* --- Responsive --- */
 @media (max-width: 600px) {
   header {
     padding: 1.5rem 5rem;
