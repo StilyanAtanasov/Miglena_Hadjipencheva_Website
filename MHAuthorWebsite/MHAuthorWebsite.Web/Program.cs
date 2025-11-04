@@ -155,13 +155,6 @@ builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "keys")))
     .SetApplicationName(ApplicationRules.Application.ProjectName);
 
-builder.Services.Configure<ForwardedHeadersOptions>(options =>
-{
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    options.KnownNetworks.Clear();
-    options.KnownProxies.Clear();
-});
-
 var app = builder.Build();
 
 AppEnvironment.Initialize(app.Environment.EnvironmentName);
@@ -270,7 +263,6 @@ using (IServiceScope scope = app.Services.CreateScope())
     IServiceProvider services = scope.ServiceProvider;
     await AdminSeeder.SeedAsync(services);
 
-    // TODO : Remove after initial image upload -> next patch
     ApplicationDbContext db = services.GetRequiredService<ApplicationDbContext>();
     IImageService imageService = services.GetRequiredService<IImageService>();
 
