@@ -14,6 +14,11 @@ public static class ApplicationRules
         public const string CurrentVersion = "1.0.0";
     }
 
+    public static class CurrencyRates
+    {
+        public const decimal LevToEurRate = 0.511m;
+    }
+
     public static class ProductComment
     {
         public const byte CommentPageCount = 3;

@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Roles
+@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 
 @model ProductDetailsViewModel
 
@@ -59,7 +60,7 @@
 		<!-- Pricing & Order Section -->
 		<section class="order-info flex-column">
 			<h4 class="heading">Наличност и поръчка</h4>
-			<p><strong>Цена:</strong> @Model.Price лв.</p>
+			<p><strong>Цена:</strong> @Model.Price лв. / @((Model.Price * LevToEurRate).ToString("F2")) €</p>
 			<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
 
 			<input type="hidden" name="productId" value="@Model.Id" />

@@ -1,5 +1,6 @@
 ﻿@using static MHAuthorWebsite.GCommon.ApplicationRules.Econt
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @using MHAuthorWebsite.Web.ViewModels.Order
 @model OrderSummaryViewModel
 
@@ -13,7 +14,7 @@
 	<link rel="stylesheet" href="~/css/order.css" asp-append-version="true" />
 }
 
-<section class="page-wrapper flex-column">
+<section class="page-wrapper flex-column" data-lev-to-eur-rate="@LevToEurRate">
 	<h1 class="title">@ViewData["Title"]</h1>
 	<div class="content flex-row">
 		<section class="main-content flex-column">
@@ -40,7 +41,7 @@
 									<p class="product-name">@p.Name</p>
 								</td>
 								<td>@p.Quantity</td>
-								<td><span>@p.TotalPrice.ToString("F2")</span> <span>лв.</span></td>
+								<td><p class="price">@p.TotalPrice.ToString("F2") лв. / @((p.TotalPrice * LevToEurRate).ToString("F2")) €</p></td>
 							</tr>
 						}
 					</tbody>
@@ -74,11 +75,28 @@
 
 			<div class="total-section-content flex-column">
 				<div>
-					<p>Междинна сума: <span id="subtotal">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></p>
-					<p>Доставка: <span id="shipping">0.00</span> <span>лв.</span></p>
+					<p>
+						Междинна сума: <span id="subtotal">@Model.Subtotal.ToString("F2")</span>
+						<span>лв. / </span>
+						<span id="subtotal-eur">@((Model.Subtotal * LevToEurRate).ToString("F2"))</span>
+						<span> €</span>
+					</p>
+					<p>
+						Доставка: <span id="shipping">0.00</span>
+						<span>лв. / </span>
+						<span id="shipping-eur">@((0.00m * LevToEurRate).ToString("F2"))</span>
+						<span> €</span>
+					</p>
 				</div>
 				<div class="flex-column">
-					<p class="grand-total"><strong>Общо: <span id="grand">@Model.Subtotal.ToString("F2")</span> <span>лв.</span></strong></p>
+					<p class="grand-total">
+						<strong>
+							Общо: <span id="grand">@Model.Subtotal.ToString("F2")</span>
+							<span>лв. /</span>
+							<span id="grand-eur">@((Model.Subtotal * LevToEurRate).ToString("F2"))</span>
+							<span> €</span>
+						</strong>
+					</p>
 					<form id="confirm-form" class="flex-row" method="post" asp-controller="Order"
 						  asp-action="Order"
 						  data-econt-calc-url="@ShipmentCalcUrl"

@@ -1,5 +1,6 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination
+@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @using MHAuthorWebsite.GCommon
 @model ICollection<ProductCardViewModel>
 
@@ -53,7 +54,7 @@
 						<span class="text-faded">@product.ProductType</span>
 					</div>
 					<div class="price-box flex-column">
-						<p class="price">@product.Price.ToString("F2") лв.</p>
+						<p class="price">@product.Price.ToString("F2") лв. / @((product.Price * LevToEurRate).ToString("F2")) €</p>
 						<span class="price-text @(product.IsAvailable ? "available" : "unavailable")">@(product.IsAvailable ? "В наличност" : "Изчерпана наличност")</span>
 					</div>
 					<div class="action-btns flex-row">

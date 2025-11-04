@@ -10,6 +10,8 @@ using MHAuthorWebsite.Data.Seeding;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.GCommon;
 using MHAuthorWebsite.Web.Infrastructure.Initialization;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -149,6 +151,17 @@ if (new[] { cloudName, apiKey, apiSecret }.Any(string.IsNullOrWhiteSpace))
 
 builder.Services.AddSingleton(new Cloudinary(new Account(cloudName, apiKey, apiSecret)));
 
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "keys")))
+    .SetApplicationName(ApplicationRules.Application.ProjectName);
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 
 AppEnvironment.Initialize(app.Environment.EnvironmentName);
@@ -164,6 +177,8 @@ else
     app.UseExceptionHandler("/Error/Error");
     app.UseHsts();
 }
+
+app.UseForwardedHeaders();
 
 app.UseStatusCodePagesWithReExecute("/Error/Error/{0}");
 

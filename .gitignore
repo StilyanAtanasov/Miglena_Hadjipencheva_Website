@@ -10,3 +10,6 @@
 
 # Exclude publish profiles
 MHAuthorWebsite/MHAuthorWebsite.Web/Properties/PublishProfiles/
+
+# Exclude App_Data
+App_Data/
