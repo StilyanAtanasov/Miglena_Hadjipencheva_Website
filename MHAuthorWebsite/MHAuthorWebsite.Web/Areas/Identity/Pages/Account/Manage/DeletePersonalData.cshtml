@@ -1,0 +1,57 @@
+﻿@page
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model DeletePersonalDataModel
+@{
+	ViewData["Heading"] = "Изтриване на лични данни";
+	ViewData["ActivePage"] = ManageNavPages.PersonalData;
+}
+
+@section Styles
+{
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
+}
+
+<section class="content-body flex-column">
+	<p>
+		Вашият акаунт съдържа лични данни, които сте ни предоставили!
+		<br />
+		Тази страница ви позволява да анонимизирате вашите данни спрямо GDPR!
+	</p>
+
+	@{
+		WarningViewModel message = new()
+		{
+			Message = "Изтриването на данните трайно ще премахне вашият профил в системата! Този процес е необратим!"
+		};
+	}
+
+	<partial name="_WarningMessage" model="message" />
+
+	<div>
+		<form id="delete-user" method="post" class="input-form flex-column">
+			<div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+			@if (Model.RequirePassword)
+			{
+				<div class="form-input-box flex-column">
+					<label class="form-label" asp-for="Input.Password">Парола</label>
+					<input class="form-input short" asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="Вашата парола" />
+					<span class="input-error" asp-validation-for="Input.Password"></span>
+				</div>
+			}
+
+			<button class="btn flex-row" type="submit">
+				<i class="fa-solid fa-circle-user-circle-minus"></i>
+				Изтрий данните и затвори акаунта ми
+			</button>
+		</form>
+
+		<i class="fa-solid fa-circle-user-circle-minus background-icon"></i>
+	</div>
+</section>
+
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

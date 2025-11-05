@@ -9,8 +9,7 @@ public class ProductCommentConfiguration : IEntityTypeConfiguration<ProductComme
     public void Configure(EntityTypeBuilder<ProductComment> builder)
     {
         builder
-            .HasQueryFilter(c => !c.IsDeleted && !c.Product.IsDeleted && c.Product.IsPublic);
-
+            .HasQueryFilter(c => !c.IsDeleted && !c.Product.IsDeleted && c.Product.IsPublic && !c.User.IsDeleted);
 
         builder
             .HasOne(pc => pc.ParentComment)

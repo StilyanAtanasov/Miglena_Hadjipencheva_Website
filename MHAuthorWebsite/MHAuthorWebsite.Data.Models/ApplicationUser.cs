@@ -14,6 +14,8 @@ public class ApplicationUser : IdentityUser
 
     public DateTime LastActive { get; set; } = DateTime.UtcNow;
 
+    public bool IsDeleted { get; set; }
+
     public ICollection<ProductComment> ProductComments { get; set; } = new HashSet<ProductComment>();
 
     public ICollection<ProductCommentReaction> ProductCommentsReactions { get; set; } = new HashSet<ProductCommentReaction>();
