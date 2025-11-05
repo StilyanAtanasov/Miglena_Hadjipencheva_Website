@@ -1,0 +1,120 @@
+.comment-details-section .comment-gallery {
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: nowrap;
+  height: 40rem;
+}
+
+.comment-details-section .comment-gallery hr {
+  height: 90%;
+  transform: translateX(0.5rem);
+}
+
+.comment-details-section .main-image {
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.comment-details-section .main-image img {
+  max-width: 100%;
+  height: 38rem;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.comment-details-section .main-image img:hover {
+  transform: scale(1.02);
+}
+
+.comment-details-section .image-previews {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 0 0 9rem;
+}
+
+.comment-details-section .image-previews .preview-thumb {
+  height: 8rem;
+  width: 8rem;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 1rem;
+  cursor: pointer;
+  border: 0.2rem solid transparent;
+}
+
+.comment-details-section .image-previews .preview-thumb.active {
+  border: 0.2rem solid var(--color-secondary);
+}
+
+.comment-details-section .image-previews .preview-thumb:hover {
+  transform: scale(1.05);
+}
+
+.comment-details-section .comment-info .comment-rating {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-details-section .comment-info .comment-rating .rating-stars {
+  gap: 0.5rem;
+}
+
+.comment-details-section .comment-info .comment-rating .rating-stars i {
+  color: var(--color-orange);
+  font-size: 1.7rem;
+}
+
+.comment-details-section .comment-info {
+  border-top: 1px solid var(--color-border, #ddd);
+  padding-top: 1rem;
+}
+
+.comment-details-section .comment-user {
+  font-weight: 600;
+  font-size: 1.9rem;
+}
+
+.comment-details-section .comment-text {
+  font-size: 1.6rem;
+  line-height: 1.5;
+  color: var(--color-grey);
+  margin: 0.5rem;
+  white-space: pre-line;
+}
+
+.comment-details-section .comment-reactions {
+  margin-top: 2rem;
+  gap: 0.6rem;
+}
+
+.comment-details-section .comment-reactions .react-btn {
+  color: var(--color-secondary);
+  font-size: 1.8rem;
+}
+
+.comment-details-section .comment-reactions .react-btn i {
+  color: var(--color-secondary);
+  font-size: 1.8rem;
+}
+
+.comment-details-section .date {
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  width: fit-content;
+  background-color: var(--color-secondary-lighter);
+  font-size: 1.5rem;
+  opacity: 0.9;
+}
+
+.comment-details-section .comment-info .verified-badge {
+  font-weight: 600;
+  font-size: 1.8rem;
+  gap: 0.7rem;
+}
+
+.comment-details-section .comment-info .verified-badge i {
+  color: var(--color-success);
+}

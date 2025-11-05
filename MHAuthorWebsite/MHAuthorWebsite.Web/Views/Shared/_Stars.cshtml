@@ -1,6 +1,6 @@
-﻿@model (decimal percentFilled, short ratingMaxValue)
+﻿@model (decimal rating, short ratingMaxValue)
 
-<div class="stars" data-percent="@(Math.Ceiling(Model.percentFilled / Model.ratingMaxValue * 100))">
+<div class="stars" data-percent="@(Math.Ceiling(Model.rating / Model.ratingMaxValue * 100))">
 	<div class="stars-row stars-base flex-row">
 		@for (int i = 0; i < Model.ratingMaxValue; i++)
 		{

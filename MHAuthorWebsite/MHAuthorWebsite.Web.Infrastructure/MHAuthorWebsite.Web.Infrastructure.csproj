@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MHAuthorWebsite.Core\MHAuthorWebsite.Core.csproj" />
+    <ProjectReference Include="..\MHAuthorWebsite.Data\MHAuthorWebsite.Data.csproj" />
+    <ProjectReference Include="..\MHAuthorWebsite.GCommon\MHAuthorWebsite.GCommon.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -41,6 +41,11 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTime>("LastActive")
                         .HasColumnType("datetime2");
 
@@ -376,7 +381,14 @@ namespace MHAuthorWebsite.Data.Migrations
                         .HasColumnType("bit")
                         .HasComment("Soft delete flag");
 
+                    b.Property<DateTime?>("LastEdited")
+                        .HasColumnType("datetime2")
+                        .HasComment("Last edited at");
+
                     b.Property<Guid?>("ParentCommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ParentReplyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ProductId")
@@ -404,6 +416,8 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("ParentReplyId");
 
                     b.HasIndex("ProductId");
 
@@ -434,6 +448,17 @@ namespace MHAuthorWebsite.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasComment("URL path to the image");
+
+                    b.Property<string>("PreviewPublicId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("The publicId for the image preview in Cloudinary");
+
+                    b.Property<string>("PreviewUrl")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasComment("URL path to the image preview");
 
                     b.Property<string>("PublicId")
                         .IsRequired()
@@ -1001,7 +1026,13 @@ namespace MHAuthorWebsite.Data.Migrations
                 {
                     b.HasOne("MHAuthorWebsite.Data.Models.ProductComment", "ParentComment")
                         .WithMany("Replies")
-                        .HasForeignKey("ParentCommentId");
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("MHAuthorWebsite.Data.Models.ProductComment", "ParentReply")
+                        .WithMany()
+                        .HasForeignKey("ParentReplyId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("MHAuthorWebsite.Data.Models.Product", "Product")
                         .WithMany("Comments")
@@ -1016,6 +1047,8 @@ namespace MHAuthorWebsite.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ParentComment");
+
+                    b.Navigation("ParentReply");
 
                     b.Navigation("Product");
 

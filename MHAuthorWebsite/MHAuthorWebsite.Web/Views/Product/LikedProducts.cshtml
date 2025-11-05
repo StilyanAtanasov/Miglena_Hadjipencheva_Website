@@ -1,4 +1,5 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @model ICollection<LikedProductViewModel>
 
 @{
@@ -25,7 +26,7 @@
 					<div class="product-details-container">
 						<h2 class="product-name"><a data-trigger="load-unlimited" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="link">@product.Name</a></h2>
 						<p class="text-faded">@product.CategoryName</p>
-						<p class="price">@product.Price.ToString("F2") лв.</p>
+						<p class="price">@product.Price.ToString("F2") лв. / @((product.Price * LevToEurRate).ToString("F2")) €</p>
 						<span class="price-text @(product.IsInStock ? "available" : "unavailable")">@(product.IsInStock ? "В наличност" : "Изчерпана наличност")</span>
 					</div>
 				</div>

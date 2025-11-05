@@ -2,6 +2,8 @@
 
 public class AdminOrderProductDetailsViewModel
 {
+    public Guid Id { get; set; }
+
     public string ImageUrl { get; set; } = null!;
 
     public string ProductName { get; set; } = null!;

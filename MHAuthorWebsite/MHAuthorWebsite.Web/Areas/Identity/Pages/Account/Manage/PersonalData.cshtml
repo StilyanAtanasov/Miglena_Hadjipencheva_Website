@@ -15,16 +15,9 @@
 <section class="content-body flex-column">
 	<p>
 		Вашият акаунт съдържа лични данни, които сте ни предоставили!
-		Тази страница ви позволява да изтеглите или изтриете тези данни!
+		<br />
+		Спрямо GDPR регламента имате право да изтеглите или изтриете вашите лични данни!
 	</p>
-	@{
-		WarningViewModel message = new()
-		{
-			Message = "Изтриването на данните трайно ще премахне вашият профил в системата! Този процес е необратим!"
-		};
-	}
-
-	<partial name="_WarningMessage" model="message" />
 
 	<div class="action-buttons flex-row">
 		<form id="download-data" asp-page="DownloadPersonalData" method="post">
@@ -34,10 +27,10 @@
 			</button>
 		</form>
 		<p>
-			<button id="delete" class="btn flex-row" asp-page="DeletePersonalData">
+			<a class="btn link flex-row" asp-page="DeletePersonalData">
 				<i class="fa-solid fa-circle-user-circle-minus"></i>
 				Изтрий лични данни
-			</button>
+			</a>
 		</p>
 	</div>
 	<i class="fa-solid fa-id-card background-icon"></i>

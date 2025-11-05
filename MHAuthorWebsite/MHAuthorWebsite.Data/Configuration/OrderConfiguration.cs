@@ -16,7 +16,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
-            .Property(s => s.Status)
+            .Property(o => o.Status)
             .HasDefaultValue(OrderStatus.InReview);
     }
 }

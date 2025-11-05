@@ -9,6 +9,18 @@ public class ProductCommentConfiguration : IEntityTypeConfiguration<ProductComme
     public void Configure(EntityTypeBuilder<ProductComment> builder)
     {
         builder
-            .HasQueryFilter(c => !c.Product.IsDeleted && c.Product.IsPublic);
+            .HasQueryFilter(c => !c.IsDeleted && !c.Product.IsDeleted && c.Product.IsPublic && !c.User.IsDeleted);
+
+        builder
+            .HasOne(pc => pc.ParentComment)
+            .WithMany(pc => pc.Replies)
+            .HasForeignKey(pc => pc.ParentCommentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasOne(pc => pc.ParentReply)
+            .WithMany()
+            .HasForeignKey(pc => pc.ParentReplyId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -24,6 +24,9 @@ public class ProductComment
     [Comment("Created at")]
     public DateTime Date { get; set; }
 
+    [Comment("Last edited at")]
+    public DateTime? LastEdited { get; set; }
+
     [Required]
     [Comment("Foreign key to User")]
     [ForeignKey(nameof(User))]
@@ -42,6 +45,11 @@ public class ProductComment
     public Guid? ParentCommentId { get; set; }
 
     public ProductComment? ParentComment { get; set; }
+
+    [ForeignKey(nameof(ParentReply))]
+    public Guid? ParentReplyId { get; set; }
+
+    public ProductComment? ParentReply { get; set; }
 
     [Required]
     public bool VerifiedPurchase { get; set; }

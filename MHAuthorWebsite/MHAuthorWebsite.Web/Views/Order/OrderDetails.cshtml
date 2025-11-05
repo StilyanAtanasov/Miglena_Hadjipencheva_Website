@@ -1,6 +1,6 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Order
-@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Econt
+@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @using MHAuthorWebsite.Data.Models.Enums
 @using MHAuthorWebsite.Data.Common.Extensions
 @using MHAuthorWebsite.Web.ViewModels.Shared
@@ -45,12 +45,20 @@
 
 		<partial name="_WarningMessage" model="message" />
 	}
+
+	@{
+		decimal totalSum = Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice;
+	}
+
 	<section class="info-section flex-row">
 		<article class="order-summary">
 			<h4 class="heading">Основна информация</h4>
 			<p class="flex-row"><strong>№</strong> @Model.OrderId</p>
 			<p class="flex-row"><strong>Дата на поръчка:</strong> @Model.OrderDate.ToString("dd MMM yyyy, HH:mm ч.")</p>
-			<p class="flex-row"><strong>Обща стойност:</strong> @((Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice).ToString("F2")) @Currency</p>
+			<p class="flex-row">
+				<strong>Обща стойност:</strong>
+				@(totalSum.ToString("F2")) лв. / @((totalSum * LevToEurRate).ToString("F2")) €
+			</p>
 			<p class="flex-row"><strong>Статус: </strong>@Model.Status</p>
 		</article>
 
@@ -139,7 +147,7 @@
 						<div class="quantity-badge">@(product.Quantity)x</div>
 					</div>
 					<p><strong>@product.ProductName</strong></p>
-					<p>Ед. цена: @product.UnitPrice.ToString("F2")</p>
+					<p>Ед. цена: <br/> @product.UnitPrice.ToString("F2") лв. / @((product.UnitPrice * LevToEurRate).ToString("F2")) €</p>
 				</div>
 			}
 		</div>

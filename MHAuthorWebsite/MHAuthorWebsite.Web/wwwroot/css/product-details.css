@@ -170,13 +170,17 @@ table tr:last-child td:last-child {
 }
 
 /* --- Comments --- */
+.comments-info {
+  gap: 5rem;
+}
+
 .comments-info .star-icon {
   color: var(--color-orange);
 }
 
 .comments-info .comments-overview {
   gap: 10rem;
-  margin: 4rem 0 8rem 0;
+  margin-top: 4rem;
 }
 
 .comments-info .comments-overview .stars {
@@ -193,6 +197,7 @@ table tr:last-child td:last-child {
 .comments-info .comments-overview .average-rating {
   font-size: 5.5rem;
   font-weight: 600;
+  text-align: center;
 }
 
 .comments-info .comments-overview .rating-stats {
@@ -209,24 +214,57 @@ table tr:last-child td:last-child {
   width: 1.5rem;
 }
 
+.comments-info .comments-overview .rating-stats .rating-bar {
+  cursor: pointer;
+}
+
+.comments-info .comments-overview .rating-stats .rating-bar.faded {
+  opacity: 0.45;
+}
+
 .comments-info .comments-overview .rating-stats .bar-container {
   width: 30rem;
   height: 1rem;
   border-radius: 5rem;
   overflow: hidden;
-  background-color: var(--color-secondary-light);
+  background-color: var(--color-light-grey);
 }
 
 .comments-info .comments-overview .rating-stats .bar-container .bar-fill {
   background-color: var(--color-secondary);
   width: var(--bar-width, 0%);
   height: 100%;
+  border-radius: 1rem;
+}
+
+.comments-info .comments-overview .rating-stats .rating-bar:nth-child(1) .bar-container .bar-fill {
+  background-color: var(--color-success);
+}
+
+.comments-info .comments-overview .rating-stats .rating-bar:nth-child(2) .bar-container .bar-fill {
+  background-color: var(--color-yellow-green);
+}
+
+.comments-info .comments-overview .rating-stats .rating-bar:nth-child(3) .bar-container .bar-fill {
+  background-color: var(--color-yellow);
+}
+
+.comments-info .comments-overview .rating-stats .rating-bar:nth-child(4) .bar-container .bar-fill {
+  background-color: var(--color-orange);
+}
+
+.comments-info .comments-overview .rating-stats .rating-bar:nth-child(5) .bar-container .bar-fill {
+  background-color: var(--color-error);
 }
 
 .comments-info .comments {
   width: 100%;
   align-items: flex-start;
   gap: 4rem;
+}
+
+.comments-info .comment-section-divider {
+  width: 80%;
 }
 
 .comments-info .comments hr {
@@ -238,10 +276,14 @@ table tr:last-child td:last-child {
   gap: 1rem;
 }
 
+.comments-info .comments .comment .stars {
+  transform: translateX(-0.6rem);
+}
+
 .comments-info .comments .comment .images {
-  height: 10rem;
   gap: 2rem;
   object-fit: contain;
+  height: 10rem;
   margin: 1rem 0;
 }
 
@@ -251,7 +293,7 @@ table tr:last-child td:last-child {
 }
 
 .comments-info .comments .comment .text {
-  white-space: break-line;
+  white-space: pre-line;
 }
 
 .comments-info .comments .comment .comment-divider {
@@ -286,7 +328,19 @@ table tr:last-child td:last-child {
   background-color: var(--color-secondary-lighter);
   font-size: 1.5rem;
   opacity: 0.9;
-  margin-top: 0.5rem;
+}
+
+.comments-info .comments .comment.reply .date {
+  margin-top: 0.2rem;
+}
+
+.comments-info .comments .comment .dates {
+  margin-top: 1.2rem;
+}
+
+.comments-info .comments .comment .dates .edited-date i {
+  font-size: 1.5rem;
+  color: var(--color-grey);
 }
 
 .comments-info .comments .comment .rating-box {
@@ -317,25 +371,50 @@ table tr:last-child td:last-child {
   margin-left: 8rem;
 }
 
+.comments .load-replies-btn {
+  margin: 1.5rem 0 0 26rem;
+}
+
 .comments-info .comments .comment .comment-info {
   gap: 0.5rem;
 }
 
-.comments-info .comments .comment.reply .comment-info i {
+.comments-info .comment.reply .comment-info i {
   font-size: 2.8rem;
+}
+
+.comments-info .comments .comment.reply .reply-person {
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.comments-info .comments .comment.reply .reply-person i {
+  color: var(--color-secondary);
+}
+
+.comments-info .comments .comment.reply .reply-person hr {
+  width: 80%;
+  border-color: var(--color-secondary);
+  transform: translateY(-0.5rem);
+  opacity: 1;
+  margin: 0;
 }
 
 .no-comments-section {
   align-items: center;
 }
 
-.no-comments-section .message {
+.no-comments-section .message,
+#no-comment-results .message {
   font-size: 2.2rem;
   font-weight: 500;
   letter-spacing: 0.15rem;
+  gap: 2rem;
 }
 
-.no-comments-section .message i {
+.no-comments-section .message i,
+#no-comment-results .message i {
   font-size: 5rem;
   color: var(--color-secondary);
 }

@@ -26,6 +26,15 @@ public class ProductCommentImage
     public string AltText { get; set; } = null!;
 
     [Required]
+    [MaxLength(UrlMaxLength)]
+    [Comment("URL path to the image preview")]
+    public string PreviewUrl { get; set; } = null!;
+
+    [Required]
+    [Comment("The publicId for the image preview in Cloudinary")]
+    public string PreviewPublicId { get; set; } = null!;
+
+    [Required]
     [Comment("Foreign key to Comment")]
     [ForeignKey(nameof(Comment))]
     public Guid CommentId { get; set; }

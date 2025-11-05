@@ -1,11 +1,14 @@
 "use strict";
 
 import { pushNotification } from "./notification.js";
+import { formatBgNumber, parseBgNumber } from "./common.js";
 
 let productsCount;
+const levToEurRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.levToEurRate);
 
 document.addEventListener(`DOMContentLoaded`, function () {
   const totalPriceElement = document.querySelector(`#price-sum`);
+  const totalPriceEurElement = document.querySelector(`#price-sum-eur`);
 
   const quantityInputs = document.querySelectorAll(`[data-role="quantity-input"]`);
   productsCount = quantityInputs.length;
@@ -27,8 +30,11 @@ document.addEventListener(`DOMContentLoaded`, function () {
       if (response.ok) {
         const data = await response.json();
 
-        data.lineTotal != null && (document.querySelector(`#line-total-${itemId} .sum-price`).textContent = `${data.lineTotal}`);
-        data.cartTotal != null && (totalPriceElement.textContent = `${data.cartTotal}`);
+        document.querySelector(`#line-total-${itemId} .sum-price`).textContent = `${data.lineTotal}`;
+        document.querySelector(`#line-total-${itemId} .sum-price-eur`).textContent = `${formatBgNumber(parseBgNumber(data.lineTotal) * levToEurRate)}`;
+
+        totalPriceElement.textContent = `${data.cartTotal}`;
+        totalPriceEurElement.textContent = `${formatBgNumber(parseBgNumber(data.cartTotal) * levToEurRate)}`;
       } else alert(`Грешка при обновяване на количеството.`);
     })
   );
@@ -50,10 +56,10 @@ document.addEventListener(`DOMContentLoaded`, function () {
       if (response.ok) {
         const selectedItems = [...document.querySelectorAll(`tbody tr`)].filter(i => i.querySelector(`[data-role="is-selected-input"]`).checked === true);
 
-        totalPriceElement.textContent = selectedItems
-          .reduce((partialSum, i) => partialSum + parseFloat(i.querySelector(`.sum-price`).textContent), 0)
-          .toFixed(2)
-          .replace(`.`, `,`);
+        const newPriceLev = selectedItems.reduce((partialSum, i) => partialSum + parseFloat(i.querySelector(`.sum-price`).textContent), 0);
+
+        totalPriceElement.textContent = formatBgNumber(newPriceLev);
+        totalPriceEurElement.textContent = `${formatBgNumber(newPriceLev * levToEurRate)}`;
       } else alert(`Грешка при обновяване на селектираните продукти!`);
     })
   );
@@ -75,8 +81,9 @@ document.addEventListener(`DOMContentLoaded`, function () {
       if (response.ok) {
         let cartItemElement = b.closest(`tr`);
         if (cartItemElement != null) {
-          const itemsSumPrice = +cartItemElement.querySelector(`.sum-price`).textContent.replace(`,`, `.`);
-          totalPriceElement.textContent = (+totalPriceElement.textContent.replace(`,`, `.`) - itemsSumPrice).toFixed(2).replace(`.`, `,`);
+          const itemsSumPrice = parseBgNumber(cartItemElement.querySelector(`.sum-price`).textContent);
+          totalPriceElement.textContent = formatBgNumber(parseBgNumber(totalPriceElement.textContent) - itemsSumPrice);
+          totalPriceEurElement.textContent = `${formatBgNumber(parseBgNumber(totalPriceElement.textContent) * levToEurRate)}`;
 
           if (--productsCount === 0) {
             document.getElementById(`valid-items-section`).remove();

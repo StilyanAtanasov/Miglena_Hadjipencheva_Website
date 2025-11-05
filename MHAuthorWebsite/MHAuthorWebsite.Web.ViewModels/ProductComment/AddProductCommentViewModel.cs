@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment;
 
-namespace MHAuthorWebsite.Web.ViewModels.Product;
-using static GCommon.EntityConstraints.ProductComment;
+namespace MHAuthorWebsite.Web.ViewModels.ProductComment;
 
 public class AddProductCommentViewModel
 {
     public Guid ProductId { get; set; }
 
     public Guid? ParentCommentId { get; set; }
+
+    public Guid? ReplyCommentId { get; set; }
 
     [Range(RatingMinValue, RatingMaxValue)]
     public short? Rating { get; set; }
@@ -19,6 +21,5 @@ public class AddProductCommentViewModel
 
     public string TargetName { get; set; } = null!;
 
-    [Required]
-    public ICollection<IFormFile> Images { get; set; } = new HashSet<IFormFile>();
+    public ICollection<IFormFile>? Images { get; set; }
 }

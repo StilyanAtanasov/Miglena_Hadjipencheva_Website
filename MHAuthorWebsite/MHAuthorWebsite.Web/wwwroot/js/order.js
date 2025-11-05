@@ -1,14 +1,19 @@
 "use strict";
 
 import { pushNotification } from "./notification.js";
+import { formatBgNumber, parseBgNumber } from "./common.js";
 
 const form = document.getElementById(`confirm-form`);
 const currency = form.dataset.currency || `BGN`;
 const frameUrl = form.dataset.econtCalcUrl;
 const econtFrame = document.getElementById(`econt-frame`);
-const subtotalEl = document.getElementById(`subtotal`);
+const subtotal = parseBgNumber(document.getElementById(`subtotal`).textContent);
+const subtotalEur = parseBgNumber(document.getElementById(`subtotal-eur`).textContent);
 const shippingEl = document.getElementById(`shipping`);
+const shippingEurEl = document.getElementById(`shipping-eur`);
 const grandEl = document.getElementById(`grand`);
+const grandEurEl = document.getElementById(`grand-eur`);
+const levToEurRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.levToEurRate);
 
 class EcontDeliveryDetails {
   constructor(data = {}) {
@@ -46,18 +51,15 @@ function setIframeSrc() {
   econtFrame.src = url.toString();
 }
 
-function parseCartSubtotal() {
-  const rows = Array.from(document.querySelectorAll(`#cart-body tr`));
-  const sum = rows.reduce((acc, tr) => acc + Number(parseFloat(tr.dataset.totalPrice, 0).toFixed(2)), 0);
-  return Number.isFinite(sum) ? sum : 0;
-}
-
 function updateTotals() {
-  const sub = parseCartSubtotal();
-  const ship = Number(econtDeliveryDetails?.shippingPrice || 0);
-  subtotalEl.textContent = sub.toFixed(2);
-  shippingEl.textContent = ship.toFixed(2);
-  grandEl.textContent = (sub + ship).toFixed(2);
+  const shipping = Number(econtDeliveryDetails?.shippingPrice || 0);
+  const shippingEur = shipping * levToEurRate;
+
+  shippingEl.textContent = shipping.toFixed(2);
+  shippingEurEl.textContent = shippingEur.toFixed(2);
+
+  grandEl.textContent = (subtotal + shipping).toFixed(2);
+  grandEurEl.textContent = (subtotalEur + shippingEur).toFixed(2);
 }
 
 window.addEventListener(
@@ -97,7 +99,8 @@ form.addEventListener(`submit`, async function (e) {
   });
 
   if (response.ok) {
-    pushNotification(`Поръчката Ви е успешно приета и се обработва!`, `success`);
+    const orderId = await response.json();
+    window.location = `/Order/OrderAccepted?orderId=${orderId}`;
   } else {
     pushNotification(`Грешка при създаването на поръчка!`, `error`);
   }

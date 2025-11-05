@@ -1,6 +1,6 @@
 ﻿namespace MHAuthorWebsite.Web.ViewModels.Product;
 
-public class ProductDetailsImage
+public class ProductDetailsImageViewModel
 {
     public string ImageUrl { get; set; } = null!;
 

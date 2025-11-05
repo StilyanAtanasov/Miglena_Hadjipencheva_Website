@@ -3,12 +3,17 @@
   padding: 8rem 5rem;
 }
 
+.title {
+  margin-bottom: 0;
+}
+
 .section-heading {
   margin-bottom: 5rem;
 }
 
 .shipment-services,
-.shipment-awb {
+.shipment-awb,
+.action-buttons {
   padding: 2rem 3.5rem;
   border-radius: 2rem;
   border: 0.2rem solid var(--color-secondary-light);
@@ -18,6 +23,11 @@
   gap: 3rem;
   width: 100%;
   align-items: start;
+}
+
+.action-buttons {
+  justify-content: space-between;
+  padding: 2rem 5rem;
 }
 
 .awb-doc {

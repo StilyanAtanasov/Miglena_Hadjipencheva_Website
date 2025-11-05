@@ -1,6 +1,6 @@
-﻿using MHAuthorWebsite.Core.Admin.Dto;
-using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Dto;
 using Microsoft.AspNetCore.Http;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
@@ -9,7 +9,11 @@ public interface IAdminProductImageService : IImageService
 {
     Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<IFormFile> images);
 
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<string> imageUrls);
+
     Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(IFormFile image);
+
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(string imageUrl);
 
     /// <summary>
     /// Deletes a product image identified by the specified image ID.

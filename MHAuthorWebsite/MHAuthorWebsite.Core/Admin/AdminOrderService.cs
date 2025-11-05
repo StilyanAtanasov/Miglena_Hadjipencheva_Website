@@ -67,10 +67,11 @@ public class AdminOrderService : OrderService, IAdminOrderService
         {
             OrderId = order.Id,
             OrderDate = order.Date,
-            Status = order.Status.GetDisplayName(),
+            Status = order.Status,
             Products = order.OrderedProducts
                  .Select(op => new AdminOrderProductDetailsViewModel
                  {
+                     Id = op.ProductId,
                      ImageUrl = op.Product.Thumbnail.Image.ImageUrl,
                      ProductName = op.Product.Name,
                      UnitPrice = op.UnitPrice,

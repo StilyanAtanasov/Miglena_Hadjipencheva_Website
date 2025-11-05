@@ -1,0 +1,36 @@
+#modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(0.2rem);
+}
+
+#modal .modal-content {
+  background-color: var(--color-primary);
+  border-radius: 2rem;
+  padding: 3rem 5rem;
+  max-width: 60%;
+  width: 50%;
+  z-index: 2001;
+  font-size: 1.5rem;
+  box-shadow: 0.1rem 0.1rem 2rem var(--color-grey);
+}
+
+#modal .modal-content .modal-close {
+  align-self: flex-end;
+}
+
+#modal .modal-overlay {
+  position: absolute;
+  background-color: var(--color-grey);
+  inset: 0;
+  opacity: 0.85;
+  z-index: 2000;
+}
+
+#modal #modal-body {
+  padding: 1rem 0 1.5rem 0;
+}

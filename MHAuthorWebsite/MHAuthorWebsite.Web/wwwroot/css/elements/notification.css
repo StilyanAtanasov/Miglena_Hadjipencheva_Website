@@ -1,6 +1,8 @@
 /* ----- SweetAlert2 ----- */
 .swal2-container {
   width: auto !important;
+  z-index: 9900;
+  font-family: var(--font-primary), sans-serif;
 }
 
 .swal2-title {
@@ -11,4 +13,15 @@
   font-size: 3rem;
   transform: translateY(-0.2rem);
   margin-right: 1.2rem;
+}
+
+.swal2-popup:not(.swal2-toast) {
+  font-size: 1.6rem;
+  border-radius: 1.5rem;
+  padding: 3rem 4rem 3.5rem 4rem;
+}
+
+.swal2-popup:not(.swal2-toast) .swal2-title {
+  font-weight: 700;
+  font-size: 2.6rem !important;
 }

@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject IWebHostEnvironment Env
+
+<!DOCTYPE html>
 <html lang="bg">
 <head>
 	<meta charset="utf-8" />
@@ -9,7 +11,8 @@
 	<link rel="stylesheet" href="~/css/common.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/loader.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
-
+	
+	<link rel="icon" type="image/x-icon" href="~/img/icons/favicon.ico">
 	@await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
@@ -62,6 +65,14 @@
 
 	<main role="main">
 		@RenderBody()
+
+		@if (Env.IsStaging())
+		{
+			<div id="btn-popup-staging-notice" class="popup-btn-box staging-notice flex-row">
+				<p class="popup-btn-text invisible"><strong>ВНИМАНИЕ:</strong> Тази версия на сайта е тестова. Поръчките не се вземат в предвид. Моля, не въвеждайте чувствителна информация в сайта. За да посетите официалния сайт кликнете <a href="https://miglena-hadjipencheva.com">тук</a></p>
+				<button class="btn popup-btn"><i class="fa-solid fa-circle-exclamation"></i></button>
+			</div>
+		}
 	</main>
 
 	<footer class="flex-row">
@@ -88,6 +99,11 @@
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/js/layout.js" asp-append-version="true"></script>
 	<script src="~/js/loader.js" asp-append-version="true"></script>
+
+	@if (Env.IsStaging())
+	{
+		<script src="~/js/elements/popup-btn.js" asp-append-version="true"></script>
+	}
 
 	@await RenderSectionAsync("Scripts", required: false)
 </body>

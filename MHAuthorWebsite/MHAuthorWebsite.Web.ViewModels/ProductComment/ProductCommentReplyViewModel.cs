@@ -1,19 +1,24 @@
 ﻿using MHAuthorWebsite.Data.Models.Enums;
 
-namespace MHAuthorWebsite.Web.ViewModels.Product;
-public class ProductCommentViewModel
+namespace MHAuthorWebsite.Web.ViewModels.ProductComment;
+
+public class ProductCommentReplyViewModel
 {
     public Guid Id { get; set; }
 
+    public Guid? ProductId { get; set; }
+
     public Guid? ParentCommentId { get; set; }
 
-    public short? Rating { get; set; }
+    public string? ReplyCommentWriterName { get; set; }
 
     public string Text { get; set; } = null!;
 
     public string UserName { get; set; } = null!;
 
     public DateTime Date { get; set; }
+
+    public DateTime? LastEdited { get; set; }
 
     public bool VerifiedPurchase { get; set; }
 
@@ -25,5 +30,5 @@ public class ProductCommentViewModel
 
     public bool IsWriterAdmin { get; set; }
 
-    public ICollection<string> ImageUrls { get; set; } = new HashSet<string>();
+    public bool IsUserAuthor { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿namespace MHAuthorWebsite.Core.Admin.Dto;
+﻿namespace MHAuthorWebsite.Core.Dto;
 
 public class ImageUploadResultDto
 {

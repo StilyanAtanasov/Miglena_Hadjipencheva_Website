@@ -10,12 +10,30 @@ public static class ApplicationRules
         public const string WebsiteName = "Миглена Хаджипенчева"; // TODO Use this for Layout and branding
 
         public const string Currency = "BGN";
+
+        public const string CurrentVersion = "1.0.1";
     }
 
-    public static class CommentImages
+    public static class CurrencyRates
     {
-        public const int ImageMaxWidth = 1300;
-        public const int ImagePreviewMaxWidth = 250;
+        public const decimal LevToEurRate = 0.511m;
+    }
+
+    public static class ProductComment
+    {
+        public const byte CommentPageCount = 3;
+        public const byte CommentRepliesPageCount = 3;
+
+        public const byte MaxRepliesTimeFrameHours = 1;
+        public const byte MaxRepliesForTimeFrame = 3;
+    }
+
+    public static class ProductCommentImages
+    {
+        public const short ImageMaxWidth = 1300;
+        public const byte ImagePreviewMaxWidth = 250;
+
+        public const byte MaxImagesPerComment = 5;
     }
 
     public static class Roles
@@ -26,6 +44,11 @@ public static class ApplicationRules
     public static class DataCollection
     {
         public const byte UsersActivityForPeriod = 30; // Days
+    }
+
+    public static class Order
+    {
+        public const byte SuccessPageMaxViewDelaySeconds = 20;
     }
 
     public static class OrderSystemEventsMessages

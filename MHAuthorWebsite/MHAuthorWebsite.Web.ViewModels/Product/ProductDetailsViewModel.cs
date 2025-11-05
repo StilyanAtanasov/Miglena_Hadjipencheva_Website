@@ -1,4 +1,6 @@
-﻿namespace MHAuthorWebsite.Web.ViewModels.Product;
+﻿using MHAuthorWebsite.Web.ViewModels.ProductComment;
+
+namespace MHAuthorWebsite.Web.ViewModels.Product;
 
 public class ProductDetailsViewModel
 {
@@ -16,9 +18,21 @@ public class ProductDetailsViewModel
 
     public bool IsLiked { get; set; }
 
-    public ICollection<ProductDetailsImage> Images { get; set; } = new HashSet<ProductDetailsImage>();
+    public decimal AverageRating { get; set; }
+
+    public int TotalBaseComments { get; set; }
+
+    public Dictionary<int, int> CommentsCountByStarsRating { get; set; } = null!;
+
+    public bool HasMoreComments { get; set; }
+
+    public bool CanWriteMoreComments { get; set; }
+
+    public bool IsRateLimitedForReplies { get; set; }
+
+    public ICollection<ProductDetailsImageViewModel> Images { get; set; } = new HashSet<ProductDetailsImageViewModel>();
 
     public ICollection<ProductAttributeDetailsViewModel> Attributes { get; set; } = new HashSet<ProductAttributeDetailsViewModel>();
 
-    public ICollection<ProductCommentViewModel> Comments { get; set; } = new HashSet<ProductCommentViewModel>();
+    public ICollection<ProductBaseCommentViewModel> Comments { get; set; } = new HashSet<ProductBaseCommentViewModel>();
 }
