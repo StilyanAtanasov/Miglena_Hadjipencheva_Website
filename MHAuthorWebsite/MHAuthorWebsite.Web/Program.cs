@@ -4,6 +4,7 @@ using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Background_Services;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.EmailConfiguration;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Seeding;
@@ -11,7 +12,6 @@ using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.GCommon;
 using MHAuthorWebsite.Web.Infrastructure.Initialization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -154,6 +154,9 @@ builder.Services.AddSingleton(new Cloudinary(new Account(cloudName, apiKey, apiS
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "keys")))
     .SetApplicationName(ApplicationRules.Application.ProjectName);
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 var app = builder.Build();
 

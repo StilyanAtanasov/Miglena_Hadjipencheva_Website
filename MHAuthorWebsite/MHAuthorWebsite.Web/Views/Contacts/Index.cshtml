@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Контакти";
+}
+
+<section class="page-wrapper flex-column">
+
+	<h1 class="title">@ViewData["Title"]</h1>
+
+	<div class="contact-info">
+		<p><strong>Телефон:</strong> +359 88 123 4567</p>
+		<p><strong>Имейл:</strong> info@miglena-hadjipencheva.com</p>
+		<p><strong>Град:</strong> София</p>
+	</div>
+
+	<div id="contact-container" class="contact-form">
+		<div>
+			<label>Име</label>
+			<input type="text" id="name" required />
+		</div>
+
+		<div>
+			<label>Вашият имейл</label>
+			<input type="email" id="email" required />
+		</div>
+
+		<div>
+			<label>Тема</label>
+			<input type="text" id="subject" required />
+		</div>
+
+		<div>
+			<label>Съобщение</label>
+			<textarea id="message" rows="6" required></textarea>
+		</div>
+
+		<button id="sendBtn" type="button">Изпрати</button>
+	</div>
+
+</section>
+
+<script type="module" src="~/js/contacts.js" asp-append-version="true"></script>
