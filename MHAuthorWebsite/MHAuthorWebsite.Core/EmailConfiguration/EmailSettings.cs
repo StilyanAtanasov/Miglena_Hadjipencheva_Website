@@ -1,4 +1,6 @@
-﻿namespace MHAuthorWebsite.Core.EmailConfiguration;
+﻿using MHAuthorWebsite.Core.EmailConfiguration.EmailUsers;
+
+namespace MHAuthorWebsite.Core.EmailConfiguration;
 
 public class EmailSettings
 {
@@ -8,7 +10,5 @@ public class EmailSettings
 
     public bool UseSsl { get; set; }
 
-    public string Username { get; set; } = null!;
-
-    public string Password { get; set; } = null!;
+    public ContactEmailUser ContactEmailUser { get; set; } = null!;
 }

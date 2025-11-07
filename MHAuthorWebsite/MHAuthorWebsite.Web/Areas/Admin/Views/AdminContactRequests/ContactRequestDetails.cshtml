@@ -1,0 +1,55 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.ContactRequests
+@model ContactRequestDetailsViewModel
+
+@{
+    ViewData["Title"] = "Детайли на запитване";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/contact-request-details.css" />
+}
+
+<section class="details-wrapper">
+
+    <div class="request-details">
+        <h2>@Model.Subject</h2>
+
+        <p class="meta">
+            <span>@Model.Name</span> | <span>@Model.Email</span>
+        </p>
+
+        <p class="date">@Model.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+
+        <div class="message-box">
+            @Model.Message
+        </div>
+    </div>
+
+    @if (!Model.IsAnswered)
+    {
+	    <hr />
+
+        <form asp-action="ReplyToRequest" method="post" class="reply-form">
+	        <input type="hidden" name="requestId" asp-for="Id" />
+
+            <label asp-for="ReplyMessage" class="label"></label>
+            <textarea asp-for="ReplyMessage" class="input-textarea"></textarea>
+            <span asp-validation-for="ReplyMessage" class="validation-error"></span>
+
+            <button type="submit" class="reply-btn">Отговори</button>
+        </form>
+    }
+    else
+    {
+	    <div class="reply-view">
+		    <h3>Изпратен отговор</h3>
+		    <p class="reply-date">
+			    @Model.RepliedOn?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+		    </p>
+		    <div class="reply-box">
+			    @Model.ReplyMessage
+		    </div>
+	    </div>
+    }
+
+</section>

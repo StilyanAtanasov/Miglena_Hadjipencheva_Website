@@ -1,6 +1,8 @@
-﻿namespace MHAuthorWebsite.Core.Contracts;
+﻿using MHAuthorWebsite.Core.EmailConfiguration.Contracts;
+
+namespace MHAuthorWebsite.Core.Contracts;
 
 public interface IEmailService
 {
-    Task SendEmailAsync(string to, string subject, string body, bool isBodyHtml);
+    Task SendEmailAsync(IEmailUser from, string to, string subject, string body, bool isBodyHtml);
 }

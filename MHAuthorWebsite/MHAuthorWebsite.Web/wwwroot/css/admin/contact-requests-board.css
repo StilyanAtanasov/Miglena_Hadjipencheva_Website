@@ -1,0 +1,73 @@
+.requests-section {
+  margin: 40px auto;
+  max-width: 1200px;
+}
+
+.requests-section h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.request-card {
+  border: 1px solid #d6d6d6;
+  border-radius: 6px;
+  padding: 16px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.request-card.answered {
+  opacity: 0.75;
+  background: #f3f3f3;
+}
+
+.request-card h3 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.request-card .meta {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.request-card .date {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.readmore-btn {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background: #0055cc;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: 0.2s ease;
+}
+
+.readmore-btn:hover {
+  background: #003d99;
+}
+
+.no-requests,
+.no-requests-sub {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 20px 0;
+}
+
+.no-requests {
+  text-align: center;
+  margin-top: 60px;
+}

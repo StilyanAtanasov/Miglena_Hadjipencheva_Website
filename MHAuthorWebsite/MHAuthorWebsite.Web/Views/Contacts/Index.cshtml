@@ -1,5 +1,10 @@
 ﻿@{
-    ViewData["Title"] = "Контакти";
+	ViewData["Title"] = "Контакти";
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
 }
 
 <section class="page-wrapper flex-column">
@@ -38,4 +43,7 @@
 
 </section>
 
-<script type="module" src="~/js/contacts.js" asp-append-version="true"></script>
+@section Scripts {
+	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/contacts.js" asp-append-version="true"></script>
+}

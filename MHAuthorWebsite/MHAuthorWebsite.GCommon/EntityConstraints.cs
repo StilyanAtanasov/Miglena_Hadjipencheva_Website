@@ -152,4 +152,22 @@ public static class EntityConstraints
     {
         public const bool IsSelectedDefaultValue = true;
     }
+
+    public static class ContactRequest
+    {
+        public const byte NameMinLength = 2;
+        public const byte NameMaxLength = 120;
+
+        public const byte EmailMinLength = 5;
+        public const byte EmailMaxLength = 100;
+
+        public const byte SubjectMinLength = 5;
+        public const byte SubjectMaxLength = 150;
+
+        public const byte MessageMinLength = 10;
+        public const ushort MessageMaxLength = 4000;
+
+        public const byte ReplyMessageMinLength = 10;
+        public const ushort ReplyMessageMaxLength = 4000;
+    }
 }

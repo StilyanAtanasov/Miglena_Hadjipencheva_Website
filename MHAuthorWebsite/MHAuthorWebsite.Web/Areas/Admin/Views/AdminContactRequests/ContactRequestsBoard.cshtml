@@ -1,0 +1,74 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.ContactRequests
+@model ICollection<ContactRequestCardViewModel>
+
+@{
+	ViewData["Title"] = "Запитвания";
+	ViewData["CurrentPage"] = Pages.Admin.ContactRequestsBoard;
+
+	ICollection<ContactRequestCardViewModel> unanswered = Model
+		.Where(m => !m.IsAnswered)
+		.OrderByDescending(m => m.CreatedOn)
+		.ToArray();
+
+	ICollection<ContactRequestCardViewModel> answered = Model
+		.Where(m => m.IsAnswered)
+		.OrderByDescending(m => m.CreatedOn)
+		.ToArray();
+
+	bool hasAny = unanswered.Any() || answered.Any();
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/admin/contact-requests-board.css" />
+}
+
+<section class="requests-section">
+	@if (!hasAny)
+	{
+		<p class="no-requests">Няма изпратени запитвания.</p>
+	}
+	else
+	{
+		<h2>Нови запитвания</h2>
+		@if (!unanswered.Any())
+		{
+			<p class="no-requests-sub">Няма нови запитвания.</p>
+		}
+		else
+		{
+			<div class="cards-grid">
+				@foreach (ContactRequestCardViewModel item in unanswered)
+				{
+					<div class="request-card">
+						<h3>@item.Subject</h3>
+						<p class="meta">@item.Name | @item.Email</p>
+						<p>@item.MessagePreview</p>
+						<p class="date">@item.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+						<a asp-controller="AdminContactRequests" asp-action="ContactRequestDetails" asp-route-requestId="@item.Id" class="readmore-btn">Преглед</a>
+					</div>
+				}
+			</div>
+		}
+
+		<h2>Отговорени</h2>
+		@if (!answered.Any())
+		{
+			<p class="no-requests-sub">Няма отговорени запитвания.</p>
+		}
+		else
+		{
+			<div class="cards-grid">
+				@foreach (ContactRequestCardViewModel item in answered)
+				{
+					<div class="request-card answered">
+						<h3>@item.Subject</h3>
+						<p class="meta">@item.Name | @item.Email</p>
+						<p>@item.MessagePreview</p>
+						<p class="date">@item.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+						<a asp-controller="AdminContactRequests" asp-action="ContactRequestDetails" asp-route-requestId="@item.Id" class="readmore-btn">Преглед</a>
+					</div>
+				}
+			</div>
+		}
+	}
+</section>

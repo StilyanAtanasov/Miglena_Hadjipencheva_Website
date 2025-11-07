@@ -1,0 +1,100 @@
+.details-wrapper {
+  max-width: 800px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.request-details h2 {
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+}
+
+.meta {
+  font-size: 1rem;
+  color: #555;
+}
+
+.date {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.message-box {
+  border: 1px solid #d6d6d6;
+  border-radius: 6px;
+  padding: 14px;
+  background: #fafafa;
+  white-space: pre-wrap;
+}
+
+.reply-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.input-textarea {
+  min-height: 120px;
+  resize: vertical;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background: #fff;
+}
+
+.reply-btn {
+  align-self: flex-start;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #0055cc;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.reply-btn:hover {
+  background: #003d99;
+}
+
+.validation-error {
+  color: #c0392b;
+  font-size: 0.9rem;
+}
+
+.already-answered {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.reply-view {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reply-view h3 {
+  font-size: 1.4rem;
+}
+
+.reply-date {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.reply-box {
+  border: 1px solid #bcd0ff;
+  background: #f3f7ff;
+  padding: 14px;
+  border-radius: 6px;
+  white-space: pre-wrap;
+}

@@ -5,6 +5,7 @@ using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Background_Services;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.EmailConfiguration;
+using MHAuthorWebsite.Core.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Seeding;
@@ -107,6 +108,9 @@ builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
 
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
+builder.Services.AddScoped<IAdminContactRequestsService, AdminContactRequestsService>();
+builder.Services.AddScoped<IContactsService, ContactsService>();
+
 builder.Services.AddHttpClient<IEcontService, EcontService>();
 builder.Services.AddHttpClient<IAdminEcontService, AdminEcontService>();
 
@@ -156,6 +160,7 @@ builder.Services.AddDataProtection()
     .SetApplicationName(ApplicationRules.Application.ProjectName);
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddSingleton<IEmailUserProvider, EmailUserProvider>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 
 var app = builder.Build();

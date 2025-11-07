@@ -69,6 +69,7 @@ public static class ApplicationRules
             public const string EditProduct = nameof(EditProduct);
             public const string AddProductType = nameof(AddProductType);
             public const string AllOrders = nameof(AllOrders);
+            public const string ContactRequestsBoard = nameof(ContactRequestsBoard);
         }
     }
 
@@ -80,6 +81,12 @@ public static class ApplicationRules
     public static class Product
     {
         public const byte MaxImages = 10;
+    }
+
+    public static class ContactRequestsBoard
+    {
+        public const byte RequestsPerPage = 10;
+        public const byte MaxMessageLength = 60;
     }
 
     public static class SortTypes
