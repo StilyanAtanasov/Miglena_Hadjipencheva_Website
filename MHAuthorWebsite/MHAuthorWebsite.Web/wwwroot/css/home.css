@@ -204,6 +204,41 @@
   gap: 5rem;
 }
 
+/* ----- Contacts ----- */
+.contacts {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+  padding: 10rem 35rem 10rem 60rem;
+  position: relative;
+  margin: 0 7rem 7rem 7rem;
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+.contacts .contacts-title {
+  font-size: 6.5rem;
+  font-weight: 800;
+}
+
+.contacts .contacts-subtitle {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: -1rem 0 2rem 0;
+}
+
+.contacts .background-icon {
+  position: absolute;
+  bottom: -0.5rem;
+  left: 13rem;
+  font-size: 30rem;
+  color: var(--color-secondary-light);
+  opacity: 0.5;
+}
+
+.contacts .contact-btn {
+  font-size: 2.2rem;
+}
+
 @keyframes splash-text {
   0% {
     opacity: 0;
@@ -317,6 +352,25 @@
   .slider {
     width: 100%;
     gap: 3rem;
+  }
+
+  .contacts {
+    padding: 10rem 5rem;
+    margin: 0 3.5rem 3.5rem 3.5rem;
+  }
+
+  .contacts .contacts-subtitle {
+    margin: -0.5rem 0 2.5rem 0;
+  }
+
+  .contacts .background-icon {
+    left: auto;
+    right: 3rem;
+    opacity: 0.3;
+  }
+
+  .contacts .contact-btn {
+    font-size: 2.5rem;
   }
 }
 
