@@ -20,7 +20,7 @@ public class ContactsController : BaseController
     [AllowAnonymous]
     public async Task<IActionResult> SendEmail([FromBody] ContactFormViewModel model)
     {
-        if (!ModelState.IsValid) return RedirectToAction(nameof(Index));
+        if (!ModelState.IsValid) return BadRequest();
 
         ServiceResult sr = await _contactsService.SendContactMessageAsync(model, GetUserId());
         if (!sr.HasPermission) return Forbid();

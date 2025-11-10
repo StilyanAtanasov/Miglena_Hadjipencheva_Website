@@ -1,10 +1,15 @@
-﻿@{
+﻿@using MHAuthorWebsite.Web.ViewModels.Contacts;
+@model ContactFormViewModel
+
+@{
 	ViewData["Title"] = "Контакти";
 }
 
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/contacts.css" asp-append-version="true" />
 }
 
 <section class="page-wrapper flex-column">
@@ -12,38 +17,48 @@
 	<h1 class="title">@ViewData["Title"]</h1>
 
 	<div class="contact-info">
-		<p><strong>Телефон:</strong> +359 88 123 4567</p>
-		<p><strong>Имейл:</strong> info@miglena-hadjipencheva.com</p>
-		<p><strong>Град:</strong> София</p>
+		<p class="flex-column"><i class="fa-regular fa-phone"></i> +359 88 123 4567</p>
+		<p class="flex-column"><i class="fa-regular fa-envelope"></i> contact@miglena-hadjipencheva.com</p>
+		<p class="flex-column"><i class="fa-regular fa-location-dot"></i> Велико Търново 5000, България</p>
 	</div>
 
-	<div id="contact-container" class="contact-form">
-		<div>
-			<label>Име</label>
-			<input type="text" id="name" required />
+	<form id="contact-form" class="input-form" asp-controller="Contacts" asp-action="SendEmail" method="post">
+		<div class="form-input-row flex-row">
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Name">Име</label>
+				<input class="form-input" asp-for="Name" type="text" placeholder="Иван Иванов" />
+				<span class="input-error" asp-validation-for="Name"></span>
+			</div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Email">Имейл</label>
+				<input class="form-input" asp-for="Email" type="email" placeholder="Вашият имейл" />
+				<span class="input-error" asp-validation-for="Email"></span>
+			</div>
 		</div>
 
-		<div>
-			<label>Вашият имейл</label>
-			<input type="email" id="email" required />
+		<div class="form-input-box flex-column">
+			<label class="form-label" asp-for="Subject">Тема</label>
+			<input class="form-input" asp-for="Subject" type="text" placeholder="Какво Ви интересува?" />
+			<span class="input-error" asp-validation-for="Subject"></span>
 		</div>
 
-		<div>
-			<label>Тема</label>
-			<input type="text" id="subject" required />
+		<div class="form-input-box flex-column">
+			<label class="form-label" asp-for="Message">Съобщение</label>
+			<textarea class="form-input" asp-for="Message" rows="4"></textarea>
+			<span class="input-error" asp-validation-for="Message"></span>
 		</div>
 
-		<div>
-			<label>Съобщение</label>
-			<textarea id="message" rows="6" required></textarea>
-		</div>
-
-		<button id="sendBtn" type="button">Изпрати</button>
-	</div>
+		<button id="sendBtn" data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">
+			<i class="fa-regular fa-paper-plane"></i>
+			Изпрати
+		</button>
+	</form>
 
 </section>
 
 @section Scripts {
+	<partial name="_ValidationScriptsPartial" />
 	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/contacts.js" asp-append-version="true"></script>
 }

@@ -16,7 +16,7 @@ public class EmailService : IEmailService
 
     public async Task SendEmailAsync(IEmailUser from, string to, string subject, string body, bool isBodyHtml)
     {
-        using var client = new SmtpClient(_settings.Host, _settings.Port)
+        using SmtpClient client = new(_settings.Host, _settings.Port)
         {
             EnableSsl = _settings.UseSsl,
             Credentials = new NetworkCredential(from.Username, from.Password)
@@ -25,7 +25,7 @@ public class EmailService : IEmailService
         MailAddress fromAddress = new(from.Username, WebsiteName);
         MailAddress toAddress = new(to);
 
-        using var message = new MailMessage(fromAddress, toAddress)
+        using MailMessage message = new(fromAddress, toAddress)
         {
             Subject = subject,
             Body = body,

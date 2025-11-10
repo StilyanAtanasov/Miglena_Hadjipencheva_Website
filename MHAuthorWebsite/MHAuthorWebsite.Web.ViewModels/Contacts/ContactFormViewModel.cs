@@ -1,22 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MHAuthorWebsite.Web.Common.Localization;
+using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ContactRequest;
 namespace MHAuthorWebsite.Web.ViewModels.Contacts;
 
 public class ContactFormViewModel
 {
-    [Required]
-    [StringLength(NameMaxLength, MinimumLength = NameMinLength)]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    [StringLength(NameMaxLength, MinimumLength = NameMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
     public string Name { get; set; } = null!;
 
-    [Required]
-    [StringLength(EmailMaxLength, MinimumLength = EmailMinLength)]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    [StringLength(EmailMaxLength, MinimumLength = EmailMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
     public string Email { get; set; } = null!;
 
-    [Required]
-    [StringLength(SubjectMaxLength, MinimumLength = SubjectMinLength)]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    [StringLength(SubjectMaxLength, MinimumLength = SubjectMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
     public string Subject { get; set; } = null!;
 
-    [Required]
-    [StringLength(MessageMaxLength, MinimumLength = MessageMinLength)]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    [StringLength(MessageMaxLength, MinimumLength = MessageMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
     public string Message { get; set; } = null!;
 }
