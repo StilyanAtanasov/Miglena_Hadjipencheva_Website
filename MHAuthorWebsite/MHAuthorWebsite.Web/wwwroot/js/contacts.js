@@ -12,7 +12,6 @@ contactForm.addEventListener(`submit`, async function (e) {
   const result = await fetch(contactForm.getAttribute(`action`), {
     method: `POST`,
     headers: {
-      "Content-Type": "application/json",
       RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
     },
     body: new FormData(contactForm),

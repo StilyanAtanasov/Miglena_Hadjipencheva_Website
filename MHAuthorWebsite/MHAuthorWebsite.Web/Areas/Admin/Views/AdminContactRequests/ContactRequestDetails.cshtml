@@ -2,54 +2,62 @@
 @model ContactRequestDetailsViewModel
 
 @{
-    ViewData["Title"] = "Детайли на запитване";
+	ViewData["Title"] = "Детайли на запитване";
+	ViewData["CurrentPage"] = Pages.Admin.ContactRequestsBoard;
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/admin/contact-request-details.css" />
+	<link rel="stylesheet" href="~/css/input-form.css" />
+	<link rel="stylesheet" href="~/css/admin/contact-request-details.css" />
 }
 
-<section class="details-wrapper">
+<section class="page-wrapper flex-column">
+	<h1 class="title">@ViewData["Title"]</h1>
+	
+	<a asp-controller="AdminContactRequests" asp-action="ContactRequestsBoard" class="btn link flex-row back-btn">
+		<i class="fa-regular fa-arrow-left"></i> Обратно към таблото
+	</a>
 
-    <div class="request-details">
-        <h2>@Model.Subject</h2>
+	<section class="request flex-row">
+		<div class="request-details">
+			<h2 class="heading">@Model.Subject</h2>
+			<p class="meta"><span>@Model.Name</span> | <span>@Model.Email</span></p>
+			<p class="date">@Model.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy, HH:mm")</p>
+			<div class="message-box">@Model.Message	</div>
+		</div>
 
-        <p class="meta">
-            <span>@Model.Name</span> | <span>@Model.Email</span>
-        </p>
+		<hr class="vertical" />
 
-        <p class="date">@Model.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+		@if (!Model.IsAnswered)
+		{
+			<section class="add-reply-section flex-column">
+				<h2 class="subheading">Отговорете на @Model.Name</h2>
 
-        <div class="message-box">
-            @Model.Message
-        </div>
-    </div>
+				<form asp-action="ReplyToRequest" method="post" class="input-form">
+					<input type="hidden" name="requestId" asp-for="Id" />
 
-    @if (!Model.IsAnswered)
-    {
-	    <hr />
+					<div class="form-input-box flex-column">
+						<label class="form-label" asp-for="ReplyMessage"></label>
+						<textarea class="form-input" asp-for="ReplyMessage"></textarea>
+						<span class="input-error" asp-validation-for="ReplyMessage"></span>
+					</div>
 
-        <form asp-action="ReplyToRequest" method="post" class="reply-form">
-	        <input type="hidden" name="requestId" asp-for="Id" />
-
-            <label asp-for="ReplyMessage" class="label"></label>
-            <textarea asp-for="ReplyMessage" class="input-textarea"></textarea>
-            <span asp-validation-for="ReplyMessage" class="validation-error"></span>
-
-            <button type="submit" class="reply-btn">Отговори</button>
-        </form>
-    }
-    else
-    {
-	    <div class="reply-view">
-		    <h3>Изпратен отговор</h3>
-		    <p class="reply-date">
-			    @Model.RepliedOn?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
-		    </p>
-		    <div class="reply-box">
-			    @Model.ReplyMessage
-		    </div>
-	    </div>
-    }
-
+					<button type="submit" class="btn flex-row"><i class="fa-regular fa-reply"></i> Отговори</button>
+				</form>
+			</section>
+		}
+		else
+		{
+			<div class="reply-view">
+				<h2 class="subheading">Изпратен отговор</h2>
+				<p class="date">@Model.RepliedOn?.ToLocalTime().ToString("dd.MM.yyyy, HH:mm")</p>
+				<div class="reply-box">@Model.ReplyMessage</div>
+			</div>
+		}
+	</section>
 </section>
+
+@section Scripts
+{
+	<partial name="_ValidationScriptsPartial" />
+}

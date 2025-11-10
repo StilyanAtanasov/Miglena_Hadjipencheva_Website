@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MHAuthorWebsite.Web.Common.Localization;
+using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ContactRequest;
 
 namespace MHAuthorWebsite.Web.ViewModels.Admin.ContactRequests;
@@ -19,9 +20,8 @@ public class ContactRequestDetailsViewModel
 
     public DateTime? RepliedOn { get; set; }
 
-    [Required]
-    [MinLength(ReplyMessageMinLength)]
-    [MaxLength(ReplyMessageMaxLength)]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
+    [StringLength(ReplyMessageMaxLength, MinimumLength = ReplyMessageMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
     public string ReplyMessage { get; set; } = null!;
 
     public bool IsAnswered { get; set; }

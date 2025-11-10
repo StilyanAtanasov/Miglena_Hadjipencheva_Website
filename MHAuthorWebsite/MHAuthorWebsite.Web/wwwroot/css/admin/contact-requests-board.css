@@ -1,73 +1,53 @@
-.requests-section {
-  margin: 40px auto;
-  max-width: 1200px;
-}
-
-.requests-section h2 {
-  margin-bottom: 20px;
-  font-size: 1.8rem;
-  font-weight: 600;
+.page-wrapper > article {
+  width: 90%;
 }
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, 30rem);
+  gap: 2rem;
+}
+
+.heading {
+  align-self: flex-start;
 }
 
 .request-card {
-  border: 1px solid #d6d6d6;
-  border-radius: 6px;
-  padding: 16px;
-  background: #ffffff;
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 1rem;
+  padding: 2rem 3rem;
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
-.request-card.answered {
-  opacity: 0.75;
-  background: #f3f3f3;
+.answered {
+  margin-top: 3.5rem;
 }
 
-.request-card h3 {
-  font-size: 1.2rem;
-  margin: 0;
-}
-
-.request-card .meta {
-  font-size: 0.9rem;
-  color: #666;
+.answered .request-card {
+  opacity: 0.9;
+  background-color: var(--color-secondary-lighter);
 }
 
 .request-card .date {
-  font-size: 0.8rem;
-  color: #999;
+  color: var(--color-grey);
 }
 
-.readmore-btn {
-  align-self: flex-start;
-  padding: 6px 12px;
-  border-radius: 4px;
-  background: #0055cc;
-  color: #fff;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: 0.2s ease;
+.request-card .message {
+  font-size: 1.75rem;
+  font-weight: 500;
 }
 
-.readmore-btn:hover {
-  background: #003d99;
+.request-card .btn {
+  margin: 1rem 0 0 auto;
 }
 
 .no-requests,
 .no-requests-sub {
-  font-size: 1.1rem;
-  color: #666;
-  margin: 20px 0;
+  margin: 2rem 0;
 }
 
 .no-requests {
   text-align: center;
-  margin-top: 60px;
+  margin-top: 6rem;
 }

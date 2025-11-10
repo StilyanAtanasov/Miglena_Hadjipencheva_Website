@@ -1,100 +1,63 @@
-.details-wrapper {
-  max-width: 800px;
-  margin: 40px auto;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+.request {
+  width: 90%;
+  margin-top: 4rem;
+  font-size: 1.8rem;
 }
 
-.request-details h2 {
-  font-size: 1.8rem;
-  margin-bottom: 5px;
+.request-details,
+.add-reply-section,
+.reply-view {
+  width: 47%;
+  padding: 0 2rem;
+  align-self: flex-start;
+}
+
+.request hr.vertical {
+  height: 15rem;
 }
 
 .meta {
-  font-size: 1rem;
-  color: #555;
+  height: 3rem;
 }
 
 .date {
-  font-size: 0.9rem;
-  color: #888;
-  margin-bottom: 15px;
+  color: var(--color-grey);
+  margin-bottom: 1.5rem;
 }
 
 .message-box {
-  border: 1px solid #d6d6d6;
-  border-radius: 6px;
-  padding: 14px;
-  background: #fafafa;
-  white-space: pre-wrap;
+  border: 0.1rem solid var(--color-secondary-light);
 }
 
-.reply-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.label {
-  font-weight: 600;
-}
-
-.input-textarea {
-  min-height: 120px;
-  resize: vertical;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  background: #fff;
-}
-
-.reply-btn {
-  align-self: flex-start;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  background: #0055cc;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.reply-btn:hover {
-  background: #003d99;
-}
-
-.validation-error {
-  color: #c0392b;
-  font-size: 0.9rem;
-}
-
-.already-answered {
-  font-size: 1.1rem;
-  color: #666;
-}
-
-.reply-view {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.reply-view h3 {
-  font-size: 1.4rem;
-}
-
-.reply-date {
-  font-size: 0.9rem;
-  color: #777;
+.reply-view .date {
+  margin-bottom: 4rem;
 }
 
 .reply-box {
-  border: 1px solid #bcd0ff;
-  background: #f3f7ff;
-  padding: 14px;
-  border-radius: 6px;
-  white-space: pre-wrap;
+  border: 0.1rem solid var(--color-tertiary-light);
+}
+
+.message-box,
+.reply-box {
+  background: var(--color-secondary-lighter);
+  padding: 2rem 3rem;
+  border-radius: 1.5rem;
+  white-space: preserve nowrap;
+}
+
+.input-form {
+  width: 100%;
+}
+
+.input-form .btn {
+  margin: 2rem auto 0 auto;
+}
+
+.back-btn {
+  font-size: 1.8rem;
+  align-self: flex-start;
+  margin: 1rem 10rem;
+  background-color: var(--color-tertiary-light);
+  color: var(--color-primary);
+  border: 0.1rem solid var(--color-tertiary);
 }

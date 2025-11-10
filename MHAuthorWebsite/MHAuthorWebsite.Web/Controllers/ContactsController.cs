@@ -18,7 +18,7 @@ public class ContactsController : BaseController
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> SendEmail([FromBody] ContactFormViewModel model)
+    public async Task<IActionResult> SendEmail(ContactFormViewModel model)
     {
         if (!ModelState.IsValid) return BadRequest();
 
