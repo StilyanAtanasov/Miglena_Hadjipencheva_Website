@@ -107,6 +107,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
 
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+builder.Services.AddScoped<IAdminUserManagementService, AdminUserManagementService>();
 
 builder.Services.AddScoped<IAdminContactRequestsService, AdminContactRequestsService>();
 builder.Services.AddScoped<IContactsService, ContactsService>();

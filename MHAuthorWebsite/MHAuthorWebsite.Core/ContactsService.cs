@@ -51,7 +51,7 @@ public class ContactsService : IContactsService
 
         string[] adminEmails = (await UserManager.GetUsersInRoleAsync(AdminRoleName)).Where(u => !u.IsDeleted).Select(u => u.Email).ToArray()!;
         string body = new StringBuilder()
-            .Append("Ново запитване")
+            .AppendLine("Ново запитване")
             .AppendLine($"Лице: {model.Name}")
             .AppendLine($"Имейл: {model.Email}")
             .AppendLine($"Тема: {model.Subject}")

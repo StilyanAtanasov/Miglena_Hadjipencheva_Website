@@ -1,0 +1,55 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.UserManagement
+@model ICollection<UserSummaryRowViewModel>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
+}
+
+<h1>Потребители</h1>
+
+<table>
+	<thead>
+	<tr>
+		<th>Име</th>
+		<th>Имейл</th>
+		<th>Активен</th>
+		<th>Роля</th>
+		<th>Действия</th>
+	</tr>
+	</thead>
+	<tbody id="users-body">
+	@foreach (var u in Model)
+	{
+		<tr data-userid="@u.Id">
+			<td>@u.Name</td>
+			<td>@u.Email</td>
+			<td>@(u.IsActive ? "Да" : "Не")</td>
+			<td>@(u.IsAdmin ? "Admin" : "User")</td>
+			<td>
+				@if (!u.IsAdmin)
+				{
+					<button data-action="assign" data-user-id="@u.Id" data-role-name="Admin">Assign admin</button>
+					<button data-action="ban" data-user-id="@u.Id">Ban</button>
+				}
+				else
+				{
+					<span>Не може да се редактира</span>
+				}
+				<button data-action="details" data-user-id="@u.Id">View details</button>
+			</td>
+		</tr>
+	}
+	</tbody>
+</table>
+
+@Html.AntiForgeryToken();
+
+@section Scripts {
+	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/admin/user-management.js" asp-append-version="true"></script>
+}

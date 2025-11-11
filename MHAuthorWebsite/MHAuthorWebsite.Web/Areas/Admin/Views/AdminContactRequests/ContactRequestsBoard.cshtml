@@ -3,7 +3,7 @@
 
 @{
 	ViewData["Title"] = "Запитвания";
-	ViewData["CurrentPage"] = Pages.Admin.ContactRequestsBoard;
+	ViewData["CurrentPage"] = Pages.Admin.ContactRequestsBoardPage;
 
 	ICollection<ContactRequestCardViewModel> unanswered = Model
 		.Where(m => !m.IsAnswered)

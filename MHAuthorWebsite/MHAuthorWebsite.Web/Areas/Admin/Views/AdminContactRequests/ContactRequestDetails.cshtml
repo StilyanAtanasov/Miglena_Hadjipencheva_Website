@@ -3,7 +3,7 @@
 
 @{
 	ViewData["Title"] = "Детайли на запитване";
-	ViewData["CurrentPage"] = Pages.Admin.ContactRequestsBoard;
+	ViewData["CurrentPage"] = Pages.Admin.ContactRequestsBoardPage;
 }
 
 @section Styles {
@@ -37,7 +37,7 @@
 					<input type="hidden" name="requestId" asp-for="Id" />
 
 					<div class="form-input-box flex-column">
-						<label class="form-label" asp-for="ReplyMessage"></label>
+						<label class="form-label" asp-for="ReplyMessage">Съобщение</label>
 						<textarea class="form-input" asp-for="ReplyMessage"></textarea>
 						<span class="input-error" asp-validation-for="ReplyMessage"></span>
 					</div>

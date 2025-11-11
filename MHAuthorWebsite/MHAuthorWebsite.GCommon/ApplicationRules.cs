@@ -69,7 +69,8 @@ public static class ApplicationRules
             public const string EditProduct = nameof(EditProduct);
             public const string AddProductType = nameof(AddProductType);
             public const string AllOrders = nameof(AllOrders);
-            public const string ContactRequestsBoard = nameof(ContactRequestsBoard);
+            public const string ContactRequestsBoardPage = nameof(ContactRequestsBoardPage);
+            public const string ManageUsers = nameof(ManageUsers);
         }
     }
 
