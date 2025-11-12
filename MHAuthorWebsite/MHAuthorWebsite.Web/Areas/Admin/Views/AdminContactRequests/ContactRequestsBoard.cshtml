@@ -46,8 +46,8 @@
 							<p>@item.Name | @item.Email</p>
 							<p class="message">@item.MessagePreview</p>
 							<p class="date">@item.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy, HH:mm")</p>
-							<a asp-controller="AdminContactRequests" asp-action="ContactRequestDetails" 
-							   asp-route-requestId="@item.Id" class="btn link flex-row">
+							<a asp-controller="AdminContactRequests" asp-action="ContactRequestDetails"
+							   asp-route-requestId="@item.Id" class="btn btn-purple link flex-row">
 								<i class="fa-regular fa-eye"></i>
 								Преглед
 							</a>
@@ -74,7 +74,7 @@
 							<p class="message">@item.MessagePreview</p>
 							<p class="date">@item.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy, HH:mm")</p>
 							<a asp-controller="AdminContactRequests" asp-action="ContactRequestDetails"
-							   asp-route-requestId="@item.Id" class="btn link flex-row">
+							   asp-route-requestId="@item.Id" class="btn btn-purple link flex-row">
 								<i class="fa-regular fa-eye"></i>
 								Преглед
 							</a>
