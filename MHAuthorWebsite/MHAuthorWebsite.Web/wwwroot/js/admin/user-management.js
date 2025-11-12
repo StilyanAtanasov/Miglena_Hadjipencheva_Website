@@ -6,7 +6,7 @@ import { openModal, replaceBody } from "../elements/modal.js";
 document.addEventListener("DOMContentLoaded", function () {
   const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-  async function assignRole(userId, roleName) {
+  async function assignRole(userId, roleName, button) {
     const response = await fetch(`/Admin/AdminUserManagement/AssignRole`, {
       method: "POST",
       headers: {
@@ -16,7 +16,27 @@ document.addEventListener("DOMContentLoaded", function () {
       body: new URLSearchParams({ userId, roleName }),
     });
 
-    response.ok ? pushNotification(`Ролята е успешно добавена`) : pushNotification(`Възникна грешка!`, `error`);
+    if (response.ok) {
+      const tr = button.closest(`tr`);
+
+      tr.querySelector(`.name-row .name`).insertAdjacentHTML(`afterend`, `<span class="badge admin-badge flex-row" title="Администратор"><i class="fa-regular fa-user-shield"></i> Админ</span>`);
+
+      tr.querySelector(`.action-btns [data-action="assign"]`).remove();
+      tr.querySelector(`.action-btns [data-action="ban"]`).remove();
+
+      await showPopupAsync({
+        icon: `success`,
+        title: `Готово!`,
+        text: `Успешно зададохте този потребител като администратор!`,
+        confirmButtonColor: `rgb(58, 5, 58)`,
+      });
+    } else
+      await showPopupAsync({
+        icon: `error`,
+        title: `Грешка!`,
+        text: `Възникна неочаквана грешка! Моля, свържете се със системния администратор!`,
+        confirmButtonColor: `rgb(58, 5, 58)`,
+      });
   }
 
   async function toggleBan(userId, button) {
@@ -31,11 +51,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (response.ok) {
       const isBanned = await response.json();
-      button.textContent = isBanned ? "Unban" : "Ban";
-      pushNotification(isBanned ? `Потребителят е блокиран` : `Потребителят е деблокиран`);
-    } else {
-      pushNotification(`Възникна грешка!`, `error`);
-    }
+      button.innerHTML = !isBanned ? `<i class="fa-regular fa-user-lock"></i> Блокирай` : `<i class="fa-regular fa-user-unlock"></i> Деблокирай`;
+
+      if (isBanned) {
+        const nameRow = button.closest(`tr`).querySelector(`.name-row`);
+        nameRow.innerHTML = nameRow.innerHTML + `<span class="badge banned-badge flex-row" title="Блокиран потребител"><i class="fa-regular fa-user-lock"></i> Блокиран</span>`;
+      } else button.closest(`tr`).querySelector(`.name-row .badge.banned-badge`).remove();
+
+      await showPopupAsync({
+        icon: `success`,
+        title: `Готово!`,
+        text: `Успешно ${isBanned ? "блокирахте" : "деблокирахте"} този потребител!`,
+        confirmButtonColor: `rgb(58, 5, 58)`,
+      });
+    } else
+      await showPopupAsync({
+        icon: `error`,
+        title: `Грешка!`,
+        text: `Възникна неочаквана грешка! Моля, свържете се със системния администратор!`,
+        confirmButtonColor: `rgb(58, 5, 58)`,
+      });
   }
 
   async function openUserDetails(userId) {
@@ -63,12 +98,12 @@ document.addEventListener("DOMContentLoaded", function () {
       await showPopupAsync({
         icon: `warning`,
         title: `Добавяне на роля`,
-        text: `Сигурни ли сте, че искате да дадете роля Admin на този потребител?`,
+        text: `Сигурни ли сте, че искате да дадете роля Admin на този потребител? Действието е необратимо!`,
         showCancelButton: true,
-        confirmButtonColor: `#3085d6`,
-        cancelButtonColor: `#d33`,
+        confirmButtonColor: `rgb(39, 103, 231)`,
+        cancelButtonColor: `rgb(255, 73, 73)`,
         onConfirm: assignRole,
-        onConfirmArgs: [userId, roleName],
+        onConfirmArgs: [userId, roleName, b],
       });
     });
   });
@@ -83,8 +118,8 @@ document.addEventListener("DOMContentLoaded", function () {
         title: `Блокиране на потребител`,
         text: `Сигурни ли сте, че искате да промените статуса на блокиране?`,
         showCancelButton: true,
-        confirmButtonColor: `#3085d6`,
-        cancelButtonColor: `#d33`,
+        confirmButtonColor: `rgb(39, 103, 231)`,
+        cancelButtonColor: `rgb(255, 73, 73)`,
         onConfirm: toggleBan,
         onConfirmArgs: [userId, b],
       });

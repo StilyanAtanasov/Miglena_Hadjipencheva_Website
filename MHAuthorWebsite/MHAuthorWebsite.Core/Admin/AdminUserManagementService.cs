@@ -37,6 +37,7 @@ public class AdminUserManagementService : IAdminUserManagementService
                 Email = !u.IsDeleted ? u.Email : "",
                 IsActive = u.LastActive > DateTime.Now.AddDays(-UsersActivityForPeriod),
                 IsAdmin = adminUsers.Contains(u),
+                IsBanned = u.IsBanned,
                 IsDeleted = u.IsDeleted
             })
             .ToArrayAsync();
@@ -73,6 +74,10 @@ public class AdminUserManagementService : IAdminUserManagementService
 
         ApplicationUser? user = await _userManager.FindByIdAsync(userId);
         if (user == null) return ServiceResult.Failure(new() { ["User"] = $"User with ID '{userId}' does not exist." });
+        if (user.IsDeleted) return ServiceResult.Failure(new() { ["AlreadyDeleted"] = "Cannot assign role to a deleted user." });
+
+        user.IsBanned = false; // Unban user when assigning any role
+        await _userManager.UpdateAsync(user);
 
         IdentityResult result = await _userManager.AddToRoleAsync(user, roleName);
         if (!result.Succeeded) return ServiceResult.Failure(new()

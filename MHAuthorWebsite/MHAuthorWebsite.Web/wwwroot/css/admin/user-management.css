@@ -1,0 +1,52 @@
+.name {
+  margin-right: 1rem;
+  font-size: 1.9rem;
+}
+
+.badge {
+  gap: 0.5rem;
+  border-radius: 3rem;
+  padding: 0.6rem 2.5rem;
+  font-weight: 600;
+}
+
+.badge.admin-badge {
+  background-color: var(--color-tertiary);
+  color: var(--color-primary);
+}
+
+.badge.active-badge {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.badge.banned-badge {
+  background-color: var(--color-orange);
+}
+
+.badge.deleted-badge {
+  background-color: var(--color-error);
+  color: var(--color-primary);
+}
+
+#user-details-container {
+  font-size: 1.9rem;
+}
+
+#user-details-container .heading,
+#user-details-container .deleted-message {
+  text-align: center;
+}
+
+#user-details-container .user-badges {
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+  margin: 3rem 4rem 2rem 4rem;
+}
+
+#user-details-container .deleted-message {
+  font-weight: 700;
+  color: var(--color-error);
+  font-size: 2.1rem;
+  margin-top: 1rem;
+}

@@ -12,5 +12,7 @@ public class UserSummaryRowViewModel
 
     public bool IsAdmin { get; set; }
 
+    public bool IsBanned { get; set; }
+
     public bool IsDeleted { get; set; }
 }
