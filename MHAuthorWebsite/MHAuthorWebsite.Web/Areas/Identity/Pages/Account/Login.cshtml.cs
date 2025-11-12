@@ -113,12 +113,18 @@ public class LoginModel : PageModel
 
         if (ModelState.IsValid)
         {
+            ApplicationUser user = await _userManager.FindByEmailAsync(Input.Email);
+            if (user?.IsBanned ?? false)
+            {
+                ModelState.AddModelError(string.Empty, "Вашият акаунт е блокиран. Свържете се с администратора за повече информация.");
+                return Page();
+            }
+
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, set lockoutOnFailure: true
             var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                ApplicationUser user = await _userManager.FindByEmailAsync(Input.Email);
                 if (user != null)
                 {
                     user.LastActive = DateTime.UtcNow;

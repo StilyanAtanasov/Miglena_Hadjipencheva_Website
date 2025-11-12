@@ -30,6 +30,13 @@ public class AdminUserManagementController : AdminBaseController
     {
         ServiceResult<bool> result = await _adminUserManagementService.ToggleIsBannedStatusAsync(userId);
         if (!result.Found) return BadRequest();
+        if (!result.Success)
+        {
+            if (result.Errors.ContainsKey("AlreadyDeleted") || result.Errors.ContainsKey("IsAdmin"))
+                return BadRequest();
+
+            return StatusCode(500);
+        }
 
         return Ok(result.Result);
     }

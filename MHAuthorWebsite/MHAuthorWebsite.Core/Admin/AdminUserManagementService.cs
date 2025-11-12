@@ -88,6 +88,8 @@ public class AdminUserManagementService : IAdminUserManagementService
     {
         ApplicationUser? user = _userManager.Users.FirstOrDefault(u => u.Id == userId);
         if (user == null) return ServiceResult<bool>.NotFound();
+        if (user.IsDeleted) return ServiceResult<bool>.Failure(new() { ["AlreadyDeleted"] = "Cannot change banned status of a deleted user." });
+        if (await _userManager.IsInRoleAsync(user, AdminRoleName)) return ServiceResult<bool>.Failure(new() { ["IsAdmin"] = "Cannot change banned status of an admin user." });
 
         user.IsBanned = !user.IsBanned;
         await _userManager.UpdateAsync(user);

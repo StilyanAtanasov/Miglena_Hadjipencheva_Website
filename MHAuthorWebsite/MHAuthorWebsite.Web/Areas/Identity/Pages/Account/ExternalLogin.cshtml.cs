@@ -117,13 +117,24 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                 isPersistent: false,
                 bypassTwoFactor: false);
 
-            if (result.Succeeded) return LocalRedirect(returnUrl);
+            if (result.Succeeded)
+            {
+                ApplicationUser appUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                if (appUser?.IsBanned ?? false)
+                {
+                    await _signInManager.SignOutAsync();
+                    TempData["ErrorMessage"] = "Вашият акаунт е блокиран. Свържете се с администратора за повече информация.";
+                    return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                }
+
+                return LocalRedirect(returnUrl);
+            }
             if (result.IsLockedOut) return RedirectToPage("./Lockout");
 
             // Extract email if available
             string email = info.Principal.FindFirstValue(ClaimTypes.Email);
 
-            // If OAuth DID NOT provide email → show default scaffold page (as now)
+            // If OAuth DID NOT provide email → show default scaffold page
             if (string.IsNullOrEmpty(email))
             {
                 ReturnUrl = returnUrl;
