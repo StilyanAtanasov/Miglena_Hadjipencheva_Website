@@ -42,6 +42,30 @@ public class AdminUserManagementService : IAdminUserManagementService
             .ToArrayAsync();
     }
 
+    public async Task<ServiceResult<UserDetailsViewModel>> GetUserDetailsReadonlyAsync(string userId)
+    {
+        ApplicationUser? user = await _repository
+            .AllReadonly<ApplicationUser>()
+            .FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) return ServiceResult<UserDetailsViewModel>.NotFound();
+
+        UserDetailsViewModel userDetails = new()
+        {
+            Id = user.Id,
+            Name = !user.IsDeleted ? user.Name : "",
+            Email = !user.IsDeleted ? user.Email : "",
+            Phone = !user.IsDeleted ? user.PhoneNumber : "",
+            IsActive = user.LastActive > DateTime.Now.AddDays(-UsersActivityForPeriod),
+            IsAdmin = _userManager.IsInRoleAsync(user, AdminRoleName).Result,
+            IsDeleted = user.IsDeleted,
+            IsBanned = user.IsBanned,
+            DateJoined = user.RegisteredOn,
+            LastActive = user.LastActive
+        };
+
+        return ServiceResult<UserDetailsViewModel>.Ok(userDetails);
+    }
+
     public async Task<ServiceResult> AssignRoleToUserAsync(string userId, string roleName)
     {
         bool roleExists = _roleManager.Roles.Any(r => r.Name == roleName);
@@ -58,5 +82,16 @@ public class AdminUserManagementService : IAdminUserManagementService
         });
 
         return ServiceResult.Ok();
+    }
+
+    public async Task<ServiceResult<bool>> ToggleIsBannedStatusAsync(string userId)
+    {
+        ApplicationUser? user = _userManager.Users.FirstOrDefault(u => u.Id == userId);
+        if (user == null) return ServiceResult<bool>.NotFound();
+
+        user.IsBanned = !user.IsBanned;
+        await _userManager.UpdateAsync(user);
+
+        return ServiceResult<bool>.Ok(user.IsBanned);
     }
 }

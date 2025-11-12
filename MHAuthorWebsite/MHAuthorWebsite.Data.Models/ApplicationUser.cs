@@ -16,6 +16,8 @@ public class ApplicationUser : IdentityUser
 
     public bool IsDeleted { get; set; }
 
+    public bool IsBanned { get; set; }
+
     public ICollection<ProductComment> ProductComments { get; set; } = new HashSet<ProductComment>();
 
     public ICollection<ProductCommentReaction> ProductCommentsReactions { get; set; } = new HashSet<ProductCommentReaction>();

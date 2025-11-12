@@ -11,5 +11,9 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder
             .Property(u => u.IsDeleted)
             .HasDefaultValue(false);
+
+        builder
+            .Property(u => u.IsBanned)
+            .HasDefaultValue(false);
     }
 }

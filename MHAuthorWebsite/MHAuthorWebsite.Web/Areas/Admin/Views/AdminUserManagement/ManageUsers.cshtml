@@ -8,6 +8,7 @@
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/modal.css" asp-append-version="true" />
 }
 
 <h1>Потребители</h1>
@@ -23,7 +24,7 @@
 	</tr>
 	</thead>
 	<tbody id="users-body">
-	@foreach (var u in Model)
+		@foreach (UserSummaryRowViewModel u in Model)
 	{
 		<tr data-userid="@u.Id">
 			<td>@u.Name</td>
@@ -47,9 +48,12 @@
 	</tbody>
 </table>
 
-@Html.AntiForgeryToken();
+@Html.AntiForgeryToken()
+
+<partial name="_Modal"/>
 
 @section Scripts {
 	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/elements/modal.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/admin/user-management.js" asp-append-version="true"></script>
 }

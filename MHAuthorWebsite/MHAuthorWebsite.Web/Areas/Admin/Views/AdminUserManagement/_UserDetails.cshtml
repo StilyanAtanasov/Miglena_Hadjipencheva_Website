@@ -1,0 +1,16 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.UserManagement
+@model UserDetailsViewModel
+
+<div id="user-details-container">
+	<h3>Детайли за потребителя</h3>
+	
+	<p><strong>Идентификатор:</strong> @Model.Id</p>
+	<p><strong>Име:</strong> @Model.Name</p>
+	<p><strong>Имейл:</strong> @Model.Email</p>
+	<p><strong>Телефон:</strong> @Model.Phone</p>
+	<p><strong>Роля:</strong> @(Model.IsAdmin ? "Admin" : "User")</p>
+	<p><strong>Активен:</strong> @(Model.IsActive ? "Да" : "Не")</p>
+	<p><strong>Блокиран:</strong> @(Model.IsBanned ? "Да" : "Не")</p>
+	<p><strong>Дата на създаване:</strong> @Model.DateJoined.ToString("dd.MM.yyyy, HH:mm")</p>
+	<p><strong>Последна активност:</strong> @Model.LastActive.ToString("dd.MM.yyyy, HH:mm")</p>
+</div>
