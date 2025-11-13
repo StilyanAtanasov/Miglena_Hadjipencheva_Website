@@ -11,4 +11,6 @@ public class EmailSettings
     public bool UseSsl { get; set; }
 
     public ContactEmailUser ContactEmailUser { get; set; } = null!;
+
+    public NotificationsEmailUser NotificationsEmailUser { get; set; } = null!;
 }

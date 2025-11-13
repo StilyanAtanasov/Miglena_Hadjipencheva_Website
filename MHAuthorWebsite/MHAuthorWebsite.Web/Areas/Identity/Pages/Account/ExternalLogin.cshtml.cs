@@ -117,19 +117,29 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                 isPersistent: false,
                 bypassTwoFactor: false);
 
+            ApplicationUser appUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
             if (result.Succeeded)
             {
-                ApplicationUser appUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-                if (appUser?.IsBanned ?? false)
-                {
-                    await _signInManager.SignOutAsync();
-                    TempData["ErrorMessage"] = "Вашият акаунт е блокиран. Свържете се с администратора за повече информация.";
-                    return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
-                }
+                if (!(appUser?.IsBanned ?? false)) return LocalRedirect(returnUrl);
 
-                return LocalRedirect(returnUrl);
+                await _signInManager.SignOutAsync();
+                TempData["ErrorMessage"] = "Вашият акаунт е блокиран. Свържете се с администратора за повече информация.";
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+
             }
             if (result.IsLockedOut) return RedirectToPage("./Lockout");
+            if (result.IsNotAllowed && appUser is { EmailConfirmed: false })
+            {
+                string resendUrl = Url.Page(
+                    "/Account/ResendEmailConfirmation",
+                    null,
+                    new { area = "Identity", email = appUser.Email },
+                    Request.Scheme);
+                string message = $"Моля потвърдете Вашия имейл адрес <a href='{HtmlEncoder.Default.Encode(resendUrl!)}'>тук</a>!";
+                TempData["ErrorMessage"] = message;
+
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+            }
 
             // Extract email if available
             string email = info.Principal.FindFirstValue(ClaimTypes.Email);

@@ -15,7 +15,12 @@
 	<section class="modal flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 		<form id="account" method="post" class="input-form flex-column">
-			<div asp-validation-summary="ModelOnly" role="alert" class="input-error"></div>
+			<div class="input-error" role="alert">
+				@foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+				{
+					@Html.Raw(error.ErrorMessage)
+				}
+			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.Email">Имейл адрес</label>
 				<input class="form-input" asp-for="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com" />

@@ -3,4 +3,6 @@
 public interface IEmailUserProvider
 {
     IEmailUser GetContactUser();
+
+    IEmailUser GetNotificationsUser();
 }

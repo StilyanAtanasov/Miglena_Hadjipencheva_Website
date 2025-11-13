@@ -1,0 +1,49 @@
+﻿@page
+@model ConfirmEmailModel
+
+@{
+	ViewData["Title"] = "Потвърждаване на имейл";
+	bool isConfirmed = (bool)ViewData["Result"]!;
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/confirm-email.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+	<h1 class="title">@ViewData["Title"]</h1>
+
+	@if (isConfirmed)
+	{
+		<video autoplay muted playsinline class="animation">
+			<source src="~/videos/success.webm" type="video/webm">
+		</video>
+		<div class="success-message flex-column">
+			<h2 class="heading">Вашият имейл адрес е успешно потвърден!</h2>
+			<p class="submessage">За да завършите процеса, моля, влезте в профила си.</p>
+		</div>
+		<nav class="navigation-btns flex-row">
+			<a asp-controller="Home" asp-action="Index" class="btn flex-row">
+				<i class="fa-regular fa-house"></i> Начало
+			</a>
+			<a asp-area="Identity" asp-page="/Account/Login" class="btn flex-row">
+				<i class="fa-regular fa-arrow-right-from-bracket"></i> Вход
+			</a>
+		</nav>
+	}
+	else
+	{
+		<video autoplay muted playsinline loop class="animation">
+			<source src="~/videos/error-sad-emote.webm" type="video/webm">
+		</video>
+		<div class="error-message flex-column">
+			<h2 class="heading">Възникна грешка при потвърждаване на имейл адреса!</h2>
+			<p class="submessage">Моля, опитайте отново! Ако проблемът продължава, свържете се с екипа.</p>
+		</div>
+		<nav class="navigation-btns flex-row">
+			<a asp-area="Identity" asp-page="/Account/ResendEmailConfirmation" class="btn flex-row">
+				<i class="fa-regular fa-rotate"></i> Опитай пак
+			</a>
+		</nav>
+	}
+</section>

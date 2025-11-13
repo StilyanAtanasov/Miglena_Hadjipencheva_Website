@@ -18,7 +18,7 @@
 		</p>
 		<form method="post" asp-route-returnUrl="@Model.ReturnUrl" class="input-form flex-column">
 			<input asp-for="RememberMe" type="hidden" />
-			<div asp-validation-summary="ModelOnly" class="text-danger" role="alert" class="input-error"></div>
+			<div asp-validation-summary="ModelOnly" role="alert" class="input-error"></div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.TwoFactorCode">Код за удостоверяване</label>
 				<input class="form-input" asp-for="Input.TwoFactorCode" autocomplete="off" />

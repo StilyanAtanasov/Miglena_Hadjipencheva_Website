@@ -10,4 +10,6 @@ public class EmailUserProvider : IEmailUserProvider
     public EmailUserProvider(IOptions<EmailSettings> settings) => _settings = settings.Value;
 
     public IEmailUser GetContactUser() => _settings.ContactEmailUser;
+
+    public IEmailUser GetNotificationsUser() => _settings.NotificationsEmailUser;
 }

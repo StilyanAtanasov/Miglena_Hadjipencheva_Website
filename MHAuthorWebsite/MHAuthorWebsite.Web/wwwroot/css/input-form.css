@@ -115,8 +115,13 @@
   transform: scale(1.3);
 }
 
-.input-form .input-error {
+.input-form .input-error,
+.input-form .form-error {
   color: var(--color-error);
+}
+
+.input-form .form-error li:empty {
+  display: none;
 }
 
 .submit-btn {
