@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -80,7 +79,14 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                 _emailUserProvider.GetNotificationsUser(),
                 Input.Email,
                 "Потвърдете Вашият имейл адрес",
-                $"Моля, потвърдете Вашият акаунт, като <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>кликнете тук</a>.",
+                $@"<!DOCTYPE html>
+                 <html>
+                   <body>
+                      <p>Моля, потвърдете Вашият акаунт, като
+                         <a href=""{HtmlEncoder.Default.Encode(callbackUrl!)}"">кликнете тук</a>.
+                       </p>
+                    </body>
+                 </html>",
                 true);
 
             ModelState.AddModelError(string.Empty, "Успешно е изпратен е имейл за потвърждение! Моля, проверете вашата поща!");
