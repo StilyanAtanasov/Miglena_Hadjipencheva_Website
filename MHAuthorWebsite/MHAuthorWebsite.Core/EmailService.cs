@@ -1,8 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.EmailConfiguration;
 using MHAuthorWebsite.Core.EmailConfiguration.Contracts;
-using MHAuthorWebsite.Core.EmailConfiguration.EmailUsers;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;

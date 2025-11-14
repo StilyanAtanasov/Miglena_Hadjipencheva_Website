@@ -188,7 +188,20 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            if (!user.EmailConfirmed)
+            {
+                string resendUrl2 = Url.Page(
+                    "/Account/ResendEmailConfirmation",
+                    null,
+                    new { area = "Identity", email = user!.Email },
+                    Request.Scheme);
+                string message2 = $"Моля потвърдете Вашия имейл адрес <a href='{HtmlEncoder.Default.Encode(resendUrl2!)}'>тук</a>!";
+                TempData["ErrorMessage"] = message2;
+
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
             return LocalRedirect(returnUrl);
         }
 
