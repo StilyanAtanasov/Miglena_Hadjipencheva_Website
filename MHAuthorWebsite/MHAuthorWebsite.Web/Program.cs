@@ -164,6 +164,8 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.AddSingleton<IEmailUserProvider, EmailUserProvider>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 AppEnvironment.Initialize(app.Environment.EnvironmentName);

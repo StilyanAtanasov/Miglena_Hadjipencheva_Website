@@ -3,6 +3,7 @@ using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dto;
+using MHAuthorWebsite.Core.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Data.Common.Extensions;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
@@ -10,7 +11,9 @@ using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Data.Shared.Filters;
 using MHAuthorWebsite.Data.Shared.Filters.Criteria;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
@@ -20,15 +23,29 @@ namespace MHAuthorWebsite.Core.Admin;
 public class AdminOrderService : OrderService, IAdminOrderService
 {
     private readonly IAdminEcontService _adminEcontService;
+    private readonly IEmailService _emailService;
+    private readonly IEmailUserProvider _emailUserProvider;
+    private readonly LinkGenerator _linkGenerator;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public AdminOrderService
-        (IApplicationRepository repository,
+    (IApplicationRepository repository,
         UserManager<ApplicationUser> userManager,
         IEcontService econtService,
         IAdminEcontService adminEcontService,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IEmailService emailService,
+        IEmailUserProvider emailUserProvider,
+        LinkGenerator linkGenerator,
+        IHttpContextAccessor httpContextAccessor)
         : base(repository, userManager, econtService, configuration)
-        => _adminEcontService = adminEcontService;
+    {
+        _adminEcontService = adminEcontService;
+        _emailService = emailService;
+        _emailUserProvider = emailUserProvider;
+        _linkGenerator = linkGenerator;
+        _httpContextAccessor = httpContextAccessor;
+    }
 
     public async Task<ICollection<AllOrdersListItemViewModel>> GetAllOrders(AllOrdersFilterCriteria filter)
         => await Repository
@@ -185,6 +202,66 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
         await Repository.SaveChangesAsync();
 
+        string userEmail = order.Shipment.Email;
+
+        string url = _linkGenerator.GetUriByAction(
+            httpContext: _httpContextAccessor.HttpContext!,
+            action: "OrderDetails",
+            controller: "Order",
+            values: new { orderId }
+        )!;
+
+        string contactsUrl = _linkGenerator.GetUriByAction(
+            httpContext: _httpContextAccessor.HttpContext!,
+            action: "Index",
+            controller: "Contacts"
+        )!;
+
+        await _emailService.SendEmailAsync(
+             _emailUserProvider.GetNotificationsUser(),
+             userEmail,
+             "Поръчката Ви е приета!",
+             $@"<!DOCTYPE html>
+            <html lang=""bg"">
+            <head>
+                <meta charset=""UTF-8"">
+                <title>Поръчката Ви е приета</title>
+            </head>
+            <body style=""margin:0;padding:0;background:rgba(240,240,240,0.721);font-family:'Sofia Sans Condensed',Arial,sans-serif;color:rgba(24,23,23,0.879);"">
+                <div style=""max-width:600px;margin:30px auto;background:#fcfcfc;padding:30px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.08);"">
+
+                    <h2 style=""color:rgb(34,201,34);margin-top:0;"">Вашата поръчка е приета!</h2>
+
+                    <p>Уважаеми/Уважаема {order.Shipment.Face},</p>
+
+                    <p>Вашата поръчка беше успешно приета и вече се подготвя да бъде изпратена!</p>
+
+                    <p>
+                        Можете да следите пратката си като кликнете 
+                        <a href=""{url}"" style=""color:rgb(39,103,231);font-weight:bold;"">тук</a>.
+                    </p>
+
+                    <p style=""margin:20px 0;font-size:15px;color:rgba(24,23,23,0.879);"">
+                        Ако имате въпроси или се нуждаете от съдействие, не се колебайте да се свържете с нас.
+                    </p>
+                    <div style=""margin:30px 0;"">
+                        <a href=""{contactsUrl}"" 
+                           style=""background:rgb(39,103,231);color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;"">
+                           Свържете се с нас
+                        </a>
+                    </div>
+
+                    <hr style=""border:0;border-top:1px solid #ccc;margin:30px 0;"">
+
+                    <p style=""font-size:12px;color:rgba(97,97,97,0.923);"">
+                        Това е автоматично съобщение. Моля, не отговаряйте на него.
+                    </p>
+
+                </div>
+            </body>
+            </html>",
+             true);
+
         return ServiceResult.Ok();
     }
 
@@ -211,6 +288,57 @@ public class AdminOrderService : OrderService, IAdminOrderService
         await RestoreProducts(Repository, order.Id, false);
 
         await Repository.SaveChangesAsync();
+
+        string userEmail = order.Shipment.Email;
+
+        string contactsUrl = _linkGenerator.GetUriByAction(
+            httpContext: _httpContextAccessor.HttpContext!,
+            action: "Index",
+            controller: "Contacts"
+        )!;
+
+        await _emailService.SendEmailAsync(
+            _emailUserProvider.GetNotificationsUser(),
+            userEmail,
+            "Поръчката Ви беше отхвърлена",
+            $@"<!DOCTYPE html>
+            <html lang=""bg"">
+            <head>
+                <meta charset=""UTF-8"">
+                <title>Поръчката Ви беше отказана</title>
+            </head>
+            <body style=""margin:0;padding:0;background:rgba(240,240,240,0.721);font-family:'Sofia Sans Condensed',Arial,sans-serif;color:rgba(24,23,23,0.879);"">
+                <div style=""max-width:600px;margin:30px auto;background:#fcfcfc;padding:30px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.08);"">
+
+                    <h2 style=""color:rgb(255,73,73);margin-top:0;"">Вашата поръчка е отказана</h2>
+
+                    <p>Уважаеми/Уважаема {order.Shipment.Face},</p>
+
+                    <p>
+                        За съжаление поръчката Ви не може да бъде изпълнена.  
+                        Ако имате въпроси или желаете допълнителна информация, можете да се свържете с нас.
+                    </p>
+
+                    <p style=""margin:20px 0;font-size:15px;color:rgba(24,23,23,0.879);"">
+                        Ако имате въпроси или се нуждаете от съдействие, не се колебайте да се свържете с нас.
+                    </p>
+                    <div style=""margin:30px 0;"">
+                        <a href=""{contactsUrl}"" 
+                           style=""background:rgb(58,5,58);color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;"">
+                           Свържете се с нас
+                        </a>
+                    </div>
+
+                    <hr style=""border:0;border-top:1px solid #ccc;margin:30px 0;"">
+
+                    <p style=""font-size:12px;color:rgba(97,97,97,0.923);"">
+                        Това е автоматично съобщение. Моля, не отговаряйте на него.
+                    </p>
+
+                </div>
+            </body>
+            </html>",
+            true);
 
         return ServiceResult.Ok();
     }
@@ -241,6 +369,57 @@ public class AdminOrderService : OrderService, IAdminOrderService
         await RestoreProducts(Repository, order.Id, false);
 
         await Repository.SaveChangesAsync();
+
+        string userEmail = order.Shipment.Email;
+
+        string contactsUrl = _linkGenerator.GetUriByAction(
+            httpContext: _httpContextAccessor.HttpContext!,
+            action: "Index",
+            controller: "Contacts"
+        )!;
+
+        await _emailService.SendEmailAsync(
+            _emailUserProvider.GetNotificationsUser(),
+            userEmail,
+            "Поръчката Ви беше прекратена",
+            $@"<!DOCTYPE html>
+            <html lang=""bg"">
+            <head>
+                <meta charset=""UTF-8"">
+                <title>Поръчката Ви беше прекратена</title>
+            </head>
+            <body style=""margin:0;padding:0;background:rgba(240,240,240,0.721);font-family:'Sofia Sans Condensed',Arial,sans-serif;color:rgba(24,23,23,0.879);"">
+                <div style=""max-width:600px;margin:30px auto;background:#fcfcfc;padding:30px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.08);"">
+
+                    <h2 style=""color:rgb(255,191,0);margin-top:0;"">Вашата поръчка беше прекратена</h2>
+
+                    <p>Уважаеми/Уважаема {order.Shipment.Face},</p>
+
+                    <p>
+                        Поръчката Ви беше маркирана като приета, но впоследствие прекратена преди изпращане.  
+                        Ако желаете да научите причината или да направите нова поръчка, екипът ни е на разположение.
+                    </p>
+
+                    <p style=""margin:20px 0;font-size:15px;color:rgba(24,23,23,0.879);"">
+                        Ако имате въпроси или се нуждаете от съдействие, не се колебайте да се свържете с нас.
+                    </p>
+                    <div style=""margin:30px 0;"">
+                        <a href=""{contactsUrl}"" 
+                           style=""background:rgb(58,5,58);color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;"">
+                           Свържете се с нас
+                        </a>
+                    </div>
+
+                    <hr style=""border:0;border-top:1px solid #ccc;margin:30px 0;"">
+
+                    <p style=""font-size:12px;color:rgba(97,97,97,0.923);"">
+                        Това е автоматично съобщение. Моля, не отговаряйте на него.
+                    </p>
+
+                </div>
+            </body>
+            </html>",
+            true);
 
         return ServiceResult.Ok();
     }
