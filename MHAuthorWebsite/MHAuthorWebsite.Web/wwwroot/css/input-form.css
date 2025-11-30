@@ -120,6 +120,21 @@
   color: var(--color-error);
 }
 
+.input-form .form-error ul {
+  list-style-type: none;
+}
+
+.input-form .form-error ul li {
+  text-align: left;
+}
+
+.input-form .form-error ul li::before {
+  content: "\e247";
+  font-family: "Font Awesome 7 Pro";
+  font-weight: 900;
+  margin-right: 2rem;
+}
+
 .input-form .form-error li:empty {
   display: none;
 }

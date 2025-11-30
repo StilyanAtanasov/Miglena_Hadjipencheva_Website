@@ -11,6 +11,7 @@ using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Seeding;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.GCommon;
+using MHAuthorWebsite.Web.Common.Localization.Identity;
 using MHAuthorWebsite.Web.Infrastructure.Initialization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +39,7 @@ builder.Services
         options.SignIn.RequireConfirmedAccount = true;
     })
     .AddRoles<IdentityRole>()
+    .AddErrorDescriber<BulgarianIdentityErrorDescriber>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddAuthentication()

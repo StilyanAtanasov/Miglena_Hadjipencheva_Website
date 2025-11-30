@@ -15,7 +15,7 @@
 	<section class="modal flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 		<form id="account" method="post" class="input-form flex-column">
-			<div class="input-error" role="alert">
+			<div class="form-error" role="alert">
 				@foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
 				{
 					@Html.Raw(error.ErrorMessage)
