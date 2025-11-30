@@ -23,6 +23,7 @@ public class AdminProductServiceTests
 
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
     private Mock<IFastCacheService> _cacheMock = null!;
+    private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
 
     private Product _defaultProduct = null!;
 
@@ -41,7 +42,8 @@ public class AdminProductServiceTests
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
-        _adminProductService = new AdminProductService(_cacheMock.Object, new ApplicationRepository(_dbContext), _userManagerMock.Object);
+        _adminProductService = new AdminProductService(_cacheMock.Object, new ApplicationRepository(_dbContext),
+            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object);
 
         // Arrange
         _defaultProduct = await SeedProductAsync();
@@ -136,7 +138,8 @@ public class AdminProductServiceTests
                   .Setup(r => r.AddAsync(It.IsAny<Product>()))
                   .Throws(new Exception("Db error"));
 
-        _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object, _userManagerMock.Object);
+        _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object,
+            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object);
 
         // Act
         ServiceResult result = await _adminProductService.AddProductAsync(model);
@@ -279,7 +282,8 @@ public class AdminProductServiceTests
             .Setup(r => r.All<Product>())
             .Throws(new Exception("Db error"));
 
-        _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object, _userManagerMock.Object);
+        _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object,
+            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object);
 
         // Act
         ServiceResult result = await _adminProductService.DeleteProductAsync(Guid.NewGuid());
@@ -380,7 +384,8 @@ public class AdminProductServiceTests
             .Setup(r => r.All<Product>())
             .Throws(new Exception("Db error"));
 
-        _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object, _userManagerMock.Object);
+        _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object,
+            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object);
 
         // Act
         ServiceResult result = await _adminProductService.ToggleProductPublicityAsync(_defaultProduct.Id);

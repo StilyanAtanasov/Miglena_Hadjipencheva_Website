@@ -21,6 +21,7 @@ public class ProductServiceTests
 
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
     private Mock<IFastCacheService> _cacheMock = null!;
+    private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
 
     private Product _defaultProduct = null!;
     private const string DefaultUserId = "test-user";
@@ -40,7 +41,8 @@ public class ProductServiceTests
         _cacheMock = new Mock<IFastCacheService>();
 
         _dbContext = new ApplicationDbContext(options);
-        _productService = new ProductService(_cacheMock.Object, new ApplicationRepository(_dbContext), _userManagerMock.Object);
+        _productService = new ProductService(_cacheMock.Object, _globalCacheKeysManagementServiceMock.Object,
+            new ApplicationRepository(_dbContext), _userManagerMock.Object);
 
         // Arrange
         _defaultProduct = await SeedProductAsync();
@@ -229,7 +231,8 @@ public class ProductServiceTests
             .Setup(r => r.AllReadonly<Product>())
             .Throws(new Exception("Simulated failure"));
 
-        ProductService service = new ProductService(_cacheMock.Object, repoMock.Object, _userManagerMock.Object);
+        ProductService service = new ProductService(_cacheMock.Object, _globalCacheKeysManagementServiceMock.Object,
+            repoMock.Object, _userManagerMock.Object);
 
         // Act
         ServiceResult<ProductDetailsViewModel> result = await service

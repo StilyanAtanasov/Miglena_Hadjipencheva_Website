@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MHAuthorWebsite.Data.Models.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ProductAttribute;
@@ -19,6 +20,10 @@ public class ProductAttribute
     [MaxLength(ValueMaxLength)]
     [Comment("Value of the attribute")]
     public string? Value { get; set; } = null!;
+
+    [Required]
+    [Comment("Defines in which section of the product's details page will it appear")]
+    public ProductAttributeDisplayPosition DisplayPosition { get; set; }
 
     [Required]
     [Comment("Foreign key to Product")]

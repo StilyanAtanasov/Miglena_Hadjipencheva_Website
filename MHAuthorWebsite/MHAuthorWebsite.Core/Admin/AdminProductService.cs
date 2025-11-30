@@ -74,7 +74,8 @@ public class AdminProductService : ProductService, IAdminProductService
                         Key = a.Key,
                         Value = a.Value,
                         ProductId = product.Id,
-                        AttributeDefinitionId = a.AttributeDefinitionId
+                        AttributeDefinitionId = a.AttributeDefinitionId,
+                        DisplayPosition = a.DisplayPosition
                     })
                     .ToArray();
 
@@ -121,7 +122,7 @@ public class AdminProductService : ProductService, IAdminProductService
                 {
                     Id = i.Id,
                     Url = i.ImageUrl,
-                    IsTitle = i.Id == product.Thumbnail.ImageOriginalId,
+                    IsTitle = i.Id == product.Thumbnail.ImageOriginalId
                 })
                 .ToArray(),
             Attributes = product.Attributes
@@ -160,7 +161,13 @@ public class AdminProductService : ProductService, IAdminProductService
         product.Weight = model.Weight;
 
         for (int i = 0; i < model.Attributes.Count; i++)
-            product.Attributes.ElementAt(i).Value = model.Attributes.ElementAt(i).Value;
+        {
+            AttributeValueForm attributeModel = model.Attributes.ElementAt(i);
+            ProductAttribute attribute = product.Attributes.ElementAt(i);
+
+            attribute.Value = attributeModel.Value;
+            attribute.DisplayPosition = attributeModel.DisplayPosition;
+        }
 
         await Repository.SaveChangesAsync();
 

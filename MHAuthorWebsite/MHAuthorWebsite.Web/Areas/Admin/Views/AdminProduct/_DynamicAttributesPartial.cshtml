@@ -1,7 +1,23 @@
 ﻿@using MHAuthorWebsite.Web.Utils
 @using MHAuthorWebsite.Web.ViewModels.Admin.Product
-@using MHAuthorWebsite.Web.ViewModels.Product
+@using MHAuthorWebsite.Data.Models.Enums
+@using MHAuthorWebsite.Data.Common.Extensions
 @model ICollection<AttributeValueForm>
+
+@{
+	SelectList displayPositions = new SelectList(
+		Enum.GetValues(typeof(ProductAttributeDisplayPosition))
+			.Cast<ProductAttributeDisplayPosition>()
+			.Select(e => new SelectListItem
+			{
+				Value = e.ToString(),
+				Text = e.GetDisplayName()
+			}),
+		"Value",
+		"Text",
+		ProductAttributeDisplayPosition.AdditionalInfoTable
+		);
+}
 
 @for (int i = 0; i < Model.Count; i++)
 {
@@ -35,6 +51,8 @@
 		<input type="hidden" name="Attributes[@i].Key" value="@a.Key"/>
 		<input type="hidden" name="Attributes[@i].Label" value="@a.Label"/>
 		<input type="hidden" name="Attributes[@i].AttributeDefinitionId" value="@a.AttributeDefinitionId" />
+
+		<select autocomplete="off" name="Attributes[@i].DisplayPosition" asp-items="@displayPositions"></select>
 
 		<span class="input-error"
 		      data-valmsg-for="Attributes[@i].Value"

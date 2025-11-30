@@ -11,6 +11,9 @@ public class AttributeValueForm : IValidatableObject
 
     public string Label { get; set; } = null!;
 
+    [Required]
+    public ProductAttributeDisplayPosition DisplayPosition { get; set; }
+
     public AttributeDataType DataType { get; set; }
 
     public bool IsRequired { get; set; }
@@ -22,11 +25,9 @@ public class AttributeValueForm : IValidatableObject
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (IsRequired && string.IsNullOrWhiteSpace(Value))
-        {
             yield return new ValidationResult(
                 $"Полето \"{Label}\" е задължително.",
                 new[] { nameof(Value) }
             );
-        }
     }
 }

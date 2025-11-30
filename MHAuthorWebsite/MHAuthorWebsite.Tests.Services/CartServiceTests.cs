@@ -17,6 +17,7 @@ public class CartServiceTests
     private ApplicationDbContext _dbContext = null!;
 
     private readonly Mock<IFastCacheService> _cacheMock = new();
+    private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
 
     private Cart _cart = null!;
     private CartItem _item = null!;
@@ -31,7 +32,8 @@ public class CartServiceTests
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
-        _cartService = new CartService(_cacheMock.Object, new ApplicationRepository(_dbContext));
+        _cartService = new CartService(_cacheMock.Object, new ApplicationRepository(_dbContext),
+            _globalCacheKeysManagementServiceMock.Object);
 
         // Arrange
         (_cart, _item) = await SeedCartAsync(DefaultUserId);
