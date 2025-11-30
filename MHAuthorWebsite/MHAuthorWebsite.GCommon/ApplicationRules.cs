@@ -13,6 +13,21 @@ public static class ApplicationRules
 
         public const string CurrentVersion = "1.0.1";
     }
+    public static class CacheKeys
+    {
+        public static string ProductDetailsKey(Guid id) => $"Product:{id}";
+        public static string ProductCommentsKey(Guid id) => $"Product:{id}:Comments";
+        public static string ProductDetailsUserDataKey(Guid id, string userId) => $"Product:{id}:User:{userId}";
+
+        public static string ProductCardKey(Guid productId) => $"Product:Card:{productId}";
+
+        public static string LikedProductsKey(string userId) => $"LikedProducts:{userId}";
+
+        public static string AdminIdsKey() => "AdminIds";
+        public static string GlobalDiscountsStateIdKey() => "GlobalDiscountsStateId";
+
+        public static string CartKey(string userId) => $"Cart:{userId}";
+    }
 
     public static class CurrencyRates
     {
@@ -66,6 +81,7 @@ public static class ApplicationRules
             public const string Dashboard = nameof(Dashboard);
             public const string AllProducts = nameof(AllProducts);
             public const string AddProduct = nameof(AddProduct);
+            public const string AddDiscount = nameof(AddDiscount);
             public const string EditProduct = nameof(EditProduct);
             public const string AddProductType = nameof(AddProductType);
             public const string AllOrders = nameof(AllOrders);

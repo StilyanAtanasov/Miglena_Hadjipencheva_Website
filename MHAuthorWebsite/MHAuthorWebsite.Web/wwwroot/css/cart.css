@@ -78,6 +78,16 @@
   border-radius: 1rem;
 }
 
+.product-price-info .unit-price.old-price {
+  font-size: 1.3rem;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
+.product-price-info .unit-price.discounted-price {
+  color: var(--color-orange-dark);
+}
+
 .cart-warning {
   background-color: var(--color-secondary-light);
   border: 1px solid var(--color-secondary);
@@ -96,12 +106,25 @@
   flex-shrink: 0;
 }
 
+.price-summary-row {
+  justify-content: space-between;
+}
+
+.price-summary-row .price-text {
+  font-weight: 700;
+}
+
+.price-summary-row .price-text.discount {
+  color: var(--color-success);
+}
+
 .btn-order {
   font-size: 1.7rem;
   font-weight: 600;
   border-radius: 1.5rem;
   padding: 1rem 1.5rem;
   justify-content: center;
+  margin-top: 2rem;
 }
 
 .btn-order i {
@@ -226,7 +249,7 @@
     width: 90%;
     background-color: var(--color-primary);
     bottom: 8.5rem;
-    height: 10rem;
+    height: 17rem;
     padding: 1rem 3rem;
     gap: 0;
     flex-direction: row;

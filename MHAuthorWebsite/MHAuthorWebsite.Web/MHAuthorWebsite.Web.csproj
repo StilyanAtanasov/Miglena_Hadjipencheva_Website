@@ -22,6 +22,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.20" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.20" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.18" />
+		<PackageReference Include="Microsoft.Build" Version="17.8.43" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.18">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -31,6 +32,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
 		<PackageReference Include="System.Text.Json" Version="8.0.6" />
 	</ItemGroup>

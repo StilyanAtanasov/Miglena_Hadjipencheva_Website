@@ -4,7 +4,7 @@ using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Dto;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Web.Dto.Product;
-using MHAuthorWebsite.Web.ViewModels.Product;
+using MHAuthorWebsite.Web.ViewModels.Admin.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text;
@@ -235,6 +235,45 @@ public class AdminProductController : AdminBaseController
     {
         ServiceResult result = await _productService.ToggleProductPublicityAsync(productId);
         if (!result.Found) return NotFound();
+        if (!result.Success) return StatusCode(500);
+
+        return RedirectToAction(nameof(ProductsList));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AddDiscount(Guid productId)
+    {
+        ServiceResult<decimal> result = await _productService.GetProductPriceReadonlyAsync(productId);
+        if (!result.Found) return NotFound();
+
+        return View(new AddProductDiscountFormViewModel
+        {
+            ProductId = productId,
+            CurrentPrice = result.Result
+        });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddDiscount(AddProductDiscountFormViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        ServiceResult result = await _productService.AddDiscountAsync(model);
+        if (!result.Success)
+        {
+            foreach (var error in result.Errors)
+                ModelState.AddModelError(string.Empty, error.Value);
+
+            return View(model);
+        }
+
+        return RedirectToAction(nameof(ProductsList));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EndDiscount(Guid productId)
+    {
+        ServiceResult result = await _productService.EndDiscountAsync(productId);
         if (!result.Success) return StatusCode(500);
 
         return RedirectToAction(nameof(ProductsList));

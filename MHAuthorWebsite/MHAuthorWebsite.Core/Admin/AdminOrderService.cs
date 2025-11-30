@@ -56,7 +56,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
             .Select(o => new AllOrdersListItemViewModel
             {
                 Id = o.Id,
-                CustomerName = o.Shipment.Face, // TODO Check if user has their data deleted
+                CustomerName = o.Shipment.Face,
                 OrderDate = o.Date,
                 TotalAmount = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity),
                 Currency = o.Shipment.Currency,

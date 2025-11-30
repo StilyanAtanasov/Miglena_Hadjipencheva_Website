@@ -1,4 +1,4 @@
-﻿namespace MHAuthorWebsite.Web.ViewModels.Product;
+﻿namespace MHAuthorWebsite.Web.ViewModels.Admin.Product;
 
 public class ProductListViewModel
 {
@@ -11,6 +11,8 @@ public class ProductListViewModel
     public int StockQuantity { get; set; }
 
     public bool IsPublic { get; set; }
+
+    public bool HasActiveDiscount { get; set; }
 
     public string ProductTypeName { get; set; } = null!;
 }

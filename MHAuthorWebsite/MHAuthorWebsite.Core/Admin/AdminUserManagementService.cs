@@ -1,10 +1,12 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Admin.UserManagement;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.DataCollection;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
@@ -15,10 +17,12 @@ public class AdminUserManagementService : IAdminUserManagementService
     private readonly IApplicationRepository _repository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IFastCacheService _cache;
 
-    public AdminUserManagementService(IApplicationRepository repository, UserManager<ApplicationUser> userManager,
+    public AdminUserManagementService(IFastCacheService cache, IApplicationRepository repository, UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager)
     {
+        _cache = cache;
         _repository = repository;
         _userManager = userManager;
         _roleManager = roleManager;
@@ -85,6 +89,8 @@ public class AdminUserManagementService : IAdminUserManagementService
             ["RoleAssignment"] =
             $"Failed to assign role '{roleName}' to user '{userId}': {string.Join(", ", result.Errors.Select(e => e.Description))}"
         });
+
+        if (roleName == AdminRoleName) await _cache.RemoveAsync(AdminIdsKey());
 
         return ServiceResult.Ok();
     }

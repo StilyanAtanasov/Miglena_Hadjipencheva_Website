@@ -1,8 +1,8 @@
-﻿@using MHAuthorWebsite.Web.ViewModels.Product
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Product
+@using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using MHAuthorWebsite.Web.Utils
-@using static MHAuthorWebsite.GCommon.EntityConstraints.Product
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Product
+@using static MHAuthorWebsite.GCommon.EntityConstraints.Product
 @model EditProductFormViewModel
 
 
@@ -62,7 +62,7 @@
 				{
 					<div class="image-container @(image.IsTitle ? "title-img-container" : "")">
 						<img src="@image.Url" alt="Product Image" class="@(image.IsTitle ? "title-img" : "")" data-id="@image.Id" data-is-title="@image.IsTitle"/>
-						<button type="button" class="removeBtn"><i class="fa-solid fa-file-slash"></i></button>
+						<button type="button" class="removeBtn"><i class="fa-regular fa-image-circle-xmark"></i></button>
 						<button type="button" class="makeTitleBtn"><i class="fa-solid fa-star-sharp"></i></button>
 					</div>
 				}

@@ -1,5 +1,5 @@
 .page-wrapper {
-  padding: 8rem 30rem;
+  padding: 4rem 30rem 8rem 30rem;
 }
 
 .hero-info {
@@ -62,18 +62,71 @@
   gap: 2rem;
 }
 
-.price-text {
+.order-info .price {
+  font-size: 2.7rem;
+  font-weight: 800;
+}
+
+.order-info .price.old-price {
+  font-size: 1.7rem;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
+.order-info .price.discounted-price {
+  color: var(--color-secondary);
+  transform: translateY(-0.7rem);
+}
+
+.order-info .price-text {
   font-size: 2rem;
   font-weight: 500;
   color: var(--color-success);
 }
 
-.price-text.unavailable {
+.order-info .price-text.unavailable {
   color: var(--color-error);
 }
 
-.quantity {
+.order-info .quantity {
   margin-bottom: 1rem;
+}
+
+.discount-clock {
+  font-size: 1.9rem;
+  padding: 1.5rem 7rem;
+  border-radius: 4rem;
+  border: none;
+  background-color: var(--color-secondary-lighter);
+  gap: 5rem;
+  width: fit-content;
+  margin: 0 auto 2rem auto;
+}
+
+.discount-clock .subheading {
+  font-size: 2.5rem;
+}
+
+.discount-clock .countdown-timer {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.discount-clock .countdown-timer .time-box {
+  text-align: center;
+  gap: 0;
+  padding: 0 0.8rem;
+}
+
+.discount-clock .countdown-timer .time-box .time-value {
+  font-weight: 900;
+  font-size: 2.3rem;
+}
+
+.discount-clock .countdown-timer .time-box .time-label {
+  font-size: 1.6rem;
+  font-weight: 600;
 }
 
 .details-info {

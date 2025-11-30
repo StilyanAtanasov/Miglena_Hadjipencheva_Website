@@ -8,6 +8,7 @@ using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
+using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ProductComment;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
@@ -15,11 +16,13 @@ namespace MHAuthorWebsite.Core;
 
 public class ProductCommentService : IProductCommentService
 {
+    private readonly IFastCacheService _cache;
     private readonly IApplicationRepository _repository;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public ProductCommentService(IApplicationRepository repository, UserManager<ApplicationUser> userManager)
+    public ProductCommentService(IFastCacheService cache, IApplicationRepository repository, UserManager<ApplicationUser> userManager)
     {
+        _cache = cache;
         _repository = repository;
         _userManager = userManager;
     }
@@ -116,6 +119,8 @@ public class ProductCommentService : IProductCommentService
         });
 
         await _repository.SaveChangesAsync();
+
+        await _cache.RemoveAsync(ProductCommentsKey(model.ProductId));
         return ServiceResult.Ok();
     }
 
@@ -191,6 +196,8 @@ public class ProductCommentService : IProductCommentService
         }
 
         await _repository.SaveChangesAsync();
+        await _cache.RemoveAsync(ProductCommentsKey(model.ProductId));
+
         return ServiceResult<ICollection<string>>.Ok(publicIdsToDelete);
     }
 
@@ -229,6 +236,8 @@ public class ProductCommentService : IProductCommentService
         }
 
         await _repository.SaveChangesAsync();
+        await _cache.RemoveAsync(ProductDetailsUserDataKey(comment.ProductId, userId));
+        await _cache.RemoveAsync(ProductCommentsKey(comment.ProductId));
 
         IEnumerable<CommentReaction> allReactions = Enum.GetValues(typeof(CommentReaction))
             .Cast<CommentReaction>();
@@ -269,10 +278,10 @@ public class ProductCommentService : IProductCommentService
             HasMoreComments = product.Comments.Count(c => c.ParentCommentId == null && (!ratingFilter.HasValue || c.Rating == ratingFilter.Value)) > page * CommentPageCount,
             Comments = product.Comments
                 .Where(c => c.ParentCommentId == null && (!ratingFilter.HasValue || c.Rating == ratingFilter.Value))
-                .OrderBy(c => c.Reactions.Count(r => r.Reaction == CommentReaction.Like))
+                .OrderByDescending(c => c.Reactions.Count(r => r.Reaction == CommentReaction.Like))
                 .ThenByDescending(c => c.Rating)
                 .ThenByDescending(c => c.Date)
-                .ThenBy(c => c.Replies.Count)
+                .ThenByDescending(c => c.Replies.Count)
                 .Skip((page - 1) * CommentPageCount)
                 .Take(CommentPageCount)
                 .Select(c => new ProductBaseCommentViewModel
@@ -298,7 +307,7 @@ public class ProductCommentService : IProductCommentService
                     TotalRepliesCount = c.Replies.Count,
                     IsUserAuthor = userId == c.UserId,
                     Replies = c.Replies
-                        .OrderBy(r => r.Reactions.Count(re => re.Reaction == CommentReaction.Like))
+                        .OrderBy(r => r.Date)
                         .Take(CommentRepliesPageCount)
                         .Select(r => new ProductCommentReplyViewModel
                         {
@@ -337,6 +346,7 @@ public class ProductCommentService : IProductCommentService
                 .ThenInclude(pc => pc.User)
             .Include(pc => pc.Replies)
                 .ThenInclude(pc => pc.ParentReply)
+                    .ThenInclude(pr => pr!.User)
             .FirstOrDefaultAsync();
 
         if (comment is null) return ServiceResult<ReplyPageViewModel>.BadRequest();
@@ -345,7 +355,7 @@ public class ProductCommentService : IProductCommentService
         {
             HasMoreReplies = comment.Replies.Count > page * CommentRepliesPageCount,
             Replies = comment.Replies
-                .OrderBy(r => r.Reactions.Count(re => re.Reaction == CommentReaction.Like))
+                .OrderBy(r => r.Date)
                 .Skip((page - 1) * CommentRepliesPageCount)
                 .Take(CommentRepliesPageCount)
                 .Select(r => new ProductCommentReplyViewModel
@@ -387,8 +397,10 @@ public class ProductCommentService : IProductCommentService
         comment.IsDeleted = true;
         foreach (ProductComment reply in comment.Replies) reply.IsDeleted = true;
 
-
         await _repository.SaveChangesAsync();
+
+        await _cache.RemoveAsync(ProductDetailsUserDataKey(comment.ProductId, userId));
+        await _cache.RemoveAsync(ProductCommentsKey(comment.ProductId));
 
         return ServiceResult.Ok();
     }

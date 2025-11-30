@@ -83,7 +83,7 @@ document.addEventListener(`DOMContentLoaded`, async () => {
       const removeBtn = document.createElement(`button`);
       removeBtn.type = `button`;
       removeBtn.classList = `removeBtn`;
-      removeBtn.innerHTML = `<i class="fa-solid fa-file-slash"></i>`;
+      removeBtn.innerHTML = `<i class="fa-regular fa-image-circle-xmark"></i>`;
       removeBtn.addEventListener(`click`, () => deleteImage(image, imgWrapper));
 
       const makeTitleBtn = document.createElement(`button`);

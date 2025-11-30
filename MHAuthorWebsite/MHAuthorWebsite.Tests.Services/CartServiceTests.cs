@@ -6,6 +6,7 @@ using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Cart;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace MHAuthorWebsite.Tests.Services;
 
@@ -15,6 +16,8 @@ public class CartServiceTests
     private ICartService _cartService = null!;
     private ApplicationDbContext _dbContext = null!;
 
+    private readonly Mock<IFastCacheService> _cacheMock = new();
+
     private Cart _cart = null!;
     private CartItem _item = null!;
 
@@ -23,12 +26,12 @@ public class CartServiceTests
     [SetUp]
     public async Task Setup()
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+        DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase("CartTestDb")
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
-        _cartService = new CartService(new ApplicationRepository(_dbContext));
+        _cartService = new CartService(_cacheMock.Object, new ApplicationRepository(_dbContext));
 
         // Arrange
         (_cart, _item) = await SeedCartAsync(DefaultUserId);

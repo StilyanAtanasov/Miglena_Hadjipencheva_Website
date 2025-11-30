@@ -1,21 +1,23 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
+using MHAuthorWebsite.Web.ViewModels.Admin.Product;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 
 namespace MHAuthorWebsite.Core.Admin;
 
 public class AdminProductService : ProductService, IAdminProductService
 {
-    private readonly IApplicationRepository _repository;
-
-    public AdminProductService(IApplicationRepository repository, UserManager<ApplicationUser> userManager)
-    : base(repository, userManager)
-        => _repository = repository;
+    public AdminProductService(IFastCacheService cacheService, IApplicationRepository repository,
+        IGlobalCacheKeysManagementService globalCacheKeysManagementService,
+        UserManager<ApplicationUser> userManager)
+        : base(cacheService, globalCacheKeysManagementService, repository, userManager) { }
 
     public async Task<ServiceResult> AddProductAsync(AddProductDto model)
     {
@@ -31,8 +33,8 @@ public class AdminProductService : ProductService, IAdminProductService
                 Weight = model.Weight
             };
 
-            await _repository.AddAsync(product);
-            await _repository.SaveChangesAsync();
+            await Repository.AddAsync(product);
+            await Repository.SaveChangesAsync();
 
             ProductImage[] images = model.ImageUrls.Select(i => new ProductImage
             {
@@ -42,7 +44,7 @@ public class AdminProductService : ProductService, IAdminProductService
                 PublicId = i.PublicId
             }).ToArray();
 
-            await _repository.AddRangeAsync(images);
+            await Repository.AddRangeAsync(images);
 
             ProductImage thumbnailImage = new()
             {
@@ -52,8 +54,8 @@ public class AdminProductService : ProductService, IAdminProductService
                 PublicId = model.Thumbnail.PublicId
             };
 
-            await _repository.AddAsync(thumbnailImage);
-            await _repository.SaveChangesAsync();
+            await Repository.AddAsync(thumbnailImage);
+            await Repository.SaveChangesAsync();
 
             ProductThumbnail thumbnail = new()
             {
@@ -76,10 +78,10 @@ public class AdminProductService : ProductService, IAdminProductService
                     })
                     .ToArray();
 
-                await _repository.AddRangeAsync(attributes);
+                await Repository.AddRangeAsync(attributes);
             }
 
-            await _repository.SaveChangesAsync();
+            await Repository.SaveChangesAsync();
 
             return ServiceResult.Ok();
         }
@@ -91,7 +93,7 @@ public class AdminProductService : ProductService, IAdminProductService
 
     public async Task<ServiceResult<EditProductFormViewModel>> GetProductForEditAsync(Guid productId)
     {
-        Product? product = await _repository
+        Product? product = await Repository
             .AllReadonly<Product>()
             .IgnoreQueryFilters()
             .Where(p => !p.IsDeleted)
@@ -141,7 +143,7 @@ public class AdminProductService : ProductService, IAdminProductService
 
     public async Task<ServiceResult> UpdateProductAsync(EditProductFormViewModel model)
     {
-        Product? product = await _repository
+        Product? product = await Repository
             .All<Product>()
             .IgnoreQueryFilters()
             .Where(p => !p.IsDeleted)
@@ -160,7 +162,10 @@ public class AdminProductService : ProductService, IAdminProductService
         for (int i = 0; i < model.Attributes.Count; i++)
             product.Attributes.ElementAt(i).Value = model.Attributes.ElementAt(i).Value;
 
-        await _repository.SaveChangesAsync();
+        await Repository.SaveChangesAsync();
+
+        await Cache.RemoveAsync(ProductDetailsKey(product.Id));
+        await Cache.RemoveAsync(ProductCardKey(product.Id));
 
         return ServiceResult.Ok();
     }
@@ -169,7 +174,7 @@ public class AdminProductService : ProductService, IAdminProductService
     {
         try
         {
-            Product? product = await _repository
+            Product? product = await Repository
                 .All<Product>()
                 .IgnoreQueryFilters()
                 .Where(p => !p.IsDeleted)
@@ -178,7 +183,10 @@ public class AdminProductService : ProductService, IAdminProductService
             if (product is null) return ServiceResult.NotFound();
 
             product.IsDeleted = true;
-            await _repository.SaveChangesAsync();
+            await Repository.SaveChangesAsync();
+
+            await Cache.RemoveAsync(ProductCardKey(product.Id));
+            await Cache.RemoveAsync(ProductDetailsKey(product.Id));
 
             return ServiceResult.Ok();
         }
@@ -189,7 +197,7 @@ public class AdminProductService : ProductService, IAdminProductService
     }
 
     public async Task<ICollection<ProductTypeAttributesDto>> GetProductTypeAttributesAsync(int productTypeId) =>
-        await _repository
+        await Repository
             .Where<ProductAttributeDefinition>(pad => pad.ProductTypeId == productTypeId)
             .Select(pad => new ProductTypeAttributesDto
             {
@@ -203,10 +211,11 @@ public class AdminProductService : ProductService, IAdminProductService
             .ToArrayAsync();
 
     public async Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync() =>
-        await _repository
+        await Repository
             .AllReadonly<Product>()
             .IgnoreQueryFilters()
             .Include(p => p.ProductType)
+            .Include(p => p.Discounts)
             .Where(p => !p.IsDeleted)
             .Select(p => new ProductListViewModel
             {
@@ -215,7 +224,8 @@ public class AdminProductService : ProductService, IAdminProductService
                 Price = p.Price,
                 StockQuantity = p.StockQuantity,
                 ProductTypeName = p.ProductType.Name,
-                IsPublic = p.IsPublic
+                IsPublic = p.IsPublic,
+                HasActiveDiscount = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
             })
             .ToArrayAsync();
 
@@ -223,7 +233,7 @@ public class AdminProductService : ProductService, IAdminProductService
     {
         try
         {
-            Product? product = await _repository
+            Product? product = await Repository
                 .All<Product>()
                 .IgnoreQueryFilters()
                 .Where(p => !p.IsDeleted)
@@ -232,7 +242,7 @@ public class AdminProductService : ProductService, IAdminProductService
             if (product is null) return ServiceResult.NotFound();
 
             product.IsPublic = !product.IsPublic;
-            await _repository.SaveChangesAsync();
+            await Repository.SaveChangesAsync();
 
             return ServiceResult.Ok();
         }
@@ -243,9 +253,72 @@ public class AdminProductService : ProductService, IAdminProductService
     }
 
     public async Task<ICollection<Guid>> GetImageIdsByProductId(Guid productId)
-        => await _repository
+        => await Repository
                 .WhereReadonly<ProductImage>(i => i.ProductId == productId)
                 .IgnoreQueryFilters()
                 .Select(i => i.Id)
                 .ToArrayAsync();
+
+    public async Task<ServiceResult<decimal>> GetProductPriceReadonlyAsync(Guid productId)
+    {
+        decimal? price = await Repository.WhereReadonly<Product>(p => p.Id == productId)
+            .Select(p => (decimal?)p.Price)
+            .FirstOrDefaultAsync();
+        if (price is null)
+            return ServiceResult<decimal>.NotFound(new Dictionary<string, string>
+            {
+                { "ProductId", "Продуктът не беше намерен!" }
+            });
+
+        return ServiceResult<decimal>.Ok(price.Value);
+    }
+
+    public async Task<ServiceResult> AddDiscountAsync(AddProductDiscountFormViewModel model)
+    {
+        if (!await Repository.AnyAsync<Product>(p => p.Id == model.ProductId))
+            return ServiceResult.NotFound(new Dictionary<string, string>
+            {
+                { "ProductId", "Продуктът не беше намерен!" }
+            });
+
+        if (await Repository.AnyAsync<ProductDiscount>(pd => pd.ProductId == model.ProductId && pd.EndDate > DateTime.Now))
+            return ServiceResult.Forbidden(new Dictionary<string, string>
+            {
+                { "ProductDiscount", "Вече има зададена промоция за този продукт!" }
+            });
+
+        ProductDiscount discount = new()
+        {
+            ProductId = model.ProductId,
+            NewPrice = model.NewPrice,
+            StartDate = model.StartDate,
+            EndDate = model.EndDate
+        };
+
+        await Repository.AddAsync(discount);
+        await Repository.SaveChangesAsync();
+
+        await Cache.RemoveAsync(ProductDetailsKey(model.ProductId));
+        await Cache.RemoveAsync(ProductCardKey(model.ProductId));
+
+        return ServiceResult.Ok();
+    }
+
+    public async Task<ServiceResult> EndDiscountAsync(Guid productId)
+    {
+        ProductDiscount? discount = await Repository
+            .All<ProductDiscount>()
+            .FirstOrDefaultAsync(pd => pd.ProductId == productId && pd.EndDate > DateTime.Now);
+
+        if (discount is null) return ServiceResult.NotFound();
+
+        discount.EndDate = DateTime.Now;
+        await Repository.SaveChangesAsync();
+
+        await Cache.RemoveAsync(ProductDetailsKey(productId));
+        await Cache.RemoveAsync(ProductCardKey(productId));
+        await Cache.RemoveAsync(GlobalDiscountsStateIdKey());
+
+        return ServiceResult.Ok();
+    }
 }

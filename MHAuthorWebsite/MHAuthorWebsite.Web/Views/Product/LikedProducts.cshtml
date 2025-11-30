@@ -21,21 +21,29 @@
 			<div class="product-card flex-row clickable" data-details-url="@Url.Action("Details", "Product", new { productId = product.Id })">
 				<div class="product-info flex-row">
 					<div class="product-image-container flex-row">
-						<img class="product-image" src="@product.ThumbnailUrl" alt="@(product.ThumbnailAlt ?? product.Name)" />
+						<img class="product-image" src="@product.ThumbnailUrl" alt="@(product.ThumbnailAlt)" />
 					</div>
 					<div class="product-details-container">
 						<h2 class="product-name"><a data-trigger="load-unlimited" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="link">@product.Name</a></h2>
 						<p class="text-faded">@product.CategoryName</p>
-						<p class="price">@product.Price.ToString("F2") лв. / @((product.Price * LevToEurRate).ToString("F2")) €</p>
+						<div class="price-box">
+							<p class="price @((product.DiscountedPrice.HasValue) ? "old-price" : "")">@product.Price.ToString("F2") лв. / @((product.Price * LevToEurRate).ToString("F2")) €</p>
+							@if (product.DiscountedPrice.HasValue)
+							{
+								<p class="price discounted-price">@product.DiscountedPrice.Value.ToString("F2") лв. / @((product.DiscountedPrice.Value * LevToEurRate).ToString("F2")) €</p>
+							}
+						</div>
 						<span class="price-text @(product.IsInStock ? "available" : "unavailable")">@(product.IsInStock ? "В наличност" : "Изчерпана наличност")</span>
 					</div>
-				</div>
+	 			</div>
 				<input type="hidden" name="productId" value="@product.Id" />
 				<input type="hidden" name="quantity" value="1" />
 				<button data-role="add-to-cart" data-item-id="@product.Id" type="button" class="btn order flex-row" @(product.IsInStock ? "" : "disabled")>
 					<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
 				</button>
-				<button data-role="remove-item" data-item-id="@product.Id" class="btn remove btn-none"><i class="fa-solid fa-trash-can"></i></button>
+				<button data-role="remove-item" data-item-id="@product.Id" class="btn remove btn-none">
+					<i class="fa-regular fa-heart-circle-minus"></i>
+				</button>
 			</div>
 			<hr id="line-@product.Id" />
 		}

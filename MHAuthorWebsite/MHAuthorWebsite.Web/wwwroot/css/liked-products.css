@@ -55,8 +55,23 @@
   border-radius: 1rem;
 }
 
-.liked-products .product-card .price {
+.liked-products .product-card .price-box {
+  margin: 1rem 0;
+}
+
+.liked-products .product-card .price-box .price {
   font-weight: 800;
+  font-size: 2rem;
+}
+
+.liked-products .product-card .price.old-price {
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
+.liked-products .product-card .price.discounted-price {
+  color: var(--color-tertiary);
 }
 
 .liked-products .product-card .btn.order {
@@ -72,10 +87,12 @@
 
 .liked-products .available {
   color: var(--color-success);
+  font-weight: 600;
 }
 
 .liked-products .unavailable {
   color: var(--color-error);
+  font-weight: 600;
 }
 
 .zero-liked {

@@ -4,7 +4,7 @@ using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.ProductType;
+using MHAuthorWebsite.Web.ViewModels.Admin.ProductType;
 using Microsoft.EntityFrameworkCore;
 
 namespace MHAuthorWebsite.Core.Admin;

@@ -9,6 +9,8 @@ const frameUrl = form.dataset.econtCalcUrl;
 const econtFrame = document.getElementById(`econt-frame`);
 const subtotal = parseBgNumber(document.getElementById(`subtotal`).textContent);
 const subtotalEur = parseBgNumber(document.getElementById(`subtotal-eur`).textContent);
+const discount = parseBgNumber(document.getElementById(`discount`).textContent);
+const discountEur = parseBgNumber(document.getElementById(`discount-eur`).textContent);
 const shippingEl = document.getElementById(`shipping`);
 const shippingEurEl = document.getElementById(`shipping-eur`);
 const grandEl = document.getElementById(`grand`);
@@ -41,8 +43,8 @@ function setIframeSrc() {
 
   url.searchParams.set(`id_shop`, form.dataset.shopId);
   url.searchParams.set(`order_currency`, currency);
-  url.searchParams.set(`order_total`, grandEl.textContent.replace(`,`, `.`));
-  url.searchParams.set(`order_weight`, form.dataset.totalWeight.replace(`,`, `.`));
+  url.searchParams.set(`order_total`, parseBgNumber(grandEl.textContent));
+  url.searchParams.set(`order_weight`, parseBgNumber(form.dataset.totalWeight));
   url.searchParams.set(`customer_company`, form.dataset.userName);
   url.searchParams.set(`customer_name`, form.dataset.userName);
   url.searchParams.set(`customer_email`, form.dataset.userEmail);
@@ -58,8 +60,8 @@ function updateTotals() {
   shippingEl.textContent = shipping.toFixed(2);
   shippingEurEl.textContent = shippingEur.toFixed(2);
 
-  grandEl.textContent = (subtotal + shipping).toFixed(2);
-  grandEurEl.textContent = (subtotalEur + shippingEur).toFixed(2);
+  grandEl.textContent = (subtotal - discount + shipping).toFixed(2);
+  grandEurEl.textContent = (subtotalEur - discountEur + shippingEur).toFixed(2);
 }
 
 window.addEventListener(
@@ -67,6 +69,8 @@ window.addEventListener(
   function (message) {
     const data = message && message.data ? message.data : null;
     if (!data) return;
+
+    console.log(data);
 
     if (data.shipment_error && data.shipment_error !== ``) {
       pushNotification(`Грешка при изчесляването на цената за доставка. Моля опитайте по-късно!`, `error`);

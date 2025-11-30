@@ -25,6 +25,32 @@
 }
 
 <div class="page-wrapper">
+	
+@if (Model.Discount is not null)
+{
+	<div class="discount-clock flex-row">
+		<h4 class="subheading">Промоцията приключва след:</h4>
+		<div id="countdown-timer" class="countdown-timer" data-end-date="@Model.Discount.EndDate.ToString("o")">
+			<div class="time-box flex-column">
+				<span id="days" class="time-value">00</span>
+				<span class="time-label">Дни</span>
+			</div>
+			<div class="time-box flex-column">
+				<span id="hours" class="time-value">00</span>
+				<span class="time-label">Часа</span>
+			</div>
+			<div class="time-box flex-column">
+				<span id="minutes" class="time-value">00</span>
+				<span class="time-label">Мин.</span>
+			</div>
+			<div class="time-box flex-column">
+				<span id="seconds" class="time-value">00</span>
+				<span class="time-label">Сек.</span>
+			</div>
+		</div>
+	</div>
+}
+
 	<section class="main flex-row">
 		<section class="hero-info flex-row">
 			<section id="slider" class="slider flex-row" data-slides-count="@Model.Images.Count">
@@ -38,7 +64,7 @@
 					{
 						<div class="slide flex-row">
 							<div class="slide-content flex-row">
-								<img class="product-image" src="@image.ImageUrl" alt="@image.AltText" />
+								<img class="product-image" src="@image.ImageUrl" alt="@image.AltText"/>
 							</div>
 						</div>
 					}
@@ -60,13 +86,20 @@
 		<!-- Pricing & Order Section -->
 		<section class="order-info flex-column">
 			<h4 class="heading">Наличност и поръчка</h4>
-			<p><strong>Цена:</strong> @Model.Price лв. / @((Model.Price * LevToEurRate).ToString("F2")) €</p>
+			<div class="flex-column">
+				<p class="price @(Model.Discount is not null ? "old-price" : "")"> @Model.Price лв. / @((Model.Price * LevToEurRate).ToString("F2")) €</p>
+				@if (Model.Discount is not null)
+				{
+					<p class="price discounted-price"> @Model.Discount.NewPrice.ToString("F2") лв. / @((Model.Discount.NewPrice * LevToEurRate).ToString("F2")) €</p>
+				}
+			</div>
+
 			<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
 
-			<input type="hidden" name="productId" value="@Model.Id" />
+			<input type="hidden" name="productId" value="@Model.Id"/>
 			<div class="quantity">
 				<label for="quantity">Количество:</label>
-				<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
+				<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10"/>
 			</div>
 			<div class="order-btns flex-row">
 				<button type="button" id="like-button" data-product-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")">
@@ -82,7 +115,7 @@
 		</section>
 	</section>
 
-	<hr />
+	<hr/>
 
 	<!-- Details Section -->
 	<article class="details-info flex-column">
@@ -90,11 +123,11 @@
 		<section class="info-article flex-column">
 			<h5 class="subheading">Описание:</h5>
 			<div id="description-editor" class="form-input"></div>
-			<input type="hidden" asp-for="Description" id="descriptionInput" />
+			<input type="hidden" asp-for="Description" id="descriptionInput"/>
 		</section>
 	</article>
 
-	<hr />
+	<hr/>
 
 	<!-- Additional Attributes Section -->
 	@if (Model.Attributes.Any(a => a.Value != null))
@@ -115,7 +148,7 @@
 			</table>
 		</section>
 
-		<hr />
+		<hr/>
 	}
 
 	<!-- Comments Section -->
@@ -160,7 +193,7 @@
 				}
 			</section>
 
-			<hr class="comment-section-divider" />
+			<hr class="comment-section-divider"/>
 
 			<section id="comments" class="comments flex-column" data-is-rate-limited-for-replies="@Model.IsRateLimitedForReplies">
 				@await Html.PartialAsync("~/Views/ProductComment/_ProductComments.cshtml", Model.Comments)

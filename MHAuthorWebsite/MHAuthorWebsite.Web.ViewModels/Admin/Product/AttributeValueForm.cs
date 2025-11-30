@@ -1,7 +1,7 @@
 ﻿using MHAuthorWebsite.Data.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace MHAuthorWebsite.Web.ViewModels.Product;
+namespace MHAuthorWebsite.Web.ViewModels.Admin.Product;
 
 public class AttributeValueForm : IValidatableObject
 {

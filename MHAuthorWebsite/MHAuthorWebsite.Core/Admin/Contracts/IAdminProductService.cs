@@ -1,7 +1,7 @@
 ﻿using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Web.ViewModels.Product;
+using MHAuthorWebsite.Web.ViewModels.Admin.Product;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 
@@ -22,4 +22,10 @@ public interface IAdminProductService : IProductService
     Task<ServiceResult> ToggleProductPublicityAsync(Guid productId);
 
     Task<ICollection<Guid>> GetImageIdsByProductId(Guid productId);
+
+    Task<ServiceResult<decimal>> GetProductPriceReadonlyAsync(Guid productId);
+
+    Task<ServiceResult> AddDiscountAsync(AddProductDiscountFormViewModel model);
+
+    Task<ServiceResult> EndDiscountAsync(Guid productId);
 }

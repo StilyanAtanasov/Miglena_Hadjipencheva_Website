@@ -1,0 +1,55 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Product
+@model AddProductDiscountFormViewModel
+
+@{
+	ViewData["Title"] = "Добави промоция";
+	ViewData["CurrentPage"] = Pages.Admin.AddDiscount;
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+}
+
+<div class="page-wrapper flex-column">
+	<section class="modal-invisible large flex-column">
+		<h1 class="title">@ViewData["Title"]</h1>
+
+		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="AddDiscount" method="post">
+			<div asp-validation-summary="ModelOnly" class="input-error"></div>
+
+			<input type="hidden" asp-for="ProductId" />
+			<input type="hidden" asp-for="CurrentPrice" />
+			
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="NewPrice">Стара цена:</label>
+				<input class="form-input" asp-for="NewPrice" disabled="disabled" value="@Model.CurrentPrice" />
+			</div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="NewPrice">Нова цена:</label>
+				<input type="number" class="form-input" asp-for="NewPrice" value="@Model.CurrentPrice"/>
+				<span class="input-error" asp-validation-for="NewPrice"></span>
+			</div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="StartDate">Начало на промоцията:</label>
+				<input type="datetime-local" class="form-input" asp-for="StartDate" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+				<span class="input-error" asp-validation-for="StartDate"></span>
+			</div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="EndDate">Край на промоцията:</label>
+				<input type="datetime-local" class="form-input" asp-for="EndDate" value="null" />
+				<span class="input-error" asp-validation-for="EndDate"></span>
+			</div>
+
+			<button data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">Запази</button>
+		</form>
+	</section>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

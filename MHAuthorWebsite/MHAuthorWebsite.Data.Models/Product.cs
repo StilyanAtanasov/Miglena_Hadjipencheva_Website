@@ -54,6 +54,8 @@ public class Product
 
     public ICollection<OrderProduct> Orders { get; set; } = new HashSet<OrderProduct>();
 
+    public ICollection<ProductDiscount> Discounts { get; set; } = new HashSet<ProductDiscount>();
+
     [Comment("Determines if the product should be visible for basic users")]
     public bool IsPublic { get; set; }
 

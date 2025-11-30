@@ -35,13 +35,18 @@
 							<tr data-total-price="@p.TotalPrice">
 								<td class="flex-row">
 									<div class="product-image-container flex-row">
-
 										<img class="product-image" src="@p.ImageUrl" alt="@p.Name" />
 									</div>
 									<p class="product-name">@p.Name</p>
 								</td>
 								<td>@p.Quantity</td>
-								<td><p class="price">@p.TotalPrice.ToString("F2") лв. / @((p.TotalPrice * LevToEurRate).ToString("F2")) €</p></td>
+								<td class="product-price-info">
+									<p class="price @(p.TotalPriceWithDiscount.HasValue ? "old-price" : "")">@p.TotalPrice.ToString("F2") лв. / @((p.TotalPrice * LevToEurRate).ToString("F2")) €</p>
+									@if (p.TotalPriceWithDiscount.HasValue)
+									{
+										<p class="price discounted-price">@p.TotalPriceWithDiscount.Value.ToString("F2") лв. / @((p.TotalPriceWithDiscount.Value * LevToEurRate).ToString("F2")) €</p>
+									}
+								</td>
 							</tr>
 						}
 					</tbody>
@@ -75,25 +80,44 @@
 
 			<div class="total-section-content flex-column">
 				<div>
-					<p>
-						Междинна сума: <span id="subtotal">@Model.Subtotal.ToString("F2")</span>
-						<span>лв. / </span>
-						<span id="subtotal-eur">@((Model.Subtotal * LevToEurRate).ToString("F2"))</span>
-						<span> €</span>
-					</p>
-					<p>
-						Доставка: <span id="shipping">0.00</span>
-						<span>лв. / </span>
-						<span id="shipping-eur">@((0.00m * LevToEurRate).ToString("F2"))</span>
-						<span> €</span>
-					</p>
+					@{
+						decimal discount = Model.Subtotal - Model.SubtotalDiscountApplied;
+					}
+
+					<div class="price-info-row flex-row">
+						<p>Междинна сума:</p>
+						<p class="price-value">
+							 <span id="subtotal">@Model.Subtotal.ToString("F2")</span>
+							<span>лв. / </span>
+							<span id="subtotal-eur">@((Model.Subtotal * LevToEurRate).ToString("F2"))</span>
+							<span> €</span>
+						</p>
+					</div>
+					<div class="price-info-row flex-row">
+						<p>Отстъпка:</p>
+						<p class="price-value discount">
+							<span id="discount">@discount.ToString("F2")</span>
+							<span>лв. / </span>
+							<span id="discount-eur">@((discount * LevToEurRate).ToString("F2"))</span>
+							<span> €</span>
+						</p>
+					</div>
+					<div class="price-info-row flex-row">
+						<p>Доставка:</p>
+						<p class="price-value">
+							<span id="shipping">0.00</span>
+							<span>лв. / </span>
+							<span id="shipping-eur">@((0.00m * LevToEurRate).ToString("F2"))</span>
+							<span> €</span>
+						</p>
+					</div>
 				</div>
 				<div class="flex-column">
 					<p class="grand-total">
 						<strong>
-							Общо: <span id="grand">@Model.Subtotal.ToString("F2")</span>
+							Общо: <span id="grand">@Model.SubtotalDiscountApplied.ToString("F2")</span>
 							<span>лв. /</span>
-							<span id="grand-eur">@((Model.Subtotal * LevToEurRate).ToString("F2"))</span>
+							<span id="grand-eur">@((Model.SubtotalDiscountApplied * LevToEurRate).ToString("F2"))</span>
 							<span> €</span>
 						</strong>
 					</p>

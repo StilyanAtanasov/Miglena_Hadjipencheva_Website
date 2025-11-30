@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -69,18 +70,18 @@ builder.Services.AddAuthentication()
             ClaimsIdentity identity = (ClaimsIdentity)ctx.Principal!.Identity!;
 
             string? email = null;
-            if (ctx.User.TryGetProperty("mail", out var mailProp) && mailProp.ValueKind != JsonValueKind.Null)
+            if (ctx.User.TryGetProperty("mail", out JsonElement mailProp) && mailProp.ValueKind != JsonValueKind.Null)
                 email = mailProp.GetString();
-            else if (ctx.User.TryGetProperty("userPrincipalName", out var upnProp) && upnProp.ValueKind != JsonValueKind.Null)
+            else if (ctx.User.TryGetProperty("userPrincipalName", out JsonElement upnProp) && upnProp.ValueKind != JsonValueKind.Null)
                 email = upnProp.GetString();
 
             if (!string.IsNullOrEmpty(email))
                 identity.AddClaim(new Claim(ClaimTypes.Email, email));
 
             string? name = null;
-            if (ctx.User.TryGetProperty("displayName", out var nameProp) && nameProp.ValueKind != JsonValueKind.Null)
+            if (ctx.User.TryGetProperty("displayName", out JsonElement nameProp) && nameProp.ValueKind != JsonValueKind.Null)
                 name = nameProp.GetString();
-            else if (ctx.User.TryGetProperty("givenName", out var givenProp) && givenProp.ValueKind != JsonValueKind.Null)
+            else if (ctx.User.TryGetProperty("givenName", out JsonElement givenProp) && givenProp.ValueKind != JsonValueKind.Null)
                 name = givenProp.GetString();
 
             if (!string.IsNullOrEmpty(name))
@@ -166,6 +167,25 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 
 builder.Services.AddHttpContextAccessor();
 
+string? redisConnectionString = builder.Configuration["Redis:ConnectionString"];
+if (redisConnectionString is null) throw new ArgumentException("Connection string for Redis must me specified!");
+
+string env = builder.Environment.EnvironmentName;
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = redisConnectionString;
+    options.InstanceName = $"MHWebsite:{env}:";
+});
+
+// Register ConnectionMultiplexer for advanced usage (fire-and-forget)
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
+    ConnectionMultiplexer.Connect(redisConnectionString)
+);
+
+builder.Services.AddScoped<ICacheService, RedisCacheService>();
+builder.Services.AddScoped<IFastCacheService, RedisCacheService>();
+builder.Services.AddScoped<IGlobalCacheKeysManagementService, GlobalCacheKeysManagementService>();
+
 var app = builder.Build();
 
 AppEnvironment.Initialize(app.Environment.EnvironmentName);
@@ -245,9 +265,9 @@ app.UseCors("DefaultPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-var supportedCultures = new[] { "bg" };
+var supportedCultures = new[] { "bg-BG" };
 var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture("bg")
+    .SetDefaultCulture("bg-BG")
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
 

@@ -1,6 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Web.ViewModels.ProductType;
+using MHAuthorWebsite.Web.ViewModels.Admin.ProductType;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 

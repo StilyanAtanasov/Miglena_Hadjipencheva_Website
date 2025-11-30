@@ -30,6 +30,8 @@ public class ProductDetailsViewModel
 
     public bool IsRateLimitedForReplies { get; set; }
 
+    public ProductDetailsDiscountViewModel? Discount { get; set; }
+
     public ICollection<ProductDetailsImageViewModel> Images { get; set; } = new HashSet<ProductDetailsImageViewModel>();
 
     public ICollection<ProductAttributeDetailsViewModel> Attributes { get; set; } = new HashSet<ProductAttributeDetailsViewModel>();

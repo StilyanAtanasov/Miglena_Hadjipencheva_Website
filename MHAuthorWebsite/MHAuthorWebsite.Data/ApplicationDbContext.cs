@@ -34,6 +34,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<Product> Products { get; set; } = null!;
 
+    public DbSet<ProductDiscount> ProductDiscounts { get; set; } = null!;
+
     public DbSet<ProductAttribute> ProductAttributes { get; set; } = null!;
 
     public DbSet<ProductAttributeDefinition> ProductAttributeDefinitions { get; set; } = null!;

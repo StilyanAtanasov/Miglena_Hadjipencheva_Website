@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ProductType;
 
-namespace MHAuthorWebsite.Web.ViewModels.ProductType;
+namespace MHAuthorWebsite.Web.ViewModels.Admin.ProductType;
 
 public class AddProductTypeForm
 {

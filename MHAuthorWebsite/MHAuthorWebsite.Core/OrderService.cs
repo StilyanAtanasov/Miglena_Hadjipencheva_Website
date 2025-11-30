@@ -41,11 +41,16 @@ public class OrderService : IOrderService
             .Include(ci => ci.Product)
                 .ThenInclude(p => p.Thumbnail)
                     .ThenInclude(t => t.Image)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Discounts)
             .Select(ci => new SelectedProductViewModel
             {
                 ImageUrl = ci.Product.Thumbnail.Image.ImageUrl,
                 Name = ci.Product.Name,
                 TotalPrice = ci.Product.Price * ci.Quantity,
+                TotalPriceWithDiscount = ci.Product.Discounts.FirstOrDefault(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now) != null
+                    ? ci.Product.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice * ci.Quantity
+                    : ci.Product.Price * ci.Quantity,
                 Quantity = ci.Quantity,
                 TotalWeight = ci.Product.Weight * ci.Quantity
             })
@@ -70,7 +75,12 @@ public class OrderService : IOrderService
             .Where<CartItem>(ci => ci.Cart.UserId == userId && ci.IsSelected && ci.Product.IsPublic && ci.Product.StockQuantity >= ci.Quantity)
             .Include(ci => ci.Cart)
             .Include(ci => ci.Product)
+                .ThenInclude(p => p.Discounts)
             .ToArrayAsync();
+
+        Dictionary<Guid, decimal> productPricesWithDiscounts = cartItems.ToDictionary(
+            ci => ci.ProductId,
+            ci => ci.Product.Discounts.FirstOrDefault(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)?.NewPrice ?? ci.Product.Price);
 
         EcontOrderDto orderDto = new()
         {
@@ -101,7 +111,7 @@ public class OrderService : IOrderService
                 {
                     Count = i.Quantity,
                     Name = i.Product.Name,
-                    TotalPrice = i.Product.Price * i.Quantity,
+                    TotalPrice = productPricesWithDiscounts[i.ProductId] * i.Quantity,
                     TotalWeight = i.Product.Weight * i.Quantity
                 }).ToArray()
         };
@@ -120,7 +130,7 @@ public class OrderService : IOrderService
                {
                    ProductId = ci.ProductId,
                    Quantity = ci.Quantity,
-                   UnitPrice = ci.Product.Price,
+                   UnitPrice = productPricesWithDiscounts[ci.ProductId],
                })
                .ToArray(),
             Shipment = new Shipment

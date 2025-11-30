@@ -558,6 +558,31 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.ToTable("ProductCommentsReactions");
                 });
 
+            modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductDiscount", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("NewPrice")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductDiscounts");
+                });
+
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductImage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1156,6 +1181,17 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductDiscount", b =>
+                {
+                    b.HasOne("MHAuthorWebsite.Data.Models.Product", "Product")
+                        .WithMany("Discounts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("MHAuthorWebsite.Data.Models.ProductImage", b =>
                 {
                     b.HasOne("MHAuthorWebsite.Data.Models.Product", "Product")
@@ -1322,6 +1358,8 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.Navigation("Attributes");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("Discounts");
 
                     b.Navigation("Images");
 

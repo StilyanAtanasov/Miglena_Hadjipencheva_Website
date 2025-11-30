@@ -2,7 +2,7 @@
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Data.Common.Extensions;
 using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Web.ViewModels.ProductType;
+using MHAuthorWebsite.Web.ViewModels.Admin.ProductType;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 

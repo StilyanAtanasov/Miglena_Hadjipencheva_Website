@@ -77,14 +77,37 @@
   border-radius: 1rem;
 }
 
+#cart-body .product-price-info .old-price {
+  font-size: 1.3rem;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
+#cart-body .product-price-info .discounted-price {
+  color: var(--color-orange-dark);
+}
+
+.price-info-row {
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.price-value {
+  font-weight: 700;
+}
+
+.price-value.discount {
+  color: var(--color-success);
+}
+
 .grand-total {
   background-color: var(--color-secondary-lighter);
   padding: 1rem 2rem;
   margin-top: 2rem;
   border-radius: 1.5rem;
   font-size: 1.9rem;
-  width: calc(100% + 4rem);
-  transform: translateX(-2rem);
+  width: calc(100% + 2rem);
+  transform: translateX(-1rem);
 }
 
 #confirm-form {

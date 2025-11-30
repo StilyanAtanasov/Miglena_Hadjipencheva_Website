@@ -37,6 +37,13 @@ public static class EntityConstraints
         public const bool IsDeletedDefaultValue = false;
     }
 
+    public static class ProductDiscount
+    {
+        public const string NewPriceSqlType = "decimal(18, 3)";
+
+        public const decimal NewPriceMinValue = 0.01m;
+    }
+
     public static class OrderProduct
     {
         public const byte QuantityMinValue = 1;

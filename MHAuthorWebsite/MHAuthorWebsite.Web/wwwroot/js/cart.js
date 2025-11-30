@@ -7,8 +7,12 @@ let productsCount;
 const levToEurRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.levToEurRate);
 
 document.addEventListener(`DOMContentLoaded`, function () {
-  const totalPriceElement = document.querySelector(`#price-sum`);
-  const totalPriceEurElement = document.querySelector(`#price-sum-eur`);
+  const grandTotalPriceElement = document.querySelector(`#grand-total`);
+  const grandTotalPriceEurElement = document.querySelector(`#grand-total-eur`);
+  const totalPriceElement = document.querySelector(`#total`);
+  const totalPriceEurElement = document.querySelector(`#total-eur`);
+  const discountElement = document.querySelector(`#discount-global`);
+  const discountEurElement = document.querySelector(`#discount-global-eur`);
 
   const quantityInputs = document.querySelectorAll(`[data-role="quantity-input"]`);
   productsCount = quantityInputs.length;
@@ -33,8 +37,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
         document.querySelector(`#line-total-${itemId} .sum-price`).textContent = `${data.lineTotal}`;
         document.querySelector(`#line-total-${itemId} .sum-price-eur`).textContent = `${formatBgNumber(parseBgNumber(data.lineTotal) * levToEurRate)}`;
 
-        totalPriceElement.textContent = `${data.cartTotal}`;
-        totalPriceEurElement.textContent = `${formatBgNumber(parseBgNumber(data.cartTotal) * levToEurRate)}`;
+        updateCartSummary(data.cartTotal);
       } else alert(`Грешка при обновяване на количеството.`);
     })
   );
@@ -53,14 +56,8 @@ document.addEventListener(`DOMContentLoaded`, function () {
         body: JSON.stringify({ itemId, isSelected }),
       });
 
-      if (response.ok) {
-        const selectedItems = [...document.querySelectorAll(`tbody tr`)].filter(i => i.querySelector(`[data-role="is-selected-input"]`).checked === true);
-
-        const newPriceLev = selectedItems.reduce((partialSum, i) => partialSum + parseFloat(i.querySelector(`.sum-price`).textContent), 0);
-
-        totalPriceElement.textContent = formatBgNumber(newPriceLev);
-        totalPriceEurElement.textContent = `${formatBgNumber(newPriceLev * levToEurRate)}`;
-      } else alert(`Грешка при обновяване на селектираните продукти!`);
+      if (response.ok) updateCartSummary();
+      else alert(`Грешка при обновяване на селектираните продукти!`);
     })
   );
 
@@ -81,10 +78,6 @@ document.addEventListener(`DOMContentLoaded`, function () {
       if (response.ok) {
         let cartItemElement = b.closest(`tr`);
         if (cartItemElement != null) {
-          const itemsSumPrice = parseBgNumber(cartItemElement.querySelector(`.sum-price`).textContent);
-          totalPriceElement.textContent = formatBgNumber(parseBgNumber(totalPriceElement.textContent) - itemsSumPrice);
-          totalPriceEurElement.textContent = `${formatBgNumber(parseBgNumber(totalPriceElement.textContent) * levToEurRate)}`;
-
           if (--productsCount === 0) {
             document.getElementById(`valid-items-section`).remove();
             document.getElementById(`cart-summary`).remove();
@@ -94,8 +87,30 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
         cartItemElement.remove();
 
-        pushNotification("Продуктът е премахнат от количката!", "success");
-      } else pushNotification("Грешка при премахването на продукта!", "error");
+        updateCartSummary();
+
+        pushNotification(`Продуктът е премахнат от количката!`, `success`);
+      } else pushNotification(`Грешка при премахването на продукта!`, `error`);
     })
   );
+
+  function updateCartSummary(cartTotal) {
+    const selectedItems = [...document.querySelectorAll(`tbody tr`)].filter(i => i.querySelector(`[data-role="is-selected-input"]`).checked === true);
+
+    const newPriceLev = cartTotal ?? selectedItems.reduce((partialSum, i) => partialSum + parseFloat(i.querySelector(`.sum-price`).textContent), 0);
+    grandTotalPriceElement.textContent = formatBgNumber(newPriceLev);
+    grandTotalPriceEurElement.textContent = `${formatBgNumber(newPriceLev * levToEurRate)}`;
+
+    const oldPriceLev = selectedItems.reduce(
+      (partialSum, i) => partialSum + parseFloat(i.querySelector(`.unit-price:not(.discounted-price) .unit-price-value`).textContent) * i.querySelector(`.quantity-input .input`).value,
+      0
+    );
+
+    totalPriceElement.textContent = formatBgNumber(oldPriceLev);
+    totalPriceEurElement.textContent = `${formatBgNumber(oldPriceLev * levToEurRate)}`;
+
+    const discount = oldPriceLev - newPriceLev;
+    discountElement.textContent = formatBgNumber(discount);
+    discountEurElement.textContent = `${formatBgNumber(discount * levToEurRate)}`;
+  }
 });

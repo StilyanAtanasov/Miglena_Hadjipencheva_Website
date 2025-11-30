@@ -14,5 +14,7 @@ public class LikedProductViewModel
 
     public decimal Price { get; set; }
 
+    public decimal? DiscountedPrice { get; set; }
+
     public bool IsInStock { get; set; }
 }

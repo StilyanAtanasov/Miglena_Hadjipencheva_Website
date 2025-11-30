@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ProductAttributeDefinition;
 
-namespace MHAuthorWebsite.Web.ViewModels.ProductType;
+namespace MHAuthorWebsite.Web.ViewModels.Admin.ProductType;
 
 public class AttributeDefinitionForm
 {

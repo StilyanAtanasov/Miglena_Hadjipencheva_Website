@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
 
-namespace MHAuthorWebsite.Web.ViewModels.Product;
+namespace MHAuthorWebsite.Web.ViewModels.Admin.Product;
 
 public class AddProductForm
 {
