@@ -76,7 +76,9 @@ public class ProductService : IProductService
                         .Select(a => new ProductAttributeDetailsViewModel
                         {
                             Label = a.Key,
-                            Value = a.Value
+                            Value = a.Value,
+                            DisplayPosition = a.DisplayPosition
+
                         })
                     .ToArray()
                     })

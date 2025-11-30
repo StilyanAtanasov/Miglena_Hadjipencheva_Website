@@ -3,6 +3,7 @@
 @using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Roles
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
+@using MHAuthorWebsite.Data.Models.Enums
 
 @model ProductDetailsViewModel
 
@@ -80,6 +81,11 @@
 			<section class="product-main-info flex-column">
 				<h1 class="title">@Model.Name</h1>
 				<p class="text-faded"><strong>Категория:</strong> @Model.ProductTypeName</p>
+				@foreach (ProductAttributeDetailsViewModel attr in Model.Attributes
+					.Where(a => a.DisplayPosition == ProductAttributeDisplayPosition.MainInfo))
+				{
+					<p class="text-faded"><strong>@attr.Label:</strong> @attr.Value</p>
+				}
 			</section>
 		</section>
 
@@ -130,14 +136,15 @@
 	<hr/>
 
 	<!-- Additional Attributes Section -->
-	@if (Model.Attributes.Any(a => a.Value != null))
+	@if (Model.Attributes.Any(a =>  a.DisplayPosition == ProductAttributeDisplayPosition.AdditionalInfoTable))
 	{
 		<section class="additional-info flex-column">
 			<h4 class="heading">Допълнителна информация</h4>
 
 			<table>
 				<tbody>
-				@foreach (ProductAttributeDetailsViewModel a in Model.Attributes.Where(a => a.Value != null))
+				@foreach (ProductAttributeDetailsViewModel a in Model.Attributes
+					.Where(a => a.DisplayPosition== ProductAttributeDisplayPosition.AdditionalInfoTable))
 				{
 					<tr>
 						<td>@a.Label</td>
