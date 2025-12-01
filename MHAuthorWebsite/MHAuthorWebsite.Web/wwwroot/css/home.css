@@ -274,6 +274,22 @@
   .splash-text {
     left: 72vw;
   }
+
+  .about-text p {
+    font-size: 2.5rem;
+  }
+
+  .about::after {
+    width: 28%;
+  }
+
+  .about-content {
+    margin-left: 9%;
+  }
+
+  .about-image-wrapper {
+    width: 40%;
+  }
 }
 
 @media (max-width: 920px) {
@@ -330,7 +346,10 @@
 
   .about-text {
     width: 80%;
-    font-size: 2.5rem;
+  }
+
+  .about-text p {
+    font-size: 2.8rem;
   }
 }
 

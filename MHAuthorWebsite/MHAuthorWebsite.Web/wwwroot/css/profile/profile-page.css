@@ -163,6 +163,7 @@
     position: fixed;
     width: 100%;
     transition: height 500ms linear;
+    font-size: 2.2rem;
   }
 
   .inner-nav {
@@ -171,6 +172,7 @@
     position: static;
     padding: 0;
     transition: all 200ms linear;
+    font-size: 2.2rem;
   }
 
   .side-nav-element:hover .inner-nav {

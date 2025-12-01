@@ -346,21 +346,15 @@ hr.vertical {
   }
 }
 
-@media (max-width: 1250px) {
+@media (max-width: 900px) {
   html {
     font-size: 6px;
   }
 }
 
-@media (max-width: 900px) {
-  html {
-    font-size: 5px;
-  }
-}
-
 @media (max-width: 700px) {
   html {
-    font-size: 4px;
+    font-size: 5px;
   }
 }
 

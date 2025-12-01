@@ -178,6 +178,18 @@ footer .social-media li:hover {
 }
 
 /* --- Responsive --- */
+@media (max-width: 1250px) {
+  footer {
+    font-size: 2.8rem;
+    padding: 1.8rem 5rem;
+    height: 8rem;
+  }
+
+  .page-wrapper {
+    min-height: calc(100vh - 18rem);
+  }
+}
+
 @media (max-width: 600px) {
   header {
     padding: 1.5rem 5rem;
@@ -232,8 +244,8 @@ footer .social-media li:hover {
     flex-direction: column;
     margin: 0;
     padding: 2rem 5rem;
-    gap: 1.5rem;
-    font-size: 3rem;
+    gap: 1.8rem;
+    font-size: 3.4rem;
     width: 100%;
   }
 
@@ -243,10 +255,6 @@ footer .social-media li:hover {
 
   #navLists .header-nav:not(:last-child) {
     border-bottom: 0.1rem solid var(--color-secondary);
-  }
-
-  footer {
-    padding: 1.5rem 5rem;
   }
 }
 

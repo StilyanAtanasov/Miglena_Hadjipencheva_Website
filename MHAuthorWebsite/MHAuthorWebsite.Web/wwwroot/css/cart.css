@@ -181,6 +181,7 @@
 
   .page-wrapper {
     padding-bottom: 10rem;
+    padding: 5rem 2.5rem;
   }
 
   .products-sections {
@@ -201,6 +202,10 @@
     position: relative;
   }
 
+  .category-title {
+    display: none;
+  }
+
   .product-info {
     width: 62%;
   }
@@ -218,7 +223,9 @@
   }
 
   .cart-table td:last-of-type {
-    width: 13%;
+    width: 10%;
+    padding: 0;
+    padding-right: 2rem;
   }
 
   .cart-table td.sum-price {
@@ -237,7 +244,13 @@
     height: 50%;
     align-self: center;
     margin-top: 2rem;
-    width: 15%;
+    width: 17%;
+  }
+
+  .cart-table .quantity-input input {
+    width: 130%;
+    padding: 0;
+    padding-left: 1rem;
   }
 
   .cart-table thead {
@@ -248,7 +261,7 @@
     position: fixed;
     width: 90%;
     background-color: var(--color-primary);
-    bottom: 8.5rem;
+    bottom: 9.5rem;
     height: 17rem;
     padding: 1rem 3rem;
     gap: 0;

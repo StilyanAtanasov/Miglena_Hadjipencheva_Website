@@ -11,12 +11,12 @@ public static class SortValueMapper
         {
             [Recommended] = (true, null),
             [PriceDesc] = (true, p => p.Discounts
-                .Where(d => d.EndDate > DateTime.UtcNow)
+                .Where(d => d.EndDate > DateTime.Now)
                 .OrderBy(d => d.NewPrice)
                 .Select(d => (decimal?)d.NewPrice)
                 .FirstOrDefault() ?? p.Price),
             [PriceAsc] = (false, p => p.Discounts
-                .Where(d => d.EndDate > DateTime.UtcNow)
+                .Where(d => d.EndDate > DateTime.Now)
                 .OrderBy(d => d.NewPrice)
                 .Select(d => (decimal?)d.NewPrice)
                 .FirstOrDefault() ?? p.Price),

@@ -186,13 +186,14 @@
 }
 
 /* --- Responsive ---  */
-@media (max-width: 800px) {
+@media (max-width: 1200px) {
   .products {
     grid-template-columns: repeat(4, 22vw);
+    margin-top: 2.5rem;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
   .products {
     grid-template-columns: repeat(2, 45vw);
     font-size: 2rem;
@@ -208,6 +209,10 @@
 
   .product .price-box .price {
     font-size: 2.3rem;
+  }
+
+  .product .price-box .price.old-price {
+    font-size: 1.7rem;
   }
 
   .product .price-box .price-text {
@@ -240,22 +245,26 @@
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 450px) {
   .products {
     grid-template-columns: repeat(1, 80vw);
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 
   .product .name {
-    font-size: 2.5rem;
+    font-size: 3.1rem;
   }
 
   .product .price-box .price {
-    font-size: 2.1rem;
+    font-size: 2.9rem;
+  }
+
+  .product .price-box .price.old-price {
+    font-size: 2.2rem;
   }
 
   .product .price-box .price-text {
-    font-size: 1.8rem;
+    font-size: 2.5rem;
   }
 
   .product-image-container {
