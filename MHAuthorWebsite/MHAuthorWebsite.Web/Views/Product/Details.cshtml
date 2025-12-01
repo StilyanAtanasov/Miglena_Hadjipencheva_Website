@@ -136,7 +136,7 @@
 	<hr/>
 
 	<!-- Additional Attributes Section -->
-	@if (Model.Attributes.Any(a =>  a.DisplayPosition == ProductAttributeDisplayPosition.AdditionalInfoTable))
+	@if (Model.Attributes.Any(a => a is { Value: not null, DisplayPosition: ProductAttributeDisplayPosition.AdditionalInfoTable }))
 	{
 		<section class="additional-info flex-column">
 			<h4 class="heading">Допълнителна информация</h4>
@@ -144,7 +144,7 @@
 			<table>
 				<tbody>
 				@foreach (ProductAttributeDetailsViewModel a in Model.Attributes
-					.Where(a => a.DisplayPosition== ProductAttributeDisplayPosition.AdditionalInfoTable))
+					.Where(a => a is { Value: not null, DisplayPosition: ProductAttributeDisplayPosition.AdditionalInfoTable }))
 				{
 					<tr>
 						<td>@a.Label</td>

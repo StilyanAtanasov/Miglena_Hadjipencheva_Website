@@ -132,6 +132,7 @@ public class AdminProductService : ProductService, IAdminProductService
                     Label = a.AttributeDefinition.Label,
                     Key = a.Key,
                     Value = a.Value,
+                    DisplayPosition = a.DisplayPosition,
                     DataType = a.AttributeDefinition.DataType,
                     // HasPredefinedValue = a.AttributeDefinition.HasPredefinedValue, TODO implement predefined values
                     IsRequired = a.AttributeDefinition.IsRequired, // TODO Use this to validate the form

@@ -4,7 +4,12 @@
 @using MHAuthorWebsite.Data.Common.Extensions
 @model ICollection<AttributeValueForm>
 
-@{
+@for (int i = 0; i < Model.Count; i++)
+{
+	AttributeValueForm a = Model.ElementAt(i);
+	string inputType = AttributeDataTypeMapper.HtmlInputTypes[a.DataType];
+	string containerClass = AttributeDataTypeMapper.CssContainerClass[a.DataType];
+
 	SelectList displayPositions = new SelectList(
 		Enum.GetValues(typeof(ProductAttributeDisplayPosition))
 			.Cast<ProductAttributeDisplayPosition>()
@@ -15,15 +20,8 @@
 			}),
 		"Value",
 		"Text",
-		ProductAttributeDisplayPosition.AdditionalInfoTable
+		a.DisplayPosition.ToString()
 		);
-}
-
-@for (int i = 0; i < Model.Count; i++)
-{
-	AttributeValueForm a = Model.ElementAt(i);
-	string inputType = AttributeDataTypeMapper.HtmlInputTypes[a.DataType];
-	string containerClass = AttributeDataTypeMapper.CssContainerClass[a.DataType];
 
 	<div class="form-input-box flex-column @containerClass">
 		<input type="hidden" name="Attributes[@i].AttributeDefinitionId" value="@a.AttributeDefinitionId" />
