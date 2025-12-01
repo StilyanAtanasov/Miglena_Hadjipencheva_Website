@@ -1,8 +1,5 @@
-﻿using CloudinaryDotNet.Actions;
-using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Dto;
+﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using System.Linq.Expressions;
 

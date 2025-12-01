@@ -19,7 +19,7 @@
 }
 
 .product-main-info {
-  width: 45%;
+  width: 35%;
 }
 
 .product-main-info p {
@@ -31,12 +31,14 @@
   justify-content: space-between;
   padding: 2rem 5rem;
   gap: 5rem;
-  width: 95%;
+  width: 110%;
+  transform: translateX(-5%);
 }
 
 #slider {
   border: 0.15rem solid var(--color-secondary);
   border-radius: 1.5rem;
+  height: 65vh;
 }
 
 .heading {
@@ -501,6 +503,7 @@ table tr:last-child td:last-child {
     width: 100%;
     margin: 0;
     height: auto;
+    transform: translateX(0);
   }
 
   .title {

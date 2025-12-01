@@ -10,8 +10,16 @@ public static class SortValueMapper
         new()
         {
             [Recommended] = (true, null),
-            [PriceDesc] = (true, p => p.Price),
-            [PriceAsc] = (false, p => p.Price),
+            [PriceDesc] = (true, p => p.Discounts
+                .Where(d => d.EndDate > DateTime.UtcNow)
+                .OrderBy(d => d.NewPrice)
+                .Select(d => (decimal?)d.NewPrice)
+                .FirstOrDefault() ?? p.Price),
+            [PriceAsc] = (false, p => p.Discounts
+                .Where(d => d.EndDate > DateTime.UtcNow)
+                .OrderBy(d => d.NewPrice)
+                .Select(d => (decimal?)d.NewPrice)
+                .FirstOrDefault() ?? p.Price),
             [Likes] = (true, p => p.Likes.Count)
         };
 }
