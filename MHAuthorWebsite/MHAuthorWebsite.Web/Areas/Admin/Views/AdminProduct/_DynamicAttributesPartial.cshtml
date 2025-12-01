@@ -23,37 +23,43 @@
 		a.DisplayPosition.ToString()
 		);
 
-	<div class="form-input-box flex-column @containerClass">
-		<input type="hidden" name="Attributes[@i].AttributeDefinitionId" value="@a.AttributeDefinitionId" />
-		<label class="form-label">@a.Label:</label>
-		
-		@if (a.IsRequired)
-		{
-			<input type="@inputType"
-			       name="Attributes[@i].Value"
-			       class="form-input"
-			       data-val="true"
-			       data-val-required="Полето е задължително."
-			       style="-webkit-appearance: textarea"
-			       value="@a.Value"/>
-		}
-		else
-		{
-			<input type="@inputType"
-				   name="Attributes[@i].Value"
-				   class="form-input"
-				   style="-webkit-appearance: textarea"
-				   value="@a.Value" />
-		}
+	<div class="form-input-row two-to-one flex-row">
+		<div class="form-input-box flex-column @containerClass">
+			<input type="hidden" name="Attributes[@i].AttributeDefinitionId" value="@a.AttributeDefinitionId" />
+			<label class="form-label">@a.Label:</label>
 
-		<input type="hidden" name="Attributes[@i].Key" value="@a.Key"/>
-		<input type="hidden" name="Attributes[@i].Label" value="@a.Label"/>
-		<input type="hidden" name="Attributes[@i].AttributeDefinitionId" value="@a.AttributeDefinitionId" />
+			@if (a.IsRequired)
+			{
+				<input type="@inputType"
+					   name="Attributes[@i].Value"
+					   class="form-input"
+					   data-val="true"
+					   data-val-required="Полето е задължително."
+					   style="-webkit-appearance: textarea"
+					   value="@a.Value" />
+			}
+			else
+			{
+				<input type="@inputType"
+					   name="Attributes[@i].Value"
+					   class="form-input"
+					   style="-webkit-appearance: textarea"
+					   value="@a.Value" />
+			}
 
-		<select autocomplete="off" name="Attributes[@i].DisplayPosition" asp-items="@displayPositions"></select>
+			<input type="hidden" name="Attributes[@i].Key" value="@a.Key" />
+			<input type="hidden" name="Attributes[@i].Label" value="@a.Label" />
+			<input type="hidden" name="Attributes[@i].AttributeDefinitionId" value="@a.AttributeDefinitionId" />
 
-		<span class="input-error"
-		      data-valmsg-for="Attributes[@i].Value"
-		      data-valmsg-replace="true"></span>
+			<span class="input-error"
+				  data-valmsg-for="Attributes[@i].Value"
+				  data-valmsg-replace="true"></span>
+		</div>
+
+		<div class="form-input-box flex-column ">
+			<label class="form-label">Позиция на показване:</label>
+			<select class="form-select wide" autocomplete="off" name="Attributes[@i].DisplayPosition" asp-items="@displayPositions"></select>
+			<span class="input-error" data-valmsg-for="Attributes[@i].DisplayPosition" data-valmsg-replace="true"></span>
+		</div>
 	</div>
 }

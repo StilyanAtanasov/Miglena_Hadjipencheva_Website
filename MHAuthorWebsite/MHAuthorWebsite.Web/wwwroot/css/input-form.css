@@ -71,10 +71,6 @@
   align-items: flex-start;
 }
 
-.input-form .form-input-row {
-  gap: 2rem;
-}
-
 .input-form .form-input-box.isolate,
 .input-form .form-box.isolate {
   border: 0.15rem solid var(--color-secondary);
@@ -91,23 +87,27 @@
   align-items: center;
 }
 
-.input-form .form-input-box.select-list select {
+.input-form .form-select {
   width: 30%;
   border-radius: 1.5rem;
   padding: 0.5rem 1.2rem;
   border: 0.15rem solid var(--color-secondary);
 }
 
-.input-form .form-input-box.select-list select > option {
+.input-form .form-select.wide {
+  width: 100%;
+}
+
+.input-form .form-select > option {
   padding: 0.5rem 1.2rem;
   border-bottom: 0.15rem solid var(--color-secondary);
 }
 
-.input-form .form-input-box.select-list select > option:first-of-type {
+.input-form .form-select > option:first-of-type {
   border-radius: 1.5rem 1.5rem 0 0;
 }
 
-.input-form .form-input-box.select-list select > option:last-of-type {
+.input-form .form-select > option:last-of-type {
   border-radius: 0 0 1.5rem 1.5rem;
 }
 
@@ -169,6 +169,19 @@
 
 .button-remove:hover {
   transform: scale(1.2);
+}
+
+.input-form .form-input-row {
+  gap: 2rem;
+  width: 100%;
+}
+
+.input-form .form-input-row.two-to-one > *:first-child {
+  width: 65%;
+}
+
+.input-form .form-input-row.two-to-one > *:nth-child(2) {
+  width: 35%;
 }
 
 /* --- Responsive --- */
