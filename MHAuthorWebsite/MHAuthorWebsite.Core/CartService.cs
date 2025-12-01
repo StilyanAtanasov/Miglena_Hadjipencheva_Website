@@ -4,6 +4,7 @@ using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Cart;
 using Microsoft.EntityFrameworkCore;
+using static MHAuthorWebsite.GCommon.ApplicationRules.CacheDefaultDurations;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.EntityConstraints.CartItem;
 
@@ -129,7 +130,19 @@ public class CartService : ICartService
             Items = cartItems
         };
 
-        _cache.SetFireAndForget(CartKey(userId), cartViewModel, TimeSpan.FromHours(3));
+        DateTime now = DateTime.Now;
+        DateTime? earliestExpiration = cart.CartItems
+            .SelectMany(ci => ci.Product.Discounts)
+            .Where(d => d.EndDate > now)
+            .OrderBy(d => d.EndDate)
+            .Select(d => d.EndDate)
+            .FirstOrDefault();
+
+        TimeSpan cacheExpiration = earliestExpiration.HasValue && earliestExpiration.Value - now < TimeSpan.FromDays(CartTtlDays)
+            ? earliestExpiration.Value - now
+            : TimeSpan.FromDays(CartTtlDays);
+
+        _cache.SetFireAndForget(CartKey(userId), cartViewModel, cacheExpiration);
 
         return cartViewModel;
     }

@@ -29,6 +29,14 @@ public static class ApplicationRules
         public static string CartKey(string userId) => $"Cart:{userId}";
     }
 
+    public static class CacheDefaultDurations
+    {
+        public const int ProductCardTtlDays = 5;
+        public const int ProductDetailsTtlDays = 5;
+        public const int LikedProductTtlDays = 1;
+        public const int CartTtlDays = 2;
+    }
+
     public static class CurrencyRates
     {
         public const decimal LevToEurRate = 0.511m;

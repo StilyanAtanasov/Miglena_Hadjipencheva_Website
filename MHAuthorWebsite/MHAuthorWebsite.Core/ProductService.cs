@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Linq.Expressions;
 using System.Text.Json;
+using static MHAuthorWebsite.GCommon.ApplicationRules.CacheDefaultDurations;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ProductComment;
@@ -86,9 +87,16 @@ public class ProductService : IProductService
 
                 if (generalInfo is null) return ServiceResult<ProductDetailsViewModel>.NotFound();
 
+                TimeSpan productDetailsTtl = TimeSpan.FromDays(ProductDetailsTtlDays);
+                if (generalInfo.Discount is not null)
+                {
+                    TimeSpan timeUntilDiscountEnds = generalInfo.Discount.EndDate - DateTime.Now;
+                    if (timeUntilDiscountEnds > productDetailsTtl) productDetailsTtl = timeUntilDiscountEnds;
+                }
+
                 Cache.SetFireAndForget(ProductDetailsKey(productId),
                     generalInfo,
-                    TimeSpan.FromDays(3));
+                    productDetailsTtl);
             }
 
             ProductDetailsCommentsInfoViewModel? commentsInfo = await Cache.GetAsync<ProductDetailsCommentsInfoViewModel>(ProductCommentsKey(productId));
@@ -343,32 +351,59 @@ public class ProductService : IProductService
         LikedProductsListViewModel? likedProducts = await Cache.GetAsync<LikedProductsListViewModel>(LikedProductsKey(userId));
         if (likedProducts is not null && likedProducts.DiscountStateId == stateId) return likedProducts.LikedProducts;
 
+        var likedProductsData = await Repository
+            .WhereReadonly<Product>(p => p.Likes.Any(u => u.Id == userId))
+            .Include(p => p.Thumbnail)
+            .ThenInclude(t => t.Image)
+            .Include(p => p.ProductType)
+            .Include(p => p.Discounts)
+            .Select(p => new
+            {
+                p.Id,
+                p.Name,
+                p.Price,
+                DiscountedPrice = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
+                    ? (decimal?)p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice
+                    : null,
+                DiscountEnd = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
+                    ? (DateTime?)p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).EndDate
+                    : null,
+                CategoryName = p.ProductType.Name,
+                IsInStock = p.StockQuantity > 0,
+                ThumbnailUrl = p.Thumbnail.Image.ImageUrl,
+                ThumbnailAlt = p.Thumbnail.Image.AltText
+            })
+            .ToArrayAsync();
+
         likedProducts = new()
         {
             DiscountStateId = stateId,
-            LikedProducts = await Repository
-                .WhereReadonly<Product>(p => p.Likes.Any(u => u.Id == userId))
-                .Include(p => p.Thumbnail)
-                .ThenInclude(t => t.Image)
-                .Include(p => p.ProductType)
-                .Include(p => p.Discounts)
+            LikedProducts = likedProductsData
                 .Select(p => new LikedProductViewModel
                 {
                     Id = p.Id,
                     Name = p.Name,
                     Price = p.Price,
-                    DiscountedPrice = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-                        ? p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice
-                        : null,
-                    CategoryName = p.ProductType.Name,
-                    IsInStock = p.StockQuantity > 0,
-                    ThumbnailUrl = p.Thumbnail.Image.ImageUrl,
-                    ThumbnailAlt = p.Thumbnail.Image.AltText
+                    DiscountedPrice = p.DiscountedPrice,
+                    CategoryName = p.CategoryName,
+                    IsInStock = p.IsInStock,
+                    ThumbnailUrl = p.ThumbnailUrl,
+                    ThumbnailAlt = p.ThumbnailAlt
                 })
-                .ToArrayAsync()
+                .ToArray()
         };
 
-        Cache.SetFireAndForget(LikedProductsKey(userId), likedProducts, TimeSpan.FromDays(1));
+        DateTime now = DateTime.Now;
+        DateTime nearestDiscountEnd = likedProductsData
+            .Where(p => p.DiscountEnd is not null && p.DiscountEnd > now)
+            .Select(p => p.DiscountEnd!.Value)
+            .Min();
+
+        TimeSpan cacheDuration = nearestDiscountEnd != default && nearestDiscountEnd - now < TimeSpan.FromDays(LikedProductTtlDays)
+            ? nearestDiscountEnd - now
+            : TimeSpan.FromDays(LikedProductTtlDays);
+
+        Cache.SetFireAndForget(LikedProductsKey(userId), likedProducts, cacheDuration);
         return likedProducts.LikedProducts;
     }
 
@@ -464,31 +499,50 @@ public class ProductService : IProductService
 
         if (missingIds.Any())
         {
-            ProductCardGeneralInfoViewModel[] dbItems = await Repository.WhereReadonly<Product>(p => missingIds.Contains(p.Id))
+            var dbItems = await Repository.WhereReadonly<Product>(p => missingIds.Contains(p.Id))
                  .Include(p => p.ProductType)
                  .Include(p => p.Thumbnail).ThenInclude(t => t.Image)
                  .Include(p => p.Discounts)
-                 .Select(p => new ProductCardGeneralInfoViewModel
+                 .Select(p => new
                  {
-                     Id = p.Id,
-                     Name = p.Name,
-                     Price = p.Price,
+                     p.Id,
+                     p.Name,
+                     p.Price,
                      IsAvailable = p.StockQuantity > 0,
                      ProductType = p.ProductType.Name,
-                     ImageUrl = p.Thumbnail.Image.ImageUrl,
+                     p.Thumbnail.Image.ImageUrl,
                      ImageAlt = p.Thumbnail.Image.AltText,
                      DiscountPrice = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-                         ? p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice
-                         : null
+                         ? (decimal?)p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice
+                         : null,
+                     DiscountEnd = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
+                         ? (DateTime?)p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).EndDate
+                         : null,
                  })
                  .ToArrayAsync();
 
             IBatch writeBatch = Cache.CreateBatch();
-            foreach (ProductCardGeneralInfoViewModel item in dbItems)
+            foreach (var item in dbItems)
             {
-                string json = JsonSerializer.Serialize(item);
-                await writeBatch.StringSetAsync((RedisKey)ProductCardKey(item.Id), (RedisValue)json, TimeSpan.FromDays(2), flags: CommandFlags.FireAndForget);
-                cachedProducts.Add(item);
+                ProductCardGeneralInfoViewModel viewModel = new()
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Price = item.Price,
+                    IsAvailable = item.IsAvailable,
+                    ProductType = item.ProductType,
+                    ImageUrl = item.ImageUrl,
+                    ImageAlt = item.ImageAlt,
+                    DiscountPrice = item.DiscountPrice
+                };
+
+                string json = JsonSerializer.Serialize(viewModel);
+                TimeSpan cacheDuration = item.DiscountEnd != null && item.DiscountEnd.Value - DateTime.Now < TimeSpan.FromDays(ProductCardTtlDays)
+                    ? item.DiscountEnd.Value - DateTime.Now
+                    : TimeSpan.FromDays(ProductCardTtlDays);
+
+                await writeBatch.StringSetAsync((RedisKey)ProductCardKey(viewModel.Id), (RedisValue)json, cacheDuration, flags: CommandFlags.FireAndForget);
+                cachedProducts.Add(viewModel);
             }
 
             writeBatch.Execute();
