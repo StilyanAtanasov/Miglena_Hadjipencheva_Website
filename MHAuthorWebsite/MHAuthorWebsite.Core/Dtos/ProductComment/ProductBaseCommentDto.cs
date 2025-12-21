@@ -1,0 +1,38 @@
+﻿using MHAuthorWebsite.Core.Models.Enums;
+
+namespace MHAuthorWebsite.Core.Dtos.ProductComment;
+
+public class ProductBaseCommentDto
+{
+    public Guid Id { get; set; }
+
+    public Guid ProductId { get; set; }
+
+    public short Rating { get; set; }
+
+    public string Text { get; set; } = null!;
+
+    public string UserName { get; set; } = null!;
+
+    public DateTime Date { get; set; }
+
+    public DateTime? LastEdited { get; set; }
+
+    public bool VerifiedPurchase { get; set; }
+
+    public int Likes { get; set; }
+
+    public int Dislikes { get; set; }
+
+    public bool HasMoreReplies { get; set; }
+
+    public int TotalRepliesCount { get; set; }
+
+    public bool IsUserAuthor { get; set; }
+
+    public CommentReaction? UserReaction { get; set; }
+
+    public ICollection<string> ImageUrls { get; set; } = new HashSet<string>();
+
+    public ICollection<ProductCommentReplyDto> Replies { get; set; } = new HashSet<ProductCommentReplyDto>();
+}

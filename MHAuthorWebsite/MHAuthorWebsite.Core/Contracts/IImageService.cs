@@ -1,13 +1,13 @@
 ﻿using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Dto;
+using MHAuthorWebsite.Core.Dtos.Images;
 using Microsoft.AspNetCore.Http;
 
 namespace MHAuthorWebsite.Core.Contracts;
 
 public interface IImageService
 {
-    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<IFormFile> images, string folder, short width);
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<UploadImageRequestDto> images, string folder, short width);
 
     Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<string> imageUrls, string folder, short width);
 

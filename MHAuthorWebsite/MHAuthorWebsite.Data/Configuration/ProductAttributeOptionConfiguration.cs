@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Data.Models;
+﻿using MHAuthorWebsite.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +8,10 @@ public class ProductAttributeOptionConfiguration : IEntityTypeConfiguration<Prod
 {
     public void Configure(EntityTypeBuilder<ProductAttributeOption> builder)
     {
+        builder
+            .Property(po => po.Value)
+            .HasComment("Predefined selectable value");
+
         builder
             .HasOne(po => po.AttributeDefinition)
             .WithMany(def => def.ProductAttributeOptions)

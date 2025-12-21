@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Data.Models.Enums;
+﻿using MHAuthorWebsite.Core.Models.Enums;
 
 namespace MHAuthorWebsite.Web.ViewModels.ProductComment;
 

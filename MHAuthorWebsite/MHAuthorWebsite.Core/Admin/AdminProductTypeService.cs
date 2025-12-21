@@ -1,11 +1,11 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Admin.ProductType;
-using Microsoft.EntityFrameworkCore;
+using MHAuthorWebsite.Core.Dtos.Admin.ProductType;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 
 namespace MHAuthorWebsite.Core.Admin;
 
@@ -15,7 +15,7 @@ public class AdminProductTypeService : IAdminProductTypeService
 
     public AdminProductTypeService(IApplicationRepository repository) => _repository = repository;
 
-    public async Task<ServiceResult> AddProductTypeAsync(AddProductTypeForm model)
+    public async Task<ServiceResult> AddProductTypeAsync(AddProductTypeDto model)
     {
         try
         {
@@ -24,9 +24,9 @@ public class AdminProductTypeService : IAdminProductTypeService
             await _repository.AddAsync(pt);
             await _repository.SaveChangesAsync();
 
-            if (model.HasAdditionalProperties)
+            if (model is { HasAdditionalProperties: true, Attributes.Count: > 0 })
             {
-                foreach (AttributeDefinitionForm attribute in model.Attributes)
+                foreach (AttributeDefinitionDto attribute in model.Attributes)
                 {
                     await _repository.AddAsync<ProductAttributeDefinition>(new()
                     {

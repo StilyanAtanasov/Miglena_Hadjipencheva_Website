@@ -1,9 +1,9 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Web.ViewModels.Contacts;
+using MHAuthorWebsite.Core.Dtos.Contacts;
 
 namespace MHAuthorWebsite.Core.Contracts;
 
 public interface IContactsService
 {
-    Task<ServiceResult> SendContactMessageAsync(ContactFormViewModel model, string? userId);
+    Task<ServiceResult> SendContactMessageAsync(SendContactMessageDto model, string? userId);
 }

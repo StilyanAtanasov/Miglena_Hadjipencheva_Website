@@ -1,11 +1,11 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
+using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Shared;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+using MHAuthorWebsite.Core.Dtos.Images;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ProductImage;
 
@@ -15,37 +15,35 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
 {
     private readonly IApplicationRepository _repository;
     private readonly IImageService _imageService;
+    private readonly ICloudinaryAdminProductImageDataService _dataService;
 
-    public CloudinaryAdminProductImageService(IApplicationRepository repository, IImageService imageService, ICloudinaryService cloudinaryService)
+    public CloudinaryAdminProductImageService(IApplicationRepository repository, ICloudinaryAdminProductImageDataService dataService, IImageService imageService, ICloudinaryService cloudinaryService)
         : base(cloudinaryService)
     {
         _repository = repository;
         _imageService = imageService;
+        _dataService = dataService;
     }
 
-    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<IFormFile> images)
+    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<UploadImageRequestDto> images)
          => UploadImagesAsync(images, ImageFolder, OriginalWidth);
 
     public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<string> imageUrls)
         => UploadImagesAsync(imageUrls, ImageFolder, OriginalWidth);
 
-    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(IFormFile image)
+    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(UploadImageRequestDto image)
         => UploadImagesAsync(new[] { image }, ThumbnailFolder, ThumbnailWidth);
 
     public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(string imageUrl)
         => UploadImagesAsync(new[] { imageUrl }, ThumbnailFolder, ThumbnailWidth);
 
-    public async Task<ServiceResult<Guid?>> LinkImagesToProductAsync(ICollection<IFormFile> images, int? titleImageIndex, Guid productId)
+    public async Task<ServiceResult<Guid?>> LinkImagesToProductAsync(ICollection<UploadImageRequestDto> images, int? titleImageIndex, Guid productId)
     {
-        if (images.Count == 0 || images.Any(i => i.Length == 0)
+        if (images.Count == 0 || images.Any(i => i.Content.Length == 0)
             || titleImageIndex > images.Count - 1 || titleImageIndex < 0)
             return ServiceResult<Guid?>.Failure();
 
-        Product? product = await _repository
-            .All<Product>()
-            .IgnoreQueryFilters()
-            .Where(p => p.Id == productId && !p.IsDeleted)
-            .FirstOrDefaultAsync();
+        Product? product = await _dataService.GetNonDeletedProductByIdAsync(productId);
 
         if (product is null) return ServiceResult<Guid?>.Failure();
 
@@ -74,10 +72,7 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
 
     public async Task<ServiceResult> DeleteProductImageByIdAsync(Guid imageId)
     {
-        ProductImage? image = await _repository
-            .All<ProductImage>()
-            .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(i => i.Id == imageId);
+        ProductImage? image = await _dataService.GetProductImageByIdAsync(imageId);
 
         if (image is null) return ServiceResult.NotFound();
 
@@ -92,22 +87,12 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
 
     public async Task<ServiceResult> UpdateProductTitleImageAsync(Guid productId, Guid newTitleImageId)
     {
-        Product product = await _repository
-            .All<Product>()
-            .Include(p => p.Thumbnail)
-                .ThenInclude(t => t.Image)
-            .IgnoreQueryFilters()
-            .Where(p => p.Id == productId && !p.IsDeleted)
-            .FirstAsync();
+        Product product = await _dataService.GetNonDeletedProductForTitleImageUpdateByIdAsync(productId);
 
         if (product.Thumbnail.Image.Id == newTitleImageId) return ServiceResult.Ok();
 
-        ProductImage? newTitleImage = await _repository
-            .All<ProductImage>()
-            .IgnoreQueryFilters()
-            .Include(i => i.Product)
-            .Where(i => !i.Product.IsDeleted)
-            .FirstOrDefaultAsync(i => i.ProductId == productId && i.Id == newTitleImageId);
+        ProductImage? newTitleImage =
+            await _dataService.GetProductImageForTitleImageUpdateByIdAsync(productId, newTitleImageId);
 
         if (newTitleImage is null) return ServiceResult.Failure();
 

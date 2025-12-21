@@ -1,4 +1,6 @@
-﻿namespace MHAuthorWebsite.Data.Shared;
+﻿using MHAuthorWebsite.Core.Models.Contracts;
+
+namespace MHAuthorWebsite.Data.Shared;
 
 public class ApplicationRepository : EfRepository, IApplicationRepository
 {

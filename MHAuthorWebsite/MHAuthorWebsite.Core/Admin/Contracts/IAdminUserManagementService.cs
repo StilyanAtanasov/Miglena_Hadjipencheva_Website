@@ -1,13 +1,13 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Web.ViewModels.Admin.UserManagement;
+using MHAuthorWebsite.Core.Dtos.Admin.UserManagement;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 
 public interface IAdminUserManagementService
 {
-    Task<ICollection<UserSummaryRowViewModel>> GetAllUsersReadonlyAsync();
+    Task<ICollection<UserSummaryRowDto>> GetAllUsersReadonlyAsync();
 
-    Task<ServiceResult<UserDetailsViewModel>> GetUserDetailsReadonlyAsync(string userId);
+    Task<ServiceResult<UserDetailsDto>> GetUserDetailsReadonlyAsync(string userId);
 
     Task<ServiceResult> AssignRoleToUserAsync(string userId, string roleName);
 

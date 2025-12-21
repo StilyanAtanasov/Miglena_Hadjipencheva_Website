@@ -1,9 +1,10 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Admin.Dashboard;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Admin.Dashboard;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using static MHAuthorWebsite.GCommon.ApplicationRules.DataCollection;
 
 namespace MHAuthorWebsite.Core.Admin;
@@ -19,23 +20,21 @@ public class AdminDashboardService : IAdminDashboardService
         _userManager = userManager;
     }
 
-    public async Task<AdminDashboardViewModel> GetDashboardStatisticsAsync()
+    public async Task<AdminDashboardDto> GetDashboardStatisticsAsync()
     {
         DateTime periodStart = DateTime.UtcNow.AddDays(-UsersActivityForPeriod);
 
         ApplicationUser[] users = await _userManager.Users.ToArrayAsync();
         List<ApplicationUser> admins = (List<ApplicationUser>)await _userManager.GetUsersInRoleAsync("Admin");
 
-        return new AdminDashboardViewModel
+        return new AdminDashboardDto
         {
             UsersCount = users.Length - admins.Count,
             NewUsersCount = users.Count(u => u.RegisteredOn >= periodStart) - admins.Count(u => u.RegisteredOn >= periodStart),
             ActiveUsersCount = users.Count(u => u.LastActive >= periodStart) - admins.Count(u => u.LastActive >= periodStart),
             ProductsList = _repository
                 .AllReadonly<Product>()
-                .Include(p => p.Likes)
-                .Include(p => p.Orders)
-                .Select(pr => new AdminDashboardProductsViewModel
+                .Select(pr => new AdminDashboardProductsDto
                 {
                     Id = pr.Id,
                     Name = pr.Name,

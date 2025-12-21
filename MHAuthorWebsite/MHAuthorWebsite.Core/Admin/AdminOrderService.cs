@@ -1,21 +1,22 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Configuration.EcontApi;
+using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
-using MHAuthorWebsite.Core.EmailConfiguration.Contracts;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Admin.Order;
+using MHAuthorWebsite.Core.Dtos.Order;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Data.Common.Extensions;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Data.Shared.Filters;
 using MHAuthorWebsite.Data.Shared.Filters.Criteria;
-using MHAuthorWebsite.Web.ViewModels.Admin.Order;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
 
 namespace MHAuthorWebsite.Core.Admin;
@@ -25,35 +26,33 @@ public class AdminOrderService : OrderService, IAdminOrderService
     private readonly IAdminEcontService _adminEcontService;
     private readonly IEmailService _emailService;
     private readonly IEmailUserProvider _emailUserProvider;
-    private readonly LinkGenerator _linkGenerator;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IUrlProvider _urlProvider;
+    private readonly IAdminOrderDataService _adminOrderDataService;
 
     public AdminOrderService
     (IApplicationRepository repository,
+        IAdminOrderDataService adminOrderDataService,
         UserManager<ApplicationUser> userManager,
         IEcontService econtService,
+        IOrderDataService orderDataService,
         IAdminEcontService adminEcontService,
-        IConfiguration configuration,
+        IOptions<EcontApiSettings> econtSettings,
         IEmailService emailService,
         IEmailUserProvider emailUserProvider,
-        LinkGenerator linkGenerator,
-        IHttpContextAccessor httpContextAccessor)
-        : base(repository, userManager, econtService, configuration)
+        IUrlProvider urlProvider)
+        : base(repository, orderDataService, userManager, econtService, econtSettings)
     {
         _adminEcontService = adminEcontService;
         _emailService = emailService;
         _emailUserProvider = emailUserProvider;
-        _linkGenerator = linkGenerator;
-        _httpContextAccessor = httpContextAccessor;
+        _urlProvider = urlProvider;
+        _adminOrderDataService = adminOrderDataService;
     }
 
-    public async Task<ICollection<AllOrdersListItemViewModel>> GetAllOrders(AllOrdersFilterCriteria filter)
+    public async Task<ICollection<AllOrdersListItemDto>> GetAllOrders(AllOrdersFilterCriteria filter)
         => await Repository
             .AllReadonly(new AllOrdersFilter(filter))
-            .Include(o => o.OrderedProducts)
-            .Include(o => o.User)
-            .Include(o => o.Shipment)
-            .Select(o => new AllOrdersListItemViewModel
+            .Select(o => new AllOrdersListItemDto
             {
                 Id = o.Id,
                 CustomerName = o.Shipment.Face,
@@ -64,29 +63,19 @@ public class AdminOrderService : OrderService, IAdminOrderService
             })
             .ToArrayAsync();
 
-    public async Task<ServiceResult<AdminOrderDetailsViewModel>> GetOrderDetailsAsync(Guid orderId)
+    public async Task<ServiceResult<AdminOrderDetailsDto>> GetOrderDetailsAsync(Guid orderId)
     {
-        Order? order = await Repository
-            .WhereReadonly<Order>(o => o.Id == orderId)
-            .Include(o => o.OrderedProducts)
-                .ThenInclude(op => op.Product)
-                    .ThenInclude(p => p.Thumbnail)
-                        .ThenInclude(t => t.Image)
-            .Include(o => o.Shipment)
-                .ThenInclude(s => s.Events)
-            .Include(o => o.Shipment)
-                .ThenInclude(s => s.Services)
-            .FirstOrDefaultAsync();
+        Order? order = await _adminOrderDataService.GetOrderByIdForOrderDetailsReadonlyAsync(orderId);
 
-        if (order == null) return ServiceResult<AdminOrderDetailsViewModel>.NotFound();
+        if (order == null) return ServiceResult<AdminOrderDetailsDto>.NotFound();
 
-        AdminOrderDetailsViewModel model = new()
+        AdminOrderDetailsDto model = new()
         {
             OrderId = order.Id,
             OrderDate = order.Date,
             Status = order.Status,
             Products = order.OrderedProducts
-                 .Select(op => new AdminOrderProductDetailsViewModel
+                 .Select(op => new AdminOrderProductDetailsDto
                  {
                      Id = op.ProductId,
                      ImageUrl = op.Product.Thumbnail.Image.ImageUrl,
@@ -95,7 +84,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
                      Quantity = op.Quantity,
                  })
                  .ToArray(),
-            Shipment = new AdminOrderShipmentDetailsViewModel
+            Shipment = new AdminOrderShipmentDetailsDto
             {
                 CourierName = order.Shipment.Courier.GetDisplayName(),
                 ShipmentNumber = order.Shipment.ShipmentNumber,
@@ -110,7 +99,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
                 PriorityTo = order.Shipment.PriorityTo,
                 TrackingEvents = order.Shipment.Events
                      .OrderBy(e => e.Time)
-                     .Select(e => new AdminOrderShipmentEventViewModel
+                     .Select(e => new AdminOrderShipmentEventDto
                      {
                          CityName = e.CityName,
                          DestinationDetails = e.DestinationDetails!,
@@ -122,7 +111,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
                 Currency = order.Shipment.Currency,
                 AwbUrl = order.Shipment.AwbUrl,
                 Services = order.Shipment.Services
-                    .Select(s => new AdminOrderShipmentServiceViewModel
+                    .Select(s => new AdminOrderShipmentServiceDto
                     {
                         Count = s.Count,
                         Currency = s.Currency,
@@ -135,7 +124,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
             }
         };
 
-        return ServiceResult<AdminOrderDetailsViewModel>.Ok(model);
+        return ServiceResult<AdminOrderDetailsDto>.Ok(model);
     }
 
     public async Task<ServiceResult> AcceptOrderAsync(Guid orderId)
@@ -204,18 +193,8 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
         string userEmail = order.Shipment.Email;
 
-        string url = _linkGenerator.GetUriByAction(
-            httpContext: _httpContextAccessor.HttpContext!,
-            action: "OrderDetails",
-            controller: "Order",
-            values: new { orderId }
-        )!;
-
-        string contactsUrl = _linkGenerator.GetUriByAction(
-            httpContext: _httpContextAccessor.HttpContext!,
-            action: "Index",
-            controller: "Contacts"
-        )!;
+        string url = _urlProvider.GetOrderDetailsPageUrl(orderId);
+        string contactsUrl = _urlProvider.GetContactsPageUrl();
 
         await _emailService.SendEmailAsync(
              _emailUserProvider.GetNotificationsUser(),
@@ -290,12 +269,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
         await Repository.SaveChangesAsync();
 
         string userEmail = order.Shipment.Email;
-
-        string contactsUrl = _linkGenerator.GetUriByAction(
-            httpContext: _httpContextAccessor.HttpContext!,
-            action: "Index",
-            controller: "Contacts"
-        )!;
+        string contactsUrl = _urlProvider.GetContactsPageUrl();
 
         await _emailService.SendEmailAsync(
             _emailUserProvider.GetNotificationsUser(),
@@ -359,7 +333,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
         await Repository.AddAsync(new ShipmentEvent
         {
-            Time = DateTime.UtcNow,
+            Time = DateTime.UtcNow, // TODO UTC or local?
             Source = ShipmentEventSource.System,
             DestinationDetails = Terminated,
             ShipmentId = order.Shipment.Id
@@ -371,12 +345,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
         await Repository.SaveChangesAsync();
 
         string userEmail = order.Shipment.Email;
-
-        string contactsUrl = _linkGenerator.GetUriByAction(
-            httpContext: _httpContextAccessor.HttpContext!,
-            action: "Index",
-            controller: "Contacts"
-        )!;
+        string contactsUrl = _urlProvider.GetContactsPageUrl();
 
         await _emailService.SendEmailAsync(
             _emailUserProvider.GetNotificationsUser(),
@@ -426,10 +395,8 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
     private async Task RestoreProducts(IApplicationRepository repository, Guid orderId, bool saveChanges = true)
     {
-        OrderProduct[] orderedProducts = await repository
-            .Where<OrderProduct>(op => op.OrderId == orderId)
-            .Include(op => op.Product)
-            .ToArrayAsync();
+        OrderProduct[] orderedProducts =
+            await _adminOrderDataService.GetOrderProductsByOrderByIdForRestoringProductAsync(orderId);
 
         foreach (OrderProduct orderedProduct in orderedProducts)
             orderedProduct.Product.StockQuantity += orderedProduct.Quantity;
@@ -439,12 +406,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
     private async Task<(Order?, EcontOrderDto?)> PrepareOrderDto(Guid orderId)
     {
-        Order? order = await Repository
-            .All<Order>()
-            .Include(o => o.Shipment)
-            .Include(o => o.OrderedProducts)
-                .ThenInclude(op => op.Product)
-            .FirstOrDefaultAsync(o => o.Id == orderId);
+        Order? order = await _adminOrderDataService.GetOrderByIdForEditAndOrderDtoAsync(orderId);
 
         if (order == null) return (null, null);
 

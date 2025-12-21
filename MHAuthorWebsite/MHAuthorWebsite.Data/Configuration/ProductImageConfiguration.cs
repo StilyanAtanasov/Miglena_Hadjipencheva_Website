@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Data.Models;
+﻿using MHAuthorWebsite.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +8,10 @@ public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
 {
     public void Configure(EntityTypeBuilder<ProductImage> builder)
     {
+        builder
+            .Property(image => image.PublicId)
+            .HasComment("The publicId in Cloudinary");
+
         builder
             .HasQueryFilter(pi => !pi.Product.IsDeleted && pi.Product.IsPublic);
 

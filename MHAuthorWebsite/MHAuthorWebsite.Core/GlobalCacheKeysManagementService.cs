@@ -1,6 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Shared;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;

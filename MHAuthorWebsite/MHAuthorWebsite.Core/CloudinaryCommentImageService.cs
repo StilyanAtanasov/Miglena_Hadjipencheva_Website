@@ -1,9 +1,10 @@
 ﻿using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
-using Microsoft.AspNetCore.Http;
+using MHAuthorWebsite.Core.Dtos.Images;
+using MHAuthorWebsite.Core.Dtos.ProductComment;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ProductCommentImages;
 
@@ -19,43 +20,59 @@ public class CloudinaryCommentImageService : CloudinaryImageService, ICommentIma
         => _imageService = imageService;
 
     public async Task<ServiceResult<ICollection<ProductCommentImagesUploadDto>>> UploadCommentImagesAsync(
-        ICollection<IFormFile> images)
+        ICollection<UploadImageRequestDto> images)
     {
-        ICollection<IFormFile> copies = new List<IFormFile>();
-        foreach (IFormFile file in images)
-        {
-            MemoryStream ms = new();
-            await file.CopyToAsync(ms);
-            ms.Position = 0;
+        ICollection<UploadImageRequestDto> originals = new List<UploadImageRequestDto>();
+        ICollection<UploadImageRequestDto> copies = new List<UploadImageRequestDto>();
 
-            copies.Add(new FormFile(ms, 0, ms.Length, file.Name, file.FileName)
-            {
-                Headers = file.Headers,
-                ContentType = file.ContentType
-            });
+        List<Stream> streamsToDispose = new();
+
+        foreach (UploadImageRequestDto file in images)
+        {
+            if (file.Content.CanSeek) file.Content.Position = 0;
+
+            using var bufferStream = new MemoryStream();
+            await file.Content.CopyToAsync(bufferStream);
+            byte[] buffer = bufferStream.ToArray();
+
+            var originalStream = new MemoryStream(buffer);
+            var copyStream = new MemoryStream(buffer);
+
+            streamsToDispose.Add(originalStream);
+            streamsToDispose.Add(copyStream);
+
+            originals.Add(new UploadImageRequestDto { Content = originalStream, FileName = file.FileName, ContentType = file.ContentType });
+            copies.Add(new UploadImageRequestDto { Content = copyStream, FileName = file.FileName, ContentType = file.ContentType });
         }
 
-        Task<ServiceResult<ICollection<ImageUploadResultDto>>> uploadImageTask =
-            _imageService.UploadImagesAsync(images, CommentImagesFolder, ImageMaxWidth);
-        Task<ServiceResult<ICollection<ImageUploadResultDto>>> uploadPreviewTask =
-            _imageService.UploadImagesAsync(copies, CommentImagePreviewsFolder, ImagePreviewMaxWidth);
-
-        await Task.WhenAll(uploadImageTask, uploadPreviewTask);
-
-        ServiceResult<ICollection<ImageUploadResultDto>> mainImages = uploadImageTask.Result;
-        ServiceResult<ICollection<ImageUploadResultDto>> previewImages = uploadPreviewTask.Result;
-
-        ICollection<ProductCommentImagesUploadDto> uploadResults = new HashSet<ProductCommentImagesUploadDto>();
-        for (int i = 0; i < mainImages.Result!.Count; i++)
+        try
         {
-            uploadResults.Add(new ProductCommentImagesUploadDto
-            {
-                Image = mainImages.Result.ElementAt(i),
-                Preview = previewImages.Result!.ElementAt(i)
-            });
-        }
+            Task<ServiceResult<ICollection<ImageUploadResultDto>>> uploadImageTask =
+                _imageService.UploadImagesAsync(originals, CommentImagesFolder, ImageMaxWidth);
+            Task<ServiceResult<ICollection<ImageUploadResultDto>>> uploadPreviewTask =
+                _imageService.UploadImagesAsync(copies, CommentImagePreviewsFolder, ImagePreviewMaxWidth);
 
-        return ServiceResult<ICollection<ProductCommentImagesUploadDto>>.Ok(uploadResults);
+            await Task.WhenAll(uploadImageTask, uploadPreviewTask);
+
+            ServiceResult<ICollection<ImageUploadResultDto>> mainImages = uploadImageTask.Result;
+            ServiceResult<ICollection<ImageUploadResultDto>> previewImages = uploadPreviewTask.Result;
+
+            ICollection<ProductCommentImagesUploadDto> uploadResults = new HashSet<ProductCommentImagesUploadDto>();
+            for (int i = 0; i < mainImages.Result!.Count; i++)
+            {
+                uploadResults.Add(new ProductCommentImagesUploadDto
+                {
+                    Image = mainImages.Result.ElementAt(i),
+                    Preview = previewImages.Result!.ElementAt(i)
+                });
+            }
+
+            return ServiceResult<ICollection<ProductCommentImagesUploadDto>>.Ok(uploadResults);
+        }
+        finally
+        {
+            foreach (var stream in streamsToDispose) await stream.DisposeAsync();
+        }
     }
 
     public async Task<ServiceResult> DeleteCommentImagesAsync(ICollection<string> publicIds)

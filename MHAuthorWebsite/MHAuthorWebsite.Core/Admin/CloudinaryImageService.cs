@@ -4,7 +4,7 @@ using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
+using MHAuthorWebsite.Core.Dtos.Images;
 using Microsoft.AspNetCore.Http;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 
@@ -16,9 +16,9 @@ public class CloudinaryImageService : IImageService
 
     public CloudinaryImageService(ICloudinaryService cloudinaryService) => _cloudinaryService = cloudinaryService;
 
-    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<IFormFile> images, string folder, short width)
+    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<UploadImageRequestDto> images, string folder, short width)
     {
-        if (images.Count == 0 || images.Any(i => i.Length == 0))
+        if (images.Count == 0 || images.Any(i => i.Content.Length == 0))
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure();
 
         IEnumerable<Task<ImageUploadResult>> uploadTasks = images.Select(image =>
@@ -28,7 +28,7 @@ public class CloudinaryImageService : IImageService
 
             ImageUploadParams fullUploadParams = new()
             {
-                File = new FileDescription(image.FileName, image.OpenReadStream()),
+                File = new FileDescription(image.FileName, image.Content),
                 Folder = folder,
                 PublicId = $"{fileName}_{timestamp}",
                 Format = "avif",

@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.EmailConfiguration.Contracts;
+﻿using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 
 namespace MHAuthorWebsite.Core.Contracts;
 

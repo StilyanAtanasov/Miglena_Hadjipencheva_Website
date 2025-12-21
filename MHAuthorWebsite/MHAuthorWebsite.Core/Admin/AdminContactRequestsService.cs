@@ -1,12 +1,12 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.EmailConfiguration.Contracts;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Admin.ContactRequests;
+using MHAuthorWebsite.Core.Dtos.Admin.ContactRequests;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ContactRequestsBoard;
 
 namespace MHAuthorWebsite.Core.Admin;
@@ -17,13 +17,13 @@ public class AdminContactRequestsService : ContactsService, IAdminContactRequest
         IApplicationRepository repository, UserManager<ApplicationUser> userManager)
         : base(emailService, emailUserProvider, repository, userManager) { }
 
-    public async Task<ICollection<ContactRequestCardViewModel>> GetContactRequestsPagedReadonlyAsync(int page)
+    public async Task<ICollection<ContactRequestCardDto>> GetContactRequestsPagedReadonlyAsync(int page)
         => await Repository
             .AllReadonly<ContactRequest>()
             .OrderByDescending(cr => cr.CreatedOn)
             .Skip((page - 1) * RequestsPerPage)
             .Take(RequestsPerPage)
-            .Select(cr => new ContactRequestCardViewModel
+            .Select(cr => new ContactRequestCardDto
             {
                 Id = cr.Id,
                 Name = cr.Name,
@@ -35,14 +35,14 @@ public class AdminContactRequestsService : ContactsService, IAdminContactRequest
             })
             .ToArrayAsync();
 
-    public async Task<ServiceResult<ContactRequestDetailsViewModel>> GetContactRequestDetailsReadonlyAsync(Guid requestId)
+    public async Task<ServiceResult<ContactRequestDetailsDto>> GetContactRequestDetailsReadonlyAsync(Guid requestId)
     {
         ContactRequest? contactRequest = await Repository
-            .AllReadonly<ContactRequest>()
-            .FirstOrDefaultAsync(cr => cr.Id == requestId);
-        if (contactRequest is null) return ServiceResult<ContactRequestDetailsViewModel>.NotFound();
+            .WhereReadonly<ContactRequest>(cr => cr.Id == requestId)
+            .FirstOrDefaultAsync();
+        if (contactRequest is null) return ServiceResult<ContactRequestDetailsDto>.NotFound();
 
-        ContactRequestDetailsViewModel viewModel = new ContactRequestDetailsViewModel
+        ContactRequestDetailsDto dto = new ContactRequestDetailsDto
         {
             Id = contactRequest.Id,
             Name = contactRequest.Name,
@@ -55,14 +55,14 @@ public class AdminContactRequestsService : ContactsService, IAdminContactRequest
             IsAnswered = contactRequest.ReplyMessage != null
         };
 
-        return ServiceResult<ContactRequestDetailsViewModel>.Ok(viewModel);
+        return ServiceResult<ContactRequestDetailsDto>.Ok(dto);
     }
 
     public async Task<ServiceResult> ReplyToContactRequestAsync(Guid requestId, string replyMessage, string adminId)
     {
         ContactRequest? contactRequest = await Repository
-            .All<ContactRequest>()
-            .FirstOrDefaultAsync(cr => cr.Id == requestId);
+            .Where<ContactRequest>(cr => cr.Id == requestId)
+            .FirstOrDefaultAsync();
         if (contactRequest is null) return ServiceResult.NotFound();
 
         contactRequest.ReplyMessage = replyMessage;

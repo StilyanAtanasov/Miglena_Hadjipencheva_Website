@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MHAuthorWebsite.Data.Models\MHAuthorWebsite.Data.Models.csproj" />
+    <ProjectReference Include="..\MHAuthorWebsite.Core\MHAuthorWebsite.Core.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.GCommon\MHAuthorWebsite.GCommon.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Web.Common\MHAuthorWebsite.Web.Common.csproj" />
   </ItemGroup>

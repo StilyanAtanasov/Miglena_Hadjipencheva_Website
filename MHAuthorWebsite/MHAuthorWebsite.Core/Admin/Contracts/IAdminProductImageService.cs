@@ -1,17 +1,18 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
+using MHAuthorWebsite.Core.Dtos.Images;
 using Microsoft.AspNetCore.Http;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 
 public interface IAdminProductImageService : IImageService
 {
-    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<IFormFile> images);
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<UploadImageRequestDto> images);
 
     Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<string> imageUrls);
 
-    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(IFormFile image);
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(UploadImageRequestDto image);
 
     Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(string imageUrl);
 
@@ -46,6 +47,6 @@ public interface IAdminProductImageService : IImageService
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The result contains a <see
     /// cref="ServiceResult{T}"/> with the unique identifier of the title image if the operation succeeds, or
     /// <c>null</c> if no title image is set.</returns>
-    Task<ServiceResult<Guid?>> LinkImagesToProductAsync(ICollection<IFormFile> images, int? titleImageIndex,
+    Task<ServiceResult<Guid?>> LinkImagesToProductAsync(ICollection<UploadImageRequestDto> images, int? titleImageIndex,
         Guid productId);
 }

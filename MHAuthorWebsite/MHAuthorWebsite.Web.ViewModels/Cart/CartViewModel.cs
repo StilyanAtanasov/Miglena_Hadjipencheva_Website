@@ -2,7 +2,6 @@
 
 public class CartViewModel
 {
-    public Guid DiscountStateId { get; set; }
 
     public ICollection<CartItemViewModel> Items { get; set; } = new HashSet<CartItemViewModel>();
 

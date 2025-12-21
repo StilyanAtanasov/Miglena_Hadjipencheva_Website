@@ -1,9 +1,9 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Cart;
-using Microsoft.EntityFrameworkCore;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Cart;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheDefaultDurations;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.EntityConstraints.CartItem;
@@ -14,12 +14,14 @@ public class CartService : ICartService
 {
     private readonly IFastCacheService _cache;
     private readonly IApplicationRepository _repository;
+    private readonly ICartDataService _cartDataService;
     private readonly IGlobalCacheKeysManagementService _globalCacheKeysManagementService;
 
-    public CartService(IFastCacheService cacheService, IApplicationRepository repository, IGlobalCacheKeysManagementService globalCacheKeysManagementService)
+    public CartService(ICartDataService cartDataService, IFastCacheService cacheService, IApplicationRepository repository, IGlobalCacheKeysManagementService globalCacheKeysManagementService)
     {
         _cache = cacheService;
         _repository = repository;
+        _cartDataService = cartDataService;
         _globalCacheKeysManagementService = globalCacheKeysManagementService;
     }
 
@@ -81,32 +83,18 @@ public class CartService : ICartService
         }
     }
 
-    public async Task<CartViewModel> GetCartReadonlyAsync(string userId)
+    public async Task<CartDto> GetCartReadonlyAsync(string userId)
     {
         Guid stateId = await _globalCacheKeysManagementService.DiscountsGlobalStateId();
-        CartViewModel? cachedCart = await _cache.GetAsync<CartViewModel>(CartKey(userId));
+        CartDto? cachedCart = await _cache.GetAsync<CartDto>(CartKey(userId));
         if (cachedCart is not null && cachedCart.DiscountStateId == stateId) return cachedCart;
 
-        Cart? cart = await _repository
-            .AllReadonly<Cart>()
-            .Where(c => c.UserId == userId)
-            .IgnoreQueryFilters()
-            .Include(c => c.CartItems)
-                .ThenInclude(ci => ci.Product)
-                    .ThenInclude(p => p.ProductType)
-            .Include(c => c.CartItems)
-                 .ThenInclude(ci => ci.Product)
-                    .ThenInclude(p => p.Thumbnail)
-                        .ThenInclude(t => t.Image)
-            .Include(c => c.CartItems)
-                 .ThenInclude(ci => ci.Product)
-                    .ThenInclude(p => p.Discounts)
-            .FirstOrDefaultAsync();
-        if (cart is null) return new CartViewModel();
+        Cart? cart = await _cartDataService.GetCartByUserIdReadonlyAsync(userId);
+        if (cart is null) return new CartDto();
 
-        ICollection<CartItemViewModel> cartItems =
+        ICollection<CartItemDto> cartItems =
             cart.CartItems
-            .Select(ci => new CartItemViewModel
+            .Select(ci => new CartItemDto
             {
                 ItemId = ci.Id,
                 ProductId = ci.ProductId,
@@ -124,7 +112,7 @@ public class CartService : ICartService
             })
             .ToArray();
 
-        CartViewModel cartViewModel = new CartViewModel
+        CartDto cartDto = new CartDto
         {
             DiscountStateId = stateId,
             Items = cartItems
@@ -142,9 +130,9 @@ public class CartService : ICartService
             ? earliestExpiration.Value - now
             : TimeSpan.FromDays(CartTtlDays);
 
-        _cache.SetFireAndForget(CartKey(userId), cartViewModel, cacheExpiration);
+        _cache.SetFireAndForget(CartKey(userId), cartDto, cacheExpiration);
 
-        return cartViewModel;
+        return cartDto;
     }
 
     public async Task<ServiceResult> RemoveFromCartAsync(string userId, Guid itemId)
@@ -153,10 +141,8 @@ public class CartService : ICartService
 
         if (cart == null) return ServiceResult.BadRequest(new() { ["cart"] = "User has nothing in cart!" });
 
-        CartItem? cartItem = _repository
-            .All<CartItem>()
-            .IgnoreQueryFilters()
-            .FirstOrDefault(c => c.CartId == cart.Id && c.Id == itemId);
+        CartItem? cartItem = cart.CartItems
+            .FirstOrDefault(c => c.Id == itemId);
 
         if (cartItem == null) return ServiceResult.BadRequest(new() { ["product"] = "User does not have the specified product in their cart!" });
 
@@ -170,22 +156,17 @@ public class CartService : ICartService
         return ServiceResult.Ok();
     }
 
-    public async Task<ServiceResult<UpdatedItemQuantityViewModel>> UpdateItemQuantityAsync(string userId, Guid itemId, int quantity)
+    public async Task<ServiceResult<UpdatedItemQuantityDto>> UpdateItemQuantityAsync(string userId, Guid itemId, int quantity)
     {
-        Cart? cart = await _repository
-            .All<Cart>()
-            .Include(c => c.CartItems)
-                .ThenInclude(ci => ci.Product)
-                    .ThenInclude(p => p.Discounts)
-            .FirstOrDefaultAsync(c => c.UserId == userId);
+        Cart? cart = await _cartDataService.GetCartForItemQuantityUpdateAsync(userId);
 
-        if (cart == null) return ServiceResult<UpdatedItemQuantityViewModel>
+        if (cart == null) return ServiceResult<UpdatedItemQuantityDto>
             .BadRequest(new() { ["cart"] = "Потребителят няма нищо в количката!" });
 
         CartItem? cartItem = cart.CartItems
             .FirstOrDefault(c => c.CartId == cart.Id && c.Id == itemId);
 
-        if (cartItem == null) return ServiceResult<UpdatedItemQuantityViewModel>
+        if (cartItem == null) return ServiceResult<UpdatedItemQuantityDto>
             .BadRequest(new() { ["product"] = "Продуктът не е намерен в количката!" });
 
         cartItem.Quantity = quantity;
@@ -193,7 +174,7 @@ public class CartService : ICartService
 
         await InvalidateCacheAsync(userId);
 
-        return ServiceResult<UpdatedItemQuantityViewModel>.Ok(new()
+        return ServiceResult<UpdatedItemQuantityDto>.Ok(new()
         {
             LineTotal = cartItem.Quantity * (cartItem.Product.Discounts.FirstOrDefault(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow)?.NewPrice ?? cartItem.Price),
             Total = cart.CartItems
@@ -207,11 +188,7 @@ public class CartService : ICartService
 
     public async Task<ServiceResult> UpdateIsSelectedAsync(string userId, Guid itemId, bool isSelected)
     {
-        Cart? cart = await _repository
-            .All<Cart>()
-            .Include(c => c.CartItems)
-            .ThenInclude(ci => ci.Product)
-            .FirstOrDefaultAsync(c => c.UserId == userId);
+        Cart? cart = await _cartDataService.GetCartForSelectionUpdateAsync(userId);
 
         if (cart == null) return ServiceResult
             .BadRequest(new() { ["cart"] = "Потребителят няма нищо в количката!" });

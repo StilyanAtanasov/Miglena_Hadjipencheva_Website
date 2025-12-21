@@ -1,16 +1,21 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Dto;
-using MHAuthorWebsite.Data.Models.Enums;
+using MHAuthorWebsite.Core.Dtos.Admin.Product;
+using MHAuthorWebsite.Core.Dtos.Images;
+using MHAuthorWebsite.Core.Dtos.Product;
+using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Web.Dto.Product;
 using MHAuthorWebsite.Web.ViewModels.Admin.Product;
+using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text;
 using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Product;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
+using static MHAuthorWebsite.Web.Utils.Mappers.ImageMapper;
+using AddProductDto = MHAuthorWebsite.Core.Admin.Dto.AddProductDto;
 
 namespace MHAuthorWebsite.Web.Areas.Admin.Controllers;
 
@@ -72,11 +77,17 @@ public class AdminProductController : AdminBaseController
         if (model.TitleImageId > model.Images.Count - 1 || model.TitleImageId < 0)
             return BadRequest("Invalid title image id!");
 
-        ServiceResult<ICollection<ImageUploadResultDto>> imageResult = await _imageService.UploadProductImagesAsync(model.Images);
+        ServiceResult<ICollection<ImageUploadResultDto>> imageResult =
+            await _imageService.UploadProductImagesAsync(
+                await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.Images));
+
         if (!imageResult.Success) return StatusCode(500);
         if (imageResult.Result is null || !imageResult.Result.Any()) return StatusCode(500);
 
-        ServiceResult<ICollection<ImageUploadResultDto>> thumbnailUploadResult = await _imageService.UploadProductThumbnailAsync(model.Images.ElementAt(model.TitleImageId));
+        ServiceResult<ICollection<ImageUploadResultDto>> thumbnailUploadResult =
+            await _imageService.UploadProductThumbnailAsync(
+                await MapIFormFileToUploadImageRequestDtoAsync(model.Images.ElementAt(model.TitleImageId)));
+
         if (!thumbnailUploadResult.Success) return StatusCode(500);
         if (thumbnailUploadResult.Result is null || !thumbnailUploadResult.Result.Any()) return StatusCode(500);
 
@@ -89,7 +100,19 @@ public class AdminProductController : AdminBaseController
             ProductTypeId = model.ProductTypeId,
             ImageUrls = imageResult.Result,
             Thumbnail = thumbnailUploadResult.Result.First(),
-            Attributes = model.Attributes,
+            Attributes = model.Attributes
+                .Select(a => new AttributeValueDto
+                {
+                    Key = a.Key,
+                    Value = a.Value,
+                    Label = a.Label,
+                    DataType = a.DataType,
+                    AttributeDefinitionId = a.AttributeDefinitionId,
+                    DisplayPosition = a.DisplayPosition,
+                    HasPredefinedValue = a.HasPredefinedValue,
+                    IsRequired = a.IsRequired
+                })
+                .ToArray(),
             Weight = model.Weight,
             ThumbnailOriginalImageIndex = model.TitleImageId
         };
@@ -104,8 +127,22 @@ public class AdminProductController : AdminBaseController
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<IActionResult> ProductsList()
     {
-        ICollection<ProductListViewModel> products = await _productService.GetProductsListReadonlyAsync();
-        return View(products);
+        ICollection<ProductListItemDto> products = await _productService.GetProductsListReadonlyAsync();
+
+        ICollection<ProductListItemViewModel> productViewModels = products
+            .Select(p => new ProductListItemViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                StockQuantity = p.StockQuantity,
+                IsPublic = p.IsPublic,
+                HasActiveDiscount = p.HasActiveDiscount,
+                ProductTypeName = p.ProductTypeName
+            })
+            .ToList();
+
+        return View(productViewModels);
     }
 
     [HttpGet("/AdminProduct/GetCategoryTypeAttributes/{productTypeId}")]
@@ -132,10 +169,45 @@ public class AdminProductController : AdminBaseController
     [HttpGet("/Admin/AdminProduct/EditProduct/{productId}")]
     public async Task<IActionResult> EditProduct([FromRoute] Guid productId)
     {
-        ServiceResult<EditProductFormViewModel> result = await _productService.GetProductForEditAsync(productId);
+        ServiceResult<EditProductDto> result = await _productService.GetProductForEditAsync(productId);
         if (!result.Found) return NotFound();
 
-        return View(result.Result);
+        EditProductDto dto = result.Result!;
+        EditProductFormViewModel viewModel = new()
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            Description = dto.Description,
+            Price = dto.Price,
+            StockQuantity = dto.StockQuantity,
+            ProductTypeName = dto.ProductTypeName,
+            ImagesJson = dto.ImagesJson,
+            Attributes = dto.Attributes
+                .Select(a => new AttributeValueForm
+                {
+                    Key = a.Key,
+                    Value = a.Value,
+                    Label = a.Label,
+                    DataType = a.DataType,
+                    AttributeDefinitionId = a.AttributeDefinitionId,
+                    DisplayPosition = a.DisplayPosition,
+                    HasPredefinedValue = a.HasPredefinedValue,
+                    IsRequired = a.IsRequired
+                })
+                .ToArray(),
+            Weight = dto.Weight,
+            Images = dto.Images
+                .Select(i => new ProductImageViewModel
+                {
+                    Id = i.Id,
+                    Url = i.Url,
+                    IsTitle = i.IsTitle
+                })
+                .ToArray(),
+            NewImages = new HashSet<IFormFile>()
+        };
+
+        return View(viewModel);
     }
 
     [HttpPost("/Admin/AdminProduct/EditProduct/{productId}")]
@@ -187,7 +259,10 @@ public class AdminProductController : AdminBaseController
         if (images.Added.Any())
         {
             int titleImageIndex = Array.IndexOf(images.Added, true);
-            ServiceResult<Guid?> imageResult = await _imageService.LinkImagesToProductAsync(model.NewImages!, titleImageIndex != -1 ? titleImageIndex : null, productId);
+            ServiceResult<Guid?> imageResult = await _imageService.LinkImagesToProductAsync(
+               await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.NewImages!),
+               titleImageIndex != -1 ? titleImageIndex : null, productId);
+
             if (!imageResult.Success) return StatusCode(500);
 
             if ((imageResult.Result is null && newTitleImageId is null)
@@ -207,7 +282,40 @@ public class AdminProductController : AdminBaseController
                 if (!r.Success) return StatusCode(500);
             }
 
-        ServiceResult result = await _productService.UpdateProductAsync(model);
+        EditProductDto modelDto = new()
+        {
+            Id = model.Id,
+            Name = model.Name,
+            Description = model.Description,
+            Price = model.Price,
+            StockQuantity = model.StockQuantity,
+            Attributes = model.Attributes
+                .Select(a => new AttributeValueDto
+                {
+                    Key = a.Key,
+                    Value = a.Value,
+                    Label = a.Label,
+                    DataType = a.DataType,
+                    AttributeDefinitionId = a.AttributeDefinitionId,
+                    DisplayPosition = a.DisplayPosition,
+                    HasPredefinedValue = a.HasPredefinedValue,
+                    IsRequired = a.IsRequired
+                })
+                .ToArray(),
+            Weight = model.Weight,
+            Images = images.Existing
+                .Select(i => new ProductImageDto
+                {
+                    Id = i.Id,
+                    IsTitle = i.IsTitle
+                })
+                .ToArray(),
+            NewImages = model.NewImages,
+            ProductTypeName = model.ProductTypeName,
+            ImagesJson = model.ImagesJson
+        };
+
+        ServiceResult result = await _productService.UpdateProductAsync(modelDto);
         if (!result.Found) return NotFound();
 
         return RedirectToAction(nameof(ProductsList));
@@ -258,7 +366,16 @@ public class AdminProductController : AdminBaseController
     {
         if (!ModelState.IsValid) return View(model);
 
-        ServiceResult result = await _productService.AddDiscountAsync(model);
+        AddProductDiscountDto dto = new()
+        {
+            ProductId = model.ProductId,
+            CurrentPrice = model.CurrentPrice,
+            NewPrice = model.NewPrice,
+            StartDate = model.StartDate,
+            EndDate = model.EndDate,
+        };
+
+        ServiceResult result = await _productService.AddDiscountAsync(dto);
         if (!result.Success)
         {
             foreach (var error in result.Errors)

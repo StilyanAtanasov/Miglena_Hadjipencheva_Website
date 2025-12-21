@@ -1,11 +1,11 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Admin.UserManagement;
+using MHAuthorWebsite.Core.Dtos.Admin.UserManagement;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.DataCollection;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
@@ -28,13 +28,13 @@ public class AdminUserManagementService : IAdminUserManagementService
         _roleManager = roleManager;
     }
 
-    public async Task<ICollection<UserSummaryRowViewModel>> GetAllUsersReadonlyAsync()
+    public async Task<ICollection<UserSummaryRowDto>> GetAllUsersReadonlyAsync()
     {
         ICollection<ApplicationUser> adminUsers = await _userManager.GetUsersInRoleAsync(AdminRoleName);
 
         return await _repository
             .AllReadonly<ApplicationUser>()
-            .Select(u => new UserSummaryRowViewModel
+            .Select(u => new UserSummaryRowDto
             {
                 Id = u.Id,
                 Name = !u.IsDeleted ? u.Name : "",
@@ -47,14 +47,14 @@ public class AdminUserManagementService : IAdminUserManagementService
             .ToArrayAsync();
     }
 
-    public async Task<ServiceResult<UserDetailsViewModel>> GetUserDetailsReadonlyAsync(string userId)
+    public async Task<ServiceResult<UserDetailsDto>> GetUserDetailsReadonlyAsync(string userId)
     {
         ApplicationUser? user = await _repository
-            .AllReadonly<ApplicationUser>()
-            .FirstOrDefaultAsync(u => u.Id == userId);
-        if (user == null) return ServiceResult<UserDetailsViewModel>.NotFound();
+            .WhereReadonly<ApplicationUser>(u => u.Id == userId)
+            .FirstOrDefaultAsync();
+        if (user == null) return ServiceResult<UserDetailsDto>.NotFound();
 
-        UserDetailsViewModel userDetails = new()
+        UserDetailsDto userDetails = new()
         {
             Id = user.Id,
             Name = !user.IsDeleted ? user.Name : "",
@@ -68,7 +68,7 @@ public class AdminUserManagementService : IAdminUserManagementService
             LastActive = user.LastActive
         };
 
-        return ServiceResult<UserDetailsViewModel>.Ok(userDetails);
+        return ServiceResult<UserDetailsDto>.Ok(userDetails);
     }
 
     public async Task<ServiceResult> AssignRoleToUserAsync(string userId, string roleName)

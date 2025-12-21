@@ -1,5 +1,5 @@
-﻿using MHAuthorWebsite.Core.Dto;
-using MHAuthorWebsite.Web.ViewModels.Admin.Product;
+﻿using MHAuthorWebsite.Core.Dtos.Admin.Product;
+using MHAuthorWebsite.Core.Dtos.Images;
 
 namespace MHAuthorWebsite.Core.Admin.Dto;
 
@@ -23,5 +23,5 @@ public class AddProductDto
 
     public ICollection<ImageUploadResultDto> ImageUrls { get; set; } = null!;
 
-    public ICollection<AttributeValueForm> Attributes { get; set; } = new HashSet<AttributeValueForm>();
+    public ICollection<AttributeValueDto> Attributes { get; set; } = new HashSet<AttributeValueDto>();
 }

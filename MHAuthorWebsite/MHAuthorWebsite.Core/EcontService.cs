@@ -1,8 +1,9 @@
 ﻿using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Configuration.EcontApi;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
-using Microsoft.Extensions.Configuration;
+using MHAuthorWebsite.Core.Dtos.Order;
+using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Econt;
@@ -12,12 +13,12 @@ namespace MHAuthorWebsite.Core;
 public class EcontService : IEcontService
 {
     protected readonly HttpClient Http;
-    protected readonly IConfiguration Config;
+    protected readonly EcontApiSettings EcontSettings;
 
-    public EcontService(HttpClient http, IConfiguration config)
+    public EcontService(HttpClient http, IOptions<EcontApiSettings> econtSettings)
     {
         Http = http;
-        Config = config;
+        EcontSettings = econtSettings.Value;
     }
 
     public async Task<ServiceResult<EcontOrderDto>> UpdateOrderAsync(EcontOrderDto order)
@@ -59,8 +60,8 @@ public class EcontService : IEcontService
         });
 
         using HttpRequestMessage request = new(HttpMethod.Post, endpoint);
-        request.Headers.TryAddWithoutValidation("Authorization", Config["EcontApiSecret"]!);
-        request.Headers.Add("X-ID-Shop", Config["EcontApiShopId"]);
+        request.Headers.TryAddWithoutValidation("Authorization", EcontSettings.EcontApiSecret);
+        request.Headers.Add("X-ID-Shop", EcontSettings.EcontApiShopId.ToString());
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
         HttpResponseMessage response = await Http.SendAsync(request);

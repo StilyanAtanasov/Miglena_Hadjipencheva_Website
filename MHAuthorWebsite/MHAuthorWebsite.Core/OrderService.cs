@@ -1,14 +1,15 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Configuration.EcontApi;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Order;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Data.Common.Extensions;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Order;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
@@ -18,32 +19,28 @@ namespace MHAuthorWebsite.Core;
 public class OrderService : IOrderService
 {
     protected readonly IApplicationRepository Repository;
+    protected readonly IOrderDataService OrderDataService;
     protected readonly UserManager<ApplicationUser> UserManager;
     protected readonly IEcontService EcontService;
-    protected readonly IConfiguration Config;
+    protected readonly EcontApiSettings EcontApiSettings;
 
-    public OrderService(IApplicationRepository repository, UserManager<ApplicationUser> userManager,
-        IEcontService econtService, IConfiguration config)
+    public OrderService(IApplicationRepository repository, IOrderDataService orderDataService, UserManager<ApplicationUser> userManager,
+        IEcontService econtService, IOptions<EcontApiSettings> econtApiSettings)
     {
         Repository = repository;
         UserManager = userManager;
         EcontService = econtService;
-        Config = config;
+        EcontApiSettings = econtApiSettings.Value;
+        OrderDataService = orderDataService;
     }
 
-    public async Task<OrderSummaryViewModel> GetOrderSummary(string userId)
+    public async Task<OrderSummaryDto> GetOrderSummary(string userId)
     {
         ApplicationUser user = (await UserManager.FindByIdAsync(userId))!;
 
-        ICollection<SelectedProductViewModel> selectedProducts = await Repository
+        ICollection<SelectedProductDto> selectedProducts = await Repository
             .WhereReadonly<CartItem>(ci => ci.Cart.UserId == userId && ci.IsSelected && ci.Product.IsPublic && ci.Product.StockQuantity >= ci.Quantity)
-            .Include(ci => ci.Cart)
-            .Include(ci => ci.Product)
-                .ThenInclude(p => p.Thumbnail)
-                    .ThenInclude(t => t.Image)
-            .Include(ci => ci.Product)
-                .ThenInclude(p => p.Discounts)
-            .Select(ci => new SelectedProductViewModel
+            .Select(ci => new SelectedProductDto
             {
                 ImageUrl = ci.Product.Thumbnail.Image.ImageUrl,
                 Name = ci.Product.Name,
@@ -56,7 +53,7 @@ public class OrderService : IOrderService
             })
             .ToListAsync();
 
-        return new OrderSummaryViewModel
+        return new OrderSummaryDto
         {
             UserData = new()
             {
@@ -65,18 +62,13 @@ public class OrderService : IOrderService
                 PhoneNumber = user.PhoneNumber
             },
             SelectedProducts = selectedProducts,
-            EcontShopId = Config.GetValue<int>("EcontApiShopId")
+            EcontShopId = EcontApiSettings.EcontApiShopId
         };
     }
 
-    public async Task<ServiceResult<Guid>> Order(string userId, EcontDeliveryDetailsViewModel model)
+    public async Task<ServiceResult<Guid>> Order(string userId, EcontDeliveryDetailsDto model)
     {
-        CartItem[] cartItems = await Repository
-            .Where<CartItem>(ci => ci.Cart.UserId == userId && ci.IsSelected && ci.Product.IsPublic && ci.Product.StockQuantity >= ci.Quantity)
-            .Include(ci => ci.Cart)
-            .Include(ci => ci.Product)
-                .ThenInclude(p => p.Discounts)
-            .ToArrayAsync();
+        CartItem[] cartItems = await OrderDataService.GetOrderCartItemsByUserId(userId);
 
         Dictionary<Guid, decimal> productPricesWithDiscounts = cartItems.ToDictionary(
             ci => ci.ProductId,
@@ -170,22 +162,18 @@ public class OrderService : IOrderService
         return ServiceResult<Guid>.Ok(order.Id);
     }
 
-    public async Task<ICollection<MyOrdersViewModel>> GetUserOrders(string userId) =>
+    public async Task<ICollection<MyOrderDto>> GetUserOrders(string userId) =>
     await Repository
         .WhereReadonly<Order>(o => o.UserId == userId)
-        .Include(o => o.OrderedProducts)
-            .ThenInclude(op => op.Product)
-                .ThenInclude(p => p.Thumbnail)
-                    .ThenInclude(t => t.Image)
         .OrderByDescending(o => o.Date)
-        .Select(o => new MyOrdersViewModel
+        .Select(o => new MyOrderDto
         {
             OrderId = o.Id,
             CreatedAt = o.Date,
             Total = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity) + o.Shipment.ShippingPrice,
             Status = o.Status.GetDisplayName(),
             Products = o.OrderedProducts
-                .Select(op => new MyOrdersOrderProductViewModel
+                .Select(op => new MyOrdersOrderProductDto
                 {
                     ImageUrl = op.Product.Thumbnail.Image.ImageUrl,
                     Quantity = op.Quantity,
@@ -194,28 +182,20 @@ public class OrderService : IOrderService
         })
         .ToArrayAsync();
 
-    public async Task<ServiceResult<OrderDetailsViewModel>> GetOrderDetails(string userId, Guid orderId)
+    public async Task<ServiceResult<OrderDetailsDto>> GetOrderDetails(string userId, Guid orderId)
     {
-        Order? order = await Repository
-            .WhereReadonly<Order>(o => o.Id == orderId)
-            .Include(o => o.OrderedProducts)
-                .ThenInclude(op => op.Product)
-                    .ThenInclude(p => p.Thumbnail)
-                        .ThenInclude(t => t.Image)
-            .Include(o => o.Shipment)
-                .ThenInclude(s => s.Events)
-            .FirstOrDefaultAsync();
+        Order? order = await OrderDataService.GetOrderByIdForOrderDetails(orderId);
 
-        if (order == null) return ServiceResult<OrderDetailsViewModel>.NotFound();
-        if (order.UserId != userId) return ServiceResult<OrderDetailsViewModel>.Forbidden();
+        if (order == null) return ServiceResult<OrderDetailsDto>.NotFound();
+        if (order.UserId != userId) return ServiceResult<OrderDetailsDto>.Forbidden();
 
-        OrderDetailsViewModel model = new()
+        OrderDetailsDto model = new()
         {
             OrderId = order.Id,
             OrderDate = order.Date,
             Status = order.Status.GetDisplayName(),
             Products = order.OrderedProducts
-                 .Select(op => new OrderProductDetailsViewModel
+                 .Select(op => new OrderProductDetailsDto
                  {
                      ImageUrl = op.Product.Thumbnail.Image.ImageUrl,
                      ProductName = op.Product.Name,
@@ -223,7 +203,7 @@ public class OrderService : IOrderService
                      Quantity = op.Quantity,
                  })
                  .ToArray(),
-            Shipment = new OrderShipmentDetailsViewModel
+            Shipment = new OrderShipmentDetailsDto
             {
                 CourierName = order.Shipment.Courier.GetDisplayName(),
                 ShipmentNumber = order.Shipment.ShipmentNumber,
@@ -238,7 +218,7 @@ public class OrderService : IOrderService
                 PriorityTo = order.Shipment.PriorityTo,
                 TrackingEvents = order.Shipment.Events
                      .OrderBy(e => e.Time)
-                     .Select(e => new OrderShipmentEventViewModel
+                     .Select(e => new OrderShipmentEventDto
                      {
                          CityName = e.CityName,
                          DestinationDetails = e.DestinationDetails!,
@@ -251,11 +231,11 @@ public class OrderService : IOrderService
             }
         };
 
-        return ServiceResult<OrderDetailsViewModel>.Ok(model);
+        return ServiceResult<OrderDetailsDto>.Ok(model);
     }
 
     public async Task<bool> CanAccessSuccessPage(string userId, Guid orderId)
         => await Repository
-            .AllReadonly<Order>()
-            .AnyAsync(o => o.Id == orderId && o.UserId == userId && o.Date > DateTime.UtcNow.AddSeconds(-SuccessPageMaxViewDelaySeconds));
+            .WhereReadonly<Order>(o => o.Id == orderId && o.UserId == userId && o.Date > DateTime.UtcNow.AddSeconds(-SuccessPageMaxViewDelaySeconds))
+            .AnyAsync();
 }

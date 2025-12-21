@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Data.Shared.Filters.Contracts;
+﻿using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Data.Shared.Filters.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq.Expressions;

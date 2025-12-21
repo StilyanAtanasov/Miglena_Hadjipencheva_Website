@@ -1,5 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Dtos.Contacts;
 using MHAuthorWebsite.Web.ViewModels.Contacts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,15 @@ public class ContactsController : BaseController
     {
         if (!ModelState.IsValid) return BadRequest();
 
-        ServiceResult sr = await _contactsService.SendContactMessageAsync(model, GetUserId());
+        SendContactMessageDto dto = new SendContactMessageDto
+        {
+            Name = model.Name,
+            Email = model.Email,
+            Subject = model.Subject,
+            Message = model.Message
+        };
+
+        ServiceResult sr = await _contactsService.SendContactMessageAsync(dto, GetUserId());
         if (!sr.HasPermission) return Forbid();
 
         return Ok();

@@ -1,11 +1,11 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.EmailConfiguration.Contracts;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Contacts;
+using MHAuthorWebsite.Core.Dtos.Contacts;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
@@ -27,12 +27,12 @@ public class ContactsService : IContactsService
         UserManager = userManager;
     }
 
-    public async Task<ServiceResult> SendContactMessageAsync(ContactFormViewModel model, string? userId)
+    public async Task<ServiceResult> SendContactMessageAsync(SendContactMessageDto model, string? userId)
     {
         IEmailUser emailUser = EmailUserProvider.GetContactUser();
 
         ApplicationUser? user = userId is not null ?
-            await UserManager.Users.FirstOrDefaultAsync(u => u.Id == userId && !u.IsDeleted)
+            await UserManager.Users.Where(u => u.Id == userId && !u.IsDeleted).FirstOrDefaultAsync()
             : null;
         if (user is null && userId is not null) return ServiceResult.Forbidden();
 

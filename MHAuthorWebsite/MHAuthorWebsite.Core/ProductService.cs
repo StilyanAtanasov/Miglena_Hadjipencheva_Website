@@ -1,12 +1,13 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Product;
-using MHAuthorWebsite.Web.ViewModels.ProductComment;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Product;
+using MHAuthorWebsite.Core.Dtos.ProductComment;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Linq.Expressions;
 using System.Text.Json;
@@ -21,32 +22,34 @@ public class ProductService : IProductService
 {
     protected readonly IFastCacheService Cache;
     protected readonly IApplicationRepository Repository;
+    protected readonly IProductDataService ProductDataService;
     protected readonly UserManager<ApplicationUser> UserManager;
     protected readonly IGlobalCacheKeysManagementService GlobalCacheKeysManagementService;
 
-    public ProductService(IFastCacheService cacheService, IGlobalCacheKeysManagementService globalCacheKeysManagementService,
+    public ProductService(IFastCacheService cacheService, IProductDataService productDataService, IGlobalCacheKeysManagementService globalCacheKeysManagementService,
         IApplicationRepository repository, UserManager<ApplicationUser> userManager)
     {
         Cache = cacheService;
         GlobalCacheKeysManagementService = globalCacheKeysManagementService;
         Repository = repository;
         UserManager = userManager;
+        ProductDataService = productDataService;
     }
 
     public async Task<int> GetAllProductsCountAsync() => await Repository.CountAsync<Product>();
 
-    public async Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId, string? userId)
+    public async Task<ServiceResult<ProductDetailsDto>> GetProductDetailsReadonlyAsync(Guid productId, string? userId)
     {
         try
         {
-            ProductDetailsGeneralInfoViewModel? generalInfo = await Cache.GetAsync<ProductDetailsGeneralInfoViewModel>(ProductDetailsKey(productId));
+            ProductDetailsGeneralInfoDto? generalInfo = await Cache.GetAsync<ProductDetailsGeneralInfoDto>(ProductDetailsKey(productId));
 
             if (generalInfo is null)
             {
                 generalInfo = await Repository
                     .AllReadonly<Product>()
                     .Where(p => !p.IsDeleted && p.Id == productId)
-                    .Select(product => new ProductDetailsGeneralInfoViewModel
+                    .Select(product => new ProductDetailsGeneralInfoDto
                     {
                         CacheCommitId = Guid.NewGuid(),
                         Id = product.Id,
@@ -56,7 +59,7 @@ public class ProductService : IProductService
                         Discount = product.Discounts
                             .Where(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
                             .OrderByDescending(d => d.NewPrice)
-                            .Select(d => new ProductDetailsDiscountViewModel
+                            .Select(d => new ProductDetailsDiscountDto
                             {
                                 NewPrice = d.NewPrice,
                                 EndDate = d.EndDate
@@ -67,14 +70,14 @@ public class ProductService : IProductService
                         Images = product.Images
                     .Where(i => i.Id != product.Thumbnail.ImageId)
                     .OrderByDescending(i => i.Id == product.Thumbnail.ImageOriginalId)
-                    .Select(i => new ProductDetailsImageViewModel
+                    .Select(i => new ProductDetailsImageDto
                     {
                         ImageUrl = i.ImageUrl,
                         AltText = i.AltText
                     })
                     .ToHashSet(),
                         Attributes = product.Attributes
-                        .Select(a => new ProductAttributeDetailsViewModel
+                        .Select(a => new ProductAttributeDetailsDto
                         {
                             Label = a.Key,
                             Value = a.Value,
@@ -85,7 +88,7 @@ public class ProductService : IProductService
                     })
                     .FirstOrDefaultAsync();
 
-                if (generalInfo is null) return ServiceResult<ProductDetailsViewModel>.NotFound();
+                if (generalInfo is null) return ServiceResult<ProductDetailsDto>.NotFound();
 
                 TimeSpan productDetailsTtl = TimeSpan.FromDays(ProductDetailsTtlDays);
                 if (generalInfo.Discount is not null)
@@ -99,7 +102,7 @@ public class ProductService : IProductService
                     productDetailsTtl);
             }
 
-            ProductDetailsCommentsInfoViewModel? commentsInfo = await Cache.GetAsync<ProductDetailsCommentsInfoViewModel>(ProductCommentsKey(productId));
+            ProductDetailsCommentsInfoDto? commentsInfo = await Cache.GetAsync<ProductDetailsCommentsInfoDto>(ProductCommentsKey(productId));
 
             if (commentsInfo is null)
             {
@@ -109,7 +112,7 @@ public class ProductService : IProductService
                 commentsInfo = await Repository
                     .AllReadonly<Product>()
                     .Where(p => !p.IsDeleted && p.Id == productId)
-                    .Select(product => new ProductDetailsCommentsInfoViewModel
+                    .Select(product => new ProductDetailsCommentsInfoDto
                     {
                         HasMoreComments = product.Comments.Count > CommentPageCount,
                         AverageRating = product.Comments.Any(c => c.ParentCommentId == null && c.Rating.HasValue)
@@ -121,7 +124,7 @@ public class ProductService : IProductService
                         CommentsCountByStarsRating = product.Comments
                             .Where(c => c.Rating.HasValue && c.ParentCommentId == null)
                             .GroupBy(c => c.Rating!.Value)
-                            .Select(g => new StarCountViewModel
+                            .Select(g => new StarCountDto
                             {
                                 Star = g.Key,
                                 Count = g.Count()
@@ -134,7 +137,7 @@ public class ProductService : IProductService
                         .ThenByDescending(c => c.Date)
                         .ThenByDescending(c => c.Replies.Count)
                         .Take(CommentPageCount)
-                        .Select(c => new ProductBaseCommentGeneralInfoViewModel
+                        .Select(c => new ProductBaseCommentGeneralInfoDto
                         {
                             Id = c.Id,
                             Rating = c.Rating!.Value,
@@ -156,7 +159,7 @@ public class ProductService : IProductService
                             Replies = c.Replies
                                 .OrderBy(r => r.Date)
                                 .Take(CommentRepliesPageCount)
-                                .Select(r => new ProductCommentReplyGeneralInfoViewModel
+                                .Select(r => new ProductCommentReplyGeneralInfoDto
                                 {
                                     Id = r.Id,
                                     Text = r.Text,
@@ -181,7 +184,7 @@ public class ProductService : IProductService
                     TimeSpan.FromDays(3));
             }
 
-            ProductDetailsViewModel model = new()
+            ProductDetailsDto model = new()
             {
                 Id = generalInfo.Id,
                 Name = generalInfo.Name,
@@ -206,7 +209,7 @@ public class ProductService : IProductService
                 IsRateLimitedForReplies = false,
                 IsLiked = false,
                 Comments = commentsInfo.Comments
-                    .Select(c => new ProductBaseCommentViewModel
+                    .Select(c => new ProductBaseCommentDto
                     {
                         Id = c.Id,
                         Rating = c.Rating,
@@ -224,7 +227,7 @@ public class ProductService : IProductService
                         IsUserAuthor = false,
                         UserReaction = null,
                         Replies = c.Replies
-                            .Select(r => new ProductCommentReplyViewModel
+                            .Select(r => new ProductCommentReplyDto
                             {
                                 Id = r.Id,
                                 Text = r.Text,
@@ -246,28 +249,17 @@ public class ProductService : IProductService
                     .ToArray()
             };
 
-            if (userId is null) return ServiceResult<ProductDetailsViewModel>.Ok(model);
+            if (userId is null) return ServiceResult<ProductDetailsDto>.Ok(model);
 
-            ProductDetailsUserInfoViewModel? userInfo =
-                await Cache.GetAsync<ProductDetailsUserInfoViewModel>(ProductDetailsUserDataKey(productId, userId));
+            ProductDetailsUserInfoDto? userInfo =
+                await Cache.GetAsync<ProductDetailsUserInfoDto>(ProductDetailsUserDataKey(productId, userId));
 
             if (userInfo is null || generalInfo.CacheCommitId != userInfo.CacheGeneralInfoCommitId)
             {
                 userInfo = await Repository
                     .AllReadonly<Product>()
-                    .Include(p => p.Likes)
-                    .Include(p => p.Comments)
-                    .ThenInclude(c => c.User)
-                    .Include(p => p.Comments)
-                    .ThenInclude(c => c.Replies)
-                    .ThenInclude(r => r.User)
-                    .Include(p => p.Comments)
-                    .ThenInclude(c => c.Replies)
-                    .ThenInclude(r => r.Reactions)
-                    .Include(p => p.Comments)
-                    .ThenInclude(c => c.Reactions)
                     .Where(p => !p.IsDeleted && p.Id == productId)
-                    .Select(product => new ProductDetailsUserInfoViewModel
+                    .Select(product => new ProductDetailsUserInfoDto
                     {
                         CacheGeneralInfoCommitId = generalInfo.CacheCommitId,
                         IsLiked = product.Likes.Any(u => u.Id == userId),
@@ -283,7 +275,7 @@ public class ProductService : IProductService
                             .ThenByDescending(c => c.Date)
                             .ThenByDescending(c => c.Replies.Count)
                             .Take(CommentPageCount)
-                        .Select(c => new ProductBaseCommentUserInfoViewModel
+                        .Select(c => new ProductBaseCommentUserInfoDto
                         {
                             Id = c.Id,
                             IsUserAuthor = userId == c.UserId,
@@ -293,7 +285,7 @@ public class ProductService : IProductService
                             Replies = c.Replies
                                 .OrderBy(r => r.Date)
                                 .Take(CommentRepliesPageCount)
-                                .Select(r => new ProductCommentReplyUserInfoViewModel
+                                .Select(r => new ProductCommentReplyUserInfoDto
                                 {
                                     Id = r.Id,
                                     UserReaction = r.Reactions.Where(rx => rx.UserId == userId)
@@ -317,18 +309,18 @@ public class ProductService : IProductService
             model.IsLiked = userInfo.IsLiked;
             model.IsRateLimitedForReplies = userInfo.IsRateLimitedForReplies;
 
-            foreach (ProductBaseCommentViewModel comment in model.Comments)
+            foreach (ProductBaseCommentDto comment in model.Comments)
             {
-                ProductBaseCommentUserInfoViewModel matchingUserInfo =
+                ProductBaseCommentUserInfoDto matchingUserInfo =
                     userInfo.CommentSpecificInfo.First(c => comment.Id == c.Id);
 
                 comment.UserReaction = matchingUserInfo.UserReaction;
                 comment.IsUserAuthor = matchingUserInfo.IsUserAuthor;
                 comment.UserName = comment.IsUserAuthor ? "Вие" : comment.UserName;
 
-                foreach (ProductCommentReplyViewModel reply in comment.Replies)
+                foreach (ProductCommentReplyDto reply in comment.Replies)
                 {
-                    ProductCommentReplyUserInfoViewModel matchingReplyUserInfo =
+                    ProductCommentReplyUserInfoDto matchingReplyUserInfo =
                         matchingUserInfo.Replies.First(r => reply.Id == r.Id);
 
                     reply.IsUserAuthor = matchingReplyUserInfo.IsUserAuthor;
@@ -337,36 +329,32 @@ public class ProductService : IProductService
                 }
             }
 
-            return ServiceResult<ProductDetailsViewModel>.Ok(model);
+            return ServiceResult<ProductDetailsDto>.Ok(model);
         }
         catch (Exception)
         {
-            return ServiceResult<ProductDetailsViewModel>.Failure();
+            return ServiceResult<ProductDetailsDto>.Failure();
         }
     }
 
-    public async Task<ICollection<LikedProductViewModel>> GetLikedProductsReadonlyAsync(string userId)
+    public async Task<ICollection<LikedProductDto>> GetLikedProductsReadonlyAsync(string userId)
     {
         Guid stateId = await GlobalCacheKeysManagementService.DiscountsGlobalStateId();
-        LikedProductsListViewModel? likedProducts = await Cache.GetAsync<LikedProductsListViewModel>(LikedProductsKey(userId));
+        LikedProductsListDto? likedProducts = await Cache.GetAsync<LikedProductsListDto>(LikedProductsKey(userId));
         if (likedProducts is not null && likedProducts.DiscountStateId == stateId) return likedProducts.LikedProducts;
 
-        var likedProductsData = await Repository
+        LikedProductAllServiceDataDto[] likedProductsData = await Repository
             .WhereReadonly<Product>(p => p.Likes.Any(u => u.Id == userId))
-            .Include(p => p.Thumbnail)
-            .ThenInclude(t => t.Image)
-            .Include(p => p.ProductType)
-            .Include(p => p.Discounts)
-            .Select(p => new
+            .Select(p => new LikedProductAllServiceDataDto
             {
-                p.Id,
-                p.Name,
-                p.Price,
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
                 DiscountedPrice = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-                    ? (decimal?)p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice
+                    ? p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice
                     : null,
                 DiscountEnd = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-                    ? (DateTime?)p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).EndDate
+                    ? p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).EndDate
                     : null,
                 CategoryName = p.ProductType.Name,
                 IsInStock = p.StockQuantity > 0,
@@ -379,7 +367,7 @@ public class ProductService : IProductService
         {
             DiscountStateId = stateId,
             LikedProducts = likedProductsData
-                .Select(p => new LikedProductViewModel
+                .Select(p => new LikedProductDto
                 {
                     Id = p.Id,
                     Name = p.Name,
@@ -394,20 +382,19 @@ public class ProductService : IProductService
         };
 
         DateTime now = DateTime.Now;
-        DateTime nearestDiscountEnd = likedProductsData
-            .Where(p => p.DiscountEnd is not null && p.DiscountEnd > now)
-            .Select(p => p.DiscountEnd!.Value)
-            .Min();
+        DateTime? nearestDiscountEnd = likedProductsData
+            .Where(p => p.DiscountEnd > now)
+            .Min(p => p.DiscountEnd);
 
         TimeSpan cacheDuration = nearestDiscountEnd != default && nearestDiscountEnd - now < TimeSpan.FromDays(LikedProductTtlDays)
-            ? nearestDiscountEnd - now
+            ? nearestDiscountEnd.Value - now
             : TimeSpan.FromDays(LikedProductTtlDays);
 
         Cache.SetFireAndForget(LikedProductsKey(userId), likedProducts, cacheDuration);
         return likedProducts.LikedProducts;
     }
 
-    public async Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId, int page,
+    public async Task<ICollection<ProductCardDto>> GetAllProductCardsReadonlyAsync(string? userId, int page,
         (bool descending, Expression<Func<Product, object>>? expression) sortType)
     {
         Guid[] pagedProductIds = await Repository
@@ -415,12 +402,12 @@ public class ProductService : IProductService
             .Select(p => p.Id)
             .ToArrayAsync();
 
-        if (!pagedProductIds.Any()) return Array.Empty<ProductCardViewModel>();
+        if (!pagedProductIds.Any()) return Array.Empty<ProductCardDto>();
 
-        ICollection<ProductCardGeneralInfoViewModel> productCards = await GetProductDetailsBatchAsync(pagedProductIds);
+        ICollection<ProductCardGeneralInfoDto> productCards = await GetProductDetailsBatchAsync(pagedProductIds);
 
-        ProductCardViewModel[] productCardViewModels = productCards
-            .Select(pc => new ProductCardViewModel
+        ProductCardDto[] productCardViewModels = productCards
+            .Select(pc => new ProductCardDto
             {
                 Id = pc.Id,
                 Name = pc.Name,
@@ -441,7 +428,7 @@ public class ProductService : IProductService
                 .Select(p => p.Id)
                 .ToArrayAsync();
 
-            foreach (ProductCardViewModel card in productCardViewModels) card.IsLiked = likedProductIds.Contains(card.Id);
+            foreach (ProductCardDto card in productCardViewModels) card.IsLiked = likedProductIds.Contains(card.Id);
         }
 
         // Ensure the results are returned in the exact order determined by the DB in Step 1.
@@ -452,10 +439,7 @@ public class ProductService : IProductService
 
     public async Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId)
     {
-        Product? product = await Repository
-            .All<Product>()
-            .Include(p => p.Likes)
-            .FirstOrDefaultAsync(p => p.Id == productId);
+        Product? product = await ProductDataService.GetProductWithLikesForEditByIdAsync(productId);
 
         if (product is null) return ServiceResult.NotFound();
 
@@ -473,7 +457,7 @@ public class ProductService : IProductService
         return ServiceResult.Ok();
     }
 
-    private async Task<ICollection<ProductCardGeneralInfoViewModel>> GetProductDetailsBatchAsync(Guid[] productIds)
+    private async Task<ICollection<ProductCardGeneralInfoDto>> GetProductDetailsBatchAsync(Guid[] productIds)
     {
         RedisKey[] keys = productIds
             .Select(id => (RedisKey)ProductCardKey(id))
@@ -484,14 +468,14 @@ public class ProductService : IProductService
         batch.Execute();
 
         RedisValue[] cachedValues = await Task.WhenAll(tasks);
-        List<ProductCardGeneralInfoViewModel> cachedProducts = new();
+        List<ProductCardGeneralInfoDto> cachedProducts = new();
         List<Guid> missingIds = new();
 
         for (int i = 0; i < productIds.Length; i++)
         {
             if (cachedValues[i].HasValue)
             {
-                ProductCardGeneralInfoViewModel? product = JsonSerializer.Deserialize<ProductCardGeneralInfoViewModel>(cachedValues[i].ToString());
+                ProductCardGeneralInfoDto? product = JsonSerializer.Deserialize<ProductCardGeneralInfoDto>(cachedValues[i].ToString());
                 if (product != null) cachedProducts.Add(product);
             }
             else missingIds.Add(productIds[i]);
@@ -499,32 +483,29 @@ public class ProductService : IProductService
 
         if (missingIds.Any())
         {
-            var dbItems = await Repository.WhereReadonly<Product>(p => missingIds.Contains(p.Id))
-                 .Include(p => p.ProductType)
-                 .Include(p => p.Thumbnail).ThenInclude(t => t.Image)
-                 .Include(p => p.Discounts)
-                 .Select(p => new
-                 {
-                     p.Id,
-                     p.Name,
-                     p.Price,
-                     IsAvailable = p.StockQuantity > 0,
-                     ProductType = p.ProductType.Name,
-                     p.Thumbnail.Image.ImageUrl,
-                     ImageAlt = p.Thumbnail.Image.AltText,
-                     DiscountPrice = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-                         ? (decimal?)p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice
+            ProductCardServiceDataDto[] dbItems = await Repository.WhereReadonly<Product>(p => missingIds.Contains(p.Id))
+                .Select(p => new ProductCardServiceDataDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    IsAvailable = p.StockQuantity > 0,
+                    ProductType = p.ProductType.Name,
+                    ImageUrl = p.Thumbnail.Image.ImageUrl,
+                    ImageAlt = p.Thumbnail.Image.AltText,
+                    DiscountPrice = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
+                         ? p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice
                          : null,
-                     DiscountEnd = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-                         ? (DateTime?)p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).EndDate
+                    DiscountEnd = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
+                         ? p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).EndDate
                          : null,
-                 })
+                })
                  .ToArrayAsync();
 
             IBatch writeBatch = Cache.CreateBatch();
-            foreach (var item in dbItems)
+            foreach (ProductCardServiceDataDto item in dbItems)
             {
-                ProductCardGeneralInfoViewModel viewModel = new()
+                ProductCardGeneralInfoDto dto = new()
                 {
                     Id = item.Id,
                     Name = item.Name,
@@ -536,13 +517,13 @@ public class ProductService : IProductService
                     DiscountPrice = item.DiscountPrice
                 };
 
-                string json = JsonSerializer.Serialize(viewModel);
+                string json = JsonSerializer.Serialize(dto);
                 TimeSpan cacheDuration = item.DiscountEnd != null && item.DiscountEnd.Value - DateTime.Now < TimeSpan.FromDays(ProductCardTtlDays)
                     ? item.DiscountEnd.Value - DateTime.Now
                     : TimeSpan.FromDays(ProductCardTtlDays);
 
-                await writeBatch.StringSetAsync((RedisKey)ProductCardKey(viewModel.Id), (RedisValue)json, cacheDuration, flags: CommandFlags.FireAndForget);
-                cachedProducts.Add(viewModel);
+                await writeBatch.StringSetAsync((RedisKey)ProductCardKey(dto.Id), (RedisValue)json, cacheDuration, flags: CommandFlags.FireAndForget);
+                cachedProducts.Add(dto);
             }
 
             writeBatch.Execute();

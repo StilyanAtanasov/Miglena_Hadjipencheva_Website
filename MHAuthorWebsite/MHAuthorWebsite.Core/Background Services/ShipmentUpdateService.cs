@@ -1,11 +1,11 @@
 ﻿using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Background_Services.Data_Services;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Data.Shared;
-using Microsoft.EntityFrameworkCore;
+using MHAuthorWebsite.Core.Dtos.Order;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -27,14 +27,10 @@ public class ShipmentUpdateService : BackgroundService
             {
                 using IServiceScope scope = _services.CreateScope();
                 IApplicationRepository repository = scope.ServiceProvider.GetRequiredService<IApplicationRepository>();
+                IShipmentUpdateDataService dataService = scope.ServiceProvider.GetRequiredService<IShipmentUpdateDataService>();
                 IEcontService econtService = scope.ServiceProvider.GetRequiredService<IEcontService>();
 
-                Order[] acceptedOrders = await repository
-                    .WhereReadonly<Order>(o => o.Status == OrderStatus.Shipped
-                                                 || o.Status == OrderStatus.Accepted)
-                    .Include(o => o.Shipment)
-                        .ThenInclude(s => s.Events)
-                    .ToArrayAsync(cancellationToken);
+                Order[] acceptedOrders = await dataService.GetOrdersOnTheWayReadonlyAsync(cancellationToken);
 
                 if (acceptedOrders.Length == 0)
                 {

@@ -1,5 +1,5 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Product
-@model ICollection<ProductListViewModel>
+@model ICollection<ProductListItemViewModel>
 
 @{
 	ViewData["Title"] = "Управление на продуктите";
@@ -37,7 +37,7 @@
 			}
 			else
 			{
-				foreach (ProductListViewModel product in Model)
+				foreach (ProductListItemViewModel product in Model)
 				{
 					<tr>
 

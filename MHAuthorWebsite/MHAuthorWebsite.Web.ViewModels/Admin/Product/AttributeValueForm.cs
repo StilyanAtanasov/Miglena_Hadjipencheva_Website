@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Data.Models.Enums;
+﻿using MHAuthorWebsite.Core.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace MHAuthorWebsite.Web.ViewModels.Admin.Product;

@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
-@model ICollection<MyOrdersViewModel>
+@model ICollection<MyOrderViewModel>
 @{
 	ViewData["Heading"] = "Вашите поръчки";
 	Layout = "/Areas/Identity/Pages/Account/Manage/_Layout.cshtml";
@@ -17,7 +17,7 @@
 <section class="content-body flex-column">
 	@if (Model.Any())
 		{
-			foreach (MyOrdersViewModel order in Model)
+			foreach (MyOrderViewModel order in Model)
 			{
 				<div class="order-card flex-column">
 					<div class="order-info flex-row">

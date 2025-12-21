@@ -2,17 +2,25 @@ using CloudinaryDotNet;
 using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
 using MHAuthorWebsite.Core.Background_Services;
+using MHAuthorWebsite.Core.Background_Services.Data_Services;
+using MHAuthorWebsite.Core.Configuration.EcontApi;
+using MHAuthorWebsite.Core.Configuration.EmailConfiguration;
+using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.EmailConfiguration;
-using MHAuthorWebsite.Core.EmailConfiguration.Contracts;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Data;
-using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Data.DataServices;
+using MHAuthorWebsite.Data.DataServices.Admin;
 using MHAuthorWebsite.Data.Seeding;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.GCommon;
 using MHAuthorWebsite.Web.Common.Localization.Identity;
 using MHAuthorWebsite.Web.Infrastructure.Initialization;
+using MHAuthorWebsite.Web.Utils.Providers;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -95,6 +103,18 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
+// Data Services
+builder.Services.AddScoped<ICloudinaryAdminProductImageDataService, CloudinaryAdminProductImageDataService>();
+builder.Services.AddScoped<IAdminProductDataService, AdminProductDataService>();
+builder.Services.AddScoped<IAdminOrderDataService, AdminOrderDataService>();
+
+builder.Services.AddScoped<ICartDataService, CartDataService>();
+builder.Services.AddScoped<IOrderDataService, OrderDataService>();
+builder.Services.AddScoped<IProductCommentDataService, ProductCommentDataService>();
+builder.Services.AddScoped<IProductDataService, ProductDataService>();
+builder.Services.AddScoped<IShipmentUpdateDataService, ShipmentUpdateDataService>();
+
+// Core Services
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
 builder.Services.AddScoped<IAdminProductImageService, CloudinaryAdminProductImageService>();
 builder.Services.AddScoped<ICommentImageService, CloudinaryCommentImageService>();
@@ -117,6 +137,8 @@ builder.Services.AddScoped<IContactsService, ContactsService>();
 
 builder.Services.AddHttpClient<IEcontService, EcontService>();
 builder.Services.AddHttpClient<IAdminEcontService, AdminEcontService>();
+
+builder.Services.AddScoped<IUrlProvider, UrlProvider>();
 
 builder.Services.AddHostedService<ShipmentUpdateService>();
 
@@ -163,6 +185,8 @@ builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "keys")))
     .SetApplicationName(ApplicationRules.Application.ProjectName);
 
+builder.Services.Configure<EcontApiSettings>(builder.Configuration.GetSection("Econt"));
+
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddSingleton<IEmailUserProvider, EmailUserProvider>();
 builder.Services.AddTransient<IEmailService, EmailService>();
@@ -191,6 +215,7 @@ builder.Services.AddScoped<IGlobalCacheKeysManagementService, GlobalCacheKeysMan
 var app = builder.Build();
 
 AppEnvironment.Initialize(app.Environment.EnvironmentName);
+QueryBridge.Initialize();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

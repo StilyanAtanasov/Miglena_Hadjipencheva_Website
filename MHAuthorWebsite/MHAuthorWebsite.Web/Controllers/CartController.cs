@@ -1,5 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Dtos.Cart;
 using MHAuthorWebsite.Web.ViewModels.Cart;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,27 @@ public class CartController : BaseController
     {
         if (!IsUserAuthenticated()) return Unauthorized();
 
-        CartViewModel cart = await _cartService.GetCartReadonlyAsync(GetUserId()!);
+        CartDto cartDto = await _cartService.GetCartReadonlyAsync(GetUserId()!);
+        CartViewModel cart = new CartViewModel
+        {
+            Items = cartDto.Items
+                .Select(i => new CartItemViewModel
+                {
+                    ItemId = i.ItemId,
+                    ProductId = i.ProductId,
+                    UnitPrice = i.UnitPrice,
+                    Quantity = i.Quantity,
+                    IsSelected = i.IsSelected,
+                    Category = i.Category,
+                    IsAvailable = i.IsAvailable,
+                    IsDiscontinued = i.IsDiscontinued,
+                    Name = i.Name,
+                    ThumbnailAlt = i.ThumbnailAlt,
+                    ThumbnailUrl = i.ThumbnailUrl,
+                    UnitDiscountedPrice = i.UnitDiscountedPrice,
+                }).ToList()
+        };
+
         return View(cart);
     }
 
@@ -50,7 +71,7 @@ public class CartController : BaseController
     {
         if (!IsUserAuthenticated()) return Unauthorized();
 
-        ServiceResult<UpdatedItemQuantityViewModel> sr = await _cartService
+        ServiceResult<UpdatedItemQuantityDto> sr = await _cartService
             .UpdateItemQuantityAsync(GetUserId()!, model.ItemId, model.Quantity);
         if (sr.IsBadRequest) return BadRequest(sr.Errors);
 

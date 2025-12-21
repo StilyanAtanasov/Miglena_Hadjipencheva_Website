@@ -3,10 +3,11 @@ using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
+using MHAuthorWebsite.Core.Dtos.Images;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Data;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.ViewModels.Admin.Product;
 using Microsoft.AspNetCore.Identity;
@@ -319,7 +320,7 @@ public class AdminProductServiceTests
     public async Task GetProductsListReadonlyAsync_ReturnsList()
     {
         // Act
-        ICollection<ProductListViewModel> products = await _adminProductService
+        ICollection<ProductListItemViewModel> products = await _adminProductService
             .GetProductsListReadonlyAsync();
 
         // Assert
@@ -338,7 +339,7 @@ public class AdminProductServiceTests
         await _dbContext.SaveChangesAsync();
 
         // Act
-        ICollection<ProductListViewModel> products = await _adminProductService
+        ICollection<ProductListItemViewModel> products = await _adminProductService
             .GetProductsListReadonlyAsync();
 
         // Assert

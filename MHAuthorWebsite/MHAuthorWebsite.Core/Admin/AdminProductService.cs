@@ -1,23 +1,30 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Admin.Product;
-using MHAuthorWebsite.Web.ViewModels.Product;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Admin.Product;
+using MHAuthorWebsite.Core.Dtos.Product;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
+using AddProductDto = MHAuthorWebsite.Core.Admin.Dto.AddProductDto;
 
 namespace MHAuthorWebsite.Core.Admin;
 
 public class AdminProductService : ProductService, IAdminProductService
 {
+    private readonly IAdminProductDataService _adminProductDataService;
+
     public AdminProductService(IFastCacheService cacheService, IApplicationRepository repository,
         IGlobalCacheKeysManagementService globalCacheKeysManagementService,
-        UserManager<ApplicationUser> userManager)
-        : base(cacheService, globalCacheKeysManagementService, repository, userManager) { }
+        UserManager<ApplicationUser> userManager, IProductDataService productDataService,
+        IAdminProductDataService adminProductDataService)
+        : base(cacheService, productDataService, globalCacheKeysManagementService, repository, userManager)
+        => _adminProductDataService = adminProductDataService;
 
     public async Task<ServiceResult> AddProductAsync(AddProductDto model)
     {
@@ -92,22 +99,13 @@ public class AdminProductService : ProductService, IAdminProductService
         }
     }
 
-    public async Task<ServiceResult<EditProductFormViewModel>> GetProductForEditAsync(Guid productId)
+    public async Task<ServiceResult<EditProductDto>> GetProductForEditAsync(Guid productId)
     {
-        Product? product = await Repository
-            .AllReadonly<Product>()
-            .IgnoreQueryFilters()
-            .Where(p => !p.IsDeleted)
-            .Include(p => p.Attributes)
-                .ThenInclude(a => a.AttributeDefinition)
-            .Include(p => p.ProductType)
-            .Include(p => p.Images)
-            .Include(p => p.Thumbnail)
-            .FirstOrDefaultAsync(p => p.Id == productId);
+        Product? product = await _adminProductDataService.GetProductForEditByIdReadonlyAsync(productId);
 
-        if (product is null) return ServiceResult<EditProductFormViewModel>.NotFound();
+        if (product is null) return ServiceResult<EditProductDto>.NotFound();
 
-        EditProductFormViewModel model = new()
+        EditProductDto model = new()
         {
             Id = product.Id,
             Name = product.Name,
@@ -118,7 +116,7 @@ public class AdminProductService : ProductService, IAdminProductService
             Weight = product.Weight,
             Images = product.Images
                 .Where(i => i.Id != product.Thumbnail.ImageId)
-                .Select(i => new ProductImageViewModel
+                .Select(i => new ProductImageDto
                 {
                     Id = i.Id,
                     Url = i.ImageUrl,
@@ -126,7 +124,7 @@ public class AdminProductService : ProductService, IAdminProductService
                 })
                 .ToArray(),
             Attributes = product.Attributes
-                .Select(a => new AttributeValueForm
+                .Select(a => new AttributeValueDto
                 {
                     AttributeDefinitionId = a.AttributeDefinitionId,
                     Label = a.AttributeDefinition.Label,
@@ -140,20 +138,14 @@ public class AdminProductService : ProductService, IAdminProductService
                 .ToArray()
         };
 
-        return ServiceResult<EditProductFormViewModel>.Ok(model);
+        return ServiceResult<EditProductDto>.Ok(model);
     }
 
-    public async Task<ServiceResult> UpdateProductAsync(EditProductFormViewModel model)
+    public async Task<ServiceResult> UpdateProductAsync(EditProductDto model)
     {
-        Product? product = await Repository
-            .All<Product>()
-            .IgnoreQueryFilters()
-            .Where(p => !p.IsDeleted)
-            .Include(p => p.Attributes)
-            .Include(p => p.ProductType)
-            .FirstOrDefaultAsync(p => p.Id == model.Id);
+        Product? product = await _adminProductDataService.GetProductForUpdateByIdAsync(model.Id);
 
-        if (product is null) return ServiceResult<EditProductFormViewModel>.NotFound();
+        if (product is null) return ServiceResult<EditProductDto>.NotFound();
 
         product.Name = model.Name;
         product.Description = model.Description;
@@ -163,7 +155,7 @@ public class AdminProductService : ProductService, IAdminProductService
 
         for (int i = 0; i < model.Attributes.Count; i++)
         {
-            AttributeValueForm attributeModel = model.Attributes.ElementAt(i);
+            AttributeValueDto attributeModel = model.Attributes.ElementAt(i);
             ProductAttribute attribute = product.Attributes.ElementAt(i);
 
             attribute.Value = attributeModel.Value;
@@ -182,11 +174,7 @@ public class AdminProductService : ProductService, IAdminProductService
     {
         try
         {
-            Product? product = await Repository
-                .All<Product>()
-                .IgnoreQueryFilters()
-                .Where(p => !p.IsDeleted)
-                .FirstOrDefaultAsync(p => p.Id == productId);
+            Product? product = await _adminProductDataService.GetNonDeletedProductByIdAsync(productId);
 
             if (product is null) return ServiceResult.NotFound();
 
@@ -218,34 +206,14 @@ public class AdminProductService : ProductService, IAdminProductService
             })
             .ToArrayAsync();
 
-    public async Task<ICollection<ProductListViewModel>> GetProductsListReadonlyAsync() =>
-        await Repository
-            .AllReadonly<Product>()
-            .IgnoreQueryFilters()
-            .Include(p => p.ProductType)
-            .Include(p => p.Discounts)
-            .Where(p => !p.IsDeleted)
-            .Select(p => new ProductListViewModel
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                StockQuantity = p.StockQuantity,
-                ProductTypeName = p.ProductType.Name,
-                IsPublic = p.IsPublic,
-                HasActiveDiscount = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-            })
-            .ToArrayAsync();
+    public async Task<ICollection<ProductListItemDto>> GetProductsListReadonlyAsync()
+        => await _adminProductDataService.GetProductsListReadonlyAsync();
 
     public async Task<ServiceResult> ToggleProductPublicityAsync(Guid productId)
     {
         try
         {
-            Product? product = await Repository
-                .All<Product>()
-                .IgnoreQueryFilters()
-                .Where(p => !p.IsDeleted)
-                .FirstOrDefaultAsync(p => p.Id == productId);
+            Product? product = await _adminProductDataService.GetNonDeletedProductByIdAsync(productId);
 
             if (product is null) return ServiceResult.NotFound();
 
@@ -261,11 +229,7 @@ public class AdminProductService : ProductService, IAdminProductService
     }
 
     public async Task<ICollection<Guid>> GetImageIdsByProductId(Guid productId)
-        => await Repository
-                .WhereReadonly<ProductImage>(i => i.ProductId == productId)
-                .IgnoreQueryFilters()
-                .Select(i => i.Id)
-                .ToArrayAsync();
+        => await _adminProductDataService.GetImageIdsByProductId(productId);
 
     public async Task<ServiceResult<decimal>> GetProductPriceReadonlyAsync(Guid productId)
     {
@@ -281,7 +245,7 @@ public class AdminProductService : ProductService, IAdminProductService
         return ServiceResult<decimal>.Ok(price.Value);
     }
 
-    public async Task<ServiceResult> AddDiscountAsync(AddProductDiscountFormViewModel model)
+    public async Task<ServiceResult> AddDiscountAsync(AddProductDiscountDto model)
     {
         if (!await Repository.AnyAsync<Product>(p => p.Id == model.ProductId))
             return ServiceResult.NotFound(new Dictionary<string, string>
@@ -315,8 +279,8 @@ public class AdminProductService : ProductService, IAdminProductService
     public async Task<ServiceResult> EndDiscountAsync(Guid productId)
     {
         ProductDiscount? discount = await Repository
-            .All<ProductDiscount>()
-            .FirstOrDefaultAsync(pd => pd.ProductId == productId && pd.EndDate > DateTime.Now);
+            .Where<ProductDiscount>(pd => pd.ProductId == productId && pd.EndDate > DateTime.Now)
+            .FirstOrDefaultAsync();
 
         if (discount is null) return ServiceResult.NotFound();
 

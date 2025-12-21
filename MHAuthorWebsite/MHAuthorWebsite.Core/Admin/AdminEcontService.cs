@@ -1,8 +1,9 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Dto;
-using Microsoft.Extensions.Configuration;
+using MHAuthorWebsite.Core.Configuration.EcontApi;
+using MHAuthorWebsite.Core.Dtos.Order;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Econt;
 
@@ -10,7 +11,7 @@ namespace MHAuthorWebsite.Core.Admin;
 
 public class AdminEcontService : EcontService, IAdminEcontService
 {
-    public AdminEcontService(HttpClient http, IConfiguration config) : base(http, config) { }
+    public AdminEcontService(HttpClient http, IOptions<EcontApiSettings> econtSettings) : base(http, econtSettings) { }
 
     public async Task<ServiceResult<EcontShipmentStatusDto>> CreateAwbAsync(EcontOrderDto order)
     {

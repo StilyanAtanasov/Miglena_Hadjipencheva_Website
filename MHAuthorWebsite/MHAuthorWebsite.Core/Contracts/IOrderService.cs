@@ -1,17 +1,17 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Web.ViewModels.Order;
+using MHAuthorWebsite.Core.Dtos.Order;
 
 namespace MHAuthorWebsite.Core.Contracts;
 
 public interface IOrderService
 {
-    Task<OrderSummaryViewModel> GetOrderSummary(string userId);
+    Task<OrderSummaryDto> GetOrderSummary(string userId);
 
-    Task<ServiceResult<Guid>> Order(string userId, EcontDeliveryDetailsViewModel model);
+    Task<ServiceResult<Guid>> Order(string userId, EcontDeliveryDetailsDto model);
 
-    Task<ICollection<MyOrdersViewModel>> GetUserOrders(string userId);
+    Task<ICollection<MyOrderDto>> GetUserOrders(string userId);
 
-    Task<ServiceResult<OrderDetailsViewModel>> GetOrderDetails(string userId, Guid orderId);
+    Task<ServiceResult<OrderDetailsDto>> GetOrderDetails(string userId, Guid orderId);
 
     Task<bool> CanAccessSuccessPage(string userId, Guid orderId);
 }
