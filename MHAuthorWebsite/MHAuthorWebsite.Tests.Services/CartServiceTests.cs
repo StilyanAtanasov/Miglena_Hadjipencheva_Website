@@ -1,10 +1,11 @@
 using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Cart;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Cart;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
@@ -17,6 +18,7 @@ public class CartServiceTests
     private ApplicationDbContext _dbContext = null!;
 
     private readonly Mock<IFastCacheService> _cacheMock = new();
+    private readonly Mock<ICartDataService> _cartDataServiceMock = new();
     private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
 
     private Cart _cart = null!;
@@ -32,7 +34,7 @@ public class CartServiceTests
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
-        _cartService = new CartService(_cacheMock.Object, new ApplicationRepository(_dbContext),
+        _cartService = new CartService(_cartDataServiceMock.Object, _cacheMock.Object, new ApplicationRepository(_dbContext),
             _globalCacheKeysManagementServiceMock.Object);
 
         // Arrange
@@ -151,7 +153,7 @@ public class CartServiceTests
     [Test]
     public async Task GetCartReadonlyAsync_ReturnsNull_WhenCartNotFound()
     {
-        CartViewModel result = await _cartService.GetCartReadonlyAsync("test-user-id");
+        CartDto result = await _cartService.GetCartReadonlyAsync("test-user-id");
 
         Assert.IsEmpty(result.Items);
     }
@@ -160,7 +162,7 @@ public class CartServiceTests
     public async Task GetCartReadonlyAsync_ReturnsViewModel_WhenCartExists()
     {
         // Act
-        CartViewModel result = await _cartService.GetCartReadonlyAsync(DefaultUserId);
+        CartDto result = await _cartService.GetCartReadonlyAsync(DefaultUserId);
 
         // Assert
         Assert.IsNotNull(result);
@@ -206,7 +208,7 @@ public class CartServiceTests
     public async Task UpdateItemQuantityAsync_UpdatesQuantity_AndReturnsCorrectTotals()
     {
         // Act
-        ServiceResult<UpdatedItemQuantityViewModel> result = await _cartService
+        ServiceResult<UpdatedItemQuantityDto> result = await _cartService
             .UpdateItemQuantityAsync(_cart.UserId, _item.Id, 5);
 
         // Assert
@@ -220,7 +222,7 @@ public class CartServiceTests
     public async Task UpdateItemQuantityAsync_ReturnsBadRequest_WhenCartNotFound()
     {
         // Act
-        ServiceResult<UpdatedItemQuantityViewModel> result = await _cartService
+        ServiceResult<UpdatedItemQuantityDto> result = await _cartService
             .UpdateItemQuantityAsync("unknown-user", Guid.NewGuid(), 2);
 
         // Assert
@@ -232,7 +234,7 @@ public class CartServiceTests
     public async Task UpdateItemQuantityAsync_ReturnsBadRequest_WhenItemNotFound()
     {
         // Act
-        ServiceResult<UpdatedItemQuantityViewModel> result = await _cartService
+        ServiceResult<UpdatedItemQuantityDto> result = await _cartService
             .UpdateItemQuantityAsync(_cart.UserId, Guid.NewGuid(), 2);
 
         // Assert

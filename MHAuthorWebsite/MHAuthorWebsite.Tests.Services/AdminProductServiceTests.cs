@@ -1,18 +1,21 @@
 ﻿using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Admin.Product;
 using MHAuthorWebsite.Core.Dtos.Images;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Admin.Product;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using AddProductDto = MHAuthorWebsite.Core.Admin.Dto.AddProductDto;
 
 namespace MHAuthorWebsite.Tests.Services;
 
@@ -24,6 +27,8 @@ public class AdminProductServiceTests
 
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
     private Mock<IFastCacheService> _cacheMock = null!;
+    private readonly Mock<IAdminProductDataService> _adminProductDataServiceMock = null!;
+    private readonly Mock<IProductDataService> _productDataServiceMock = null!;
     private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
 
     private Product _defaultProduct = null!;
@@ -44,7 +49,8 @@ public class AdminProductServiceTests
 
         _dbContext = new ApplicationDbContext(options);
         _adminProductService = new AdminProductService(_cacheMock.Object, new ApplicationRepository(_dbContext),
-            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object);
+            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object, _productDataServiceMock.Object,
+            _adminProductDataServiceMock.Object);
 
         // Arrange
         _defaultProduct = await SeedProductAsync();
@@ -82,7 +88,7 @@ public class AdminProductServiceTests
                     ImageUrl = "image.jpg"
                 }
             },
-            Attributes = new List<AttributeValueForm>
+            Attributes = new List<AttributeValueDto>
             {
                 new ()
                 {
@@ -140,7 +146,8 @@ public class AdminProductServiceTests
                   .Throws(new Exception("Db error"));
 
         _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object,
-            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object);
+            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object,
+            _productDataServiceMock.Object, _adminProductDataServiceMock.Object);
 
         // Act
         ServiceResult result = await _adminProductService.AddProductAsync(model);
@@ -162,7 +169,7 @@ public class AdminProductServiceTests
     public async Task GetProductForEditAsync_ReturnsViewModel_OnExistingProduct()
     {
         // Act
-        ServiceResult<EditProductFormViewModel> sr = await _adminProductService.GetProductForEditAsync(_defaultProduct.Id);
+        ServiceResult<EditProductDto> sr = await _adminProductService.GetProductForEditAsync(_defaultProduct.Id);
 
         // Assert
         Assert.That(sr.Success, Is.True);
@@ -178,7 +185,7 @@ public class AdminProductServiceTests
     public async Task GetProductForEditAsync_ReturnsViewModel_OnNonExistingProduct()
     {
         // Act
-        ServiceResult<EditProductFormViewModel> sr = await _adminProductService.GetProductForEditAsync(new Guid());
+        ServiceResult<EditProductDto> sr = await _adminProductService.GetProductForEditAsync(new Guid());
 
         // Assert
         Assert.IsFalse(sr.Success);
@@ -190,7 +197,7 @@ public class AdminProductServiceTests
     public async Task UpdateProductAsync_ReturnsOk_WhenProductIsUpdated()
     {
         // Arrange
-        EditProductFormViewModel model = new()
+        EditProductDto model = new()
         {
             Id = _defaultProduct.Id,
             Name = "Updated Product",
@@ -198,7 +205,7 @@ public class AdminProductServiceTests
             Price = 15.99m,
             StockQuantity = 8,
             ProductTypeName = _defaultProduct.ProductType.Name,
-            Attributes = _defaultProduct.Attributes.Select(_ => new AttributeValueForm
+            Attributes = _defaultProduct.Attributes.Select(_ => new AttributeValueDto
             {
                 Value = "New value",
             }).ToArray()
@@ -228,7 +235,7 @@ public class AdminProductServiceTests
     public async Task UpdateProductAsync_Returns404_WhenProductIsNotFound()
     {
         // Arrange
-        EditProductFormViewModel model = new()
+        EditProductDto model = new()
         {
             Id = new Guid(),
         };
@@ -284,7 +291,8 @@ public class AdminProductServiceTests
             .Throws(new Exception("Db error"));
 
         _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object,
-            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object);
+            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object,
+            _productDataServiceMock.Object, _adminProductDataServiceMock.Object);
 
         // Act
         ServiceResult result = await _adminProductService.DeleteProductAsync(Guid.NewGuid());
@@ -320,7 +328,7 @@ public class AdminProductServiceTests
     public async Task GetProductsListReadonlyAsync_ReturnsList()
     {
         // Act
-        ICollection<ProductListItemViewModel> products = await _adminProductService
+        ICollection<ProductListItemDto> products = await _adminProductService
             .GetProductsListReadonlyAsync();
 
         // Assert
@@ -339,7 +347,7 @@ public class AdminProductServiceTests
         await _dbContext.SaveChangesAsync();
 
         // Act
-        ICollection<ProductListItemViewModel> products = await _adminProductService
+        ICollection<ProductListItemDto> products = await _adminProductService
             .GetProductsListReadonlyAsync();
 
         // Assert
@@ -386,7 +394,8 @@ public class AdminProductServiceTests
             .Throws(new Exception("Db error"));
 
         _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object,
-            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object);
+            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object,
+            _productDataServiceMock.Object, _adminProductDataServiceMock.Object);
 
         // Act
         ServiceResult result = await _adminProductService.ToggleProductPublicityAsync(_defaultProduct.Id);

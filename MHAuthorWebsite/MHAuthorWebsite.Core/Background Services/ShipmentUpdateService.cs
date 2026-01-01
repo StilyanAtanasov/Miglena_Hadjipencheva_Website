@@ -6,8 +6,12 @@ using MHAuthorWebsite.Core.Dtos.Order;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
+using MHAuthorWebsite.Core.NotificationTemplates.PayloadModels;
+using MHAuthorWebsite.Data.Common.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Econt;
 
 namespace MHAuthorWebsite.Core.Background_Services;
 
@@ -82,8 +86,40 @@ public class ShipmentUpdateService : BackgroundService
                         if (shipmentInfo.SendTime != null) order.Status = OrderStatus.Shipped;
                         if (shipmentInfo.DeliveryTime != null) order.Status = OrderStatus.Delivered;
 
-                        await repository.SaveChangesAsync();
+                        if (newEvents.Length == 0 || order.User.Name is null) continue;
+
+                        ShipmentEvent latestEvent = newEvents.OrderByDescending(e => e.Time).First();
+
+                        OrderStatusUpdatePayloadModel notificationPayloadModel = new()
+                        {
+                            ShipmentNumber = order.Shipment.ShipmentNumber,
+                            OrderNumber = order.Shipment.OrderNumber,
+                            CustomerName = order.User.Name,
+                            EventTime = latestEvent.Time.ToString("dd/MM/yyyy HH:mm"),
+                            Location = latestEvent.CityName ?? latestEvent.OfficeName ?? "Локацията не е налична!",
+                            StatusUpdate = order.Status.GetDisplayName(),
+                            TrackingUrl = $"{EcontTrackerUrl}/{order.Shipment.ShipmentNumber}",
+                            LocationDetails = latestEvent.DestinationDetails,
+                            OrderId = order.Id
+                        };
+
+                        ScheduledNotification notification = new()
+                        {
+                            Subject = $"Актуализация на поръчка {order.Shipment.OrderNumber}",
+                            NotificationStatus = ScheduledNotificationStatus.Pending,
+                            NotificationTemplate = ScheduledNotificationTemplate.OrderStatusUpdate,
+                            NotificationType = ScheduledNotificationType.Email,
+                            RecipientId = order.UserId,
+                            ScheduledAt = DateTime.Now,
+                            Payload = JsonSerializer.Serialize(notificationPayloadModel),
+                            TargetDeliveryDetails = order.Shipment.Email,
+                            ExpirationDate = DateTime.Now.AddDays(7)
+                        };
+
+                        await repository.AddAsync(notification);
                     }
+
+                    await repository.SaveChangesAsync();
                 }
 
                 Console.WriteLine("Shipment status was updated successfully to all orders!");

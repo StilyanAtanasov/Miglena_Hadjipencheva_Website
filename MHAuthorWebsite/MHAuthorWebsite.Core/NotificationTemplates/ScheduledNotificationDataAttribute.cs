@@ -1,11 +1,9 @@
-﻿using MHAuthorWebsite.Core.NotificationTemplates.PayloadModels.Contracts;
-
-namespace MHAuthorWebsite.Core.NotificationTemplates;
+﻿namespace MHAuthorWebsite.Core.NotificationTemplates;
 
 [AttributeUsage(AttributeTargets.Field)]
 public class ScheduledNotificationDataAttribute : Attribute
 {
-    public ScheduledNotificationDataAttribute(string templateFile, IScheduledNotificationPayload payloadType)
+    public ScheduledNotificationDataAttribute(string templateFile, Type payloadType)
     {
         TemplateFile = templateFile;
         PayloadType = payloadType;
@@ -13,5 +11,5 @@ public class ScheduledNotificationDataAttribute : Attribute
 
     public string TemplateFile { get; }
 
-    public IScheduledNotificationPayload PayloadType { get; }
+    public Type PayloadType { get; }
 }

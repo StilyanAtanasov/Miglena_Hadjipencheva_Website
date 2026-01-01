@@ -17,5 +17,6 @@ public class ShipmentUpdateDataService : IShipmentUpdateDataService
         .WhereReadonly<Order>(o => o.Status == OrderStatus.Shipped || o.Status == OrderStatus.Accepted)
         .Include(o => o.Shipment)
         .ThenInclude(s => s.Events)
+        .Include(o => o.User)
         .ToArrayAsync(ct);
 }

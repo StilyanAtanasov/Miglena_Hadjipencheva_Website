@@ -1,12 +1,13 @@
 ﻿using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Product;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.Utils;
-using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -22,6 +23,7 @@ public class ProductServiceTests
 
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
     private Mock<IFastCacheService> _cacheMock = null!;
+    private readonly Mock<IProductDataService> _productDataServiceMock = null!;
     private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
 
     private Product _defaultProduct = null!;
@@ -42,7 +44,7 @@ public class ProductServiceTests
         _cacheMock = new Mock<IFastCacheService>();
 
         _dbContext = new ApplicationDbContext(options);
-        _productService = new ProductService(_cacheMock.Object, _globalCacheKeysManagementServiceMock.Object,
+        _productService = new ProductService(_cacheMock.Object, _productDataServiceMock.Object, _globalCacheKeysManagementServiceMock.Object,
             new ApplicationRepository(_dbContext), _userManagerMock.Object);
 
         // Arrange
@@ -69,7 +71,7 @@ public class ProductServiceTests
         (bool descending, Expression<Func<Product, object>>? expression) sort = SortValueMapper.SortMap["recommended"];
 
         // Act
-        ICollection<ProductCardViewModel> products = await _productService
+        ICollection<ProductCardDto> products = await _productService
             .GetAllProductCardsReadonlyAsync(DefaultUserId, 1, sort);
 
         // Assert
@@ -80,7 +82,7 @@ public class ProductServiceTests
     public async Task GetLikedProductsReadonlyAsync_ReturnsArray_WhenUserHasNone()
     {
         // Act
-        ICollection<LikedProductViewModel> products = await _productService
+        ICollection<LikedProductDto> products = await _productService
             .GetLikedProductsReadonlyAsync(DefaultUserId);
 
         // Assert
@@ -106,7 +108,7 @@ public class ProductServiceTests
         await _dbContext.SaveChangesAsync();
 
         // Act
-        ICollection<LikedProductViewModel> products = await _productService
+        ICollection<LikedProductDto> products = await _productService
             .GetLikedProductsReadonlyAsync(user.Id);
 
         // Assert
@@ -199,7 +201,7 @@ public class ProductServiceTests
     public async Task GetProductDetailsReadonlyAsync_Returns404_WhenProductNotFound()
     {
         // Act
-        ServiceResult<ProductDetailsViewModel> sr = await _productService
+        ServiceResult<ProductDetailsDto> sr = await _productService
             .GetProductDetailsReadonlyAsync(new Guid(), DefaultUserId);
 
         // Assert
@@ -211,7 +213,7 @@ public class ProductServiceTests
     public async Task GetProductDetailsReadonlyAsync_ReturnsOk_WhenProductIsFound()
     {
         // Act
-        ServiceResult<ProductDetailsViewModel> sr = await _productService
+        ServiceResult<ProductDetailsDto> sr = await _productService
             .GetProductDetailsReadonlyAsync(_defaultProduct.Id, DefaultUserId);
 
         // Assert
@@ -232,11 +234,11 @@ public class ProductServiceTests
             .Setup(r => r.AllReadonly<Product>())
             .Throws(new Exception("Simulated failure"));
 
-        ProductService service = new ProductService(_cacheMock.Object, _globalCacheKeysManagementServiceMock.Object,
+        ProductService service = new ProductService(_cacheMock.Object, _productDataServiceMock.Object, _globalCacheKeysManagementServiceMock.Object,
             repoMock.Object, _userManagerMock.Object);
 
         // Act
-        ServiceResult<ProductDetailsViewModel> result = await service
+        ServiceResult<ProductDetailsDto> result = await service
             .GetProductDetailsReadonlyAsync(Guid.NewGuid(), "user-id");
 
         // Assert

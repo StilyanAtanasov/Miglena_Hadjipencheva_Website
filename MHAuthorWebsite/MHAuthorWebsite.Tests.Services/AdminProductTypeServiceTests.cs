@@ -1,16 +1,13 @@
-﻿using MHAuthorWebsite.Core;
-using MHAuthorWebsite.Core.Admin;
+﻿using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Dtos.Admin.ProductType;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Admin.ProductType;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
@@ -83,11 +80,11 @@ public class AdminProductTypeServiceTests
     public async Task AddProductTypeAsync_ReturnsOk_WhenThereAreAdditionalProperties()
     {
         // Arrange
-        AddProductTypeForm newProductType = new()
+        AddProductTypeDto newProductType = new()
         {
             Name = "New Product Type",
             HasAdditionalProperties = true,
-            Attributes = new List<AttributeDefinitionForm>
+            Attributes = new List<AttributeDefinitionDto>
             {
                 new ()
                 {
@@ -119,11 +116,11 @@ public class AdminProductTypeServiceTests
     public async Task AddProductTypeAsync_ReturnsOk_WhenThereAreNoneAdditionalProperties()
     {
         // Arrange
-        AddProductTypeForm newProductType = new()
+        AddProductTypeDto newProductType = new()
         {
             Name = "New Product Type",
             HasAdditionalProperties = false,
-            Attributes = new List<AttributeDefinitionForm>()
+            Attributes = new List<AttributeDefinitionDto>()
         };
 
         // Act
@@ -144,11 +141,11 @@ public class AdminProductTypeServiceTests
     public async Task AddProductTypeAsync_ReturnsFailure_OnError()
     {
         // Arrange
-        AddProductTypeForm newProductType = new()
+        AddProductTypeDto newProductType = new()
         {
             Name = "New Product Type",
             HasAdditionalProperties = false,
-            Attributes = new List<AttributeDefinitionForm>()
+            Attributes = new List<AttributeDefinitionDto>()
         };
 
         // Simulate an error by throwing an exception in the repository

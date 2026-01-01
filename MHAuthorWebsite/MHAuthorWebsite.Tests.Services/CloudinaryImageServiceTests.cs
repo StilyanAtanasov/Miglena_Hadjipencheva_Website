@@ -1,6 +1,7 @@
 ﻿using CloudinaryDotNet.Actions;
 using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
@@ -20,6 +21,7 @@ public class CloudinaryImageServiceTests
 
     private Mock<ICloudinaryService> _cloudinaryMock = null!;
     private Mock<IImageService> _imageServiceMock = null!;
+    private Mock<ICloudinaryAdminProductImageDataService> _dataServiceMock = null!;
 
     private ProductImage _defaultImage = null!;
     private Product _defaultProduct = null!;
@@ -35,7 +37,8 @@ public class CloudinaryImageServiceTests
         _imageServiceMock = new Mock<IImageService>();
 
         _dbContext = new ApplicationDbContext(options);
-        _adminProductImageService = new CloudinaryAdminProductImageService(new ApplicationRepository(_dbContext), _imageServiceMock.Object, _cloudinaryMock.Object);
+        _adminProductImageService = new CloudinaryAdminProductImageService(
+            new ApplicationRepository(_dbContext), _dataServiceMock.Object, _imageServiceMock.Object, _cloudinaryMock.Object);
 
         // Arrange
         _defaultImage = await SeedImageAsync();
@@ -107,7 +110,7 @@ public class CloudinaryImageServiceTests
     public async Task UploadImageWithPreviewAsync_ReturnsFailure_WhenTitleImageIndexIsInvalid()
     {
         // Arrange
-        ICollection<IFormFile> formFiles = new HashSet<IFormFile>()
+        ICollection<IFormFile> formFiles = new HashSet<IFormFile>
         {
             CreateInMemoryFormFile("image-1.jpeg", "image/jpeg", "Fake image data"),
             CreateInMemoryFormFile("image-2.jpeg", "image/jpeg", "Another fake image data")
@@ -131,7 +134,7 @@ public class CloudinaryImageServiceTests
     public async Task LinkImagesToProductAsync_ReturnsFailure_WhenImageCollectionIsInvalid()
     {
         // Arrange
-        ICollection<IFormFile> formFiles = new HashSet<IFormFile>(); // Empty collection
+        ICollection<UploadImageRequestDto> formFiles = new HashSet<UploadImageRequestDto>(); // Empty collection
 
         // Act
         ServiceResult<Guid?> sr = await _adminProductImageService.LinkImagesToProductAsync(formFiles, 0, Guid.NewGuid());
@@ -144,10 +147,20 @@ public class CloudinaryImageServiceTests
     public async Task LinkImagesToProductAsync_ReturnsFailure_WhenTitleImageIndexIsInvalid()
     {
         // Arrange
-        ICollection<IFormFile> formFiles = new HashSet<IFormFile>()
+        ICollection<UploadImageRequestDto> formFiles = new HashSet<UploadImageRequestDto>()
         {
-            CreateInMemoryFormFile("image-1.jpeg", "image/jpeg", "Fake image data"),
-            CreateInMemoryFormFile("image-2.jpeg", "image/jpeg", "Another fake image data")
+            new ()
+            {
+                Content = null!,
+                ContentType = "image/jpeg",
+                FileName = "image-1.jpeg"
+            },
+            new ()
+            {
+                Content = null!,
+                ContentType = "image/jpeg",
+                FileName = "image-2.jpeg"
+            }
         };
 
         // Act
@@ -166,10 +179,20 @@ public class CloudinaryImageServiceTests
     public async Task LinkImagesToProductAsync_ReturnsFailure_WhenProductIdIsInvalid()
     {
         // Arrange
-        ICollection<IFormFile> formFiles = new HashSet<IFormFile>()
+        ICollection<UploadImageRequestDto> formFiles = new HashSet<UploadImageRequestDto>()
         {
-            CreateInMemoryFormFile("image-1.jpeg", "image/jpeg", "Fake image data"),
-            CreateInMemoryFormFile("image-2.jpeg", "image/jpeg", "Another fake image data")
+            new ()
+            {
+                Content = null!,
+                ContentType = "image/jpeg",
+                FileName = "image-1.jpeg"
+            },
+            new ()
+            {
+                Content = null!,
+                ContentType = "image/jpeg",
+                FileName = "image-2.jpeg"
+            }
         };
 
         // Act
@@ -184,10 +207,20 @@ public class CloudinaryImageServiceTests
     public async Task LinkImagesToProductAsync_ReturnsOk_WhenAllDataValid()
     {
         // Arrange
-        ICollection<IFormFile> formFiles = new HashSet<IFormFile>
+        ICollection<UploadImageRequestDto> formFiles = new HashSet<UploadImageRequestDto>
         {
-            CreateInMemoryFormFile("image-1.jpeg", "image/jpeg", "Fake image data"),
-            CreateInMemoryFormFile("image-2.jpeg", "image/jpeg", "Another fake image data")
+            new ()
+            {
+                Content = null!,
+                ContentType = "image/jpeg",
+                FileName = "image-1.jpeg"
+            },
+            new ()
+            {
+                Content = null!,
+                ContentType = "image/jpeg",
+                FileName = "image-2.jpeg"
+            }
         };
 
         int callCount = 1;

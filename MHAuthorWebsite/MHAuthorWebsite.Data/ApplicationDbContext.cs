@@ -50,6 +50,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<ContactRequest> ContactRequests { get; set; } = null!;
 
+    public DbSet<ScheduledNotification> ScheduledNotifications { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

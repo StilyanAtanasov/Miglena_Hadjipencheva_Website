@@ -4,6 +4,7 @@ using MHAuthorWebsite.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MHAuthorWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260101162140_AddTargetDeliveryDetailsToScheduledNotifications")]
+    partial class AddTargetDeliveryDetailsToScheduledNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -624,11 +627,6 @@ namespace MHAuthorWebsite.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ExpirationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("DATEADD(day, 30, GETDATE())");
-
                     b.Property<int>("NotificationStatus")
                         .HasColumnType("int");
 
@@ -805,8 +803,8 @@ namespace MHAuthorWebsite.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("Count")
-                        .HasColumnType("float");
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
 
                     b.Property<string>("Currency")
                         .IsRequired()

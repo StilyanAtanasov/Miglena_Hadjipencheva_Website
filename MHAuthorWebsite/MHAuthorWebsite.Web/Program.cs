@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RazorLight;
 using StackExchange.Redis;
 using System.Security.Claims;
 using System.Text.Json;
@@ -113,6 +114,8 @@ builder.Services.AddScoped<IOrderDataService, OrderDataService>();
 builder.Services.AddScoped<IProductCommentDataService, ProductCommentDataService>();
 builder.Services.AddScoped<IProductDataService, ProductDataService>();
 builder.Services.AddScoped<IShipmentUpdateDataService, ShipmentUpdateDataService>();
+builder.Services.AddScoped<IScheduledEmailNotificationSenderDataService, ScheduledEmailNotificationSenderDataService>();
+builder.Services.AddScoped<IScheduledNotificationIntegrityDataService, ScheduledNotificationIntegrityDataService>();
 
 // Core Services
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
@@ -141,6 +144,8 @@ builder.Services.AddHttpClient<IAdminEcontService, AdminEcontService>();
 builder.Services.AddScoped<IUrlProvider, UrlProvider>();
 
 builder.Services.AddHostedService<ShipmentUpdateService>();
+builder.Services.AddHostedService<ScheduledEmailNotificationSenderService>();
+builder.Services.AddHostedService<ScheduledNotificationIntegrityService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -212,7 +217,17 @@ builder.Services.AddScoped<ICacheService, RedisCacheService>();
 builder.Services.AddScoped<IFastCacheService, RedisCacheService>();
 builder.Services.AddScoped<IGlobalCacheKeysManagementService, GlobalCacheKeysManagementService>();
 
-var app = builder.Build();
+string templatePath = Path.Combine(AppContext.BaseDirectory, "NotificationTemplates\\Razor Templates");
+
+builder.Services.AddSingleton<IRazorLightEngine>(_ => new RazorLightEngineBuilder()
+    .UseFileSystemProject(templatePath)
+    .UseMemoryCachingProvider()
+    .SetOperatingAssembly(typeof(RazorLightRenderingService).Assembly)
+    .Build());
+
+builder.Services.AddScoped<INotificationRenderingService, RazorLightRenderingService>();
+
+WebApplication app = builder.Build();
 
 AppEnvironment.Initialize(app.Environment.EnvironmentName);
 QueryBridge.Initialize();
@@ -292,8 +307,8 @@ app.UseCors("DefaultPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-var supportedCultures = new[] { "bg-BG" };
-var localizationOptions = new RequestLocalizationOptions()
+string[] supportedCultures = { "bg-BG" };
+RequestLocalizationOptions localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture("bg-BG")
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);

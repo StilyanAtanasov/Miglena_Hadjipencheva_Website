@@ -15,7 +15,7 @@ public class ShipmentService
     [MaxLength(DescriptionMaxLength)]
     public string Description { get; set; } = null!;
 
-    public int Count { get; set; }
+    public double Count { get; set; }
 
     [MaxLength(PaymentSideMaxLength)]
     public string PaymentSide { get; set; } = null!;
