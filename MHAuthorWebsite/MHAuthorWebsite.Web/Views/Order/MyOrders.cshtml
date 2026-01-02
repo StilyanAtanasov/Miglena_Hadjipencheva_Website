@@ -1,8 +1,10 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Order
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model ICollection<MyOrderViewModel>
+
 @{
 	ViewData["Heading"] = "Вашите поръчки";
+	ViewData["MetaDescription"] = "Пълен списък с вашите поръчки!";
 	Layout = "/Areas/Identity/Pages/Account/Manage/_Layout.cshtml";
 }
 

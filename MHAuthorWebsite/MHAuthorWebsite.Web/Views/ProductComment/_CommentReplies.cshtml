@@ -57,7 +57,7 @@
 				<div>
 					<a class="reply-btn btn-none link" asp-controller="ProductComment" asp-action="AddComment"
 					   asp-route-productId="@reply.ProductId" asp-route-parentCommentId="@reply.ParentCommentId"
-					   asp-route-replyCommentId="@reply.Id" asp-route-targetName="@reply.UserName">
+					   asp-route-replyCommentId="@reply.Id" asp-route-targetName="@reply.UserName" aria-label="Отговори на @reply.UserName">
 						<i class="fa-regular fa-reply"></i>
 					</a>
 				</div>
@@ -66,11 +66,11 @@
 				{
 					<div>
 						<a class="btn-none link" asp-controller="ProductComment" asp-action="Edit"
-						   asp-route-commentId="@reply.Id">
+						   asp-route-commentId="@reply.Id" aria-label="Редактирай коментар">
 							<i class="fa-regular fa-pen"></i>
 						</a>
 
-						<button class="delete-btn btn-none link" data-comment-id="@reply.Id" data-product-id="@reply.ProductId">
+						<button class="delete-btn btn-none link" data-comment-id="@reply.Id" data-product-id="@reply.ProductId" aria-label="Изтрий коментар">
 							<i class="fa-regular fa-trash"></i>
 						</button>
 					</div>

@@ -487,7 +487,7 @@ table tr:last-child td:last-child {
 
 @media (max-width: 600px) {
   .page-wrapper {
-    padding: 8rem 5rem;
+    padding: 5rem 2rem;
   }
 
   .details-info,
@@ -513,6 +513,7 @@ table tr:last-child td:last-child {
   .main {
     gap: 15rem;
     margin-bottom: 10rem;
+    padding: 0;
   }
 
   .product-main-info,

@@ -14,6 +14,8 @@
 
 @{
 	ViewData["Title"] = "Магазин";
+	ViewData["MetaDescription"] = "Разгледайте наличните книги на Миглена Хаджипенчева и поръчайте онлайн!";
+
 	int currentPage = int.TryParse(Context.Request.Query["page"].ToString(), out int page) ? page : 1;
 	int productsCount = ViewBag.ProductsCount ?? Model.Count;
 	int totalPages = (int)Math.Ceiling((double)productsCount / PageSize);
@@ -34,7 +36,7 @@
 	{
 		<div class="shop-action-btns flex-row">
 			<div class="shop-action-btn flex-row">
-				<label>Подреди по:</label>
+				<label for="order-by-select">Подреди по:</label>
 				<select id="order-by-select" class="select-main" autocomplete="off" name="orderType" asp-items="@selectItems"></select>
 			</div>
 		</div>
@@ -71,7 +73,7 @@
 						<span class="price-text @(product.IsAvailable ? "available" : "unavailable")">@(product.IsAvailable ? "В наличност" : "Изчерпана наличност")</span>
 					</div>
 					<div class="action-btns flex-row">
-						<button data-role="remove-item" data-item-id="@product.Id" class="btn like @(product.IsLiked ? "liked" : "")">
+						<button data-role="remove-item" data-item-id="@product.Id" class="btn like @(product.IsLiked ? "liked" : "")" aria-label="like">
 							<span class="fa-stack">
 								<i class="fa-regular fa-heart fa-stack-2x"></i>
 								<i class="fa-solid fa-heart fa-stack-2x"></i>

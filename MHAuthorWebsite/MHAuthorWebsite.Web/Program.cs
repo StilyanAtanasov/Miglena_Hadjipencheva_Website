@@ -270,7 +270,7 @@ app.Use(async (context, next) =>
     context.Response.Headers["Content-Security-Policy"] =
         "default-src 'self'; " +
         "connect-src 'self' " +
-                "ws: wss: http://localhost:* https://localhost:*; " +
+                "ws: wss: http://localhost:* https://localhost:* https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css.map; " +
         "script-src 'self' " +
                 "https://site-assets.fontawesome.com " +
                 "https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js " +
@@ -289,7 +289,8 @@ app.Use(async (context, next) =>
                 "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css " +
         "https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css; " +
         "font-src 'self' " +
-                "https://fonts.gstatic.com https://site-assets.fontawesome.com; " +
+                "https://fonts.gstatic.com https://site-assets.fontawesome.com " +
+                "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/fonts/;" +
         "img-src 'self' data: " +
                 "https://res.cloudinary.com; " +
         "frame-src 'self' " +
