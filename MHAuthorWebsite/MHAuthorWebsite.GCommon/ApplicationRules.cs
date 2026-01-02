@@ -72,6 +72,8 @@ public static class ApplicationRules
     public static class Order
     {
         public const byte SuccessPageMaxViewDelaySeconds = 20;
+
+        public const byte MyOrdersPageSize = 5;
     }
 
     public static class OrderSystemEventsMessages

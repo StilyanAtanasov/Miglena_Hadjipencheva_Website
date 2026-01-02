@@ -82,11 +82,13 @@ public class OrderController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> MyOrders()
+    public async Task<IActionResult> MyOrders(int? page)
     {
-        ICollection<MyOrderDto> dto = await _orderService.GetUserOrders(GetUserId()!);
+        if (page is null || page < 1) page = 1;
 
-        ICollection<MyOrderViewModel> viewModel = dto
+        ICollection<MyOrderDto> dto = await _orderService.GetUserOrders(GetUserId()!, page.Value);
+
+        ICollection<MyOrderViewModel> viewModels = dto
             .Select(o => new MyOrderViewModel
             {
                 OrderId = o.OrderId,
@@ -103,7 +105,8 @@ public class OrderController : BaseController
             })
             .ToArray();
 
-        return View(viewModel);
+        if (page == 1) return View(viewModels);
+        return PartialView("_MyOrdersCards", viewModels);
     }
 
     [HttpGet]

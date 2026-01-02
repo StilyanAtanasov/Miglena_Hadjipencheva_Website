@@ -9,7 +9,7 @@ public interface IOrderService
 
     Task<ServiceResult<Guid>> Order(string userId, EcontDeliveryDetailsDto model);
 
-    Task<ICollection<MyOrderDto>> GetUserOrders(string userId);
+    Task<ICollection<MyOrderDto>> GetUserOrders(string userId, int page);
 
     Task<ServiceResult<OrderDetailsDto>> GetOrderDetails(string userId, Guid orderId);
 

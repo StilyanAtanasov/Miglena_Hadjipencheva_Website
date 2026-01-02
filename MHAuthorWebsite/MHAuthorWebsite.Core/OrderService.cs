@@ -162,10 +162,12 @@ public class OrderService : IOrderService
         return ServiceResult<Guid>.Ok(order.Id);
     }
 
-    public async Task<ICollection<MyOrderDto>> GetUserOrders(string userId) =>
+    public async Task<ICollection<MyOrderDto>> GetUserOrders(string userId, int page) =>
     await Repository
         .WhereReadonly<Order>(o => o.UserId == userId)
         .OrderByDescending(o => o.Date)
+        .Skip((page - 1) * MyOrdersPageSize)
+        .Take(MyOrdersPageSize)
         .Select(o => new MyOrderDto
         {
             OrderId = o.Id,

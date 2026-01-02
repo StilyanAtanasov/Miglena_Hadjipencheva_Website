@@ -1,7 +1,5 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Order
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
-@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @model ICollection<MyOrderViewModel>
 @{
 	ViewData["Heading"] = "Вашите поръчки";
@@ -13,45 +11,19 @@
 	<link rel="stylesheet" href="~/css/profile/my-orders.css" />
 }
 
-
 <section class="content-body flex-column">
 	@if (Model.Any())
-		{
-			foreach (MyOrderViewModel order in Model)
-			{
-				<div class="order-card flex-column">
-					<div class="order-info flex-row">
-						<div class="product-list flex-row">
-							@foreach (MyOrdersOrderProductViewModel product in order.Products)
-							{
-								<div class="product-image-box">
-									<img src="@product.ImageUrl" alt="" />
-									<div class="quantity-badge">@(product.Quantity)x</div>
-								</div>
-							}
-						</div>
-						<div class="order-actions">
-							<a asp-controller="Order" asp-action="OrderDetails" asp-route-orderId="@order.OrderId" class="btn link btn-details flex-row">
-								<i class="fa-solid fa-memo-circle-info"></i>
-								Детайли
-							</a>
-						</div>
-					</div>
-					<hr/>
-					<article class="order-summary flex-row">
-						<p><strong>№</strong> @order.OrderId</p>
-						<p><strong>Брой артикули:</strong> @order.Products.Sum(p => p.Quantity)</p>
-						<p><strong>Дата:</strong> @order.CreatedAt.ToShortDateString()</p>
-						<p><strong>Статус:</strong> @order.Status</p>
-					<p><strong>Общо:</strong> @order.Total.ToString("F2") @Currency / @((order.Total * LevToEurRate).ToString("F2")) €</p>
-					</article>
-				</div>
-			}
-		}
-		else
-		{
-			<p>Нямате поръчки все още.</p>
-		}
+	{
+		@await Html.PartialAsync("_MyOrdersCards", Model)
+	}
+	else
+	{
+		<p>Нямате поръчки все още.</p>
+	}
 	
 	<i class="fa-solid fa-truck-fast background-icon"></i>
 </section>
+
+@section Scripts {
+	<script type="module" src="~/js/profile/my-orders.js" asp-append-version="true"></script>
+}
