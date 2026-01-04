@@ -47,7 +47,7 @@ public class OrderService : IOrderService
                 TotalPrice = ci.Product.Price * ci.Quantity,
                 TotalPriceWithDiscount = ci.Product.Discounts.FirstOrDefault(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now) != null
                     ? ci.Product.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice * ci.Quantity
-                    : ci.Product.Price * ci.Quantity,
+                    : null,
                 Quantity = ci.Quantity,
                 TotalWeight = ci.Product.Weight * ci.Quantity
             })
