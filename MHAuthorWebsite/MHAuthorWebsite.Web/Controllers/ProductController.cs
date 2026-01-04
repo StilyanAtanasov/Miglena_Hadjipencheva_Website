@@ -3,6 +3,8 @@ using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Product;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Web.Utils;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +22,7 @@ public class ProductController : BaseController
 
     [AllowAnonymous]
     [HttpGet("Product/Details/{productId}")]
+    [SecurityHeaders(CspFeature.Notifications | CspFeature.Editor)]
     public async Task<IActionResult> Details(Guid productId)
     {
         ServiceResult<ProductDetailsDto> result = await _productService.GetProductDetailsReadonlyAsync(productId, GetUserId());
@@ -107,6 +110,7 @@ public class ProductController : BaseController
         return View(viewModel);
     }
 
+    [SecurityHeaders(CspFeature.TomSelect | CspFeature.Notifications)]
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> AllProducts([FromQuery] int page = 1, [FromQuery] string? orderType = null)
@@ -144,6 +148,7 @@ public class ProductController : BaseController
     }
 
     [HttpGet]
+    [SecurityHeaders(CspFeature.Notifications)]
     public async Task<IActionResult> LikedProducts()
     {
         string? userId = GetUserId();

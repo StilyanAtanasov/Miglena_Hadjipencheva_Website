@@ -6,6 +6,8 @@ using MHAuthorWebsite.Core.Dtos.Images;
 using MHAuthorWebsite.Core.Dtos.Product;
 using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Web.Dto.Product;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.ViewModels.Admin.Product;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +43,7 @@ public class AdminProductController : AdminBaseController
     }
 
     [HttpPost]
+    [SecurityHeaders(CspFeature.Editor)]
     public async Task<IActionResult> AddProduct(AddProductForm model)
     {
         if (!ModelState.IsValid)
@@ -210,6 +213,7 @@ public class AdminProductController : AdminBaseController
         return View(viewModel);
     }
 
+    [SecurityHeaders(CspFeature.Editor)]
     [HttpPost("/Admin/AdminProduct/EditProduct/{productId}")]
     public async Task<IActionResult> EditProduct([FromRoute] Guid productId, [FromForm] EditProductFormViewModel model)
     {
@@ -348,6 +352,7 @@ public class AdminProductController : AdminBaseController
         return RedirectToAction(nameof(ProductsList));
     }
 
+    [SecurityHeaders(CspFeature.Notifications)]
     [HttpGet]
     public async Task<IActionResult> AddDiscount(Guid productId)
     {

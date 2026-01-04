@@ -1,6 +1,8 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Cart;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.ViewModels.Cart;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,7 @@ public class CartController : BaseController
     private readonly ICartService _cartService;
     public CartController(ICartService cartService) => _cartService = cartService;
 
+    [SecurityHeaders(CspFeature.Notifications)]
     [HttpGet]
     public async Task<IActionResult> Index()
     {

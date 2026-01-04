@@ -1,6 +1,8 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Dtos.Admin.UserManagement;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.ViewModels.Admin.UserManagement;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +15,7 @@ public class AdminUserManagementController : AdminBaseController
     public AdminUserManagementController(IAdminUserManagementService adminUserManagementService)
         => _adminUserManagementService = adminUserManagementService;
 
+    [SecurityHeaders(CspFeature.Notifications)]
     [HttpGet]
     public async Task<IActionResult> ManageUsers()
     {

@@ -1,6 +1,8 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Order;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.ViewModels.Order;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +14,7 @@ public class OrderController : BaseController
 
     public OrderController(IOrderService orderService) => _orderService = orderService;
 
+    [SecurityHeaders(CspFeature.Notifications | CspFeature.Econt)]
     [HttpGet]
     public async Task<IActionResult> Index()
     {

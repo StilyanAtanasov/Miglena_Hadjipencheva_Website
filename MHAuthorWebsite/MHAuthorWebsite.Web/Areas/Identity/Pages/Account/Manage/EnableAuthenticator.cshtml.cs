@@ -2,21 +2,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using MHAuthorWebsite.Core.Models;
 
 namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account.Manage;
 
+[SecurityHeaders(CspFeature.QrCodes)]
 public class EnableAuthenticatorModel : PageModel
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -95,8 +94,8 @@ public class EnableAuthenticatorModel : PageModel
 
         await LoadSharedKeyAndQrCodeUriAsync(user);
 
-        bool is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
-        ViewData["IsTwoFactorEnabled"] = is2faEnabled;
+        bool is2FaEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+        ViewData["IsTwoFactorEnabled"] = is2FaEnabled;
 
         return Page();
     }
@@ -118,10 +117,10 @@ public class EnableAuthenticatorModel : PageModel
         // Strip spaces and hyphens
         var verificationCode = Input.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
-        var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
+        var is2FaTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
             user, _userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);
 
-        if (!is2faTokenValid)
+        if (!is2FaTokenValid)
         {
             ModelState.AddModelError("Input.Code", "Verification code is invalid.");
             await LoadSharedKeyAndQrCodeUriAsync(user);
@@ -137,13 +136,11 @@ public class EnableAuthenticatorModel : PageModel
         if (await _userManager.CountRecoveryCodesAsync(user) == 0)
         {
             var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-            RecoveryCodes = recoveryCodes.ToArray();
+            if (recoveryCodes != null) RecoveryCodes = recoveryCodes.ToArray();
             return RedirectToPage("./ShowRecoveryCodes");
         }
-        else
-        {
-            return RedirectToPage("./TwoFactorAuthentication");
-        }
+
+        return RedirectToPage("./TwoFactorAuthentication");
     }
 
     private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user)

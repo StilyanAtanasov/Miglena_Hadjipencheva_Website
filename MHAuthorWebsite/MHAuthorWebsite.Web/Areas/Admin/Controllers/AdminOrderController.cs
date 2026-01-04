@@ -4,6 +4,8 @@ using MHAuthorWebsite.Core.Dtos.Admin.Order;
 using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Data.Common.Extensions;
 using MHAuthorWebsite.Data.Shared.Filters.Criteria;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.ViewModels.Admin.Order;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,6 +18,7 @@ public class AdminOrderController : AdminBaseController
 
     public AdminOrderController(IAdminOrderService adminOrderService) => _adminOrderService = adminOrderService;
 
+    [SecurityHeaders(CspFeature.TomSelect)]
     [HttpGet]
     public async Task<IActionResult> AllOrders([FromQuery] AllOrdersFilterCriteria filter)
     {

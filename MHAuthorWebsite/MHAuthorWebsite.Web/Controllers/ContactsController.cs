@@ -1,6 +1,8 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Contacts;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.ViewModels.Contacts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,7 @@ public class ContactsController : BaseController
 
     public ContactsController(IContactsService contactsService) => _contactsService = contactsService;
 
+    [SecurityHeaders(CspFeature.Notifications)]
     [HttpGet]
     [AllowAnonymous]
     public IActionResult Index() => View();
