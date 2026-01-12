@@ -80,7 +80,7 @@
 					<div id="dots-box" class="dots flex-row"></div>
 				}
 			</section>
-			<section class="product-main-info flex-column">
+			<section class="product-main-info flex-column" id="product-main-info" data-product-id="@Model.Id">
 				<h1 class="title">@Model.Name</h1>
 				<p class="text-faded"><strong>Категория:</strong> @Model.ProductTypeName</p>
 				@foreach (ProductAttributeDetailsViewModel attr in Model.Attributes
@@ -161,7 +161,7 @@
 	}
 
 	<!-- Comments Section -->
-	<article class="comments-info flex-column">
+	<article class="comments-info flex-column" >
 		<h4 class="heading">Коментари</h4>
 
 		@if (Model.Comments.Any())
@@ -210,7 +210,7 @@
 
 			if (Model.HasMoreComments)
 			{
-				<button id="more-comments-btn" data-product-id="@Model.Id" class="btn-none link">
+				<button id="more-comments-btn" class="btn-none link">
 					<i class="fa-regular fa-circle-chevron-down"></i>
 					Още коментари
 				</button>

@@ -36,7 +36,7 @@ public class ProductCommentDataService : IProductCommentDataService
             .Include(c => c.Images)
             .FirstOrDefaultAsync(c => c.Id == commentId && c.UserId == userId);
 
-    public async Task<ProductComment?> GetCommentForRepliesLoadReadonlyAsync(Guid commentId, Guid productId)
+    public async Task<ProductComment?> GetCommentForRepliesLoadReadonlyAsync(Guid productId, Guid commentId)
      => await _repository
          .WhereReadonly<ProductComment>(pc => pc.ProductId == productId && pc.Id == commentId)
          .Include(pc => pc.Replies)

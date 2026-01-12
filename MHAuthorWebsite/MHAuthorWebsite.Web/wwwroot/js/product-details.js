@@ -11,44 +11,44 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
   // --- Discount End Time Counter ---
   const timer = document.getElementById(`countdown-timer`);
-  if (!timer) return;
+  if (timer) {
+    const endDate = new Date(timer.dataset.endDate);
 
-  const endDate = new Date(timer.dataset.endDate);
+    function updateCountdown() {
+      const now = new Date();
+      const diff = endDate - now;
 
-  function updateCountdown() {
-    const now = new Date();
-    const diff = endDate - now;
+      if (diff <= 0) {
+        document.getElementById(`days`).textContent = 0;
+        document.getElementById(`hours`).textContent = 0;
+        document.getElementById(`minutes`).textContent = 0;
+        document.getElementById(`seconds`).textContent = 0;
+        return;
+      }
 
-    if (diff <= 0) {
-      document.getElementById(`days`).textContent = 0;
-      document.getElementById(`hours`).textContent = 0;
-      document.getElementById(`minutes`).textContent = 0;
-      document.getElementById(`seconds`).textContent = 0;
-      return;
+      const totalSeconds = Math.floor(diff / 1000);
+
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      document.getElementById(`days`).textContent = days.toString().padStart(2, `0`);
+      document.getElementById(`hours`).textContent = hours.toString().padStart(2, `0`);
+      document.getElementById(`minutes`).textContent = minutes.toString().padStart(2, `0`);
+      document.getElementById(`seconds`).textContent = seconds.toString().padStart(2, `0`);
     }
 
-    const totalSeconds = Math.floor(diff / 1000);
-
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    document.getElementById(`days`).textContent = days.toString().padStart(2, `0`);
-    document.getElementById(`hours`).textContent = hours.toString().padStart(2, `0`);
-    document.getElementById(`minutes`).textContent = minutes.toString().padStart(2, `0`);
-    document.getElementById(`seconds`).textContent = seconds.toString().padStart(2, `0`);
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
   }
-
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
 
   // --- Comments ---
   let currentCommentsPage = 1;
   let currentRepliesPage = 1;
   let currentRatingFilter = null;
   const moreCommentsBtnEl = document.getElementById(`more-comments-btn`);
-  const productId = moreCommentsBtnEl.dataset.productId;
+  const productId = document.getElementById(`product-main-info`).dataset.productId;
   const commentsContainer = document.getElementById(`comments`);
   const noResultsContainer = document.getElementById(`no-comment-results`);
   const isRateLimitedForReplies = document.getElementById(`comments`).dataset.isRateLimitedForReplies == `True`;
@@ -142,7 +142,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
     } else pushNotification(`Възникна грешка при изтриването на коментара!`, `error`);
   }
 
-  moreCommentsBtnEl.addEventListener(`click`, () => loadCommentsAsync(productId, currentCommentsPage + 1, currentRatingFilter));
+  moreCommentsBtnEl && moreCommentsBtnEl.addEventListener(`click`, () => loadCommentsAsync(productId, currentCommentsPage + 1, currentRatingFilter));
 
   // - Load comments -
   async function loadCommentsAsync(productId, page, ratingFilter) {
@@ -161,7 +161,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
       noResultsContainer.classList.add(`hidden`);
       commentsContainer.insertAdjacentHTML(`beforeend`, data.comments);
-      moreCommentsBtnEl.classList.toggle(`hidden`, !data.hasMoreComments);
+      moreCommentsBtnEl && moreCommentsBtnEl.classList.toggle(`hidden`, !data.hasMoreComments);
       !ratingFilter && ratingBarElements.forEach(el => el.classList.remove(`faded`));
 
       if (!data.comments.replaceAll(`\r`, ``).replaceAll(`\n`, ``)) return noResultsContainer.classList.remove(`hidden`);

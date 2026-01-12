@@ -6,6 +6,7 @@ using MHAuthorWebsite.Web.Utils.Extensions;
 using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 using static MHAuthorWebsite.Web.Utils.Mappers.ImageMapper;
 
@@ -219,10 +220,50 @@ public class ProductCommentController : BaseController
         ServiceResult<CommentPageDto> sr = await _productCommentService.LoadCommentsReadonlyAsync(productId, page, ratingFilter, GetUserId());
         if (sr.IsBadRequest) return BadRequest();
 
+        ICollection<ProductBaseCommentViewModel> vm = sr.Result!.Comments
+            .Select(c => new ProductBaseCommentViewModel
+            {
+                Id = c.Id,
+                Text = c.Text,
+                UserReaction = c.UserReaction,
+                Rating = c.Rating,
+                Date = c.Date,
+                Likes = c.Likes,
+                Dislikes = c.Dislikes,
+                UserName = c.UserName,
+                VerifiedPurchase = c.VerifiedPurchase,
+                HasMoreReplies = c.HasMoreReplies,
+                ImageUrls = c.ImageUrls,
+                IsUserAuthor = c.IsUserAuthor,
+                TotalRepliesCount = c.TotalRepliesCount,
+                LastEdited = c.LastEdited,
+                ProductId = c.ProductId,
+                Replies = c.Replies
+                    .Select(r => new ProductCommentReplyViewModel
+                    {
+                        Id = r.Id,
+                        Text = r.Text,
+                        UserReaction = r.UserReaction,
+                        Date = r.Date,
+                        Likes = r.Likes,
+                        Dislikes = r.Dislikes,
+                        UserName = r.UserName,
+                        IsUserAuthor = r.IsUserAuthor,
+                        LastEdited = r.LastEdited,
+                        ProductId = r.ProductId,
+                        IsWriterAdmin = r.IsWriterAdmin,
+                        ParentCommentId = r.ParentCommentId,
+                        ReplyCommentWriterName = r.ReplyCommentWriterName,
+                        VerifiedPurchase = r.VerifiedPurchase
+                    })
+                    .ToArray()
+            })
+            .ToArray();
+
         bool hasMore = sr.Result!.HasMoreComments;
         string html = await this.RenderViewAsync(
             "_ProductComments",
-            sr.Result!.Comments,
+            vm,
             partial: true
         );
 
@@ -235,10 +276,30 @@ public class ProductCommentController : BaseController
         ServiceResult<ReplyPageDto> sr = await _productCommentService.LoadRepliesReadonlyAsync(productId, commentId, page, GetUserId());
         if (sr.IsBadRequest) return BadRequest();
 
+        ICollection<ProductCommentReplyViewModel> vm = sr.Result!.Replies
+            .Select(r => new ProductCommentReplyViewModel
+            {
+                Id = r.Id,
+                Text = r.Text,
+                UserReaction = r.UserReaction,
+                Date = r.Date,
+                Likes = r.Likes,
+                Dislikes = r.Dislikes,
+                UserName = r.UserName,
+                IsUserAuthor = r.IsUserAuthor,
+                LastEdited = r.LastEdited,
+                ProductId = r.ProductId,
+                IsWriterAdmin = r.IsWriterAdmin,
+                ParentCommentId = r.ParentCommentId,
+                ReplyCommentWriterName = r.ReplyCommentWriterName,
+                VerifiedPurchase = r.VerifiedPurchase
+            })
+            .ToArray();
+
         bool hasMore = sr.Result!.HasMoreReplies;
         string html = await this.RenderViewAsync(
             "_CommentReplies",
-            sr.Result!.Replies,
+            vm,
             partial: true
         );
 

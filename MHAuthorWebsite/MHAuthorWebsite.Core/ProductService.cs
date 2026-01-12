@@ -114,7 +114,7 @@ public class ProductService : IProductService
                     .Select(product => new ProductDetailsCommentsInfoDto
                     {
                         CommitId = Guid.NewGuid(),
-                        HasMoreComments = product.Comments.Count > CommentPageCount,
+                        HasMoreComments = product.Comments.Count(c => c.ParentCommentId == null) > CommentPageCount,
                         AverageRating = product.Comments.Any(c => c.ParentCommentId == null && c.Rating.HasValue)
                             ? (decimal)Math.Round(product.Comments
                                 .Where(c => c.ParentCommentId == null && c.Rating.HasValue)
