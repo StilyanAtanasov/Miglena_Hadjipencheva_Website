@@ -1,6 +1,8 @@
 ﻿using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Reflection;
 
 namespace MHAuthorWebsite.Data;
@@ -56,5 +58,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        ValueConverter<DateTime, DateTime> utcConverter = new(
+            v => v,
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+        foreach (IMutableEntityType entityType in builder.Model.GetEntityTypes())
+            foreach (IMutableProperty property in entityType.GetProperties())
+                if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                    property.SetValueConverter(utcConverter);
     }
 }

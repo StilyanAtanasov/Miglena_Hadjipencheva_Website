@@ -104,7 +104,7 @@ public class CartService : ICartService
                 Quantity = ci.Quantity,
                 UnitPrice = ci.Price,
                 UnitDiscountedPrice = ci.Product.Discounts
-                    .FirstOrDefault(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)?.NewPrice,
+                    .FirstOrDefault(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow)?.NewPrice,
                 IsDiscontinued = ci.Product.IsDeleted || !ci.Product.IsPublic,
                 IsAvailable = ci.Product is { StockQuantity: > 0, IsDeleted: false, IsPublic: true },
                 ThumbnailUrl = ci.Product.Thumbnail.Image.ImageUrl,
@@ -118,7 +118,7 @@ public class CartService : ICartService
             Items = cartItems
         };
 
-        DateTime now = DateTime.Now;
+        DateTime now = DateTime.UtcNow;
         DateTime? earliestExpiration = cart.CartItems
             .SelectMany(ci => ci.Product.Discounts)
             .Where(d => d.EndDate > now)

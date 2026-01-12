@@ -110,10 +110,10 @@ public class ShipmentUpdateService : BackgroundService
                             NotificationTemplate = ScheduledNotificationTemplate.OrderStatusUpdate,
                             NotificationType = ScheduledNotificationType.Email,
                             RecipientId = order.UserId,
-                            ScheduledAt = DateTime.Now,
+                            ScheduledAt = DateTime.UtcNow,
                             Payload = JsonSerializer.Serialize(notificationPayloadModel),
                             TargetDeliveryDetails = order.Shipment.Email,
-                            ExpirationDate = DateTime.Now.AddDays(7)
+                            ExpirationDate = DateTime.UtcNow.AddDays(7)
                         };
 
                         await repository.AddAsync(notification);

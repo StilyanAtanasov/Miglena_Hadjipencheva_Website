@@ -26,8 +26,15 @@ public class ProductCommentDataService : IProductCommentDataService
     public async Task<ProductComment?> GetCommentForEditReadonlyAsync(Guid commentId, string userId)
      => await _repository
          .All<ProductComment>()
+         .AsNoTracking()
          .Include(c => c.Images)
          .FirstOrDefaultAsync(c => c.Id == commentId && c.UserId == userId);
+
+    public async Task<ProductComment?> GetCommentForEditAsync(Guid commentId, string userId)
+        => await _repository
+            .All<ProductComment>()
+            .Include(c => c.Images)
+            .FirstOrDefaultAsync(c => c.Id == commentId && c.UserId == userId);
 
     public async Task<ProductComment?> GetCommentForRepliesLoadReadonlyAsync(Guid commentId, Guid productId)
      => await _repository

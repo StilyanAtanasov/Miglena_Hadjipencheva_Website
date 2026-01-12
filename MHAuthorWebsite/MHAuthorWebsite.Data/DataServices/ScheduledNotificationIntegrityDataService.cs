@@ -16,7 +16,7 @@ public class ScheduledNotificationIntegrityDataService : IScheduledNotificationI
      => await _repository
          .Where<ScheduledNotification>(n =>
              n.NotificationStatus == ScheduledNotificationStatus.Pending
-             && n.ExpirationDate < DateTime.Now)
+             && n.ExpirationDate < DateTime.UtcNow)
          .IgnoreQueryFilters()
          .ToArrayAsync();
 }

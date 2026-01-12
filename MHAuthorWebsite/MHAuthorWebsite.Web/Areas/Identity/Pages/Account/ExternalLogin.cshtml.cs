@@ -163,7 +163,7 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                     UserName = email,
                     Email = email,
                     Name = info.Principal.FindFirstValue(ClaimTypes.Name),
-                    RegisteredOn = DateTime.Now,
+                    RegisteredOn = DateTime.UtcNow,
                     NormalizedEmail = email.ToUpper(),
                     NormalizedUserName = email.ToUpper(),
                 };

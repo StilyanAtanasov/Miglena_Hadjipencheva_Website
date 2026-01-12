@@ -35,13 +35,13 @@
 
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="StartDate">Начало на промоцията:</label>
-				<input type="datetime-local" class="form-input" asp-for="StartDate" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+				<input type="datetime-local" class="form-input" asp-for="StartDate" />
 				<span class="input-error" asp-validation-for="StartDate"></span>
 			</div>
 
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="EndDate">Край на промоцията:</label>
-				<input type="datetime-local" class="form-input" asp-for="EndDate" value="null" />
+				<input type="datetime-local" class="form-input" asp-for="EndDate" value=""/>
 				<span class="input-error" asp-validation-for="EndDate"></span>
 			</div>
 

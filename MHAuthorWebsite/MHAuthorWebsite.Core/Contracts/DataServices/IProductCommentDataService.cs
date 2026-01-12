@@ -10,6 +10,8 @@ public interface IProductCommentDataService
 
     Task<ProductComment?> GetCommentForEditReadonlyAsync(Guid commentId, string userId);
 
+    Task<ProductComment?> GetCommentForEditAsync(Guid commentId, string userId);
+
     Task<ProductComment?> GetCommentForRepliesLoadReadonlyAsync(Guid productId, Guid commentId);
 
     Task<Product?> GetProductForCommentsLoadAsync(Guid productId);

@@ -45,8 +45,8 @@ public class OrderService : IOrderService
                 ImageUrl = ci.Product.Thumbnail.Image.ImageUrl,
                 Name = ci.Product.Name,
                 TotalPrice = ci.Product.Price * ci.Quantity,
-                TotalPriceWithDiscount = ci.Product.Discounts.FirstOrDefault(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now) != null
-                    ? ci.Product.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice * ci.Quantity
+                TotalPriceWithDiscount = ci.Product.Discounts.FirstOrDefault(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow) != null
+                    ? ci.Product.Discounts.First(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow).NewPrice * ci.Quantity
                     : null,
                 Quantity = ci.Quantity,
                 TotalWeight = ci.Product.Weight * ci.Quantity
@@ -72,7 +72,7 @@ public class OrderService : IOrderService
 
         Dictionary<Guid, decimal> productPricesWithDiscounts = cartItems.ToDictionary(
             ci => ci.ProductId,
-            ci => ci.Product.Discounts.FirstOrDefault(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)?.NewPrice ?? ci.Product.Price);
+            ci => ci.Product.Discounts.FirstOrDefault(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow)?.NewPrice ?? ci.Product.Price);
 
         EcontOrderDto orderDto = new()
         {
@@ -149,7 +149,7 @@ public class OrderService : IOrderService
                         DestinationDetails = AwaitingApproval
                     }
                 }
-            },
+            }
         };
 
         await Repository.AddAsync(order);

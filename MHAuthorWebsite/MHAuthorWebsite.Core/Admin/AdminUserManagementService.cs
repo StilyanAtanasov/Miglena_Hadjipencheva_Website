@@ -39,7 +39,7 @@ public class AdminUserManagementService : IAdminUserManagementService
                 Id = u.Id,
                 Name = !u.IsDeleted ? u.Name : "",
                 Email = !u.IsDeleted ? u.Email : "",
-                IsActive = u.LastActive > DateTime.Now.AddDays(-UsersActivityForPeriod),
+                IsActive = u.LastActive > DateTime.UtcNow.AddDays(-UsersActivityForPeriod),
                 IsAdmin = adminUsers.Contains(u),
                 IsBanned = u.IsBanned,
                 IsDeleted = u.IsDeleted
@@ -60,7 +60,7 @@ public class AdminUserManagementService : IAdminUserManagementService
             Name = !user.IsDeleted ? user.Name : "",
             Email = !user.IsDeleted ? user.Email : "",
             Phone = !user.IsDeleted ? user.PhoneNumber : "",
-            IsActive = user.LastActive > DateTime.Now.AddDays(-UsersActivityForPeriod),
+            IsActive = user.LastActive > DateTime.UtcNow.AddDays(-UsersActivityForPeriod),
             IsAdmin = _userManager.IsInRoleAsync(user, AdminRoleName).Result,
             IsDeleted = user.IsDeleted,
             IsBanned = user.IsBanned,

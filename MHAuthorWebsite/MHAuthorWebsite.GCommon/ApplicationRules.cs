@@ -12,7 +12,10 @@ public static class ApplicationRules
         public const string Currency = "BGN";
 
         public const string CurrentVersion = "1.0.1";
+
+        public const string DefaultTimeZoneId = "FLE Standard Time";
     }
+
     public static class CacheKeys
     {
         public static string ProductDetailsKey(Guid id) => $"Product:{id}";

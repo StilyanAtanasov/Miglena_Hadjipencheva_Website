@@ -62,7 +62,7 @@ public class AdminProductDataService : IAdminProductDataService
             StockQuantity = p.StockQuantity,
             ProductTypeName = p.ProductType.Name,
             IsPublic = p.IsPublic,
-            HasActiveDiscount = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
+            HasActiveDiscount = p.Discounts.Any(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow)
         })
         .ToArrayAsync();
 }

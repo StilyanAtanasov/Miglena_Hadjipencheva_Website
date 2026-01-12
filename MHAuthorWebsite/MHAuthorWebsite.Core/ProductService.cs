@@ -51,13 +51,12 @@ public class ProductService : IProductService
                     .Where(p => !p.IsDeleted && p.Id == productId)
                     .Select(product => new ProductDetailsGeneralInfoDto
                     {
-                        CacheCommitId = Guid.NewGuid(),
                         Id = product.Id,
                         Name = product.Name,
                         Description = product.Description,
                         Price = product.Price,
                         Discount = product.Discounts
-                            .Where(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
+                            .Where(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow)
                             .OrderByDescending(d => d.NewPrice)
                             .Select(d => new ProductDetailsDiscountDto
                             {
@@ -93,7 +92,7 @@ public class ProductService : IProductService
                 TimeSpan productDetailsTtl = TimeSpan.FromDays(ProductDetailsTtlDays);
                 if (generalInfo.Discount is not null)
                 {
-                    TimeSpan timeUntilDiscountEnds = generalInfo.Discount.EndDate - DateTime.Now;
+                    TimeSpan timeUntilDiscountEnds = generalInfo.Discount.EndDate - DateTime.UtcNow;
                     if (timeUntilDiscountEnds > productDetailsTtl) productDetailsTtl = timeUntilDiscountEnds;
                 }
 
@@ -114,6 +113,7 @@ public class ProductService : IProductService
                     .Where(p => !p.IsDeleted && p.Id == productId)
                     .Select(product => new ProductDetailsCommentsInfoDto
                     {
+                        CommitId = Guid.NewGuid(),
                         HasMoreComments = product.Comments.Count > CommentPageCount,
                         AverageRating = product.Comments.Any(c => c.ParentCommentId == null && c.Rating.HasValue)
                             ? (decimal)Math.Round(product.Comments
@@ -254,14 +254,14 @@ public class ProductService : IProductService
             ProductDetailsUserInfoDto? userInfo =
                 await Cache.GetAsync<ProductDetailsUserInfoDto>(ProductDetailsUserDataKey(productId, userId));
 
-            if (userInfo is null || generalInfo.CacheCommitId != userInfo.CacheGeneralInfoCommitId)
+            if (userInfo is null || commentsInfo.CommitId != userInfo.CacheGeneralInfoCommitId)
             {
                 userInfo = await Repository
                     .AllReadonly<Product>()
                     .Where(p => !p.IsDeleted && p.Id == productId)
                     .Select(product => new ProductDetailsUserInfoDto
                     {
-                        CacheGeneralInfoCommitId = generalInfo.CacheCommitId,
+                        CacheGeneralInfoCommitId = commentsInfo.CommitId,
                         IsLiked = product.Likes.Any(u => u.Id == userId),
                         CanWriteMoreComments = !product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null),
                         IsRateLimitedForReplies = product.Comments
@@ -343,6 +343,7 @@ public class ProductService : IProductService
         LikedProductsListDto? likedProducts = await Cache.GetAsync<LikedProductsListDto>(LikedProductsKey(userId));
         if (likedProducts is not null && likedProducts.DiscountStateId == stateId) return likedProducts.LikedProducts;
 
+        DateTime now = DateTime.UtcNow;
         LikedProductAllServiceDataDto[] likedProductsData = await Repository
             .WhereReadonly<Product>(p => p.Likes.Any(u => u.Id == userId))
             .Select(p => new LikedProductAllServiceDataDto
@@ -350,11 +351,11 @@ public class ProductService : IProductService
                 Id = p.Id,
                 Name = p.Name,
                 Price = p.Price,
-                DiscountedPrice = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-                    ? p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice
+                DiscountedPrice = p.Discounts.Any(d => d.StartDate <= now && d.EndDate >= now)
+                    ? p.Discounts.First(d => d.StartDate <= now && d.EndDate >= now).NewPrice
                     : null,
-                DiscountEnd = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-                    ? p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).EndDate
+                DiscountEnd = p.Discounts.Any(d => d.StartDate <= now && d.EndDate >= now)
+                    ? p.Discounts.First(d => d.StartDate <= now && d.EndDate >= now).EndDate
                     : null,
                 CategoryName = p.ProductType.Name,
                 IsInStock = p.StockQuantity > 0,
@@ -381,7 +382,6 @@ public class ProductService : IProductService
                 .ToArray()
         };
 
-        DateTime now = DateTime.Now;
         DateTime? nearestDiscountEnd = likedProductsData
             .Where(p => p.DiscountEnd > now)
             .Min(p => p.DiscountEnd);
@@ -481,6 +481,7 @@ public class ProductService : IProductService
             else missingIds.Add(productIds[i]);
         }
 
+        DateTime now = DateTime.UtcNow;
         if (missingIds.Any())
         {
             ProductCardServiceDataDto[] dbItems = await Repository.WhereReadonly<Product>(p => missingIds.Contains(p.Id))
@@ -493,11 +494,11 @@ public class ProductService : IProductService
                     ProductType = p.ProductType.Name,
                     ImageUrl = p.Thumbnail.Image.ImageUrl,
                     ImageAlt = p.Thumbnail.Image.AltText,
-                    DiscountPrice = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-                         ? p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).NewPrice
+                    DiscountPrice = p.Discounts.Any(d => d.StartDate <= now && d.EndDate >= now)
+                         ? p.Discounts.First(d => d.StartDate <= now && d.EndDate >= now).NewPrice
                          : null,
-                    DiscountEnd = p.Discounts.Any(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now)
-                         ? p.Discounts.First(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).EndDate
+                    DiscountEnd = p.Discounts.Any(d => d.StartDate <= now && d.EndDate >= now)
+                         ? p.Discounts.First(d => d.StartDate <= now && d.EndDate >= now).EndDate
                          : null,
                 })
                  .ToArrayAsync();
@@ -518,8 +519,8 @@ public class ProductService : IProductService
                 };
 
                 string json = JsonSerializer.Serialize(dto);
-                TimeSpan cacheDuration = item.DiscountEnd != null && item.DiscountEnd.Value - DateTime.Now < TimeSpan.FromDays(ProductCardTtlDays)
-                    ? item.DiscountEnd.Value - DateTime.Now
+                TimeSpan cacheDuration = item.DiscountEnd != null && item.DiscountEnd.Value - now < TimeSpan.FromDays(ProductCardTtlDays)
+                    ? item.DiscountEnd.Value - now
                     : TimeSpan.FromDays(ProductCardTtlDays);
 
                 await writeBatch.StringSetAsync((RedisKey)ProductCardKey(dto.Id), (RedisValue)json, cacheDuration, flags: CommandFlags.FireAndForget);

@@ -4,6 +4,8 @@ namespace MHAuthorWebsite.Core.Dtos.Product;
 
 public class ProductDetailsCommentsInfoDto
 {
+    public Guid CommitId { get; set; }
+
     public decimal AverageRating { get; set; }
 
     public int TotalBaseComments { get; set; }

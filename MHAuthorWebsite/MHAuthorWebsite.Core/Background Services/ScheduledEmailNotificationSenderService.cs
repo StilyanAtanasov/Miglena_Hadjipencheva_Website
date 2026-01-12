@@ -52,7 +52,7 @@ public class ScheduledEmailNotificationSenderService : BackgroundService
                         true);
 
                     n.NotificationStatus = ScheduledNotificationStatus.Sent;
-                    n.SentAt = DateTime.Now;
+                    n.SentAt = DateTime.UtcNow;
                     sentCount++;
                 }
 

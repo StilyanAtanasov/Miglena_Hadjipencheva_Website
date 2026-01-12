@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text;
 using System.Text.Json;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Product;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
 using static MHAuthorWebsite.Web.Utils.Mappers.ImageMapper;
@@ -362,7 +363,11 @@ public class AdminProductController : AdminBaseController
         return View(new AddProductDiscountFormViewModel
         {
             ProductId = productId,
-            CurrentPrice = result.Result
+            CurrentPrice = result.Result,
+            StartDate = TimeZoneInfo.ConvertTimeFromUtc(
+                DateTime.UtcNow,
+                TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId)
+            )
         });
     }
 

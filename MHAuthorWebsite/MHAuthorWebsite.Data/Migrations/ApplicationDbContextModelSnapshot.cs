@@ -121,7 +121,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.CartItem", b =>
@@ -153,7 +153,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ContactRequest", b =>
@@ -204,7 +204,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ContactRequests");
+                    b.ToTable("ContactRequests", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Order", b =>
@@ -229,7 +229,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.OrderProduct", b =>
@@ -250,7 +250,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrdersProducts");
+                    b.ToTable("OrdersProducts", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Product", b =>
@@ -295,7 +295,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("ProductTypeId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ProductAttribute", b =>
@@ -337,7 +337,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductAttributes");
+                    b.ToTable("ProductAttributes", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ProductAttributeDefinition", b =>
@@ -375,7 +375,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("ProductTypeId");
 
-                    b.ToTable("ProductAttributeDefinitions");
+                    b.ToTable("ProductAttributeDefinitions", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ProductAttributeOption", b =>
@@ -398,7 +398,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("AttributeDefinitionId");
 
-                    b.ToTable("ProductAttributeOptions");
+                    b.ToTable("ProductAttributeOptions", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ProductComment", b =>
@@ -451,7 +451,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProductComments");
+                    b.ToTable("ProductComments", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ProductCommentImage", b =>
@@ -492,7 +492,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("CommentId");
 
-                    b.ToTable("ProductCommentsImages");
+                    b.ToTable("ProductCommentsImages", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ProductCommentReaction", b =>
@@ -520,7 +520,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProductCommentsReactions");
+                    b.ToTable("ProductCommentsReactions", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ProductDiscount", b =>
@@ -545,7 +545,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductDiscounts");
+                    b.ToTable("ProductDiscounts", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ProductImage", b =>
@@ -576,7 +576,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductsImages");
+                    b.ToTable("ProductsImages", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ProductThumbnail", b =>
@@ -597,7 +597,7 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.HasIndex("ProductId")
                         .IsUnique();
 
-                    b.ToTable("ProductsThumbnails");
+                    b.ToTable("ProductsThumbnails", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ProductType", b =>
@@ -615,7 +615,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductTypes");
+                    b.ToTable("ProductTypes", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ScheduledNotification", b =>
@@ -666,7 +666,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("RecipientId");
 
-                    b.ToTable("ScheduledNotifications");
+                    b.ToTable("ScheduledNotifications", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Shipment", b =>
@@ -758,7 +758,7 @@ namespace MHAuthorWebsite.Data.Migrations
                         .IsUnique()
                         .HasFilter("[ShipmentNumber] IS NOT NULL");
 
-                    b.ToTable("Shipments");
+                    b.ToTable("Shipments", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ShipmentEvent", b =>
@@ -796,7 +796,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("ShipmentId");
 
-                    b.ToTable("ShipmentEvents");
+                    b.ToTable("ShipmentEvents", (string)null);
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ShipmentService", b =>
@@ -838,7 +838,7 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.HasIndex("ShipmentId");
 
-                    b.ToTable("ShipmentServices");
+                    b.ToTable("ShipmentServices", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

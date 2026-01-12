@@ -79,8 +79,8 @@ public class ProductCommentService : IProductCommentService
 
         if (model.ParentCommentId is not null && parentComment is null) return ServiceResult.BadRequest();
 
-        if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null) && model.ParentCommentId == null)
-            return ServiceResult.Failure(new() { ["Limit"] = "Всеки потребител има право на един базов коментар за продукт!" });
+        //if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null) && model.ParentCommentId == null)
+        //return ServiceResult.Failure(new() { ["Limit"] = "Всеки потребител има право на един базов коментар за продукт!" });
 
         if (product.Comments
                 .Count(c => c.UserId == userId && c.ParentCommentId != null
@@ -145,14 +145,14 @@ public class ProductCommentService : IProductCommentService
 
     public async Task<ServiceResult<ICollection<string>>> EditCommentAsync(string userId, EditProductCommentDto model, ICollection<ProductCommentImagesUploadDto>? newImages, ICollection<Guid>? removedImagesUrls)
     {
-        ProductComment? comment = await _productCommentDataService.GetCommentForEditReadonlyAsync(model.CommentId, userId);
+        ProductComment? comment = await _productCommentDataService.GetCommentForEditAsync(model.CommentId, userId);
 
         if (comment is null) return ServiceResult<ICollection<string>>.BadRequest();
         if (comment.UserId != userId) return ServiceResult<ICollection<string>>.BadRequest();
 
         comment.Rating = model.Rating;
         comment.Text = model.Text;
-        comment.LastEdited = DateTime.Now;
+        comment.LastEdited = DateTime.UtcNow;
 
         if (newImages is not null && newImages.Count > 0)
         {
@@ -206,7 +206,7 @@ public class ProductCommentService : IProductCommentService
                 UserId = userId,
                 Reaction = reactionType,
                 CommentId = commentId,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             });
         }
         else
@@ -216,7 +216,7 @@ public class ProductCommentService : IProductCommentService
             else
             {
                 existingReaction.Reaction = reactionType;
-                existingReaction.CreatedAt = DateTime.Now;
+                existingReaction.CreatedAt = DateTime.UtcNow;
             }
         }
 

@@ -10,6 +10,7 @@ using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using AddProductDto = MHAuthorWebsite.Core.Admin.Dto.AddProductDto;
 
@@ -253,18 +254,19 @@ public class AdminProductService : ProductService, IAdminProductService
                 { "ProductId", "Продуктът не беше намерен!" }
             });
 
-        if (await Repository.AnyAsync<ProductDiscount>(pd => pd.ProductId == model.ProductId && pd.EndDate > DateTime.Now))
+        if (await Repository.AnyAsync<ProductDiscount>(pd => pd.ProductId == model.ProductId && pd.EndDate > DateTime.UtcNow))
             return ServiceResult.Forbidden(new Dictionary<string, string>
             {
                 { "ProductDiscount", "Вече има зададена промоция за този продукт!" }
             });
 
+        TimeZoneInfo bgZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
         ProductDiscount discount = new()
         {
             ProductId = model.ProductId,
             NewPrice = model.NewPrice,
-            StartDate = model.StartDate,
-            EndDate = model.EndDate
+            StartDate = TimeZoneInfo.ConvertTimeToUtc(model.StartDate, bgZone),
+            EndDate = TimeZoneInfo.ConvertTimeToUtc(model.EndDate, bgZone)
         };
 
         await Repository.AddAsync(discount);
@@ -279,12 +281,12 @@ public class AdminProductService : ProductService, IAdminProductService
     public async Task<ServiceResult> EndDiscountAsync(Guid productId)
     {
         ProductDiscount? discount = await Repository
-            .Where<ProductDiscount>(pd => pd.ProductId == productId && pd.EndDate > DateTime.Now)
+            .Where<ProductDiscount>(pd => pd.ProductId == productId && pd.EndDate > DateTime.UtcNow)
             .FirstOrDefaultAsync();
 
         if (discount is null) return ServiceResult.NotFound();
 
-        discount.EndDate = DateTime.Now;
+        discount.EndDate = DateTime.UtcNow;
         await Repository.SaveChangesAsync();
 
         await Cache.RemoveAsync(ProductDetailsKey(productId));

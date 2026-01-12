@@ -66,7 +66,7 @@ public class AdminContactRequestsService : ContactsService, IAdminContactRequest
         if (contactRequest is null) return ServiceResult.NotFound();
 
         contactRequest.ReplyMessage = replyMessage;
-        contactRequest.RepliedOn = DateTime.Now;
+        contactRequest.RepliedOn = DateTime.UtcNow;
         contactRequest.AdminId = adminId;
 
         await Repository.SaveChangesAsync();
