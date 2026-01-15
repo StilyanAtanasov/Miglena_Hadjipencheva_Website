@@ -8,6 +8,9 @@
 
 @{
 	ViewData["Title"] = $"Поръчка № {Model.OrderId}";
+	ViewData["RequireTimeZoneManager"] = true;
+
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
 }
 
 @section Styles {
@@ -51,7 +54,12 @@
 		<article class="order-summary">
 			<h4 class="heading">Основна информация</h4>
 			<p class="flex-row"><strong>№</strong> @Model.OrderId</p>
-			<p class="flex-row"><strong>Дата на поръчка:</strong> @Model.OrderDate.ToString("dd MMM yyyy, HH:mm ч.")</p>
+			<p class="flex-row">
+				<strong>Дата на поръчка:</strong> 
+				<time to-local month-long datetime="@Model.OrderDate.ToString("O")">
+					@TimeZoneInfo.ConvertTimeFromUtc(Model.OrderDate, defaultZone)
+				</time>
+			</p>
 			<p class="flex-row"><strong>Обща стойност:</strong> @((Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice).ToString("F2")) @Currency</p>
 			<p class="flex-row"><strong>Статус: </strong>@Model.Status.GetDisplayName()</p>
 		</article>
@@ -128,7 +136,11 @@
 						<li class="tracking-row flex-row">
 							<span class="tracking-dot"></span>
 							<p class="tracking-text">
-								<strong>@ev.Time.ToString("dd MMM yyyy, HH:mm ч."):</strong>
+								<strong>
+									<time to-local no-seconds month-long datetime="@ev.Time.ToString("O")">
+										@TimeZoneInfo.ConvertTimeFromUtc(ev.Time, defaultZone).ToString("dd MMM yyyy, HH:mm")
+									</time>:
+								</strong>
 								@if (!string.IsNullOrWhiteSpace(ev.DestinationDetails))
 								{
 									<span> @ev.DestinationDetails</span>

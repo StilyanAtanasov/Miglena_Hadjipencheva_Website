@@ -1,5 +1,6 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Order
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Econt
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @using MHAuthorWebsite.Data.Common.Extensions
 @using MHAuthorWebsite.Web.ViewModels.Shared
@@ -10,6 +11,9 @@
 @{
 	ViewData["Heading"] = $"Поръчка № {Model.OrderId}";
 	Layout = "/Areas/Identity/Pages/Account/Manage/_Layout.cshtml";
+	ViewData["RequireTimeZoneManager"] = true;
+
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
 }
 
 @section Styles {
@@ -54,7 +58,12 @@
 		<article class="order-summary">
 			<h4 class="heading">Основна информация</h4>
 			<p class="flex-row"><strong>№</strong> @Model.OrderId</p>
-			<p class="flex-row"><strong>Дата на поръчка:</strong> @Model.OrderDate.ToString("dd MMM yyyy, HH:mm ч.")</p>
+			<p class="flex-row">
+				<strong>Дата на поръчка:</strong>
+				<time to-local datetime="@Model.OrderDate.ToString("O")">
+					@TimeZoneInfo.ConvertTimeFromUtc(Model.OrderDate, defaultZone)
+				</time>
+			</p>
 			<p class="flex-row">
 				<strong>Обща стойност:</strong>
 				@(totalSum.ToString("F2")) лв. / @((totalSum * LevToEurRate).ToString("F2")) €
@@ -111,7 +120,11 @@
 					<li class="tracking-row flex-row">
 						<span class="tracking-dot"></span>
 						<p class="tracking-text">
-							<strong>@ev.Time.ToString("dd MMM yyyy, HH:mm ч."):</strong>
+							<strong>
+								<time to-local no-seconds month-long datetime="@ev.Time.ToString("O")">
+									@TimeZoneInfo.ConvertTimeFromUtc(ev.Time, defaultZone).ToString("dd MMM yyyy, HH:mm")
+								</time>
+							</strong>
 							@if (!string.IsNullOrWhiteSpace(ev.DestinationDetails))
 							{
 								<span> @ev.DestinationDetails</span>

@@ -4,6 +4,10 @@
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @model ICollection<MyOrderViewModel>
 
+@{
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+}
+
 @foreach (MyOrderViewModel order in Model)
 {
 <div class="order-card flex-column">
@@ -28,7 +32,12 @@
 	<article class="order-summary flex-row">
 		<p><strong>№</strong> @order.OrderId</p>
 		<p><strong>Брой артикули:</strong> @order.Products.Sum(p => p.Quantity)</p>
-		<p><strong>Дата:</strong> @order.CreatedAt.ToShortDateString()</p>
+		<p>
+			<strong>Дата:</strong>
+			<time to-local date-only datetime="@order.CreatedAt.ToString("O")">
+				@TimeZoneInfo.ConvertTimeFromUtc(order.CreatedAt, defaultZone)
+			</time>
+		</p>
 		<p><strong>Статус:</strong> @order.Status</p>
 		<p><strong>Общо:</strong> @order.Total.ToString("F2") @Currency / @((order.Total * LevToEurRate).ToString("F2")) €</p>
 	</article>

@@ -2,6 +2,7 @@
 
 import { pushNotification, showPopupAsync } from "../notification.js";
 import { openModal, replaceBody } from "../elements/modal.js";
+import { formatLocalDates } from "../time-zone-manager.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
@@ -85,8 +86,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const html = await response.text();
-    openModal();
     replaceBody(html);
+    formatLocalDates();
+    openModal();
   }
 
   // --- Assign admin role with confirmation ---

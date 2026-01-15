@@ -1,6 +1,11 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.ProductComment
 @using MHAuthorWebsite.Core.Models.Enums
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @model ProductCommentDetailsViewModel
+
+@{
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+}
 
 <section class="comment-details-section flex-column">
 	<div class="comment-gallery flex-row">
@@ -31,7 +36,11 @@
 					<p class="verified-badge flex-row"><i class="fa-solid fa-badge-check"></i> Потвърдена поръчка!</p>
 				}
 			</div>
-			<span class="date">@Model.Date.ToString("dd.MM.yyyy")</span>
+			<span class="date">
+				<time to-local no-seconds datetime="@Model.Date.ToString("O")">
+					@TimeZoneInfo.ConvertTimeFromUtc(Model.Date, defaultZone).ToString("dd.MM.yyyy, HH:mm")
+				</time>
+			</span>
 		</div>
 
 		<p class="comment-user">@Model.UserName</p>

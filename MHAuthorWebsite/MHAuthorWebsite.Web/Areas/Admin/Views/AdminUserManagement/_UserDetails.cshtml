@@ -1,6 +1,11 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Admin.UserManagement
 @using static MHAuthorWebsite.GCommon.ApplicationRules.DataCollection
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @model UserDetailsViewModel
+
+@{
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+}
 
 <article id="user-details-container">
 	<h3 class="heading">Детайли за потребителя</h3>
@@ -43,6 +48,16 @@
 	<br/>
 
 	<p><strong>Идентификатор:</strong> @Model.Id</p>
-	<p><strong>Дата на създаване на акаунт:</strong> @Model.DateJoined.ToString("dd.MM.yyyy, HH:mm")</p>
-	<p><strong>Последна активност:</strong> @Model.LastActive.ToString("dd.MM.yyyy, HH:mm")</p>
+	<p>
+		<strong>Дата на създаване на акаунт:</strong> 
+		<time to-local no-seconds month-long datetime="@Model.DateJoined.ToString("O")">
+			@TimeZoneInfo.ConvertTimeFromUtc(Model.DateJoined, defaultZone).ToString("dd MMM yyyy, HH:mm")
+		</time>
+	</p>
+	<p>
+		<strong>Последна активност:</strong> 
+		<time to-local no-seconds month-long datetime="@Model.LastActive.ToString("O")">
+			@TimeZoneInfo.ConvertTimeFromUtc(Model.LastActive, defaultZone).ToString("dd MMM yyyy, HH:mm")
+		</time>
+	</p>
 </article>

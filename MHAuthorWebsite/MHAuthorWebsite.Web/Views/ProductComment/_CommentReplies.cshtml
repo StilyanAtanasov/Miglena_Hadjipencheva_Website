@@ -1,8 +1,13 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.ProductComment
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MHAuthorWebsite.Core.Models.Enums
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 
 @model ICollection<ProductCommentReplyViewModel>
+
+@{
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+}
 
 @foreach (ProductCommentReplyViewModel reply in Model)
 {
@@ -17,10 +22,14 @@
 				<p>@reply.UserName</p>
 			</div>
 			<div class="dates flex-row">
-				<p class="date">@reply.Date.Date.ToString("dd.MM.yyyy")</p>
+				<p class="date">
+					<time to-local date-only datetime="@reply.Date.ToString("O")">
+						@TimeZoneInfo.ConvertTimeFromUtc(reply.Date, defaultZone).ToString("dd.MM.yyyy")
+					</time>
+				</p>
 				@if (reply.LastEdited.HasValue)
 				{
-					<span class="edited-date" title="Последно редактиран на @reply.LastEdited.Value.Date.ToString("dd.MM.yyyy")">
+					<span class="edited-date" title="Последно редактиран на @TimeZoneInfo.ConvertTimeFromUtc(reply.LastEdited.Value.Date, defaultZone).ToString("dd.MM.yyyy")">
 						<i class="fa-regular fa-pen"></i>
 					</span>
 				}

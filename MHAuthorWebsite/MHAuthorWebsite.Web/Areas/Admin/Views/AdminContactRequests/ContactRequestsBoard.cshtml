@@ -1,9 +1,13 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Admin.ContactRequests
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @model ICollection<ContactRequestCardViewModel>
 
 @{
 	ViewData["Title"] = "Запитвания";
 	ViewData["CurrentPage"] = Pages.Admin.ContactRequestsBoardPage;
+	ViewData["RequireTimeZoneManager"] = true;
+
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
 
 	ICollection<ContactRequestCardViewModel> unanswered = Model
 		.Where(m => !m.IsAnswered)
@@ -43,9 +47,13 @@
 					{
 						<div class="request-card clickable flex-column" data-details-url="@Url.Action("ContactRequestDetails", "AdminContactRequests", new { requestId = item.Id })">
 							<h3 class="subheading">@item.Subject</h3>
-							<p>@item.Name | @item.Email</p>
+							<p>@item.Name <br/> @item.Email</p>
 							<p class="message">@item.MessagePreview</p>
-							<p class="date">@item.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy, HH:mm")</p>
+							<p class="date">
+								<time to-local no-seconds datetime="@item.CreatedOn.ToString("O")">
+									@TimeZoneInfo.ConvertTimeFromUtc(item.CreatedOn, defaultZone)
+								</time>
+							</p>
 							<a asp-controller="AdminContactRequests" asp-action="ContactRequestDetails"
 							   asp-route-requestId="@item.Id" class="btn btn-purple link flex-row">
 								<i class="fa-regular fa-eye"></i>
@@ -70,9 +78,13 @@
 					{
 						<div class="request-card clickable flex-column" data-details-url="@Url.Action("ContactRequestDetails", "AdminContactRequests", new { requestId = item.Id })">
 							<h3 class="subheading">@item.Subject</h3>
-							<p>@item.Name | @item.Email</p>
+							<p>@item.Name  <br /> @item.Email</p>
 							<p class="message">@item.MessagePreview</p>
-							<p class="date">@item.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy, HH:mm")</p>
+							<p class="date">
+								<time to-local no-seconds datetime="@item.CreatedOn.ToString("O")">
+									@TimeZoneInfo.ConvertTimeFromUtc(item.CreatedOn, defaultZone)
+								</time>
+							</p>
 							<a asp-controller="AdminContactRequests" asp-action="ContactRequestDetails"
 							   asp-route-requestId="@item.Id" class="btn btn-purple link flex-row">
 								<i class="fa-regular fa-eye"></i>

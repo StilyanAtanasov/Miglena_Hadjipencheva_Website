@@ -64,6 +64,11 @@
 	<script src="~/js/loader.js" asp-append-version="true"></script>
 	<script src="~/js/click.js" asp-append-version="true"></script>
 
-	@await RenderSectionAsync("Scripts", required: false)
+	@if (ViewData["RequireTimeZoneManager"] is not null && (bool)ViewData["RequireTimeZoneManager"]!)
+	{
+		<script type="module" src="~/js/time-zone-manager.js" asp-append-version="true"></script>
+	}
+
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

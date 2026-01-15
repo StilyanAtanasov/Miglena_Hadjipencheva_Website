@@ -5,6 +5,7 @@ import { pushNotification, showPopupAsync } from "./notification.js";
 import { calculateStarsFill } from "./elements/stars.js";
 import { openModal, replaceBody } from "./elements/modal.js";
 import { reactToComment } from "./react-to-product-comment.js";
+import { formatLocalDates } from "./time-zone-manager.js";
 
 document.addEventListener(`DOMContentLoaded`, async function () {
   await initQuill(false, false);
@@ -98,6 +99,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
     if (response.ok) {
       const html = await response.text();
       replaceBody(html);
+      formatLocalDates();
       openModal();
     } else {
       pushNotification(`Възникна грешка при зареждане на коментара!`, `error`);
@@ -166,6 +168,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
       if (!data.comments.replaceAll(`\r`, ``).replaceAll(`\n`, ``)) return noResultsContainer.classList.remove(`hidden`);
       calculateStarsFill();
+      formatLocalDates();
     } else {
       pushNotification(`Грешка при зареждането на коментарите!`, `error`);
     }
@@ -205,6 +208,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
       currentRepliesPage = page;
 
       loadBtn.insertAdjacentHTML(`beforebegin`, data.replies);
+      formatLocalDates();
       loadBtn.classList.toggle(`hidden`, !data.hasMoreReplies);
     } else {
       pushNotification(`Грешка при зареждането на отговорите!`, `error`);

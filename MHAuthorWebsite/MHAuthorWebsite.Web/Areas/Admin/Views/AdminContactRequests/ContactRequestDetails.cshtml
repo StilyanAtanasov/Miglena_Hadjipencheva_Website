@@ -1,9 +1,13 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Admin.ContactRequests
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @model ContactRequestDetailsViewModel
 
 @{
 	ViewData["Title"] = "Детайли на запитване";
 	ViewData["CurrentPage"] = Pages.Admin.ContactRequestsBoardPage;
+	ViewData["RequireTimeZoneManager"] = true;
+
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
 }
 
 @section Styles {
@@ -22,7 +26,11 @@
 		<div class="request-details">
 			<h2 class="heading">@Model.Subject</h2>
 			<p class="meta"><span>@Model.Name</span> | <span>@Model.Email</span></p>
-			<p class="date">@Model.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy, HH:mm")</p>
+			<p class="date">
+				<time to-local no-seconds datetime="@Model.CreatedOn.ToString("O")">
+					@TimeZoneInfo.ConvertTimeFromUtc(Model.CreatedOn, defaultZone)
+				</time>
+			</p>
 			<div class="message-box">@Model.Message	</div>
 		</div>
 
@@ -50,7 +58,11 @@
 		{
 			<div class="reply-view">
 				<h2 class="subheading">Изпратен отговор</h2>
-				<p class="date">@Model.RepliedOn?.ToLocalTime().ToString("dd.MM.yyyy, HH:mm")</p>
+				<p class="date">
+					<time to-local no-seconds datetime="@Model.RepliedOn!.Value.ToString("O")">
+						@TimeZoneInfo.ConvertTimeFromUtc(Model.RepliedOn.Value, defaultZone)
+					</time>
+				</p>
 				<div class="reply-box">@Model.ReplyMessage</div>
 			</div>
 		}

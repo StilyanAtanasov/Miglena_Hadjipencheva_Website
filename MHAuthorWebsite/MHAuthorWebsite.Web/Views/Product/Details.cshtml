@@ -11,6 +11,7 @@
 	ViewData["Title"] = Model.Name;
 	string metaBookDescription = Model.Description.Length > 70 ? $"{Model.Description.Substring(0, 70)}..." : Model.Description;
 	ViewData["MetaDescription"] = $"Книга {Model.Name}. {metaBookDescription}";
+	ViewData["RequireTimeZoneManager"] = true;
 }
 
 @section Styles {
