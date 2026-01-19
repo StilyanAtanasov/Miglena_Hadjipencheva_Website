@@ -26,4 +26,11 @@ public class UrlProvider : IUrlProvider
             action: "Index",
             controller: "Contacts"
         ) ?? string.Empty;
+
+    public string GetContactRequestPageUrl(Guid requestId)
+    => _linkGenerator.GetUriByAction(
+            _httpContextAccessor.HttpContext!,
+            action: "ContactRequestDetails",
+            controller: "AdminContactRequests",
+            values: new { area = "Admin", requestId }) ?? string.Empty;
 }

@@ -14,6 +14,8 @@ public static class ApplicationRules
         public const string CurrentVersion = "1.0.1";
 
         public const string DefaultTimeZoneId = "FLE Standard Time";
+
+        public const decimal FreeDeliveryThresholdEur = 50;
     }
 
     public static class CacheKeys
@@ -153,5 +155,11 @@ public static class ApplicationRules
         public const string GetTraceEndpoint = "https://delivery.econt.com/services/OrdersService.getTrace.json";
 
         public const string EcontTrackerUrl = "https://www.econt.com/services/track-shipment";
+    }
+
+    public static class Emails
+    {
+        public const string ContactRequestReplyGreeting = "Здравейте,";
+        public const string ContactRequestReplyRegardsInnerHtml = $"Поздрави, <br /> Екипът на {Application.WebsiteName}";
     }
 }

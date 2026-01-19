@@ -7,15 +7,17 @@ using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ContactRequestsBoard;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Emails;
 
 namespace MHAuthorWebsite.Core.Admin;
 
 public class AdminContactRequestsService : ContactsService, IAdminContactRequestsService
 {
     public AdminContactRequestsService(IEmailService emailService, IEmailUserProvider emailUserProvider,
-        IApplicationRepository repository, UserManager<ApplicationUser> userManager)
-        : base(emailService, emailUserProvider, repository, userManager) { }
+        IApplicationRepository repository, UserManager<ApplicationUser> userManager, IUrlProvider urlProvider)
+        : base(emailService, emailUserProvider, repository, userManager, urlProvider) { }
 
     public async Task<ICollection<ContactRequestCardDto>> GetContactRequestsPagedReadonlyAsync(int page)
         => await Repository
@@ -65,19 +67,73 @@ public class AdminContactRequestsService : ContactsService, IAdminContactRequest
             .FirstOrDefaultAsync();
         if (contactRequest is null) return ServiceResult.NotFound();
 
+        string htmlBody = $@"
+            <!DOCTYPE html>
+            <html lang=""bg"">
+            <head>
+                <meta charset=""UTF-8"">
+                <style>
+                    .content-text {{ line-height: 1.6; color: #181717; font-size: 16px; }}
+                    .quote-box {{ border-left: 4px solid #f8dff8; padding-left: 15px; margin: 20px 0; color: #616161; font-style: italic; }}
+                </style>
+            </head>
+            <body style=""margin: 0; padding: 0; background-color: #fcfcfc; font-family: 'Segoe UI', Arial, sans-serif;"">
+                <table role=""presentation"" cellspacing=""0"" cellpadding=""0"" border=""0"" width=""100%"" style=""background-color: #fcfcfc;"">
+                    <tr>
+                        <td align=""center"" style=""padding: 20px 0;"">
+                            <table role=""presentation"" cellspacing=""0"" cellpadding=""0"" border=""0"" width=""600"" style=""background-color: #ffffff; border: 1px solid #f0f0f0; border-radius: 8px;"">
+                                <tr>
+                                    <td style=""padding: 20px; background-color: #3a053a; border-radius: 8px 8px 0 0; text-align: center;"">
+                                        <span style=""color: #fcfcfc; font-size: 20px; font-weight: bold; letter-spacing: 1px;"">
+                                            Отговор на Вашето запитване
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style=""padding: 40px 30px;"">
+                                        <div class=""content-text"">
+                                            <p> {ContactRequestReplyGreeting}</p>
+                                            <p>{replyMessage.Trim().Replace("\n", "<br>")}</p>
+                                        </div>
+
+                                        <div class=""quote-box"">
+                                            <p style=""margin: 0; font-size: 14px;"">
+                                                <strong>Относно Вашето запитване: ""{contactRequest.Subject}""</strong><br>
+                                                ""{contactRequest.Message}""
+                                            </p>
+                                        </div>
+
+                                        <p style=""font-size: 14px; color: #999; margin-top: 30px;"">
+                                           {ContactRequestReplyRegardsInnerHtml}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style=""padding: 20px; background-color: #fbf3fb; text-align: center; font-size: 12px; color: #616161; border-radius: 0 0 8px 8px;"">
+                                        <p style=""margin: 0;"">Този имейл е изпратен във връзка с Вашето запитване през нашата контактна форма.</p>
+                                        <p style=""margin: 5px 0 0 0;"">&copy; {DateTime.UtcNow.Year} {WebsiteName}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>";
+
+        await EmailService.SendEmailAsync(
+            to: contactRequest.Email,
+            subject: $"Re: {contactRequest.Subject}",
+            body: htmlBody,
+            isBodyHtml: true,
+            from: EmailUserProvider.GetContactUser()
+        );
+
         contactRequest.ReplyMessage = replyMessage;
         contactRequest.RepliedOn = DateTime.UtcNow;
         contactRequest.AdminId = adminId;
 
         await Repository.SaveChangesAsync();
-
-        await EmailService.SendEmailAsync(
-            to: contactRequest.Email,
-            subject: $"Re: {contactRequest.Subject}",
-            body: replyMessage.Trim(),
-            isBodyHtml: false,
-            from: EmailUserProvider.GetContactUser()
-        );
 
         return ServiceResult.Ok();
     }

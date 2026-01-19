@@ -1,5 +1,6 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Admin.ContactRequests
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Emails
 @model ContactRequestDetailsViewModel
 
 @{
@@ -17,7 +18,7 @@
 
 <section class="page-wrapper flex-column">
 	<h1 class="title">@ViewData["Title"]</h1>
-	
+
 	<a asp-controller="AdminContactRequests" asp-action="ContactRequestsBoard" class="btn link flex-row back-btn">
 		<i class="fa-regular fa-arrow-left"></i> Обратно към таблото
 	</a>
@@ -46,7 +47,11 @@
 
 					<div class="form-input-box flex-column">
 						<label class="form-label" asp-for="ReplyMessage">Съобщение</label>
-						<textarea class="form-input" asp-for="ReplyMessage"></textarea>
+						<div class="form-input-box flex-column">
+							<p class="text-faded">@ContactRequestReplyGreeting</p>
+							<textarea class="form-input" asp-for="ReplyMessage" placeholder="Напишете отговор..."></textarea>
+							<p class="text-faded">@Html.Raw(ContactRequestReplyRegardsInnerHtml)</p>
+						</div>
 						<span class="input-error" asp-validation-for="ReplyMessage"></span>
 					</div>
 
