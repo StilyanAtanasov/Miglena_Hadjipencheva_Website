@@ -333,7 +333,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
         await Repository.AddAsync(new ShipmentEvent
         {
-            Time = DateTime.UtcNow, // TODO UTC or local?
+            Time = DateTime.UtcNow,
             Source = ShipmentEventSource.System,
             DestinationDetails = Terminated,
             ShipmentId = order.Shipment.Id

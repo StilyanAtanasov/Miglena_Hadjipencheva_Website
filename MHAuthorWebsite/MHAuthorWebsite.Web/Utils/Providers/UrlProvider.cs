@@ -18,7 +18,7 @@ public class UrlProvider : IUrlProvider
             _httpContextAccessor.HttpContext!,
             action: "OrderDetails",
             controller: "Order",
-            values: new { id = orderId }) ?? string.Empty;
+            values: new { orderId = orderId }) ?? string.Empty;
 
     public string GetContactsPageUrl()
     => _linkGenerator.GetUriByAction(
