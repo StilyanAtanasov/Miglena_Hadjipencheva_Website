@@ -6,18 +6,22 @@
 
 @{
 	ViewData["Title"] = "Завършване на поръчка";
+	decimal eurLeftUntilFreeDelivery = FreeDeliveryThresholdEur - Model.SubtotalDiscountApplied * LevToEurRate;
 }
 
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/order.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/free-delivery.css" asp-append-version="true" />
 }
 
-<section class="page-wrapper flex-column" data-lev-to-eur-rate="@LevToEurRate">
+<section class="page-wrapper flex-column" data-lev-to-eur-rate="@LevToEurRate" data-free-shipping-threshold-eur="@FreeDeliveryThresholdEur">
 	<h1 class="title">@ViewData["Title"]</h1>
 	<div class="content flex-row">
 		<section class="main-content flex-column">
+			@await Html.PartialAsync("_FreeDelivery", (eurLeftUntilFreeDelivery, FreeDeliveryThresholdEur))
+
 			<section class="section flex-column">
 				<h2 class="heading flex-row"><i class="fa-regular fa-bags-shopping"></i> Вашата поръчка</h2>
 
@@ -87,7 +91,7 @@
 					<div class="price-info-row flex-row">
 						<p>Междинна сума:</p>
 						<p class="price-value">
-							 <span id="subtotal">@Model.Subtotal.ToString("F2")</span>
+							<span id="subtotal">@Model.Subtotal.ToString("F2")</span>
 							<span>лв. / </span>
 							<span id="subtotal-eur">@((Model.Subtotal * LevToEurRate).ToString("F2"))</span>
 							<span> €</span>
@@ -104,7 +108,7 @@
 					</div>
 					<div class="price-info-row flex-row">
 						<p>Доставка:</p>
-						<p class="price-value">
+						<p id="shipping-prices" class="price-value">
 							<span id="shipping">0.00</span>
 							<span>лв. / </span>
 							<span id="shipping-eur">@((0.00m * LevToEurRate).ToString("F2"))</span>

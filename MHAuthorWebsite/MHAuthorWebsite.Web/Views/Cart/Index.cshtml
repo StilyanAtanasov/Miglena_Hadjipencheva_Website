@@ -1,30 +1,35 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Cart
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @model CartViewModel
 
 @{
 	ViewData["Title"] = "Моята количка";
 	ViewData["MetaDescription"] = "Прегледай всички книги във вашата количка";
+
+	decimal eurLeftUntilFreeDelivery = FreeDeliveryThresholdEur - Model.Total * LevToEurRate;
 }
 
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/free-delivery.css" asp-append-version="true" />
 }
 
-<div class="page-wrapper flex-column" data-lev-to-eur-rate="@LevToEurRate">
+<div class="page-wrapper flex-column" data-lev-to-eur-rate="@LevToEurRate" data-free-shipping-threshold-eur="@FreeDeliveryThresholdEur">
 	<h1 class="title">Моята количка</h1>
-
 	<div class="all-products flex-row">
 		<section class="products-sections flex-column">
 			@if (Model.Items.Any(i => i.IsAvailable))
 			{
+				@await Html.PartialAsync("_FreeDelivery", (eurLeftUntilFreeDelivery, FreeDeliveryThresholdEur))
+
 				<section id="valid-items-section" class="products-section flex-column" aria-labelledby="valid-items">
 					<h2 id="valid-items" class="heading">Избрани продукти</h2>
 					@Html.AntiForgeryToken()
-						<table class="cart-table">
-							<thead>
+					<table class="cart-table">
+						<thead>
 							<tr>
 								<th></th>
 								<th>Продукт</th>
@@ -33,19 +38,19 @@
 								<th>Сума</th>
 								<th></th>
 							</tr>
-							</thead>
-							<tbody>
+						</thead>
+						<tbody>
 							@foreach (CartItemViewModel item in Model.Items.Where(i => i.IsAvailable))
 							{
 								<tr class="clickable" data-details-url="@Url.Action("Details", "Product", new { productId = item.ProductId })">
 									<td>
 										@if (item.IsSelected)
 										{
-												<input data-role="is-selected-input" data-item-id="@item.ItemId" type="checkbox" name="selectedItems" value="@item.ItemId" checked />
+											<input data-role="is-selected-input" data-item-id="@item.ItemId" type="checkbox" name="selectedItems" value="@item.ItemId" checked />
 										}
 										else
 										{
-												<input data-role="is-selected-input" data-item-id="@item.ItemId" type="checkbox" name="selectedItems" value="@item.ItemId" />
+											<input data-role="is-selected-input" data-item-id="@item.ItemId" type="checkbox" name="selectedItems" value="@item.ItemId" />
 										}
 									</td>
 									<td class="product-info flex-row">
@@ -82,14 +87,14 @@
 										</p>
 									</td>
 									<td>
-										<button data-role="remove-item" data-item-id="@item.ItemId" class="btn remove btn-none" aria-label="Изтрий">
+										<button data-role="remove-item" data-item-id="@item.ItemId" class="btn remove btn-none remove-item" aria-label="Изтрий">
 											<i class="fa-solid fa-basket-shopping-minus"></i>
 										</button>
 									</td>
 								</tr>
 							}
-							</tbody>
-						</table>
+						</tbody>
+					</table>
 				</section>
 			}
 
@@ -144,7 +149,8 @@
 							<span id="total">@totalWithoutDiscount.ToString("F2")</span>
 							<span> лв. /</span>
 							<span id="total-eur">@((totalWithoutDiscount * LevToEurRate).ToString("F2"))</span>
-							<span> €</span></p>
+							<span> €</span>
+						</p>
 					</div>
 					<div class="price-summary-row flex-row">
 						<strong>Отстъпка:</strong>
@@ -171,7 +177,7 @@
 			</aside>
 		}
 	</div>
-	
+
 	<form class="hidden">@Html.AntiForgeryToken()</form>
 </div>
 

@@ -48,6 +48,7 @@ public class AdminOrderController : AdminBaseController
     }
 
     [HttpGet]
+    [SecurityHeaders(CspFeature.Econt)]
     public async Task<IActionResult> OrderDetails(Guid orderId)
     {
         ServiceResult<AdminOrderDetailsDto> sr = await _adminOrderService.GetOrderDetailsAsync(orderId);

@@ -2,6 +2,7 @@
 
 import { pushNotification } from "./notification.js";
 import { formatBgNumber, parseBgNumber } from "./common.js";
+import { calcFreeDelivery } from "./elements/free-delivery.js";
 
 const form = document.getElementById(`confirm-form`);
 const currency = form.dataset.currency || `BGN`;
@@ -11,11 +12,13 @@ const subtotal = parseBgNumber(document.getElementById(`subtotal`).textContent);
 const subtotalEur = parseBgNumber(document.getElementById(`subtotal-eur`).textContent);
 const discount = parseBgNumber(document.getElementById(`discount`).textContent);
 const discountEur = parseBgNumber(document.getElementById(`discount-eur`).textContent);
-const shippingEl = document.getElementById(`shipping`);
-const shippingEurEl = document.getElementById(`shipping-eur`);
 const grandEl = document.getElementById(`grand`);
 const grandEurEl = document.getElementById(`grand-eur`);
 const levToEurRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.levToEurRate);
+const freeShippingThresholdEur = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.freeShippingThresholdEur);
+const shippingPricesEl = document.getElementById(`shipping-prices`);
+
+window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(+grandEurEl.textContent, freeShippingThresholdEur), 700));
 
 class EcontDeliveryDetails {
   constructor(data = {}) {
@@ -54,11 +57,25 @@ function setIframeSrc() {
 }
 
 function updateTotals() {
-  const shipping = Number(econtDeliveryDetails?.shippingPrice || 0);
-  const shippingEur = shipping * levToEurRate;
+  const shippingEur = Number(econtDeliveryDetails?.shippingPrice || 0);
+  const shipping = shippingEur / levToEurRate;
 
-  shippingEl.textContent = shipping.toFixed(2);
-  shippingEurEl.textContent = shippingEur.toFixed(2);
+  const orderSubtotalEur = parseBgNumber(grandEl.textContent) * levToEurRate;
+  if (econtDeliveryDetails && orderSubtotalEur >= freeShippingThresholdEur && econtDeliveryDetails.shippingPrice != 0) {
+    pushNotification(`Грешка при изчисляването на цената! Моля, опитайте по-късно!`, `error`);
+    return;
+  }
+
+  if (orderSubtotalEur >= freeShippingThresholdEur && econtDeliveryDetails.shippingPrice == 0) {
+    shippingPricesEl.style.color = "var(--color-success)";
+    shippingPricesEl.innerHTML = `БЕЗПЛАТНО`;
+  } else {
+    shippingPricesEl.innerHTML = `
+    <span id="shipping">${shipping.toFixed(2)}</span>
+    <span>лв. / </span>
+    <span id="shipping-eur">${shippingEur.toFixed(2)}</span>
+    <span> €</span>`;
+  }
 
   grandEl.textContent = (subtotal - discount + shipping).toFixed(2);
   grandEurEl.textContent = (subtotalEur - discountEur + shippingEur).toFixed(2);
@@ -70,8 +87,6 @@ window.addEventListener(
     const data = message && message.data ? message.data : null;
     if (!data) return;
 
-    console.log(data);
-
     if (data.shipment_error && data.shipment_error !== ``) {
       pushNotification(`Грешка при изчесляването на цената за доставка. Моля опитайте по-късно!`, `error`);
       return;
@@ -80,7 +95,7 @@ window.addEventListener(
     econtDeliveryDetails = new EcontDeliveryDetails(data);
     updateTotals();
   },
-  false
+  false,
 );
 
 form.addEventListener(`submit`, async function (e) {

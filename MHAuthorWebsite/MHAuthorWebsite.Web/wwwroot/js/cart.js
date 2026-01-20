@@ -2,9 +2,11 @@
 
 import { pushNotification } from "./notification.js";
 import { formatBgNumber, parseBgNumber } from "./common.js";
+import { calcFreeDelivery } from "./elements/free-delivery.js";
 
 let productsCount;
 const levToEurRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.levToEurRate);
+const freeShippingThresholdEur = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.freeShippingThresholdEur);
 
 document.addEventListener(`DOMContentLoaded`, function () {
   const grandTotalPriceElement = document.querySelector(`#grand-total`);
@@ -13,6 +15,8 @@ document.addEventListener(`DOMContentLoaded`, function () {
   const totalPriceEurElement = document.querySelector(`#total-eur`);
   const discountElement = document.querySelector(`#discount-global`);
   const discountEurElement = document.querySelector(`#discount-global-eur`);
+
+  window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(+grandTotalPriceEurElement.textContent, freeShippingThresholdEur), 350));
 
   const quantityInputs = document.querySelectorAll(`[data-role="quantity-input"]`);
   productsCount = quantityInputs.length;
@@ -39,7 +43,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
         updateCartSummary(data.cartTotal);
       } else alert(`Грешка при обновяване на количеството.`);
-    })
+    }),
   );
 
   document.querySelectorAll(`[data-role="is-selected-input"]`).forEach(i =>
@@ -58,7 +62,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
       if (response.ok) updateCartSummary();
       else alert(`Грешка при обновяване на селектираните продукти!`);
-    })
+    }),
   );
 
   document.querySelectorAll(`[data-role="remove-item"]`).forEach(b =>
@@ -91,7 +95,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
         pushNotification(`Продуктът е премахнат от количката!`, `success`);
       } else pushNotification(`Грешка при премахването на продукта!`, `error`);
-    })
+    }),
   );
 
   function updateCartSummary(cartTotal) {
@@ -103,7 +107,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
     const oldPriceLev = selectedItems.reduce(
       (partialSum, i) => partialSum + parseFloat(i.querySelector(`.unit-price:not(.discounted-price) .unit-price-value`).textContent) * i.querySelector(`.quantity-input .input`).value,
-      0
+      0,
     );
 
     totalPriceElement.textContent = formatBgNumber(oldPriceLev);
@@ -112,5 +116,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
     const discount = oldPriceLev - newPriceLev;
     discountElement.textContent = formatBgNumber(discount);
     discountEurElement.textContent = `${formatBgNumber(discount * levToEurRate)}`;
+
+    calcFreeDelivery(newPriceLev * levToEurRate, freeShippingThresholdEur);
   }
 });

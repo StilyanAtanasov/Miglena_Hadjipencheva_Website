@@ -44,6 +44,10 @@
   border-bottom: 0.1rem solid var(--color-secondary);
 }
 
+.cart-table .remove-item {
+  color: var(--color-dark-red);
+}
+
 .product-info {
   gap: 1.7rem;
   align-items: center;

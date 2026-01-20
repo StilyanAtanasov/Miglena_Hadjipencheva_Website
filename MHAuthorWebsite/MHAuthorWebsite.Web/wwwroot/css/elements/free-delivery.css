@@ -1,0 +1,35 @@
+.free-delivery {
+  padding: 3rem 5rem;
+  border: 0.1rem solid var(--color-secondary);
+  border-radius: 2rem;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.free-delivery .bar {
+  position: static;
+  width: 100%;
+  height: 1rem;
+  border-radius: 5rem;
+  overflow: hidden;
+  background-color: var(--color-light-grey);
+  border: 0.1rem solid var(--color-dark);
+}
+
+.free-delivery .bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 1.5rem;
+  background-color: var(--color-success);
+  width: 0;
+}
+
+.free-delivery .message {
+  width: max-content;
+  text-align: center;
+  font-size: 2.3rem;
+}
+
+.free-delivery .message.success {
+  color: var(--color-dark-green);
+}
