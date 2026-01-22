@@ -227,7 +227,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
     });
 
     if (response.ok) {
-      const isAdded = e.target.classList.toggle(`liked`);
+      const isAdded = document.getElementById(`like-button`).classList.toggle(`liked`);
 
       pushNotification(isAdded ? `Продуктът е харесан успешно!` : `Продуктът е премахнат от харесани!`, `success`);
     } else if (response.status === 401) pushNotification(`Взете в системата, за да харесате продукт!`, `warning`);
