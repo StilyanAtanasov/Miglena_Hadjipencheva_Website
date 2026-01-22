@@ -170,6 +170,7 @@ public class AdminProductController : AdminBaseController
         return PartialView("_DynamicAttributesPartial", attributes);
     }
 
+    [SecurityHeaders(CspFeature.Editor)]
     [HttpGet("/Admin/AdminProduct/EditProduct/{productId}")]
     public async Task<IActionResult> EditProduct([FromRoute] Guid productId)
     {

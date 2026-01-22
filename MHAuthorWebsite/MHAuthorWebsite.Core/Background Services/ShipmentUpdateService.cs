@@ -58,21 +58,35 @@ public class ShipmentUpdateService : BackgroundService
                     {
                         repository.Attach(order.Shipment);
 
+                        TimeZoneInfo bgTimeZone = TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time");
+
                         ShipmentEvent[] newEvents = shipmentInfo.TrackingEvents
-                            .Where(te => !order.Shipment.Events
-                                .Any(se => se.Source == ShipmentEventSource.Econt
-                                           && se.Time == DateTime.Parse(te.Time!)
-                                           && se.DestinationType == te.DestinationType
-                                           && se.DestinationDetails == te.DestinationDetails
-                                           && se.CityName == te.CityName
-                                           && se.OfficeName == te.OfficeName))
-                            .Select(eventInfo => new ShipmentEvent
+                            .Select(eventInfo =>
                             {
-                                DestinationType = eventInfo.DestinationType,
-                                DestinationDetails = eventInfo.DestinationDetails,
-                                CityName = eventInfo.CityName,
-                                OfficeName = eventInfo.OfficeName,
-                                Time = DateTime.Parse(eventInfo.Time!),
+                                DateTime utcTime = TimeZoneInfo.ConvertTimeToUtc(
+                                    DateTime.SpecifyKind(
+                                        DateTime.Parse(eventInfo.Time!),
+                                        DateTimeKind.Unspecified
+                                    ),
+                                    bgTimeZone
+                                );
+
+                                return new { eventInfo, utcTime };
+                            })
+                            .Where(x => !order.Shipment.Events
+                                .Any(se => se.Source == ShipmentEventSource.Econt
+                                           && se.Time == DateTime.Parse(x.eventInfo.Time!)
+                                           && se.DestinationType == x.eventInfo.DestinationType
+                                           && se.DestinationDetails == x.eventInfo.DestinationDetails
+                                           && se.CityName == x.eventInfo.CityName
+                                           && se.OfficeName == x.eventInfo.OfficeName))
+                            .Select(x => new ShipmentEvent
+                            {
+                                DestinationType = x.eventInfo.DestinationType,
+                                DestinationDetails = x.eventInfo.DestinationDetails,
+                                CityName = x.eventInfo.CityName,
+                                OfficeName = x.eventInfo.OfficeName,
+                                Time = x.utcTime,
                                 Source = ShipmentEventSource.Econt,
                                 ShipmentId = order.Shipment.Id
                             })

@@ -34,4 +34,12 @@ public class EmailService : IEmailService
 
         await client.SendMailAsync(message);
     }
+
+    public async Task SendEmailsBulkAsync(IEmailUser from, ICollection<string> to, string subject, string body, bool isBodyHtml)
+    {
+        IEnumerable<Task> sendTasks = to
+            .Select(adminEmail => SendEmailAsync(from, adminEmail, subject, body, isBodyHtml));
+
+        await Task.WhenAll(sendTasks);
+    }
 }

@@ -144,6 +144,8 @@ builder.Services.AddHttpClient<IAdminEcontService, AdminEcontService>();
 
 builder.Services.AddScoped<IUrlProvider, UrlProvider>();
 
+builder.Services.AddScoped<IErrorService, ErrorService>();
+
 builder.Services.AddHostedService<ShipmentUpdateService>();
 builder.Services.AddHostedService<ScheduledEmailNotificationSenderService>();
 builder.Services.AddHostedService<ScheduledNotificationIntegrityService>();

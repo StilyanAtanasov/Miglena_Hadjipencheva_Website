@@ -116,11 +116,7 @@ public class ContactsService : IContactsService
                 </body>
                 </html>";
 
-            IEnumerable<Task> sendTasks = adminEmails
-                .Select(adminEmail => EmailService
-                    .SendEmailAsync(emailUser, adminEmail, $"Ново запитване от {model.Name}", emailBody, true));
-
-            await Task.WhenAll(sendTasks);
+            await EmailService.SendEmailsBulkAsync(emailUser, adminEmails, $"Ново запитване от {model.Name}", emailBody, true);
         }
         catch
         {
