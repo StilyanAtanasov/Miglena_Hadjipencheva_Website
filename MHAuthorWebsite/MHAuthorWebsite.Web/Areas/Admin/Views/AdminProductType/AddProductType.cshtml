@@ -16,14 +16,16 @@
 
 		<form class="input-form flex-column" method="POST" asp-area="Admin" asp-controller="AdminProductType" asp-action="AddProductType" id="AddProductTypeForm">
 			<div class="form-input-box flex-column">
-				<label class="form-label" asp-for="Name">Име:</label><br>
-				<input class="form-input" asp-for="Name"/><br>
+				<label class="form-label" asp-for="Name">Име:</label>
+				<input class="form-input" asp-for="Name"/>
 				<span class="input-error" asp-validation-for="Name"></span>
 			</div>
+			
+			<br/>
 
-			<div class="form-input-box flex-column">
-				<label class="form-label" asp-for="HasAdditionalProperties">Допълнителни данни?</label><br>
+			<div class="form-input-box flex-row boolean">
 				<input class="form-input" asp-for="HasAdditionalProperties" type="checkbox" id="HasAdditionalProperties" />
+				<label class="form-label" asp-for="HasAdditionalProperties">Допълнителни данни?</label>
 				<span class="input-error" asp-validation-for="HasAdditionalProperties"></span>
 			</div>
 

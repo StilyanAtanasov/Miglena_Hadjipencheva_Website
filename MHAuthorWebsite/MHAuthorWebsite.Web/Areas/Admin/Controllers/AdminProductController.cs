@@ -37,6 +37,7 @@ public class AdminProductController : AdminBaseController
     }
 
     [HttpGet]
+    [SecurityHeaders(CspFeature.Editor)]
     public async Task<IActionResult> AddProduct()
     {
         await PrepareViewBagForAddProduct();

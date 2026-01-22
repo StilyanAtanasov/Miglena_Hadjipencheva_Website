@@ -40,7 +40,9 @@
 }
 
 .input-form textarea.form-input {
-  animation: width, height linear 0s;
+  animation:
+    width,
+    height linear 0s;
   max-width: 100%;
   min-width: 100%;
 }
@@ -71,6 +73,10 @@
   align-items: flex-start;
 }
 
+.input-form .form-input-box.flex-row {
+  align-items: center;
+}
+
 .input-form .form-input-box.isolate,
 .input-form .form-box.isolate {
   border: 0.15rem solid var(--color-secondary);
@@ -85,6 +91,11 @@
   gap: 1.5rem;
   justify-content: start;
   align-items: center;
+}
+
+.input-form .form-input-box input[type="checkbox"] {
+  width: fit-content;
+  margin: 0 1rem;
 }
 
 .input-form .form-select {
