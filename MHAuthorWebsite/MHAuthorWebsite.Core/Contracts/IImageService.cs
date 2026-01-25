@@ -25,4 +25,6 @@ public interface IImageService
     /// </summary>
     /// <param name="publicId">The public id of the image to delete.</param>
     Task<ServiceResult> DeleteImageAsync(string publicId);
+
+    Task<ServiceResult> DeleteImagesAsync(ICollection<string> publicIds);
 }

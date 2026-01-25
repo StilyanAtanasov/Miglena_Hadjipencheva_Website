@@ -9,6 +9,7 @@ using MHAuthorWebsite.Core.Dtos.Product;
 using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
@@ -41,62 +42,81 @@ public class AdminProductService : ProductService, IAdminProductService
                 Weight = model.Weight
             };
 
-            await Repository.AddAsync(product);
-            await Repository.SaveChangesAsync();
-
-            ProductImage[] images = model.ImageUrls.Select(i => new ProductImage
-            {
-                ProductId = product.Id,
-                AltText = product.Name,
-                ImageUrl = i.ImageUrl,
-                PublicId = i.PublicId
-            }).ToArray();
-
-            await Repository.AddRangeAsync(images);
+            ProductImage[] images = model.ImageUrls
+                .Select(i => new ProductImage
+                {
+                    AltText = product.Name,
+                    ImageUrl = i.ImageUrl,
+                    PublicId = i.PublicId
+                })
+                .ToArray();
 
             ProductImage thumbnailImage = new()
             {
-                ProductId = product.Id,
                 AltText = model.Name,
                 ImageUrl = model.Thumbnail.ImageUrl,
                 PublicId = model.Thumbnail.PublicId
             };
 
-            await Repository.AddAsync(thumbnailImage);
-            await Repository.SaveChangesAsync();
+            product.Images = images.Append(thumbnailImage).ToArray();
 
             ProductThumbnail thumbnail = new()
             {
-                ProductId = product.Id,
-                ImageId = thumbnailImage.Id,
-                ImageOriginalId = images[model.ThumbnailOriginalImageIndex].Id
+                Image = thumbnailImage,
+                ImageOriginal = images[model.ThumbnailOriginalImageIndex]
             };
 
             product.Thumbnail = thumbnail;
 
-            if (model.Attributes.Count > 0) // ToDO Check if category has attributes
+            if (model.Attributes.Count > 0) // TODO Check if category has attributes
             {
+                int[] definitionIds = model.Attributes.Select(a => a.AttributeDefinitionId).Distinct().ToArray();
+
+                ProductAttributeOption[] attributeOptionsForProduct = await Repository
+                    .WhereReadonly<ProductAttributeOption>(pao => definitionIds.Contains(pao.AttributeDefinitionId))
+                    .ToArrayAsync();
+
+                bool hasInvalidAttributeOptions = model.Attributes
+                    .Where(a => a.DataType == AttributeDataType.Dropdown)
+                    .Select(a => new
+                    {
+                        a.ProductAttributeOptionId,
+                        a.AttributeDefinitionId
+                    })
+                    .Any(a =>
+                    {
+                        ProductAttributeOption? option = attributeOptionsForProduct
+                            .FirstOrDefault(pao => pao.Id == a.ProductAttributeOptionId);
+
+                        return option is null || option.AttributeDefinitionId != a.AttributeDefinitionId;
+                    });
+
+                if (hasInvalidAttributeOptions) return ServiceResult.Failure(new Dictionary<string, string>
+                {
+                    { "Attributes", "Невалидна опция за атрибут!" }
+                });
+
                 ICollection<ProductAttribute> attributes = model.Attributes
                     .Select(a => new ProductAttribute
                     {
-                        Key = a.Key,
                         Value = a.Value,
-                        ProductId = product.Id,
                         AttributeDefinitionId = a.AttributeDefinitionId,
-                        DisplayPosition = a.DisplayPosition
+                        DisplayPosition = a.DisplayPosition,
+                        ProductAttributeOptionId = a.ProductAttributeOptionId
                     })
                     .ToArray();
 
-                await Repository.AddRangeAsync(attributes);
+                product.Attributes = attributes;
             }
 
+            await Repository.AddAsync(product);
             await Repository.SaveChangesAsync();
 
             return ServiceResult.Ok();
         }
         catch (Exception)
         {
-            return ServiceResult.Failure();
+            return ServiceResult.Failure(new Dictionary<string, string>() { { "DBError", "Грешка при добавяне на продукта в базата!" } });
         }
     }
 
@@ -129,12 +149,21 @@ public class AdminProductService : ProductService, IAdminProductService
                 {
                     AttributeDefinitionId = a.AttributeDefinitionId,
                     Label = a.AttributeDefinition.Label,
-                    Key = a.Key,
-                    Value = a.Value,
+                    Key = a.AttributeDefinition.Key,
+                    Value = a.Value == null && a.ProductAttributeOptionId != null
+                        ? a.ProductAttributeOption!.Value
+                        : a.Value,
                     DisplayPosition = a.DisplayPosition,
                     DataType = a.AttributeDefinition.DataType,
-                    // HasPredefinedValue = a.AttributeDefinition.HasPredefinedValue, TODO implement predefined values
-                    IsRequired = a.AttributeDefinition.IsRequired, // TODO Use this to validate the form
+                    IsRequired = a.AttributeDefinition.IsRequired,
+                    ProductAttributeOptionId = a.ProductAttributeOption?.Id ?? null,
+                    PredefinedValues = a.AttributeDefinition.ProductAttributeOptions
+                        .Select(pao => new AttributeOptionDto
+                        {
+                            Id = pao.Id,
+                            Value = pao.Value
+                        })
+                        .ToArray()
                 })
                 .ToArray()
         };
@@ -161,6 +190,7 @@ public class AdminProductService : ProductService, IAdminProductService
 
             attribute.Value = attributeModel.Value;
             attribute.DisplayPosition = attributeModel.DisplayPosition;
+            attribute.ProductAttributeOptionId = attributeModel.ProductAttributeOptionId;
         }
 
         await Repository.SaveChangesAsync();
@@ -202,8 +232,14 @@ public class AdminProductService : ProductService, IAdminProductService
                 Key = pad.Key,
                 Label = pad.Label,
                 DataType = (int)pad.DataType,
-                HasPredefinedValue = pad.HasPredefinedValue,
-                IsRequired = pad.IsRequired
+                IsRequired = pad.IsRequired,
+                PredefinedValues = pad.ProductAttributeOptions
+                    .Select(pao => new AttributeOptionDto
+                    {
+                        Id = pao.Id,
+                        Value = pao.Value
+                    })
+                    .ToArray()
             })
             .ToArrayAsync();
 

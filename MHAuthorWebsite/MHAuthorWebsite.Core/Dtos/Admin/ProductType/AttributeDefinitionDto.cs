@@ -1,4 +1,6 @@
-﻿namespace MHAuthorWebsite.Core.Dtos.Admin.ProductType;
+﻿using MHAuthorWebsite.Core.Admin.Dto;
+
+namespace MHAuthorWebsite.Core.Dtos.Admin.ProductType;
 
 public class AttributeDefinitionDto
 {
@@ -8,7 +10,7 @@ public class AttributeDefinitionDto
 
     public int DataType { get; set; }
 
-    public bool HasPredefinedValue { get; set; }
-
     public bool IsRequired { get; set; }
+
+    public ICollection<string> PredefinedValues { get; set; } = new HashSet<string>();
 }

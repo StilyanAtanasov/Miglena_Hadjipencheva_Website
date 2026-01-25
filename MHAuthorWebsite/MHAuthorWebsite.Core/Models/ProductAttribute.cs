@@ -10,10 +10,6 @@ public class ProductAttribute
     [Key]
     public int Id { get; set; }
 
-    [Required]
-    [MaxLength(KeyMaxLength)]
-    public string Key { get; set; } = null!;
-
     [MaxLength(ValueMaxLength)]
     public string? Value { get; set; } = null!;
 
@@ -26,10 +22,10 @@ public class ProductAttribute
 
     public Product Product { get; set; } = null!;
 
-    [ForeignKey(nameof(ProductAttributeOptions))]
-    public int? ProductAttributeOptionsId { get; set; }
+    [ForeignKey(nameof(ProductAttributeOption))]
+    public int? ProductAttributeOptionId { get; set; }
 
-    public ProductAttributeOption ProductAttributeOptions { get; set; } = null!;
+    public ProductAttributeOption? ProductAttributeOption { get; set; }
 
     [ForeignKey(nameof(AttributeDefinition))]
     public int AttributeDefinitionId { get; set; }

@@ -18,11 +18,13 @@ public class CloudinaryImageService : IImageService
 
     public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<UploadImageRequestDto> images, string folder, short width)
     {
-        if (images.Count == 0 || images.Any(i => i.Content.Length == 0))
-            return ServiceResult<ICollection<ImageUploadResultDto>>.Failure();
+        if (images.Count == 0)
+            return ServiceResult<ICollection<ImageUploadResultDto>>.Failure(new Dictionary<string, string> { { "Images", "Не са намерени изображения." } });
 
-        IEnumerable<Task<ImageUploadResult>> uploadTasks = images.Select(image =>
+        IEnumerable<Task<ImageUploadResult>> uploadTasks = images.Select(async image =>
         {
+            if (image.Content.CanSeek) image.Content.Position = 0;
+
             string fileName = Path.GetFileNameWithoutExtension(image.FileName);
             string timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
 
@@ -39,7 +41,7 @@ public class CloudinaryImageService : IImageService
                     .FetchFormat("avif")
             };
 
-            return _cloudinaryService.UploadAsync(fullUploadParams);
+            return await _cloudinaryService.UploadAsync(fullUploadParams);
         });
 
         ImageUploadResult[] fullUploads = await Task.WhenAll(uploadTasks);
@@ -174,6 +176,19 @@ public class CloudinaryImageService : IImageService
         DeletionResult result = await _cloudinaryService.DestroyAsync(deletionParams);
 
         if (result.Result != "ok") return ServiceResult.Failure();
+
+        return ServiceResult.Ok();
+    }
+
+    public async Task<ServiceResult> DeleteImagesAsync(ICollection<string> publicIds)
+    {
+        if (publicIds.Count == 0) return ServiceResult.Failure();
+
+        IEnumerable<Task<ServiceResult>> deletionTasks = publicIds.Select(DeleteImageAsync);
+        ServiceResult[] results = await Task.WhenAll(deletionTasks);
+
+        if (results.Any(result => !result.Success))
+            return ServiceResult.Failure();
 
         return ServiceResult.Ok();
     }

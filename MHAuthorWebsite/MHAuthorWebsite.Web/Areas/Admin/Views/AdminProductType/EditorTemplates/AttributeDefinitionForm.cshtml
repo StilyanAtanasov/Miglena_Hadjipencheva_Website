@@ -1,12 +1,13 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Admin.ProductType
-@model AttributeDefinitionForm
+@model AttributeDefinitionForm?
 
 <div class="form-input-box flex-column isolate attribute-definition">
-	<button type="button" class="btn btn-none button-remove remove-attribute" aria-label="Close"><i class="fa-solid fa-xmark remove-attribute"></i></button>
+	<input type="hidden" name="Attributes.Index" value="@ViewData.TemplateInfo.HtmlFieldPrefix.Replace("Attributes[", "").Replace("]", "")" />
 
+	<button type="button" class="btn btn-none button-remove remove-attribute" aria-label="Close"><i class="fa-solid fa-xmark remove-attribute"></i></button>
 	<div class ="form-input-box flex-column">
 		<label class="form-label" asp-for="Key">Поле:</label>
-		<input class="form-input" asp-for="Key" />
+		<input class="form-input" asp-for="Key" /> 
 		<span class="input-error" asp-validation-for="Key"></span>
 	</div>
 
@@ -18,13 +19,19 @@
 
 	<div class="form-input-box flex-column select-list">
 		<label class="form-label" asp-for="DataType">Тип данни:</label>
-		<select class="form-select" asp-for="DataType" asp-items="ViewBag.AttributeDataTypes"></select>
+		<select class="form-select data-type-select" asp-for="DataType" asp-items="ViewBag.AttributeDataTypes"></select>
 		<span class="input-error" asp-validation-for="DataType"></span>
 	</div>
+	
+	<div class="form-input-box flex-column predefined-values-section">
+		<label class="form-label">Опции за избор:</label>
+    
+		<div class="tags-container flex-row">
+		</div>
 
-	<div class="form-input-box flex-column boolean">
-		<label class="form-label" asp-for="HasPredefinedValue">Има ли зададени стойности?</label>
-		<input class="input-error" class="form-input" asp-for="HasPredefinedValue" type="checkbox" />
+		<input class="form-input values-visual-input" placeholder="Изброй опции със запетая..." />
+
+		<div class="values-hidden-container"></div>
 	</div>
 
 	<div class="form-input-box flex-column boolean">

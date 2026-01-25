@@ -16,7 +16,6 @@ public enum AttributeDataType
     [Display(Name = "Да/Не")]
     Boolean = 3,
 
-    // TODO 
-    //    [Display(Name = "Падащо меню")]
-    //    Dropdown = 4
+    [Display(Name = "Списък")]
+    Dropdown = 4
 }

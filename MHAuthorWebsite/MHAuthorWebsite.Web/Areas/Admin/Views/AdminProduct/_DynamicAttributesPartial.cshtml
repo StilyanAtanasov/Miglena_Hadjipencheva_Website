@@ -23,28 +23,55 @@
 		a.DisplayPosition.ToString()
 		);
 
+	SelectList? selectInput = null;
+	if(a.DataType == AttributeDataType.Dropdown || inputType == "select")
+	{
+		selectInput = new SelectList(
+			a.PredefinedValues
+				.Select(v => new SelectListItem
+				{
+					Value = v.Id.ToString(),
+					Text = v.Value
+				}),
+			"Value",
+			"Text",
+			a.ProductAttributeOptionId
+		);
+	}
+
 	<div class="form-input-row two-to-one flex-row">
 		<div class="form-input-box flex-column @containerClass">
 			<input type="hidden" name="Attributes[@i].AttributeDefinitionId" value="@a.AttributeDefinitionId" />
 			<label class="form-label">@a.Label:</label>
-
-			@if (a.IsRequired)
+			
+			@if (selectInput == null)
 			{
-				<input type="@inputType"
-					   name="Attributes[@i].Value"
-					   class="form-input"
-					   data-val="true"
-					   data-val-required="Полето е задължително."
-					   style="-webkit-appearance: textarea"
-					   value="@a.Value" />
+				@if (a.IsRequired)
+				{
+					<input type="@inputType"
+					       name="Attributes[@i].Value"
+					       class="form-input"
+					       data-val="true"
+					       data-val-required="Полето е задължително."
+					       style="-webkit-appearance: textarea"
+					       value="@a.Value" />
+				}
+				else
+				{
+					<input type="@inputType"
+					       name="Attributes[@i].Value"
+					       class="form-input"
+					       style="-webkit-appearance: textarea"
+					       value="@a.Value" />
+				}
 			}
 			else
 			{
-				<input type="@inputType"
-					   name="Attributes[@i].Value"
-					   class="form-input"
-					   style="-webkit-appearance: textarea"
-					   value="@a.Value" />
+				<select class="form-select wide"
+				        autocomplete="off"
+						name="Attributes[@i].ProductAttributeOptionId"
+				        asp-items="@selectInput">
+				</select>
 			}
 
 			<input type="hidden" name="Attributes[@i].Key" value="@a.Key" />

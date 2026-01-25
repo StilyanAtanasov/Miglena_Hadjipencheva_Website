@@ -1,0 +1,27 @@
+.predefined-values-section {
+  display: none;
+}
+
+.tags-container {
+  flex-wrap: wrap;
+}
+
+.tag-badge {
+  background-color: var(--color-secondary-lighter);
+  padding: 0.5rem 1rem;
+  border-radius: 1.5rem;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 0.1rem solid var(--color-secondary);
+}
+
+.tag-badge .remove-tag {
+  cursor: pointer;
+  color: var(--color-secondary);
+  font-weight: bold;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+}

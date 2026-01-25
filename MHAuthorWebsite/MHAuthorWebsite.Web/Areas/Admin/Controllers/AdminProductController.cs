@@ -37,7 +37,7 @@ public class AdminProductController : AdminBaseController
     }
 
     [HttpGet]
-    [SecurityHeaders(CspFeature.Editor)]
+    [SecurityHeaders(CspFeature.Editor | CspFeature.Notifications)]
     public async Task<IActionResult> AddProduct()
     {
         await PrepareViewBagForAddProduct();
@@ -114,8 +114,8 @@ public class AdminProductController : AdminBaseController
                     DataType = a.DataType,
                     AttributeDefinitionId = a.AttributeDefinitionId,
                     DisplayPosition = a.DisplayPosition,
-                    HasPredefinedValue = a.HasPredefinedValue,
-                    IsRequired = a.IsRequired
+                    IsRequired = a.IsRequired,
+                    ProductAttributeOptionId = a.ProductAttributeOptionId
                 })
                 .ToArray(),
             Weight = model.Weight,
@@ -123,7 +123,14 @@ public class AdminProductController : AdminBaseController
         };
 
         ServiceResult productResult = await _productService.AddProductAsync(dto);
-        if (!productResult.Success) return StatusCode(500);
+        if (!productResult.Success)
+        {
+            string[] publicIds = imageResult.Result.Select(x => x.PublicId).ToArray();
+            await _imageService.DeleteImagesAsync(publicIds);
+
+            return StatusCode(500, "Грешка при запис в базата. Снимките бяха изтрити.");
+        }
+
 
         return RedirectToAction(nameof(ProductsList));
     }
@@ -165,7 +172,13 @@ public class AdminProductController : AdminBaseController
                 Label = a.Label,
                 DataType = (AttributeDataType)a.DataType,
                 IsRequired = a.IsRequired,
-                HasPredefinedValue = a.HasPredefinedValue
+                PredefinedValues = a.PredefinedValues
+                    .Select(v => new AttributeOptionViewModel
+                    {
+                        Id = v.Id,
+                        Value = v.Value
+                    })
+                    .ToList()
             }).ToList();
 
         return PartialView("_DynamicAttributesPartial", attributes);
@@ -197,8 +210,15 @@ public class AdminProductController : AdminBaseController
                     DataType = a.DataType,
                     AttributeDefinitionId = a.AttributeDefinitionId,
                     DisplayPosition = a.DisplayPosition,
-                    HasPredefinedValue = a.HasPredefinedValue,
-                    IsRequired = a.IsRequired
+                    ProductAttributeOptionId = a.ProductAttributeOptionId,
+                    IsRequired = a.IsRequired,
+                    PredefinedValues = a.PredefinedValues
+                        .Select(v => new AttributeOptionViewModel
+                        {
+                            Id = v.Id,
+                            Value = v.Value
+                        })
+                        .ToList()
                 })
                 .ToArray(),
             Weight = dto.Weight,
@@ -304,8 +324,8 @@ public class AdminProductController : AdminBaseController
                     Label = a.Label,
                     DataType = a.DataType,
                     AttributeDefinitionId = a.AttributeDefinitionId,
+                    ProductAttributeOptionId = a.ProductAttributeOptionId,
                     DisplayPosition = a.DisplayPosition,
-                    HasPredefinedValue = a.HasPredefinedValue,
                     IsRequired = a.IsRequired
                 })
                 .ToArray(),

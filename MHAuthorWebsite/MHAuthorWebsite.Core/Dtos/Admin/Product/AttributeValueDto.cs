@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Core.Models.Enums;
+﻿using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Models.Enums;
 
 namespace MHAuthorWebsite.Core.Dtos.Admin.Product;
 
@@ -16,7 +17,9 @@ public class AttributeValueDto
 
     public bool IsRequired { get; set; }
 
-    public bool HasPredefinedValue { get; set; }
-
     public string? Value { get; set; }
+
+    public int? ProductAttributeOptionId { get; set; }
+
+    public ICollection<AttributeOptionDto> PredefinedValues { get; set; } = null!;
 }

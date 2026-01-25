@@ -76,13 +76,14 @@ public class ProductService : IProductService
                     })
                     .ToHashSet(),
                         Attributes = product.Attributes
-                        .Select(a => new ProductAttributeDetailsDto
-                        {
-                            Label = a.Key,
-                            Value = a.Value,
-                            DisplayPosition = a.DisplayPosition
-
-                        })
+                            .Select(a => new ProductAttributeDetailsDto
+                            {
+                                Label = a.AttributeDefinition.Key,
+                                Value = a.Value == null && a.ProductAttributeOptionId != null
+                                    ? a.ProductAttributeOption!.Value
+                                    : a.Value,
+                                DisplayPosition = a.DisplayPosition
+                            })
                     .ToArray()
                     })
                     .FirstOrDefaultAsync();

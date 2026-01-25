@@ -302,7 +302,6 @@ public class ProductServiceTests
                 new ()
                 {
                     Id = 1,
-                    Key = "Author",
                     Value = "John Doe"
                 }
             },

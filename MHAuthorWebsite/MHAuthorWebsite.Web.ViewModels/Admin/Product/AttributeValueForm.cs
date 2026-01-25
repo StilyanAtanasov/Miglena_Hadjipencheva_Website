@@ -18,13 +18,15 @@ public class AttributeValueForm : IValidatableObject
 
     public bool IsRequired { get; set; }
 
-    public bool HasPredefinedValue { get; set; }
+    public ICollection<AttributeOptionViewModel> PredefinedValues { get; set; } = new HashSet<AttributeOptionViewModel>();
 
     public string? Value { get; set; }
 
+    public int? ProductAttributeOptionId { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (IsRequired && string.IsNullOrWhiteSpace(Value))
+        if (IsRequired && string.IsNullOrWhiteSpace(Value) && !ProductAttributeOptionId.HasValue)
             yield return new ValidationResult(
                 $"Полето \"{Label}\" е задължително.",
                 new[] { nameof(Value) }

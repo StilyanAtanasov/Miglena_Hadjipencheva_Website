@@ -7,7 +7,7 @@ public class ImageMapper
     public static async Task<UploadImageRequestDto> MapIFormFileToUploadImageRequestDtoAsync(
         IFormFile file)
     {
-        using MemoryStream memoryStream = new();
+        MemoryStream memoryStream = new();
         await file.CopyToAsync(memoryStream);
         memoryStream.Position = 0;
 
@@ -26,7 +26,7 @@ public class ImageMapper
 
         foreach (IFormFile file in files)
         {
-            using MemoryStream memoryStream = new();
+            MemoryStream memoryStream = new();
             await file.CopyToAsync(memoryStream);
             memoryStream.Position = 0;
 

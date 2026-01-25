@@ -1,12 +1,13 @@
 "use strict";
 
 import { initQuill } from "./editor.js";
+import { pushNotification } from "../js/notification.js";
 
 document.addEventListener(`DOMContentLoaded`, async function (e) {
   const categorySelect = document.getElementById(`selectProductType`);
   const quill = await initQuill(true, true);
 
-  RetrieveAttributes();
+  await RetrieveAttributes();
   categorySelect.addEventListener(`change`, RetrieveAttributes);
 
   document.querySelector(`#addProductForm`).addEventListener(`submit`, function (e) {
@@ -25,7 +26,7 @@ document.addEventListener(`DOMContentLoaded`, async function (e) {
   });
 });
 
-function RetrieveAttributes() {
+async function RetrieveAttributes() {
   const attributesContainer = document.getElementById(`productTypeAttributesContainer`);
   const selectElement = document.getElementById(`selectProductType`);
 
@@ -36,27 +37,22 @@ function RetrieveAttributes() {
     return;
   }
 
-  fetch(`/AdminProduct/GetCategoryTypeAttributes/${selectedId}`, {
+  const response = await fetch(`/AdminProduct/GetCategoryTypeAttributes/${selectedId}`, {
     headers: {
       "X-Requested-With": `XMLHttpRequest`,
     },
-  })
-    .then(response => {
-      if (!response.ok) throw new Error(`Грешка при зареждане на атрибутите.`);
-      return response.text();
-    })
-    .then(html => {
-      attributesContainer.innerHTML = html;
+  });
 
-      const $form = $(`#addProductForm`);
-      $form.unbind();
-      $form.removeData(`validator`);
-      $form.removeData(`unobtrusiveValidation`);
-      $.validator.unobtrusive.parse($form);
-    })
-    .catch(error => {
-      console.error(`Error:`, error);
-    });
+  if (!response.ok) pushNotification(`Грешка при зареждане на атрибутите.`, `error`);
+
+  const html = await response.text();
+  attributesContainer.innerHTML = html;
+
+  const $form = $(`#addProductForm`);
+  $form.unbind();
+  $form.removeData(`validator`);
+  $form.removeData(`unobtrusiveValidation`);
+  $.validator.unobtrusive.parse($form);
 }
 
 // --- Image preview ---

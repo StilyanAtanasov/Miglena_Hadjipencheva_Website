@@ -446,7 +446,6 @@ public class CloudinaryImageServiceTests
                 new ()
                 {
                     Id = 1,
-                    Key = "Author",
                     Value = "John Doe"
                 }
             },

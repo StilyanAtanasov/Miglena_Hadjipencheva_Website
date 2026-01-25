@@ -21,8 +21,6 @@ public class ProductAttributeDefinition
     [Required]
     public AttributeDataType DataType { get; set; }
 
-    public bool HasPredefinedValue { get; set; }
-
     public bool IsRequired { get; set; }
 
     [Required]

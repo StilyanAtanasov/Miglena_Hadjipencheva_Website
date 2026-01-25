@@ -8,6 +8,7 @@
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/add-product-type.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
@@ -33,7 +34,7 @@
 				<div id="attributeTemplates" data-attribute-index="@Model.Attributes.Count">
 					@for (int i = 0; i < Model.Attributes.Count; i++)
 					{
-						var i1 = i;
+						int i1 = i;
 						@Html.EditorFor(x => x.Attributes[i1], "AttributeDefinitionForm")
 					}
 				</div>
@@ -53,5 +54,5 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
-	<script src="~/js/add-product-type.js"></script>
+	<script src="~/js/add-product-type.js" asp-append-version="true"></script>
 }

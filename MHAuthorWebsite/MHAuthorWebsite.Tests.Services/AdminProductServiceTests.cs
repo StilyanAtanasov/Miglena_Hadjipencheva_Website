@@ -178,7 +178,6 @@ public class AdminProductServiceTests
         Assert.That(sr.Result.Images.Count, Is.EqualTo(1));
         Assert.That(sr.Result.Attributes.Count, Is.EqualTo(1));
         Assert.That(sr.Result.Images.First().Id, Is.EqualTo(_defaultProduct.Images.First().Id));
-        Assert.That(sr.Result.Attributes.First().Key, Is.EqualTo(_defaultProduct.Attributes.First().Key));
     }
 
     [Test]
@@ -419,7 +418,6 @@ public class AdminProductServiceTests
                     Label = "Author",
                     DataType = AttributeDataType.Text,
                     IsRequired = true,
-                    HasPredefinedValue = false
                 }
             }
         };
@@ -463,7 +461,6 @@ public class AdminProductServiceTests
                 new ()
                 {
                     Id = 1,
-                    Key = "Author",
                     Value = "John Doe",
                     AttributeDefinition = productType.AttributeDefinitions.First(),
                 }

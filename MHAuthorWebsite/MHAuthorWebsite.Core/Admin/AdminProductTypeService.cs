@@ -21,26 +21,32 @@ public class AdminProductTypeService : IAdminProductTypeService
         {
             ProductType pt = new() { Name = model.Name };
 
-            await _repository.AddAsync(pt);
-            await _repository.SaveChangesAsync();
-
             if (model is { HasAdditionalProperties: true, Attributes.Count: > 0 })
             {
                 foreach (AttributeDefinitionDto attribute in model.Attributes)
                 {
-                    await _repository.AddAsync<ProductAttributeDefinition>(new()
+                    ProductAttributeDefinition attrDefinition = new()
                     {
                         Key = attribute.Key,
                         Label = attribute.Label,
                         DataType = (AttributeDataType)attribute.DataType,
-                        HasPredefinedValue = attribute.HasPredefinedValue,
-                        IsRequired = attribute.IsRequired,
-                        ProductTypeId = pt.Id
-                    });
-                }
+                        IsRequired = attribute.IsRequired
+                    };
 
-                await _repository.SaveChangesAsync();
+                    if (attribute is { DataType: (int)AttributeDataType.Dropdown, PredefinedValues.Count: > 0 })
+                        foreach (string value in attribute.PredefinedValues)
+                            attrDefinition.ProductAttributeOptions.Add(new()
+                            {
+                                Value = value,
+                                AttributeDefinitionId = attrDefinition.Id
+                            });
+
+                    pt.AttributeDefinitions.Add(attrDefinition);
+                }
             }
+
+            await _repository.AddAsync(pt);
+            await _repository.SaveChangesAsync();
         }
         catch (Exception)
         {

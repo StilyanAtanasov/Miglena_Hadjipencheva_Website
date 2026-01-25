@@ -18,8 +18,7 @@ public class AttributeDefinitionForm
     public int DataType { get; set; }
 
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
-    public bool HasPredefinedValue { get; set; }
-
-    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public bool IsRequired { get; set; }
+
+    public ICollection<string> PredefinedValues { get; set; } = new HashSet<string>();
 }

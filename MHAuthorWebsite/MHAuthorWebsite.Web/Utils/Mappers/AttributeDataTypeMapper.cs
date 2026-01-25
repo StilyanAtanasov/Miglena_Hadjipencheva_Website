@@ -9,7 +9,8 @@ public static class AttributeDataTypeMapper
         { AttributeDataType.Text, "text" },
         { AttributeDataType.Number, "number" },
         { AttributeDataType.Date, "date" },
-        { AttributeDataType.Boolean, "checkbox" }
+        { AttributeDataType.Boolean, "checkbox" },
+        { AttributeDataType.Dropdown, "select" }
     };
 
     public static readonly Dictionary<AttributeDataType, string> CssContainerClass = new()
@@ -17,6 +18,7 @@ public static class AttributeDataTypeMapper
         { AttributeDataType.Text, "" },
         { AttributeDataType.Number, "" },
         { AttributeDataType.Date, "" },
-        { AttributeDataType.Boolean, "boolean" }
+        { AttributeDataType.Boolean, "boolean" },
+        { AttributeDataType.Dropdown, "" }
     };
 }

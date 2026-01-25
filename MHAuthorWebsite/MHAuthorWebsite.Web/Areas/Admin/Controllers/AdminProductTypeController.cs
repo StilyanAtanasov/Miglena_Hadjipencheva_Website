@@ -60,7 +60,7 @@ public class AdminProductTypeController : AdminBaseController
                     Label = a.Label,
                     DataType = a.DataType,
                     IsRequired = a.IsRequired,
-                    HasPredefinedValue = a.HasPredefinedValue,
+                    PredefinedValues = a.PredefinedValues
                 })
                 .ToArray(),
             HasAdditionalProperties = form.HasAdditionalProperties,

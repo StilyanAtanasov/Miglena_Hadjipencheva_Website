@@ -92,7 +92,6 @@ public class AdminProductTypeServiceTests
                     Label = "New Label",
                     DataType = 1,
                     IsRequired = true,
-                    HasPredefinedValue = false
                 }
             }
         };
@@ -183,7 +182,6 @@ public class AdminProductTypeServiceTests
                     DataType = AttributeDataType.Text,
                     Key = "TestKey",
                     Label = "Test Label",
-                    HasPredefinedValue = false,
                     IsRequired = true,
                 }
             }
