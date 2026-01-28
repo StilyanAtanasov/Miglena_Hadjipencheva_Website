@@ -16,6 +16,8 @@ public class ProductDetailsDto
 
     public bool IsInStock { get; set; }
 
+    public int Quantity { get; set; }
+
     public bool IsLiked { get; set; }
 
     public decimal AverageRating { get; set; }

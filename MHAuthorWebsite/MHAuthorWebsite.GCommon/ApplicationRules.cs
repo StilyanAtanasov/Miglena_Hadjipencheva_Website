@@ -79,6 +79,8 @@ public static class ApplicationRules
         public const byte SuccessPageMaxViewDelaySeconds = 20;
 
         public const byte MyOrdersPageSize = 5;
+
+        public const byte MaxItemQuantityPerOrder = 20;
     }
 
     public static class OrderSystemEventsMessages

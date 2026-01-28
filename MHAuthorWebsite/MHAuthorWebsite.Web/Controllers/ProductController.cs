@@ -44,6 +44,7 @@ public class ProductController : BaseController
                 NewPrice = dto.Discount.NewPrice
             } : null,
             IsInStock = dto.IsInStock,
+            Quantity = dto.Quantity,
             ProductTypeName = dto.ProductTypeName,
             TotalBaseComments = dto.TotalBaseComments,
             AverageRating = dto.AverageRating,

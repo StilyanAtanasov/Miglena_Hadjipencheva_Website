@@ -65,6 +65,7 @@ public class ProductService : IProductService
                             })
                             .FirstOrDefault(),
                         IsInStock = product.StockQuantity > 0,
+                        Quantity = product.StockQuantity,
                         ProductTypeName = product.ProductType.Name,
                         Images = product.Images
                     .Where(i => i.Id != product.Thumbnail.ImageId)
@@ -193,6 +194,7 @@ public class ProductService : IProductService
                 Price = generalInfo.Price,
                 Discount = generalInfo.Discount,
                 IsInStock = generalInfo.IsInStock,
+                Quantity = generalInfo.Quantity,
                 Images = generalInfo.Images,
                 ProductTypeName = generalInfo.ProductTypeName,
                 HasMoreComments = commentsInfo!.HasMoreComments,

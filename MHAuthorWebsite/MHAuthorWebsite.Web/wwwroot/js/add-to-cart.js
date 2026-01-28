@@ -22,7 +22,8 @@ document.querySelectorAll(`[data-role="add-to-cart"]`).forEach(b =>
     });
 
     if (response.ok) pushNotification(`Продуктът добавен в количката!`, `success`);
+    else if (response.status === 400) pushNotification(Object.values(await response.json())[0], `warning`);
     else if (response.status === 401) pushNotification(`Влезте в системата, за да добавите продукта в количката!`, `warning`);
     else pushNotification(`Възникна неочаквана грешка!`, `error`);
-  })
+  }),
 );

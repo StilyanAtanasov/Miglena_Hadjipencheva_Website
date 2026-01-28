@@ -3,6 +3,7 @@
 @using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Roles
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Order
 @using MHAuthorWebsite.Core.Models.Enums
 
 @model ProductDetailsViewModel
@@ -12,6 +13,8 @@
 	string metaBookDescription = Model.Description.Length > 70 ? $"{Model.Description.Substring(0, 70)}..." : Model.Description;
 	ViewData["MetaDescription"] = $"Книга {Model.Name}. {metaBookDescription}";
 	ViewData["RequireTimeZoneManager"] = true;
+
+	bool isQuantityLimited = Model.Quantity < MaxItemQuantityPerOrder;
 }
 
 @section Styles {
@@ -102,13 +105,21 @@
 					<p class="price discounted-price"> @Model.Discount.NewPrice.ToString("F2") лв. / @((Model.Discount.NewPrice * LevToEurRate).ToString("F2")) €</p>
 				}
 			</div>
-
-			<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
+			
+			<div class="item-info-text flex-column">
+				<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
+			
+				@if(isQuantityLimited)
+				{
+					<p class="stock-warning">Остават само още <strong>@Model.Quantity</strong> налични броя!</p>
+				}
+			</div>
 
 			<input type="hidden" name="productId" value="@Model.Id"/>
 			<div class="quantity">
 				<label for="quantity">Количество:</label>
-				<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10"/>
+				<input class="input" type="number" id="quantity" name="quantity" 
+				       value="1" min="1" max="@Math.Min(Model.Quantity, MaxItemQuantityPerOrder)" />
 			</div>
 			<div class="order-btns flex-row">
 				<button type="button" id="like-button" data-product-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")" aria-label="Харесай продукт">

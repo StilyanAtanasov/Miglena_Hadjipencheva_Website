@@ -14,6 +14,8 @@ public class ProductDetailsGeneralInfoDto
 
     public bool IsInStock { get; set; }
 
+    public int Quantity { get; set; }
+
     public ProductDetailsDiscountDto? Discount { get; set; }
 
     public ICollection<ProductDetailsImageDto> Images { get; set; } = new HashSet<ProductDetailsImageDto>();

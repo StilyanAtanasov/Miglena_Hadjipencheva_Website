@@ -80,13 +80,19 @@
   transform: translateY(-0.7rem);
 }
 
-.order-info .price-text {
+.order-info .item-info-text {
+  gap: 0.5rem;
+}
+
+.order-info .price-text,
+.stock-warning {
   font-size: 2rem;
   font-weight: 500;
   color: var(--color-success);
 }
 
-.order-info .price-text.unavailable {
+.order-info .price-text.unavailable,
+.stock-warning {
   color: var(--color-error);
 }
 

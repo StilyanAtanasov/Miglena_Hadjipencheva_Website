@@ -30,6 +30,7 @@ public class CartController : BaseController
                     ProductId = i.ProductId,
                     UnitPrice = i.UnitPrice,
                     Quantity = i.Quantity,
+                    MaxOrderQuantityForProduct = i.MaxOrderQuantityForProduct,
                     IsSelected = i.IsSelected,
                     Category = i.Category,
                     IsAvailable = i.IsAvailable,
@@ -49,10 +50,11 @@ public class CartController : BaseController
     public async Task<IActionResult> Add([FromBody] AddCartItemViewModel model)
     {
         if (!IsUserAuthenticated()) return StatusCode(401);
-        if (model.ProductId == Guid.Empty || model.Quantity <= 0) return BadRequest("Invalid cart item data.");
+        if (model.ProductId == Guid.Empty || model.Quantity <= 0)
+            return BadRequest(new Dictionary<string, string> { ["error"] = "Невалидни данни за продукта." });
 
         ServiceResult result = await _cartService.AddItemToCartAsync(GetUserId()!, model.ProductId, model.Quantity);
-        if (result.IsBadRequest) return BadRequest(result.Errors); // TODO: Add error modal window
+        if (result.IsBadRequest) return BadRequest(result.Errors);
         if (!result.Success) return StatusCode(500);
 
         return StatusCode(200);
@@ -77,6 +79,7 @@ public class CartController : BaseController
         ServiceResult<UpdatedItemQuantityDto> sr = await _cartService
             .UpdateItemQuantityAsync(GetUserId()!, model.ItemId, model.Quantity);
         if (sr.IsBadRequest) return BadRequest(sr.Errors);
+        if (!sr.Success) return StatusCode(500);
 
         return Json(new
         {

@@ -6,6 +6,7 @@ using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheDefaultDurations;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Order;
 using static MHAuthorWebsite.GCommon.EntityConstraints.CartItem;
 
 namespace MHAuthorWebsite.Core;
@@ -32,12 +33,18 @@ public class CartService : ICartService
             Product? product = await _repository.FindByExpressionAsync<Product>(p => p.Id == productId);
             if (product == null) return ServiceResult.BadRequest(new() { ["product"] = "Продуктът не съществува!" });
 
+            if (quantity > MaxItemQuantityPerOrder)
+                return ServiceResult.BadRequest(new()
+                {
+                    ["quantity"] = $"Максимална поръчка от {MaxItemQuantityPerOrder} продукта!"
+                });
+
             if (product.StockQuantity < quantity)
                 return ServiceResult.BadRequest(new()
                 {
                     ["quantity"] =
-                    $"Недостатъчно количество на продукта! Максимална поръчка от {product.StockQuantity} продукта!"
-                    + (product.StockQuantity > 1 ? "a" : "") + "."
+                    $"Недостатъчно количество на продукта! Максимална поръчка от {product.StockQuantity} продукт"
+                    + (product.StockQuantity > 1 ? "a" : "") + "!"
                 });
 
             Cart? cart = await _repository.FindByExpressionAsync<Cart>(c => c.UserId == userId);
@@ -51,7 +58,13 @@ public class CartService : ICartService
             CartItem? existingCartItem = await _repository.FindByExpressionAsync<CartItem>(ci => ci.CartId == cart.Id && ci.ProductId == productId);
             if (existingCartItem is not null)
             {
-                existingCartItem.Quantity += quantity; // TODO Add validation for maximum quantity
+                if (existingCartItem.Quantity + quantity > MaxItemQuantityPerOrder)
+                    return ServiceResult.BadRequest(new()
+                    {
+                        ["quantity"] = $"Надвишавате максималния лимит от {MaxItemQuantityPerOrder} продукта в количката Ви!"
+                    });
+
+                existingCartItem.Quantity += quantity;
                 existingCartItem.Price = product.Price;
 
                 _repository.Update(existingCartItem);
@@ -102,6 +115,7 @@ public class CartService : ICartService
                 Name = ci.Product.Name,
                 Category = ci.Product.ProductType.Name,
                 Quantity = ci.Quantity,
+                MaxOrderQuantityForProduct = Math.Min(MaxItemQuantityPerOrder, ci.Product.StockQuantity),
                 UnitPrice = ci.Price,
                 UnitDiscountedPrice = ci.Product.Discounts
                     .FirstOrDefault(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow)?.NewPrice,
@@ -168,6 +182,13 @@ public class CartService : ICartService
 
         if (cartItem == null) return ServiceResult<UpdatedItemQuantityDto>
             .BadRequest(new() { ["product"] = "Продуктът не е намерен в количката!" });
+
+        int maxOrderQuantityForProduct = Math.Min(MaxItemQuantityPerOrder, cartItem.Product.StockQuantity);
+        if (quantity > maxOrderQuantityForProduct) return ServiceResult<UpdatedItemQuantityDto>
+            .BadRequest(new()
+            {
+                ["quantity"] = $"Можете да поръчате максимум {maxOrderQuantityForProduct} броя от този продукт!"
+            });
 
         cartItem.Quantity = quantity;
         await _repository.SaveChangesAsync();

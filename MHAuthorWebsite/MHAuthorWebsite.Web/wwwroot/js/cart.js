@@ -42,7 +42,8 @@ document.addEventListener(`DOMContentLoaded`, function () {
         document.querySelector(`#line-total-${itemId} .sum-price-eur`).textContent = `${formatBgNumber(parseBgNumber(data.lineTotal) * levToEurRate)}`;
 
         updateCartSummary(data.cartTotal);
-      } else alert(`Грешка при обновяване на количеството.`);
+      } else if (response.status === 400) pushNotification(Object.values(await response.json())[0], `warning`);
+      else alert(`Грешка при обновяване на количеството.`);
     }),
   );
 

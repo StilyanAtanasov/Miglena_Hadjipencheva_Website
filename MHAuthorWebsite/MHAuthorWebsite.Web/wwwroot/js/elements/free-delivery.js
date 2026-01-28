@@ -10,5 +10,5 @@ export function calcFreeDelivery(orderTotalEur, freeDeliveryTresholdEur) {
   else message.innerHTML = `<i class="fa-regular fa-clipboard-list-check heading"></i> Още ${(freeDeliveryTresholdEur - orderTotalEur).toFixed(2)} евро до безплатна доставка`;
 
   message.classList.toggle(`success`, isEligible);
-  freeDeliveryBarFill.style.width = `${fillPercent}%`;
+  freeDeliveryBarFill.style.width = `${Math.min(fillPercent, 100)}%`;
 }
