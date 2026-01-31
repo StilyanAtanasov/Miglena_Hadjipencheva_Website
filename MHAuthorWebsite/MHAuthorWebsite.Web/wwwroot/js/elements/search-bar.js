@@ -48,9 +48,14 @@ export class SearchBarHandler {
     }
 
     try {
-      const searchUrl = query.trim() === `` ? this.url : `${this.url}?${this.param}=${encodeURIComponent(query)}`;
+      const currentUrlParams = new URLSearchParams(window.location.search);
 
-      const response = await fetch(searchUrl, {
+      query.trim() === "" ? currentUrlParams.delete(this.param) : currentUrlParams.set(this.param, query);
+
+      const queryString = currentUrlParams.toString();
+      const requestUrl = queryString ? `${this.url}?${queryString}` : this.url;
+
+      const response = await fetch(requestUrl, {
         headers: { "X-Requested-With": "XMLHttpRequest" },
         signal: this.abortController.signal,
       });
@@ -58,7 +63,7 @@ export class SearchBarHandler {
       const html = await response.text();
       this.target.innerHTML = html;
 
-      window.history.pushState(null, ``, searchUrl);
+      window.history.pushState(null, ``, requestUrl);
     } catch (error) {
       if (error.name === `AbortError`) {
         console.log(`Fetch aborted: newer search started.`);

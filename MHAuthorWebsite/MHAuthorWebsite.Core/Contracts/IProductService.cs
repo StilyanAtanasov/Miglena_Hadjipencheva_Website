@@ -7,7 +7,8 @@ namespace MHAuthorWebsite.Core.Contracts;
 
 public interface IProductService
 {
-    Task<ICollection<ProductCardDto>> GetAllProductCardsReadonlyAsync(string? userId, int page, (bool descending, Expression<Func<Product, object>>? expression) sortType);
+    Task<ICollection<ProductCardDto>> GetAllProductCardsReadonlyAsync(string? userId, int page,
+        (bool descending, Expression<Func<Product, object>>? expression) sortType, string? searchString);
 
     Task<int> GetAllProductsCountAsync();
 

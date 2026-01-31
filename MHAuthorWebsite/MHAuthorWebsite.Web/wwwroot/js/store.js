@@ -1,8 +1,18 @@
 "use strict";
 
 import { pushNotification } from "./notification.js";
+import { SearchBarHandler } from "./elements/search-bar.js";
 
 document.addEventListener(`DOMContentLoaded`, function () {
+  new SearchBarHandler({
+    inputSelector: "#product-search-input",
+    formSelector: "#product-search-form",
+    targetSelector: "#products",
+    url: "/Product/AllProducts?page=1&orderType=recommended&",
+    param: "search",
+    debounceTimeoutMilliseconds: 500,
+  });
+
   document.getElementById(`order-by-select`).addEventListener(`change`, async function () {
     const orderType = this.value;
     window.location.href = `/Product/AllProducts?orderType=${orderType}`;

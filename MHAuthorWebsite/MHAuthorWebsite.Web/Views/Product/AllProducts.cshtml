@@ -1,14 +1,17 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination
-@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @using MHAuthorWebsite.GCommon
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using MHAuthorWebsite.Web.ViewModels.Shared.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model ICollection<ProductCardViewModel>
 
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true"/>
+	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/search-bar.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/store.css" asp-append-version="true" />
 }
 
@@ -27,6 +30,8 @@
 		"Value",
 		"Text",
 		orderType);
+
+	string? currentSearch = Context.Request.Query["search"];
 }
 
 <section class="page-wrapper flex-column">
@@ -34,6 +39,15 @@
 
 	@if (productsCount > 0)
 	{
+		@await Html.PartialAsync("_SearchBar", new SearchBarViewModel
+		       {
+			       FormCustomId = "product-search-form",
+			       InputCustomId = "product-search-input",
+			       PlaceholderText = "Търсете продукти по име, категория или описание...",
+			       DefaultValue = currentSearch,
+			       Align = SearchBarAlignOptions.Left
+		       })
+
 		<div class="shop-action-btns flex-row">
 			<div class="shop-action-btn flex-row">
 				<label for="order-by-select">Подреди по:</label>
@@ -42,50 +56,10 @@
 		</div>
 	}
 
-	<section class="products">
+	<section id="products" class="products">
 		@if (productsCount > 0)
 		{
-			@foreach (ProductCardViewModel product in Model)
-			{
-				<div class="product flex-column clickable" data-details-url="@Url.Action("Details", "Product", new { productId = product.Id })">
-					@if (product.DiscountPrice.HasValue)
-					{
-						<div class="product-badge">
-							<i class="fa-solid fa-badge"></i>
-							<span class="badge-text">- @(Math.Ceiling((product.Price - product.DiscountPrice.Value) / product.Price * 100))%</span>
-						</div>
-					}
-					
-					<div class="product-image-container flex-row">
-						<img class="product-image" src="@product.ImageUrl" alt="@(product.ImageAlt)" />
-					</div>
-					<div class="product-title-container">
-						<h4 class="product-title"><a data-trigger="load-unlimited" class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
-						<span class="text-faded">@product.ProductType</span>
-					</div>
-					<div class="price-box flex-column">
-						<p class="price @((product.DiscountPrice.HasValue) ? "old-price" : "")">@product.Price.ToString("F2") лв. / @((product.Price * LevToEurRate).ToString("F2")) €</p>
-						@if (product.DiscountPrice.HasValue)
-						{
-							<p class="price discounted-price">@product.DiscountPrice.Value.ToString("F2") лв. / @((product.DiscountPrice.Value * LevToEurRate).ToString("F2")) €</p>
-						}
-
-						<span class="price-text @(product.IsAvailable ? "available" : "unavailable")">@(product.IsAvailable ? "В наличност" : "Изчерпана наличност")</span>
-					</div>
-					<div class="action-btns flex-row">
-						<button data-role="remove-item" data-item-id="@product.Id" class="btn like @(product.IsLiked ? "liked" : "")" aria-label="like">
-							<span class="fa-stack">
-								<i class="fa-regular fa-heart fa-stack-2x"></i>
-								<i class="fa-solid fa-heart fa-stack-2x"></i>
-							</span>
-						</button>
-						<input id="quantity" type="hidden" name="quantity" value="1" />
-						<button data-role="add-to-cart" data-item-id="@product.Id" class="btn order flex-row" @(product.IsAvailable ? "" : "disabled")>
-							<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
-						</button>
-					</div>
-				</div>
-			}
+			@await Html.PartialAsync("_ProductCardsPartial", Model)
 		}
 		else
 		{

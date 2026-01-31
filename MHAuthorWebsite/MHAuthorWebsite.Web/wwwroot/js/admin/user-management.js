@@ -8,7 +8,7 @@ import { SearchBarHandler } from "../elements/search-bar.js";
 document.addEventListener("DOMContentLoaded", function () {
   const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-  const userSearch = new SearchBarHandler({
+  new SearchBarHandler({
     inputSelector: "#user-search-input",
     formSelector: "#user-search-form",
     targetSelector: "#users-body",

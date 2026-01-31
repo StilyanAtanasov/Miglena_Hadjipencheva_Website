@@ -398,10 +398,16 @@ public class ProductService : IProductService
     }
 
     public async Task<ICollection<ProductCardDto>> GetAllProductCardsReadonlyAsync(string? userId, int page,
-        (bool descending, Expression<Func<Product, object>>? expression) sortType)
+        (bool descending, Expression<Func<Product, object>>? expression) sortType, string? searchString)
     {
+        Expression<Func<Product, bool>>? filter = null;
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+            filter = p =>
+                p.Name.Contains(searchString) || p.Description.Contains(searchString) || p.ProductType.Name.Contains(searchString);
+
         Guid[] pagedProductIds = await Repository
-            .GetPagedAsync(page, PageSize, true, null, sortType.expression, sortType.descending)
+            .GetPagedAsync(page, PageSize, true, filter, sortType.expression, sortType.descending)
             .Select(p => p.Id)
             .ToArrayAsync();
 

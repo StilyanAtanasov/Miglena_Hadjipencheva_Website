@@ -114,7 +114,8 @@ public class ProductController : BaseController
     [SecurityHeaders(CspFeature.TomSelect | CspFeature.Notifications)]
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IActionResult> AllProducts([FromQuery] int page = 1, [FromQuery] string? orderType = null)
+    public async Task<IActionResult> AllProducts([FromQuery] int page = 1,
+        [FromQuery] string? orderType = null, [FromQuery] string? search = null)
     {
         if (page < 1) page = 1;
         if (orderType is null) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
@@ -126,7 +127,7 @@ public class ProductController : BaseController
         if (productsCount > 0 && Math.Ceiling((double)productsCount / PageSize) < page) return NotFound();
 
         (bool descending, Expression<Func<Product, object>>? expression) sortType = (sortValue.descending, sortValue.expression);
-        ICollection<ProductCardDto> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page, sortType);
+        ICollection<ProductCardDto> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page, sortType, search);
 
         ViewBag.ProductsCount = productsCount;
 
@@ -144,6 +145,9 @@ public class ProductController : BaseController
                 ProductType = p.ProductType
             })
             .ToArray();
+
+        if (HttpContext.Request.Headers.Any(h => h.Key == "X-Requested-With" && h.Value == "XMLHttpRequest"))
+            return PartialView("_ProductCardsPartial", productsViewModel);
 
         return View(productsViewModel);
     }
