@@ -1,0 +1,21 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Shared
+@using MHAuthorWebsite.Data.Common.Extensions
+@model SearchBarViewModel
+
+@{
+	string alignPosition = Model.Align.GetDisplayName();
+}
+
+<section class="search-bar-wrapper @alignPosition flex-row">
+	<form id="@Model.FormCustomId" class="search-bar flex-row">
+		<input type="text"
+			   id="@Model.InputCustomId"
+			   class="input search-input"
+			   placeholder="@Model.PlaceholderText"
+			   value="@Model.DefaultValue" />
+
+		<button type="submit" class="search-btn btn btn-purple flex-row">
+			<i class="fa-solid fa-magnifying-glass"></i> Търси
+		</button>
+	</form>
+</section>

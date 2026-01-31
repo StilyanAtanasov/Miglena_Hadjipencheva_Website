@@ -17,11 +17,11 @@ public class AdminUserManagementController : AdminBaseController
 
     [SecurityHeaders(CspFeature.Notifications)]
     [HttpGet]
-    public async Task<IActionResult> ManageUsers()
+    public async Task<IActionResult> ManageUsers(string? search)
     {
-        ICollection<UserSummaryRowDto> dto = await _adminUserManagementService.GetAllUsersReadonlyAsync();
+        ICollection<UserSummaryRowDto> dto = await _adminUserManagementService.GetAllUsersReadonlyAsync(search);
         ICollection<UserSummaryRowViewModel> vm = dto
-            .Select(u => new UserSummaryRowViewModel()
+            .Select(u => new UserSummaryRowViewModel
             {
                 Id = u.Id,
                 Name = u.Name,
@@ -32,6 +32,9 @@ public class AdminUserManagementController : AdminBaseController
                 IsAdmin = u.IsAdmin,
             })
             .ToArray();
+
+        if (HttpContext.Request.Headers.Any(h => h.Key == "X-Requested-With" && h.Value == "XMLHttpRequest"))
+            return PartialView("_UserSummaryRows", vm);
 
         return View(vm);
     }

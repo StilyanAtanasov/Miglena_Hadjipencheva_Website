@@ -1,0 +1,52 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.UserManagement
+@using static MHAuthorWebsite.GCommon.ApplicationRules.DataCollection
+
+@model ICollection<UserSummaryRowViewModel>
+
+@foreach (UserSummaryRowViewModel u in Model)
+{
+	<tr data-userid="@u.Id">
+		<td class="name-row flex-row">
+			<strong class="name">@(!u.IsDeleted ? u.Name : " * Изтрит потребител *")</strong>
+			@if (u.IsAdmin)
+			{
+				<span class="badge admin-badge flex-row" title="Администратор"><i class="fa-regular fa-user-shield"></i> Админ</span>
+			}
+			@if (u.IsDeleted)
+			{
+				<span class="badge deleted-badge flex-row" title="Изтрит потребител"><i class="fa-regular fa-user-xmark"></i> Изтрит</span>
+			}
+			@if (u.IsActive)
+			{
+				<span class="badge active-badge flex-row" title="Активен потребител през последните @UsersActivityForPeriod дни!"><i class="fa-regular fa-person-running-fast"></i> Активен</span>
+			}
+			@if (u.IsBanned)
+			{
+				<span class="badge banned-badge flex-row" title="Блокиран потребител"><i class="fa-regular fa-user-lock"></i> Блокиран</span>
+			}
+		</td>
+		<td class="align-center">@u.Email</td>
+		<td class="action-btns flex-row">
+			@if (u is { IsAdmin: false,IsDeleted: false })
+			{
+				<button class="btn btn-purple flex-row" data-action="assign" data-user-id="@u.Id" data-role-name="Admin">
+					<i class="fa-regular fa-user-shield"></i>
+					Направи админ
+				</button>
+
+				<button class="btn btn-orange flex-row" data-action="ban" data-user-id="@u.Id">
+					@if (!u.IsBanned)
+					{
+						<i class="fa-regular fa-user-lock"></i>
+					}
+					else
+					{
+						<i class="fa-regular fa-user-unlock"></i>
+					}
+					@(!u.IsBanned ? "Блокирай" : "Деблокирай")
+				</button>
+			}
+			<button class="btn btn-blue flex-row" data-action="details" data-user-id="@u.Id">Детайли</button>
+		</td>
+	</tr>
+}

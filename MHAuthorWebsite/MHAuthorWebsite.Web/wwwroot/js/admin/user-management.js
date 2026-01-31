@@ -3,9 +3,19 @@
 import { pushNotification, showPopupAsync } from "../notification.js";
 import { openModal, replaceBody } from "../elements/modal.js";
 import { formatLocalDates } from "../time-zone-manager.js";
+import { SearchBarHandler } from "../elements/search-bar.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+  const userSearch = new SearchBarHandler({
+    inputSelector: "#user-search-input",
+    formSelector: "#user-search-form",
+    targetSelector: "#users-body",
+    url: "/Admin/AdminUserManagement/ManageUsers",
+    param: "search",
+    debounceTimeoutMilliseconds: 500,
+  });
 
   async function assignRole(userId, roleName, button) {
     const response = await fetch(`/Admin/AdminUserManagement/AssignRole`, {

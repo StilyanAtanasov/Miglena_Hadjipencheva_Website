@@ -5,7 +5,7 @@ namespace MHAuthorWebsite.Core.Admin.Contracts;
 
 public interface IAdminUserManagementService
 {
-    Task<ICollection<UserSummaryRowDto>> GetAllUsersReadonlyAsync();
+    Task<ICollection<UserSummaryRowDto>> GetAllUsersReadonlyAsync(string? searchString);
 
     Task<ServiceResult<UserDetailsDto>> GetUserDetailsReadonlyAsync(string userId);
 

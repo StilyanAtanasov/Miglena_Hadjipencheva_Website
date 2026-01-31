@@ -28,12 +28,19 @@ public class AdminUserManagementService : IAdminUserManagementService
         _roleManager = roleManager;
     }
 
-    public async Task<ICollection<UserSummaryRowDto>> GetAllUsersReadonlyAsync()
+    public async Task<ICollection<UserSummaryRowDto>> GetAllUsersReadonlyAsync(string? searchString)
     {
         ICollection<ApplicationUser> adminUsers = await _userManager.GetUsersInRoleAsync(AdminRoleName);
 
-        return await _repository
-            .AllReadonly<ApplicationUser>()
+        IQueryable<ApplicationUser> query = _repository.AllReadonly<ApplicationUser>();
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+            query = searchString.Contains("@")
+                ? query.Where(u => u.Email != null && u.Email.Contains(searchString))
+                : query.Where(u => (u.Name != null && u.Name.Contains(searchString))
+                                   || (u.Email != null && u.Email.Contains(searchString)));
+
+        return await query
             .Select(u => new UserSummaryRowDto
             {
                 Id = u.Id,
