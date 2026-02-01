@@ -40,40 +40,5 @@
   border-radius: 1.5rem;
   justify-content: center;
   position: relative;
-}
-
-.search-btn.loading::after {
-  content: "";
-  border: 0.6rem solid var(--color-secondary);
-  border-top: 0.6rem solid var(--color-secondary-light);
-  border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
-  opacity: 1;
-  display: block;
-  animation:
-    fadeIn linear 200ms,
-    spin 1s linear infinite;
-  animation-fill-mode: forwards;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+  overflow: hidden;
 }

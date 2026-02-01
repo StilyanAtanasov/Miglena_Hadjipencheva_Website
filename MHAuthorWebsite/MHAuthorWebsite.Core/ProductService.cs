@@ -36,7 +36,16 @@ public class ProductService : IProductService
         ProductDataService = productDataService;
     }
 
-    public async Task<int> GetAllProductsCountAsync() => await Repository.CountAsync<Product>();
+    public async Task<int> GetAllProductsCountAsync(string? searchString)
+    {
+        IQueryable<Product> query = Repository.AllReadonly<Product>();
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+            query = query.Where(p => p.Name.Contains(searchString) || p.Description.Contains(searchString)
+            || p.ProductType.Name.Contains(searchString));
+
+        return await query.CountAsync();
+    }
 
     public async Task<ServiceResult<ProductDetailsDto>> GetProductDetailsReadonlyAsync(Guid productId, string? userId)
     {

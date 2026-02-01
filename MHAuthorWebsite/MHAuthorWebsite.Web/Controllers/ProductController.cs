@@ -123,7 +123,7 @@ public class ProductController : BaseController
         bool result = SortValueMapper.SortMap.TryGetValue(orderType, out var sortValue);
         if (!result) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
 
-        int productsCount = await _productService.GetAllProductsCountAsync();
+        int productsCount = await _productService.GetAllProductsCountAsync(search);
         if (productsCount > 0 && Math.Ceiling((double)productsCount / PageSize) < page) return NotFound();
 
         (bool descending, Expression<Func<Product, object>>? expression) sortType = (sortValue.descending, sortValue.expression);

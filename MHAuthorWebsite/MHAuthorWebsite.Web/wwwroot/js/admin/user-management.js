@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     url: "/Admin/AdminUserManagement/ManageUsers",
     param: "search",
     debounceTimeoutMilliseconds: 500,
+    targetLoaderConfig: { size: `medium` },
   });
 
   async function assignRole(userId, roleName, button) {

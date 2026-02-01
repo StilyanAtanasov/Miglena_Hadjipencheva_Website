@@ -1,5 +1,4 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
-@using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination
 @using MHAuthorWebsite.GCommon
 @using MHAuthorWebsite.Web.ViewModels.Shared
 @using MHAuthorWebsite.Web.ViewModels.Shared.Enums
@@ -12,6 +11,8 @@
 	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/search-bar.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/pagination.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/loader.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/store.css" asp-append-version="true" />
 }
 
@@ -19,9 +20,7 @@
 	ViewData["Title"] = "Магазин";
 	ViewData["MetaDescription"] = "Разгледайте наличните книги на Миглена Хаджипенчева и поръчайте онлайн!";
 
-	int currentPage = int.TryParse(Context.Request.Query["page"].ToString(), out int page) ? page : 1;
 	int productsCount = ViewBag.ProductsCount ?? Model.Count;
-	int totalPages = (int)Math.Ceiling((double)productsCount / PageSize);
 
 	string orderType = Context.Request.Query["orderType"].ToString();
 	SelectList selectItems = new(
@@ -37,73 +36,31 @@
 <section class="page-wrapper flex-column">
 	<h1 class="title">Магазин</h1>
 
-	@if (productsCount > 0)
-	{
-		@await Html.PartialAsync("_SearchBar", new SearchBarViewModel
-		       {
-			       FormCustomId = "product-search-form",
-			       InputCustomId = "product-search-input",
-			       PlaceholderText = "Търсете продукти по име, категория или описание...",
-			       DefaultValue = currentSearch,
-			       Align = SearchBarAlignOptions.Left
-		       })
 
+	@if (productsCount > 0 || !string.IsNullOrEmpty(currentSearch))
+	{
 		<div class="shop-action-btns flex-row">
+
+			@await Html.PartialAsync("_SearchBar", new SearchBarViewModel
+			       {
+				       FormCustomId = "product-search-form",
+				       InputCustomId = "product-search-input",
+				       PlaceholderText = "Търсете продукти по име, категория или описание...",
+				       DefaultValue = currentSearch,
+				       Align = SearchBarAlignOptions.Left
+			       })
+
 			<div class="shop-action-btn flex-row">
 				<label for="order-by-select">Подреди по:</label>
 				<select id="order-by-select" class="select-main" autocomplete="off" name="orderType" asp-items="@selectItems"></select>
 			</div>
 		</div>
-	}
+		}
 
-	<section id="products" class="products">
-		@if (productsCount > 0)
-		{
-			@await Html.PartialAsync("_ProductCardsPartial", Model)
-		}
-		else
-		{
-			<p class="no-products-message flex-row"> <i class="fa-solid fa-shop-slash"></i> В момента не се предлагат никакви продукти.</p>
-		}
+	<section id="products-page">
+		@await Html.PartialAsync("_ProductCardsPartial", Model)
 	</section>
 
-	@if (totalPages > 1)
-	{
-		<div class="pagination-box flex-row">
-			<ul role="list" class="pagination-btns flex-row">
-				@{
-					int firstPage = Math.Max(1, currentPage - 1);
-					int lastPage = Math.Min(totalPages, firstPage + 2);
-
-					firstPage = Math.Max(1, lastPage - 2);
-				}
-				@if (currentPage != firstPage)
-				{
-					<li title="Предишна страница" class="pagination-btn">
-						<a asp-controller="Product" asp-action="AllProducts" asp-route-page="@(currentPage - 1)" class="link"><i class="fa-solid fa-arrow-left"></i></a>
-					</li>
-				}
-				@for (int i = firstPage; i <= lastPage; i++)
-				{
-					<li class="pagination-btn">
-
-						@{
-							var i1 = i;
-						}
-
-						<a asp-controller="Product" asp-action="AllProducts" asp-route-page="@i1" class="link @(i1 == currentPage ? "current" : "")">@i1</a>
-					</li>
-				}
-				@if (currentPage != totalPages)
-				{
-					<li title="Следваща страница" class="pagination-btn">
-						<a asp-controller="Product" asp-action="AllProducts" asp-route-page="@(currentPage + 1)" class="link"><i class="fa-solid fa-arrow-right"></i></a>
-					</li>
-				}
-			</ul>
-		</div>
-	}
-	
 	<form class="hidden">@Html.AntiForgeryToken()</form>
 </section>
 

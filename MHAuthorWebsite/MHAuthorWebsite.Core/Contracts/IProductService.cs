@@ -10,7 +10,7 @@ public interface IProductService
     Task<ICollection<ProductCardDto>> GetAllProductCardsReadonlyAsync(string? userId, int page,
         (bool descending, Expression<Func<Product, object>>? expression) sortType, string? searchString);
 
-    Task<int> GetAllProductsCountAsync();
+    Task<int> GetAllProductsCountAsync(string? searchString);
 
     Task<ServiceResult<ProductDetailsDto>> GetProductDetailsReadonlyAsync(Guid productId, string? userId);
 

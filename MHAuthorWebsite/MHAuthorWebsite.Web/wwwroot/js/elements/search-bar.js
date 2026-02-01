@@ -1,4 +1,5 @@
 import { pushNotification } from "../notification.js";
+import { injectLoader } from "./loader.js";
 
 export class SearchBarHandler {
   constructor(config) {
@@ -11,6 +12,19 @@ export class SearchBarHandler {
     this.debounceTimer = null;
     this.abortController = null;
     this.submitBtn = this.form?.querySelector(`.search-btn`);
+    this.loader = null;
+    this.enableLoader = config.enableLoader || true;
+    this.resetParams = config.resetParams || [];
+    this.submitBtnLoaderConfig = config.submitBtnLoaderConfig || {
+      size: `small`,
+      theme: `light`,
+      screenColor: `var(--color-secondary)`,
+    };
+    this.targetLoaderConfig = config.targetLoaderConfig || {
+      size: `large`,
+    };
+
+    console.log(this.targetLoaderConfig);
 
     if (this.input && this.target && this.form) this.init();
     else {
@@ -36,21 +50,27 @@ export class SearchBarHandler {
   }
 
   async performSearch(query) {
-    if (this.abortController) {
-      this.abortController.abort();
-    }
+    if (this.abortController) this.abortController.abort();
     this.abortController = new AbortController();
+
+    let localBtnLoader = null;
+    let localTargetLoader = null;
 
     if (this.submitBtn) {
       this.submitBtn.disabled = true;
-      this.submitBtn.innerHTML = ``;
-      this.submitBtn.classList.add(`loading`);
+      localBtnLoader = injectLoader(this.submitBtn, this.submitBtnLoaderConfig);
+    }
+
+    if (this.enableLoader) {
+      localTargetLoader = injectLoader(this.target, this.targetLoaderConfig);
     }
 
     try {
       const currentUrlParams = new URLSearchParams(window.location.search);
 
       query.trim() === "" ? currentUrlParams.delete(this.param) : currentUrlParams.set(this.param, query);
+
+      this.resetParams.forEach(p => currentUrlParams.delete(p));
 
       const queryString = currentUrlParams.toString();
       const requestUrl = queryString ? `${this.url}?${queryString}` : this.url;
@@ -62,22 +82,16 @@ export class SearchBarHandler {
 
       const html = await response.text();
       this.target.innerHTML = html;
-
       window.history.pushState(null, ``, requestUrl);
     } catch (error) {
-      if (error.name === `AbortError`) {
-        console.log(`Fetch aborted: newer search started.`);
-        pushNotification(`Грешка при повторно търсене!`, `error`);
-      } else {
+      if (error.name !== `AbortError`) {
         console.error(`Search failed:`, error);
         pushNotification(`Грешка при търсенето!`, `error`);
       }
     } finally {
-      if (this.submitBtn) {
-        this.submitBtn.disabled = false;
-        this.submitBtn.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Търси`;
-        this.submitBtn.classList.remove(`loading`);
-      }
+      if (localBtnLoader) localBtnLoader.close();
+      if (localTargetLoader) localTargetLoader.close();
+      if (this.submitBtn) this.submitBtn.disabled = false;
     }
   }
 }
