@@ -21,14 +21,12 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
     public class ResendEmailConfirmationModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailService _emailService;
-        private readonly IEmailUserProvider _emailUserProvider;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ResendEmailConfirmationModel(UserManager<ApplicationUser> userManager, IEmailService emailService, IEmailUserProvider emailUserProvider)
+        public ResendEmailConfirmationModel(UserManager<ApplicationUser> userManager, IServiceProvider serviceProvider)
         {
             _userManager = userManager;
-            _emailService = emailService;
-            _emailUserProvider = emailUserProvider;
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -76,49 +74,62 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                 values: new { userId, code },
                 protocol: Request.Scheme);
 
-            await _emailService.SendEmailAsync(
-                _emailUserProvider.GetNotificationsUser(),
-                Input.Email,
-                "Потвърдете Вашият имейл адрес",
-                $@"<!DOCTYPE html>
-                        <html lang=""bg"">
-                        <head>
-                            <meta charset=""UTF-8"">
-                            <style>
-                                /* Inline styles are best, but basic embedded CSS is a backup */
-                                .btn-link:hover {{ background-color: #2767e7 !important; }}
-                            </style>
-                        </head>
-                        <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fcfcfc; color: #181717;"">
-                            <table align=""center"" border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" style=""max-width: 600px; margin: 20px auto; border: 1px solid #f8dff8; border-radius: 15px; overflow: hidden; background-color: #ffffff;"">
-                                <tr>
-                                    <td style=""padding: 30px 20px; text-align: center; background-color: #3a053a;"">
-                                        <h1 style=""color: #fcfcfc; margin: 0; font-size: 28px; letter-spacing: 1px;"">Добре дошли!</h1>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style=""padding: 40px 30px; text-align: center;"">
-                                        <h2 style=""color: #3a053a; font-size: 22px; margin-bottom: 20px;"">Потвърдете вашия имейл</h2>
-                                        <p style=""color: #616161; font-size: 16px; line-height: 1.6; margin-bottom: 30px;"">
-                                            Благодарим Ви за регистрацията. За да активирате вашия акаунт и да получите достъп до всички функции, моля, потвърдете вашия имейл адрес чрез бутона по-долу.
-                                        </p>
-                                        <a href=""{HtmlEncoder.Default.Encode(callbackUrl!)}"" 
-                                           style=""background-color: #3a053a; color: #fcfcfc; padding: 15px 30px; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 10px; display: inline-block;"">
-                                            Кликнете тук за потвърждение
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style=""padding: 20px; background-color: #fbf3fb; text-align: center; color: #616161; font-size: 12px;"">
-                                        <p style=""margin: 5px 0;"">Ако не сте правили тази регистрация, можете безопасно да игнорирате този имейл.</p>
-                                        <hr style=""border: 0; border-top: 1px solid #f8dff8; margin: 15px 0;"">
-                                        <p style=""margin: 5px 0;"">&copy; {DateTime.UtcNow.Year} {WebsiteName}. Всички права запазени.</p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </body>
-                        </html>",
-                true);
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    IEmailService emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                    IEmailUserProvider emailUserProvider = scope.ServiceProvider.GetRequiredService<IEmailUserProvider>();
+
+                    await emailService.SendEmailAsync(
+                        emailUserProvider.GetNotificationsUser(),
+                        Input.Email,
+                        "Потвърдете Вашият имейл адрес",
+                        $@"<!DOCTYPE html>
+                            <html lang=""bg"">
+                            <head>
+                                <meta charset=""UTF-8"">
+                                <style>
+                                    .btn-link:hover {{ background-color: #2767e7 !important; }}
+                                </style>
+                            </head>
+                            <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fcfcfc; color: #181717;"">
+                                <table align=""center"" border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" style=""max-width: 600px; margin: 20px auto; border: 1px solid #f8dff8; border-radius: 15px; overflow: hidden; background-color: #ffffff;"">
+                                    <tr>
+                                        <td style=""padding: 30px 20px; text-align: center; background-color: #3a053a;"">
+                                            <h1 style=""color: #fcfcfc; margin: 0; font-size: 28px; letter-spacing: 1px;"">Добре дошли!</h1>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style=""padding: 40px 30px; text-align: center;"">
+                                            <h2 style=""color: #3a053a; font-size: 22px; margin-bottom: 20px;"">Потвърдете вашия имейл</h2>
+                                            <p style=""color: #616161; font-size: 16px; line-height: 1.6; margin-bottom: 30px;"">
+                                                Благодарим Ви за регистрацията. За да активирате вашия акаунт и да получите достъп до всички функции, моля, потвърдете вашия имейл адрес чрез бутона по-долу.
+                                            </p>
+                                            <a href=""{HtmlEncoder.Default.Encode(callbackUrl!)}"" 
+                                               style=""background-color: #3a053a; color: #fcfcfc; padding: 15px 30px; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 10px; display: inline-block;"">
+                                                Кликнете тук за потвърждение
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style=""padding: 20px; background-color: #fbf3fb; text-align: center; color: #616161; font-size: 12px;"">
+                                            <p style=""margin: 5px 0;"">Ако не сте правили тази регистрация, можете безопасно да игнорирате този имейл.</p>
+                                            <hr style=""border: 0; border-top: 1px solid #f8dff8; margin: 15px 0;"">
+                                            <p style=""margin: 5px 0;"">&copy; {DateTime.UtcNow.Year} {WebsiteName}. Всички права запазени.</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </body>
+                            </html>",
+                        true);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex); // TODO: Log this exception
+                }
+            });
 
             ModelState.AddModelError(string.Empty, "Успешно е изпратен е имейл за потвърждение! Моля, проверете вашата поща!");
             return Page();
