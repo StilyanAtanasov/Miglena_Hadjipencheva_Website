@@ -195,6 +195,12 @@
   width: 35%;
 }
 
+.icon-animated.big {
+  height: 15rem;
+  width: 15rem;
+  align-self: center;
+}
+
 /* --- Responsive --- */
 @media (max-width: 800px) {
   html {

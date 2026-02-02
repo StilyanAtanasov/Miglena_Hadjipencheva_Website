@@ -72,7 +72,7 @@ public class ProductServiceTests
 
         // Act
         ICollection<ProductCardDto> products = await _productService
-            .GetAllProductCardsReadonlyAsync(DefaultUserId, 1, sort);
+            .GetAllProductCardsReadonlyAsync(DefaultUserId, 1, sort, null);
 
         // Assert
         Assert.That(products.Count == 1);
@@ -249,7 +249,7 @@ public class ProductServiceTests
     public async Task GetAllProductsCountAsync_ReturnsCorrectAnswer()
     {
         // Act
-        int count = await _productService.GetAllProductsCountAsync();
+        int count = await _productService.GetAllProductsCountAsync(null);
 
         // Assert
         Assert.That(count == _dbContext.Products.Count());
