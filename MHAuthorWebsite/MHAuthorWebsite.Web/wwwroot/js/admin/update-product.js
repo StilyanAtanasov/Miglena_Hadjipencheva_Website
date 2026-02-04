@@ -174,23 +174,12 @@ document.addEventListener(`DOMContentLoaded`, async function () {
   const quill = await initQuill(true, true);
 
   document.querySelector("#updateProductForm").addEventListener("submit", function (e) {
-    const plainText = quill.getText().trim();
-
     const descriptionInput = document.querySelector(`#descriptionInput`);
-    const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
-    const minLength = parseInt(descriptionInput.dataset.textMinLength);
-    const errorSpan = document.getElementById(`description-input-error`);
 
-    errorSpan.textContent = ``;
-
-    let errorMessage = ``;
-    //if (plainText.length < minLength) errorMessage = `Описанието не трябва да е по-кратко от ${minLength} символа.`;
-    //else if (plainText.length > maxLength) errorMessage = `Описанието не трябва да надвишава ${maxLength} символа.`;
-
-    if (errorMessage) {
+    const counterModule = quill.getModule("counter");
+    if (counterModule && counterModule.hasError) {
       e.preventDefault();
-      errorSpan.textContent = errorMessage;
-      quill.scrollIntoView({ behavior: `smooth`, block: `center` });
+      quill.container.scrollIntoView({ behavior: `smooth`, block: `center` });
       return;
     }
 
