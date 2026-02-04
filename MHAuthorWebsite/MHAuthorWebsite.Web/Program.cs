@@ -27,281 +27,313 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RazorLight;
+using Serilog;
 using StackExchange.Redis;
 using System.Security.Claims;
 using System.Text.Json;
 
-var builder = WebApplication.CreateBuilder(args);
 
-if (builder.Environment.IsStaging()) builder.Configuration.AddEnvironmentVariables(prefix: "Staging__");
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+try
+{
+    Log.Information("Starting web host...");
 
-builder.Services
-    .AddDefaultIdentity<ApplicationUser>(options =>
-    {
-        options.User.AllowedUserNameCharacters = null!;
-        options.User.RequireUniqueEmail = true;
-        options.SignIn.RequireConfirmedAccount = true;
-    })
-    .AddRoles<IdentityRole>()
-    .AddErrorDescriber<BulgarianIdentityErrorDescriber>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication()
-    .AddGoogle(googleOptions =>
-    {
-        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
-        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    if (builder.Environment.IsStaging()) builder.Configuration.AddEnvironmentVariables(prefix: "Staging__");
 
-        googleOptions.CallbackPath = "/signin-google";
-        googleOptions.Events.OnCreatingTicket = ctx =>
+    // Add services to the container.
+    string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+                              throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString));
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+    builder.Services
+        .AddDefaultIdentity<ApplicationUser>(options =>
         {
-            ClaimsIdentity identity = (ClaimsIdentity)ctx.Principal!.Identity!;
-            string email = ctx.User.GetProperty("email").GetString()!;
-            string name = ctx.User.GetProperty("name").GetString()!;
+            options.User.AllowedUserNameCharacters = null!;
+            options.User.RequireUniqueEmail = true;
+            options.SignIn.RequireConfirmedAccount = true;
+        })
+        .AddRoles<IdentityRole>()
+        .AddErrorDescriber<BulgarianIdentityErrorDescriber>()
+        .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            // Add claims
-            identity.AddClaim(new Claim(ClaimTypes.Email, email));
-            identity.AddClaim(new Claim(ClaimTypes.Name, name));
-            return Task.CompletedTask;
-        };
-    })
-    .AddMicrosoftAccount(microsoftOptions =>
-    {
-        microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"]!;
-        microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"]!;
-        microsoftOptions.CallbackPath = "/signin-microsoft";
-
-        microsoftOptions.Events.OnCreatingTicket = ctx =>
+    builder.Services.AddAuthentication()
+        .AddGoogle(googleOptions =>
         {
-            ClaimsIdentity identity = (ClaimsIdentity)ctx.Principal!.Identity!;
+            googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+            googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
 
-            string? email = null;
-            if (ctx.User.TryGetProperty("mail", out JsonElement mailProp) && mailProp.ValueKind != JsonValueKind.Null)
-                email = mailProp.GetString();
-            else if (ctx.User.TryGetProperty("userPrincipalName", out JsonElement upnProp) && upnProp.ValueKind != JsonValueKind.Null)
-                email = upnProp.GetString();
+            googleOptions.CallbackPath = "/signin-google";
+            googleOptions.Events.OnCreatingTicket = ctx =>
+            {
+                ClaimsIdentity identity = (ClaimsIdentity)ctx.Principal!.Identity!;
+                string email = ctx.User.GetProperty("email").GetString()!;
+                string name = ctx.User.GetProperty("name").GetString()!;
 
-            if (!string.IsNullOrEmpty(email))
+                // Add claims
                 identity.AddClaim(new Claim(ClaimTypes.Email, email));
-
-            string? name = null;
-            if (ctx.User.TryGetProperty("displayName", out JsonElement nameProp) && nameProp.ValueKind != JsonValueKind.Null)
-                name = nameProp.GetString();
-            else if (ctx.User.TryGetProperty("givenName", out JsonElement givenProp) && givenProp.ValueKind != JsonValueKind.Null)
-                name = givenProp.GetString();
-
-            if (!string.IsNullOrEmpty(name))
                 identity.AddClaim(new Claim(ClaimTypes.Name, name));
+                return Task.CompletedTask;
+            };
+        })
+        .AddMicrosoftAccount(microsoftOptions =>
+        {
+            microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"]!;
+            microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"]!;
+            microsoftOptions.CallbackPath = "/signin-microsoft";
 
+            microsoftOptions.Events.OnCreatingTicket = ctx =>
+            {
+                ClaimsIdentity identity = (ClaimsIdentity)ctx.Principal!.Identity!;
+
+                string? email = null;
+                if (ctx.User.TryGetProperty("mail", out JsonElement mailProp) &&
+                    mailProp.ValueKind != JsonValueKind.Null)
+                    email = mailProp.GetString();
+                else if (ctx.User.TryGetProperty("userPrincipalName", out JsonElement upnProp) &&
+                         upnProp.ValueKind != JsonValueKind.Null)
+                    email = upnProp.GetString();
+
+                if (!string.IsNullOrEmpty(email))
+                    identity.AddClaim(new Claim(ClaimTypes.Email, email));
+
+                string? name = null;
+                if (ctx.User.TryGetProperty("displayName", out JsonElement nameProp) &&
+                    nameProp.ValueKind != JsonValueKind.Null)
+                    name = nameProp.GetString();
+                else if (ctx.User.TryGetProperty("givenName", out JsonElement givenProp) &&
+                         givenProp.ValueKind != JsonValueKind.Null)
+                    name = givenProp.GetString();
+
+                if (!string.IsNullOrEmpty(name))
+                    identity.AddClaim(new Claim(ClaimTypes.Name, name));
+
+                return Task.CompletedTask;
+            };
+        });
+
+    builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
+
+    // Data Services
+    builder.Services.AddScoped<ICloudinaryAdminProductImageDataService, CloudinaryAdminProductImageDataService>();
+    builder.Services.AddScoped<IAdminProductDataService, AdminProductDataService>();
+    builder.Services.AddScoped<IAdminOrderDataService, AdminOrderDataService>();
+
+    builder.Services.AddScoped<ICartDataService, CartDataService>();
+    builder.Services.AddScoped<IOrderDataService, OrderDataService>();
+    builder.Services.AddScoped<IProductCommentDataService, ProductCommentDataService>();
+    builder.Services.AddScoped<IProductDataService, ProductDataService>();
+    builder.Services.AddScoped<IShipmentUpdateDataService, ShipmentUpdateDataService>();
+    builder.Services
+        .AddScoped<IScheduledEmailNotificationSenderDataService, ScheduledEmailNotificationSenderDataService>();
+    builder.Services.AddScoped<IScheduledNotificationIntegrityDataService, ScheduledNotificationIntegrityDataService>();
+
+    // Core Services
+    builder.Services.AddScoped<IImageService, CloudinaryImageService>();
+    builder.Services.AddScoped<IAdminProductImageService, CloudinaryAdminProductImageService>();
+    builder.Services.AddScoped<ICommentImageService, CloudinaryCommentImageService>();
+    builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+
+    builder.Services.AddScoped<IAdminProductTypeService, AdminProductTypeService>();
+    builder.Services.AddScoped<IAdminProductService, AdminProductService>();
+
+    builder.Services.AddScoped<IProductService, ProductService>();
+    builder.Services.AddScoped<IProductCommentService, ProductCommentService>();
+    builder.Services.AddScoped<ICartService, CartService>();
+    builder.Services.AddScoped<IOrderService, OrderService>();
+    builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
+
+    builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+    builder.Services.AddScoped<IAdminUserManagementService, AdminUserManagementService>();
+
+    builder.Services.AddScoped<IAdminContactRequestsService, AdminContactRequestsService>();
+    builder.Services.AddScoped<IContactsService, ContactsService>();
+
+    builder.Services.AddHttpClient<IEcontService, EcontService>();
+    builder.Services.AddHttpClient<IAdminEcontService, AdminEcontService>();
+
+    builder.Services.AddScoped<IUrlProvider, UrlProvider>();
+
+    builder.Services.AddScoped<IErrorService, ErrorService>();
+
+    builder.Services.AddHostedService<ShipmentUpdateService>();
+    builder.Services.AddHostedService<ScheduledEmailNotificationSenderService>();
+    builder.Services.AddHostedService<ScheduledNotificationIntegrityService>();
+
+    builder.Services.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.HttpOnly = true;
+        options.SlidingExpiration = true;
+
+        options.Events.OnRedirectToAccessDenied = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
             return Task.CompletedTask;
         };
     });
 
-builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
-
-// Data Services
-builder.Services.AddScoped<ICloudinaryAdminProductImageDataService, CloudinaryAdminProductImageDataService>();
-builder.Services.AddScoped<IAdminProductDataService, AdminProductDataService>();
-builder.Services.AddScoped<IAdminOrderDataService, AdminOrderDataService>();
-
-builder.Services.AddScoped<ICartDataService, CartDataService>();
-builder.Services.AddScoped<IOrderDataService, OrderDataService>();
-builder.Services.AddScoped<IProductCommentDataService, ProductCommentDataService>();
-builder.Services.AddScoped<IProductDataService, ProductDataService>();
-builder.Services.AddScoped<IShipmentUpdateDataService, ShipmentUpdateDataService>();
-builder.Services.AddScoped<IScheduledEmailNotificationSenderDataService, ScheduledEmailNotificationSenderDataService>();
-builder.Services.AddScoped<IScheduledNotificationIntegrityDataService, ScheduledNotificationIntegrityDataService>();
-
-// Core Services
-builder.Services.AddScoped<IImageService, CloudinaryImageService>();
-builder.Services.AddScoped<IAdminProductImageService, CloudinaryAdminProductImageService>();
-builder.Services.AddScoped<ICommentImageService, CloudinaryCommentImageService>();
-builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
-
-builder.Services.AddScoped<IAdminProductTypeService, AdminProductTypeService>();
-builder.Services.AddScoped<IAdminProductService, AdminProductService>();
-
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IProductCommentService, ProductCommentService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
-
-builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
-builder.Services.AddScoped<IAdminUserManagementService, AdminUserManagementService>();
-
-builder.Services.AddScoped<IAdminContactRequestsService, AdminContactRequestsService>();
-builder.Services.AddScoped<IContactsService, ContactsService>();
-
-builder.Services.AddHttpClient<IEcontService, EcontService>();
-builder.Services.AddHttpClient<IAdminEcontService, AdminEcontService>();
-
-builder.Services.AddScoped<IUrlProvider, UrlProvider>();
-
-builder.Services.AddScoped<IErrorService, ErrorService>();
-
-builder.Services.AddHostedService<ShipmentUpdateService>();
-builder.Services.AddHostedService<ScheduledEmailNotificationSenderService>();
-builder.Services.AddHostedService<ScheduledNotificationIntegrityService>();
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.HttpOnly = true;
-    options.SlidingExpiration = true;
-
-    options.Events.OnRedirectToAccessDenied = context =>
+    builder.Services.AddControllersWithViews(options =>
     {
-        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-        return Task.CompletedTask;
-    };
-});
-
-builder.Services.AddControllersWithViews(options =>
-{
-    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-    options.Filters.Add(new SecurityHeadersAttribute());
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("DefaultPolicy", p =>
-    {
-        p.WithOrigins("http://stilyan-001-site1.stempurl.com/")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+        options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+        options.Filters.Add(new SecurityHeadersAttribute());
     });
-});
 
-string? cloudName = builder.Configuration["Cloudinary:CloudName"];
-string? apiKey = builder.Configuration["Cloudinary:ApiKey"];
-string? apiSecret = builder.Configuration["Cloudinary:ApiSecret"];
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("DefaultPolicy", p =>
+        {
+            p.WithOrigins("http://stilyan-001-site1.stempurl.com/")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+    });
 
-if (new[] { cloudName, apiKey, apiSecret }.Any(string.IsNullOrWhiteSpace))
-    throw new ArgumentException("Please specify Cloudinary account details!");
+    string? cloudName = builder.Configuration["Cloudinary:CloudName"];
+    string? apiKey = builder.Configuration["Cloudinary:ApiKey"];
+    string? apiSecret = builder.Configuration["Cloudinary:ApiSecret"];
 
-builder.Services.AddSingleton(new Cloudinary(new Account(cloudName, apiKey, apiSecret)));
+    if (new[] { cloudName, apiKey, apiSecret }.Any(string.IsNullOrWhiteSpace))
+        throw new ArgumentException("Please specify Cloudinary account details!");
 
-builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "keys")))
-    .SetApplicationName(ApplicationRules.Application.ProjectName);
+    builder.Services.AddSingleton(new Cloudinary(new Account(cloudName, apiKey, apiSecret)));
 
-builder.Services.Configure<EcontApiSettings>(builder.Configuration.GetSection("Econt"));
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(
+            new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "keys")))
+        .SetApplicationName(ApplicationRules.Application.ProjectName);
 
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-builder.Services.AddSingleton<IEmailUserProvider, EmailUserProvider>();
-builder.Services.AddTransient<IEmailService, EmailService>();
+    builder.Services.Configure<EcontApiSettings>(builder.Configuration.GetSection("Econt"));
 
-builder.Services.AddHttpContextAccessor();
+    builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+    builder.Services.AddSingleton<IEmailUserProvider, EmailUserProvider>();
+    builder.Services.AddTransient<IEmailService, EmailService>();
 
-string? redisConnectionString = builder.Configuration["Redis:ConnectionString"];
-if (redisConnectionString is null) throw new ArgumentException("Connection string for Redis must me specified!");
+    builder.Services.AddHttpContextAccessor();
 
-string env = builder.Environment.EnvironmentName;
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = redisConnectionString;
-    options.InstanceName = $"MHWebsite:{env}:";
-});
+    string? redisConnectionString = builder.Configuration["Redis:ConnectionString"];
+    if (redisConnectionString is null) throw new ArgumentException("Connection string for Redis must me specified!");
 
-// Register ConnectionMultiplexer for advanced usage (fire-and-forget)
-builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
-    ConnectionMultiplexer.Connect(redisConnectionString)
-);
+    string env = builder.Environment.EnvironmentName;
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConnectionString;
+        options.InstanceName = $"MHWebsite:{env}:";
+    });
 
-builder.Services.AddScoped<ICacheService, RedisCacheService>();
-builder.Services.AddScoped<IFastCacheService, RedisCacheService>();
-builder.Services.AddScoped<IGlobalCacheKeysManagementService, GlobalCacheKeysManagementService>();
+    // Register ConnectionMultiplexer for advanced usage (fire-and-forget)
+    builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
+        ConnectionMultiplexer.Connect(redisConnectionString)
+    );
 
-string templatePath = Path.Combine(AppContext.BaseDirectory, "NotificationTemplates\\Razor Templates");
+    builder.Services.AddScoped<ICacheService, RedisCacheService>();
+    builder.Services.AddScoped<IFastCacheService, RedisCacheService>();
+    builder.Services.AddScoped<IGlobalCacheKeysManagementService, GlobalCacheKeysManagementService>();
 
-builder.Services.AddSingleton<IRazorLightEngine>(_ => new RazorLightEngineBuilder()
-    .UseFileSystemProject(templatePath)
-    .UseMemoryCachingProvider()
-    .SetOperatingAssembly(typeof(RazorLightRenderingService).Assembly)
-    .Build());
+    string templatePath = Path.Combine(AppContext.BaseDirectory, "NotificationTemplates\\Razor Templates");
 
-builder.Services.AddScoped<INotificationRenderingService, RazorLightRenderingService>();
+    builder.Services.AddSingleton<IRazorLightEngine>(_ => new RazorLightEngineBuilder()
+        .UseFileSystemProject(templatePath)
+        .UseMemoryCachingProvider()
+        .SetOperatingAssembly(typeof(RazorLightRenderingService).Assembly)
+        .Build());
 
-WebApplication app = builder.Build();
+    builder.Services.AddScoped<INotificationRenderingService, RazorLightRenderingService>();
 
-AppEnvironment.Initialize(app.Environment.EnvironmentName);
-QueryBridge.Initialize();
+    // --- Configure Logger ---
+    builder.Host.UseSerilog((context, _, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration));
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseMigrationsEndPoint();
-    app.UseDeveloperExceptionPage();
+    WebApplication app = builder.Build();
+
+    AppEnvironment.Initialize(app.Environment.EnvironmentName);
+    QueryBridge.Initialize();
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseMigrationsEndPoint();
+        app.UseDeveloperExceptionPage();
+    }
+    else
+    {
+        app.UseExceptionHandler("/Error/Error");
+        app.UseHsts();
+    }
+
+    app.UseForwardedHeaders();
+
+    app.UseStatusCodePagesWithReExecute("/Error/Error/{0}");
+
+    app.UseCookiePolicy(new CookiePolicyOptions
+    {
+        Secure = CookieSecurePolicy.Always,
+        HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
+        MinimumSameSitePolicy = SameSiteMode.None
+    });
+
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+
+    app.UseRouting();
+
+    app.UseCors("DefaultPolicy");
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    string[] supportedCultures = { "bg-BG" };
+    RequestLocalizationOptions localizationOptions = new RequestLocalizationOptions()
+        .SetDefaultCulture("bg-BG")
+        .AddSupportedCultures(supportedCultures)
+        .AddSupportedUICultures(supportedCultures);
+
+    app.UseRequestLocalization(localizationOptions);
+
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+
+    app.MapControllerRoute(
+        name: "areas",
+        pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+    app.MapAreaControllerRoute(
+        name: "Admin",
+        areaName: "Admin",
+        pattern: "Admin/{controller}/{action}/{id?}",
+        defaults: new { controller = "AdminDashboard", action = "Dashboard" });
+
+    app.MapRazorPages();
+
+    using (IServiceScope scope = app.Services.CreateScope())
+    {
+        IServiceProvider services = scope.ServiceProvider;
+        await AdminSeeder.SeedAsync(services);
+
+        ApplicationDbContext db = services.GetRequiredService<ApplicationDbContext>();
+        IImageService imageService = services.GetRequiredService<IImageService>();
+
+        await DbInitializer.GenerateCommentImagesPreviewsAsync(db, imageService);
+    }
+
+    Log.Information("The application has started successfully.");
+
+    app.Run();
 }
-else
+catch (Exception ex)
 {
-    app.UseExceptionHandler("/Error/Error");
-    app.UseHsts();
+    Log.Fatal(ex, "Host terminated unexpectedly");
 }
-
-app.UseForwardedHeaders();
-
-app.UseStatusCodePagesWithReExecute("/Error/Error/{0}");
-
-app.UseCookiePolicy(new CookiePolicyOptions
+finally
 {
-    Secure = CookieSecurePolicy.Always,
-    HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
-    MinimumSameSitePolicy = SameSiteMode.None
-});
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseCors("DefaultPolicy");
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-string[] supportedCultures = { "bg-BG" };
-RequestLocalizationOptions localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture("bg-BG")
-    .AddSupportedCultures(supportedCultures)
-    .AddSupportedUICultures(supportedCultures);
-
-app.UseRequestLocalization(localizationOptions);
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
-
-app.MapAreaControllerRoute(
-    name: "Admin",
-    areaName: "Admin",
-    pattern: "Admin/{controller}/{action}/{id?}",
-defaults: new { controller = "AdminDashboard", action = "Dashboard" });
-
-app.MapRazorPages();
-
-using (IServiceScope scope = app.Services.CreateScope())
-{
-    IServiceProvider services = scope.ServiceProvider;
-    await AdminSeeder.SeedAsync(services);
-
-    ApplicationDbContext db = services.GetRequiredService<ApplicationDbContext>();
-    IImageService imageService = services.GetRequiredService<IImageService>();
-
-    await DbInitializer.GenerateCommentImagesPreviewsAsync(db, imageService);
+    Log.CloseAndFlush();
 }
-
-app.Run();
