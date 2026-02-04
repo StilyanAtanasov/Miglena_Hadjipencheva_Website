@@ -151,7 +151,7 @@ function makeTitle(newImage, newImageElement, oldImageRemoved = false) {
   try {
     if (!newImage || !newImageElement || currentTitleImage === newImage) return;
 
-    if (!oldImageRemoved) {
+    if (!oldImageRemoved && currentTitleImage) {
       currentTitleImage.isTitle = false;
       currentTitleImageElement.classList.remove(titleImgClassName);
       currentTitleImageElement.closest(`.${imgContainerClassName}`).classList.remove(titleImgContainerClassName);
@@ -163,8 +163,8 @@ function makeTitle(newImage, newImageElement, oldImageRemoved = false) {
     currentTitleImage.isTitle = true;
     currentTitleImageElement.classList.add(titleImgClassName);
     currentTitleImageElement.closest(`.${imgContainerClassName}`).classList.add(titleImgContainerClassName);
-  } catch {
-    return console.log(`error`); // TODO return a message
+  } catch (error) {
+    return console.error(`error`, error); // TODO return a message
   }
 }
 

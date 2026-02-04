@@ -19,6 +19,7 @@ using static MHAuthorWebsite.GCommon.ApplicationRules.Product;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
 using static MHAuthorWebsite.Web.Utils.Mappers.ImageMapper;
 using AddProductDto = MHAuthorWebsite.Core.Admin.Dto.AddProductDto;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace MHAuthorWebsite.Web.Areas.Admin.Controllers;
 
@@ -247,7 +248,11 @@ public class AdminProductController : AdminBaseController
     [HttpPost("/Admin/AdminProduct/EditProduct/{productId}")]
     public async Task<IActionResult> EditProduct([FromRoute] Guid productId, [FromForm] EditProductFormViewModel model)
     {
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            UpdateExistingProductImagesBasedOnImagesJsonDto(model);
+            return View(model);
+        }
 
         string delta = model.Description;
         string plainText = ExtractPlainTextFromQuillDelta(delta);
@@ -255,22 +260,30 @@ public class AdminProductController : AdminBaseController
         if (plainText.Length < DescriptionTextMinLength)
         {
             ModelState.AddModelError(nameof(model.Description), $"Описанието не трябва да е по-кратко от {DescriptionTextMinLength} символа.");
+            UpdateExistingProductImagesBasedOnImagesJsonDto(model);
             return View(model);
         }
 
         if (plainText.Length > DescriptionTextMaxLength)
         {
             ModelState.AddModelError(nameof(model.Description), $"Описанието не трябва да надвишава {DescriptionTextMaxLength} символа.");
+            UpdateExistingProductImagesBasedOnImagesJsonDto(model);
             return View(model);
         }
 
         if (delta.Length > DescriptionDeltaMaxLength)
         {
             ModelState.AddModelError(nameof(model.Description), "HTML съдържанието е прекалено голямо.");
+            UpdateExistingProductImagesBasedOnImagesJsonDto(model);
             return View(model);
         }
 
-        if (string.IsNullOrEmpty(model.ImagesJson)) return StatusCode(500);
+        if (string.IsNullOrEmpty(model.ImagesJson))
+        {
+            ModelState.AddModelError(nameof(model.Images), "Грешка при вземането на изображенията.");
+            UpdateExistingProductImagesBasedOnImagesJsonDto(model);
+            return View(model);
+        }
 
         ProductImagesJsonDto? images = JsonSerializer.Deserialize<ProductImagesJsonDto>(model.ImagesJson);
 
@@ -280,16 +293,23 @@ public class AdminProductController : AdminBaseController
         if (imagesCount > MaxImages)
         {
             ModelState.AddModelError(nameof(model.Images), $"Можете да качите максимум {MaxImages} снимки.");
+            UpdateExistingProductImagesBasedOnImagesJsonDto(model);
             return View(model);
         }
         if (imagesCount == 0)
         {
             ModelState.AddModelError(nameof(model.Images), "Трябва да добавите поне една снимка.");
+            UpdateExistingProductImagesBasedOnImagesJsonDto(model);
             return View(model);
         }
 
         if (images.Added.Count(i => i) + images.Existing.Count(i => i.IsTitle) != 1)
-            return BadRequest("Невалиден брой заглавни изображения.");
+        {
+            ModelState.AddModelError(nameof(model.Images), "Невалиден брой заглавни изображения.");
+            UpdateExistingProductImagesBasedOnImagesJsonDto(model);
+            return View(model);
+        }
+
 
         Guid? newTitleImageId = null;
         if (images.Existing.Any(i => i.IsTitle))
@@ -463,5 +483,25 @@ public class AdminProductController : AdminBaseController
                 Text = pt.Name
             })
             .ToArray();
+    }
+
+    private void UpdateExistingProductImagesBasedOnImagesJsonDto(EditProductFormViewModel model)
+    {
+        ProductImagesJsonDto? json = JsonSerializer.Deserialize<ProductImagesJsonDto>(model.ImagesJson);
+
+        if (json is null) return;
+
+        model.Images = json.Existing
+            .Where(img => !json.Deleted.Contains(img.Id))
+            .Select(i => new ProductImageViewModel
+            {
+                Id = i.Id,
+                Url = i.Url,
+                IsTitle = i.IsTitle
+            })
+            .ToArray();
+
+        ModelState.AddModelError("AddedImages",
+            "Моля, добавете отново новите изображения и проверете дали е избрано заглавно изображение");
     }
 }
