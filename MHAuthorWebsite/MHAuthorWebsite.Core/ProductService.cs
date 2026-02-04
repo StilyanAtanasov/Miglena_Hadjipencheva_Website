@@ -8,6 +8,7 @@ using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System.Linq.Expressions;
 using System.Text.Json;
@@ -26,14 +27,22 @@ public class ProductService : IProductService
     protected readonly UserManager<ApplicationUser> UserManager;
     protected readonly IGlobalCacheKeysManagementService GlobalCacheKeysManagementService;
 
-    public ProductService(IFastCacheService cacheService, IProductDataService productDataService, IGlobalCacheKeysManagementService globalCacheKeysManagementService,
-        IApplicationRepository repository, UserManager<ApplicationUser> userManager)
+    private readonly ILogger<ProductService> _logger;
+
+    public ProductService(
+        IFastCacheService cacheService,
+        IProductDataService productDataService,
+        IGlobalCacheKeysManagementService globalCacheKeysManagementService,
+        IApplicationRepository repository,
+        UserManager<ApplicationUser> userManager,
+        ILogger<ProductService> logger)
     {
         Cache = cacheService;
         GlobalCacheKeysManagementService = globalCacheKeysManagementService;
         Repository = repository;
         UserManager = userManager;
         ProductDataService = productDataService;
+        _logger = logger;
     }
 
     public async Task<int> GetAllProductsCountAsync(string? searchString)
@@ -464,13 +473,16 @@ public class ProductService : IProductService
         ApplicationUser? user = await UserManager.FindByIdAsync(userId);
         if (user is null) return ServiceResult.Forbidden();
 
-        if (product.Likes.All(u => u.Id != userId)) product.Likes.Add(user);
+        bool isLiked = product.Likes.Any(u => u.Id == userId);
+        if (!isLiked) product.Likes.Add(user);
         else product.Likes.Remove(user);
 
         await Repository.SaveChangesAsync();
 
         await Cache.RemoveAsync(LikedProductsKey(userId));
         await Cache.RemoveAsync(ProductDetailsUserDataKey(productId, userId));
+
+        _logger.LogInformation($"User with ID {userId} {(!isLiked ? "liked" : "unliked")} product with ID {productId}.");
 
         return ServiceResult.Ok();
     }

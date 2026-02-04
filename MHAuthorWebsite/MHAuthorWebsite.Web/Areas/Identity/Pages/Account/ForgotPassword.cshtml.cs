@@ -136,11 +136,14 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
 
             _ = Task.Run(async () =>
             {
+                using IServiceScope scope = _serviceProvider.CreateScope();
+                ILogger<ForgotPasswordModel> logger = scope.ServiceProvider.GetRequiredService<ILogger<ForgotPasswordModel>>();
+
                 try
                 {
-                    using var scope = _serviceProvider.CreateScope();
-                    var mailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
-                    var userProvider = scope.ServiceProvider.GetRequiredService<IEmailUserProvider>();
+                    IEmailService mailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                    IEmailUserProvider userProvider = scope.ServiceProvider.GetRequiredService<IEmailUserProvider>();
+
 
                     await mailService.SendEmailAsync(
                         userProvider.GetNotificationsUser(),
@@ -151,7 +154,7 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex); // TODO: Log this exception
+                    logger.LogError($"Error sending password reset email to {Input.Email}: {ex.Message}");
                 }
             });
 

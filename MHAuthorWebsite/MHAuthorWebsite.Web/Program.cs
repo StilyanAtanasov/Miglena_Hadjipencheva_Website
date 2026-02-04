@@ -32,7 +32,6 @@ using StackExchange.Redis;
 using System.Security.Claims;
 using System.Text.Json;
 
-
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();

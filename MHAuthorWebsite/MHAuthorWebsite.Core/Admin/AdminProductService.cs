@@ -11,6 +11,7 @@ using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using AddProductDto = MHAuthorWebsite.Core.Admin.Dto.AddProductDto;
@@ -21,11 +22,15 @@ public class AdminProductService : ProductService, IAdminProductService
 {
     private readonly IAdminProductDataService _adminProductDataService;
 
-    public AdminProductService(IFastCacheService cacheService, IApplicationRepository repository,
+    public AdminProductService(
+        IFastCacheService cacheService,
+        IApplicationRepository repository,
         IGlobalCacheKeysManagementService globalCacheKeysManagementService,
-        UserManager<ApplicationUser> userManager, IProductDataService productDataService,
-        IAdminProductDataService adminProductDataService)
-        : base(cacheService, productDataService, globalCacheKeysManagementService, repository, userManager)
+        UserManager<ApplicationUser> userManager,
+        IProductDataService productDataService,
+        IAdminProductDataService adminProductDataService,
+        ILogger<ProductService> logger)
+        : base(cacheService, productDataService, globalCacheKeysManagementService, repository, userManager, logger)
         => _adminProductDataService = adminProductDataService;
 
     public async Task<ServiceResult> AddProductAsync(AddProductDto model)

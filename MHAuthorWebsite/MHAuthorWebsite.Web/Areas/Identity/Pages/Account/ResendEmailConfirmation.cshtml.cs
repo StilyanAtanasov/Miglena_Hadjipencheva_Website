@@ -76,9 +76,12 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
 
             _ = Task.Run(async () =>
             {
+                using IServiceScope scope = _serviceProvider.CreateScope();
+                ILogger<ResendEmailConfirmationModel> logger =
+                    scope.ServiceProvider.GetRequiredService<ILogger<ResendEmailConfirmationModel>>();
+
                 try
                 {
-                    using var scope = _serviceProvider.CreateScope();
                     IEmailService emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
                     IEmailUserProvider emailUserProvider = scope.ServiceProvider.GetRequiredService<IEmailUserProvider>();
 
@@ -127,7 +130,8 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex); // TODO: Log this exception
+                    logger.LogError($"Грешка при изпращане на имейл за потвърждение на регистрация до {Input.Email}: {ex.Message}");
+                    logger.LogError(ex.ToString());
                 }
             });
 

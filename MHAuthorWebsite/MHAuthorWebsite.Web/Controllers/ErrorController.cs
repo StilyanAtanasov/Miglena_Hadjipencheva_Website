@@ -10,13 +10,11 @@ namespace MHAuthorWebsite.Web.Controllers;
 
 public class ErrorController : BaseController
 {
-    private readonly IErrorService _errorService;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IWebHostEnvironment _environment;
 
-    public ErrorController(IErrorService errorService, IServiceScopeFactory scopeFactory, IWebHostEnvironment environment)
+    public ErrorController(IServiceScopeFactory scopeFactory, IWebHostEnvironment environment)
     {
-        _errorService = errorService;
         _scopeFactory = scopeFactory;
         _environment = environment;
     }
@@ -41,6 +39,8 @@ public class ErrorController : BaseController
             _ = Task.Run(async () =>
             {
                 using IServiceScope scope = _scopeFactory.CreateScope();
+                ILogger<ErrorController> logger = scope.ServiceProvider.GetRequiredService<ILogger<ErrorController>>();
+
                 try
                 {
                     IErrorService scopedErrorService = scope.ServiceProvider.GetRequiredService<IErrorService>();
@@ -56,7 +56,9 @@ public class ErrorController : BaseController
                 }
                 catch
                 {
-                    Console.WriteLine("CRITICAL: Failed to handle error!!!");
+                    logger.LogCritical("CRITICAL: Failed to handle error!!!");
+                    logger.LogCritical($"Original Path: {originalPath}");
+                    logger.LogCritical($"Exception: {exception?.Message}");
                 }
             });
 

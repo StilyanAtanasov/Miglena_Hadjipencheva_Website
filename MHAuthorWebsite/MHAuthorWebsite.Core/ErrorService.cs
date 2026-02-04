@@ -4,6 +4,7 @@ using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Error;
 using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
 namespace MHAuthorWebsite.Core;
@@ -13,17 +14,21 @@ public class ErrorService : IErrorService
     private readonly IEmailService _emailService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEmailUserProvider _emailUserProvider;
+    private readonly ILogger<ErrorService> _logger;
 
-    public ErrorService(IEmailService emailService, UserManager<ApplicationUser> userManager, IEmailUserProvider emailUserProvider)
+    public ErrorService(IEmailService emailService, UserManager<ApplicationUser> userManager,
+        IEmailUserProvider emailUserProvider, ILogger<ErrorService> logger)
     {
         _emailService = emailService;
         _userManager = userManager;
         _emailUserProvider = emailUserProvider;
+        _logger = logger;
     }
 
     public async Task<ServiceResult> HandleErrorAsync(HandleErrorDto errorDto)
     {
-        // TODO log to the logging provider 
+        _logger.LogError(errorDto.Exception, "An error occurred at {Path} with Request ID {RequestId} for user {UserNameIdentifier}.",
+            errorDto.Path, errorDto.RequestId, errorDto.UserNameIdentifier);
 
         ServiceResult sr = await SendAdminsErrorNotificationAsync(errorDto.Exception, errorDto.Path, errorDto.Method, errorDto.RequestId, errorDto.UserNameIdentifier);
         if (!sr.Success)

@@ -16,8 +16,9 @@ namespace MHAuthorWebsite.Core.Admin;
 public class AdminContactRequestsService : ContactsService, IAdminContactRequestsService
 {
     public AdminContactRequestsService(IEmailService emailService, IEmailUserProvider emailUserProvider,
-        IApplicationRepository repository, UserManager<ApplicationUser> userManager, IUrlProvider urlProvider)
-        : base(emailService, emailUserProvider, repository, userManager, urlProvider) { }
+        IApplicationRepository repository, UserManager<ApplicationUser> userManager, IUrlProvider urlProvider,
+        IServiceProvider serviceProvider)
+        : base(emailService, emailUserProvider, repository, userManager, urlProvider, serviceProvider) { }
 
     public async Task<ICollection<ContactRequestCardDto>> GetContactRequestsPagedReadonlyAsync(int page)
         => await Repository

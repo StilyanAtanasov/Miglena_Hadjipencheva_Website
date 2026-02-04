@@ -6,14 +6,20 @@ using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace MHAuthorWebsite.Core.Background_Services;
 
 public class ScheduledEmailNotificationSenderService : BackgroundService
 {
     private readonly IServiceProvider _services;
+    private readonly ILogger<ScheduledEmailNotificationSenderService> _logger;
 
-    public ScheduledEmailNotificationSenderService(IServiceProvider services) => _services = services;
+    public ScheduledEmailNotificationSenderService(IServiceProvider services, ILogger<ScheduledEmailNotificationSenderService> logger)
+    {
+        _services = services;
+        _logger = logger;
+    }
 
     private TimeSpan DelayInterval => TimeSpan.FromHours(2);
 
@@ -58,12 +64,12 @@ public class ScheduledEmailNotificationSenderService : BackgroundService
 
                 await repository.SaveChangesAsync();
 
-                Console.WriteLine($"Successfully send {sentCount} notifications!");
-                Console.WriteLine($"{failedCount} notifications failed to send!");
+                _logger.LogInformation($"Successfully send {sentCount} notifications!");
+                _logger.LogInformation($"{failedCount} notifications failed to send (User not found)!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
+                _logger.LogError($"Error occurred: {ex.Message}");
             }
 
             await Task.Delay(DelayInterval, cancellationToken);

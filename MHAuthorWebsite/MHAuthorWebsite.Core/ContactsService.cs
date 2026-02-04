@@ -6,6 +6,8 @@ using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
 namespace MHAuthorWebsite.Core;
@@ -17,21 +19,22 @@ public class ContactsService : IContactsService
     protected readonly IApplicationRepository Repository;
     protected readonly UserManager<ApplicationUser> UserManager;
     protected readonly IUrlProvider UrlProvider;
+    protected readonly IServiceProvider ServiceProvider;
 
     public ContactsService(IEmailService emailService, IEmailUserProvider emailUserProvider,
-        IApplicationRepository repository, UserManager<ApplicationUser> userManager, IUrlProvider urlProvider)
+        IApplicationRepository repository, UserManager<ApplicationUser> userManager, IUrlProvider urlProvider,
+        IServiceProvider serviceProvider)
     {
         EmailService = emailService;
         EmailUserProvider = emailUserProvider;
         Repository = repository;
         UserManager = userManager;
         UrlProvider = urlProvider;
+        ServiceProvider = serviceProvider;
     }
 
     public async Task<ServiceResult> SendContactMessageAsync(SendContactMessageDto model, string? userId)
     {
-        IEmailUser emailUser = EmailUserProvider.GetContactUser();
-
         ApplicationUser? user = userId is not null ?
             await UserManager.Users.Where(u => u.Id == userId && !u.IsDeleted).FirstOrDefaultAsync()
             : null;
@@ -52,10 +55,20 @@ public class ContactsService : IContactsService
 
         string requestDetailsUrl = UrlProvider.GetContactRequestPageUrl(contactRequest.Id);
 
-        try
+        _ = Task.Run(async () =>
         {
-            string[] adminEmails = (await UserManager.GetUsersInRoleAsync(AdminRoleName)).Where(u => !u.IsDeleted).Select(u => u.Email).ToArray()!;
-            string emailBody = $@"
+            using IServiceScope scope = ServiceProvider.CreateScope();
+            ILogger<ContactsService> logger = scope.ServiceProvider.GetRequiredService<ILogger<ContactsService>>();
+
+            try
+            {
+                UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                IEmailUserProvider emailUserProvider =
+                    scope.ServiceProvider.GetRequiredService<IEmailUserProvider>();
+                IEmailService emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+
+                string[] adminEmails = (await userManager.GetUsersInRoleAsync(AdminRoleName)).Where(u => !u.IsDeleted).Select(u => u.Email).ToArray()!;
+                string emailBody = $@"
                 <!DOCTYPE html>
                 <html>
                 <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f0f0;"">
@@ -116,12 +129,15 @@ public class ContactsService : IContactsService
                 </body>
                 </html>";
 
-            await EmailService.SendEmailsBulkAsync(emailUser, adminEmails, $"Ново запитване от {model.Name}", emailBody, true);
-        }
-        catch
-        {
-            // TODO  Log email sending failure (not implemented here)
-        }
+                await emailService.SendEmailsBulkAsync(emailUserProvider.GetContactUser(),
+                    adminEmails, $"Ново запитване от {model.Name}", emailBody, true);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Неуспешно изпращане на имейл за ново запитване от контактната форма.");
+                logger.LogError(ex.Message);
+            }
+        });
 
         return ServiceResult.Ok();
     }

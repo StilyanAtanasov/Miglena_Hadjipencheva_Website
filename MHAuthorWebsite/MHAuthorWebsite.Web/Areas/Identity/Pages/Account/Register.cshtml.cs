@@ -169,9 +169,11 @@ public class RegisterModel : PageModel
 
         _ = Task.Run(async () =>
         {
+            using IServiceScope scope = _serviceProvider.CreateScope();
+            ILogger<RegisterModel> logger = scope.ServiceProvider.GetRequiredService<ILogger<RegisterModel>>();
+
             try
             {
-                using var scope = _serviceProvider.CreateScope();
                 IEmailService emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
                 IEmailUserProvider emailUserProvider = scope.ServiceProvider.GetRequiredService<IEmailUserProvider>();
 
@@ -220,7 +222,8 @@ public class RegisterModel : PageModel
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex); // TODO: Log this exception
+                logger.LogError($"Error sending email confirmation to {targetEmail}: {ex.Message}");
+                logger.LogError(ex.ToString());
             }
         });
 

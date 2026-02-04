@@ -109,9 +109,12 @@ public class ResetPasswordModel : PageModel
             {
                 _ = Task.Run(async () =>
                 {
+                    using IServiceScope scope = _serviceProvider.CreateScope();
+                    ILogger<ResetPasswordModel> logger =
+                        scope.ServiceProvider.GetRequiredService<ILogger<ResetPasswordModel>>();
+
                     try
                     {
-                        using IServiceScope scope = _serviceProvider.CreateScope();
                         IEmailService emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
                         IEmailUserProvider emailUserProvider =
                             scope.ServiceProvider.GetRequiredService<IEmailUserProvider>();
@@ -168,8 +171,8 @@ public class ResetPasswordModel : PageModel
                     }
                     catch (Exception ex)
                     {
-                        // TODO Log the exception (use your logger here)
-                        Console.WriteLine($"Email background task failed: {ex.Message}");
+                        logger.LogError($"Error sending password reset confirmation email: {ex.Message}");
+                        logger.LogError(ex.Message);
                     }
                 });
             }

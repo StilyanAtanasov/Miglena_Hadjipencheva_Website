@@ -10,6 +10,7 @@ using MHAuthorWebsite.Core.NotificationTemplates.PayloadModels;
 using MHAuthorWebsite.Data.Common.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Econt;
 
@@ -18,8 +19,13 @@ namespace MHAuthorWebsite.Core.Background_Services;
 public class ShipmentUpdateService : BackgroundService
 {
     private readonly IServiceProvider _services;
+    private readonly ILogger<ShipmentUpdateService> _logger;
 
-    public ShipmentUpdateService(IServiceProvider services) => _services = services;
+    public ShipmentUpdateService(IServiceProvider services, ILogger<ShipmentUpdateService> logger)
+    {
+        _services = services;
+        _logger = logger;
+    }
 
     private TimeSpan DelayInterval => TimeSpan.FromHours(2);
 
@@ -136,11 +142,12 @@ public class ShipmentUpdateService : BackgroundService
                     await repository.SaveChangesAsync();
                 }
 
-                Console.WriteLine("Shipment status was updated successfully to all orders!");
+                _logger.LogInformation("Shipment status was updated successfully to all orders!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
+                _logger.LogError($"Error occurred: {ex.Message}");
+                // TODO Email the admin about the error
             }
 
             await Task.Delay(DelayInterval, cancellationToken);

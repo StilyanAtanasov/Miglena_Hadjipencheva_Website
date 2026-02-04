@@ -4,14 +4,20 @@ using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace MHAuthorWebsite.Core.Background_Services;
 
 public class ScheduledNotificationIntegrityService : BackgroundService
 {
     private readonly IServiceProvider _services;
+    private readonly ILogger<ScheduledNotificationIntegrityService> _logger;
 
-    public ScheduledNotificationIntegrityService(IServiceProvider services) => _services = services;
+    public ScheduledNotificationIntegrityService(IServiceProvider services, ILogger<ScheduledNotificationIntegrityService> logger)
+    {
+        _services = services;
+        _logger = logger;
+    }
 
     private TimeSpan DelayInterval => TimeSpan.FromHours(2);
 
@@ -30,12 +36,12 @@ public class ScheduledNotificationIntegrityService : BackgroundService
                 foreach (ScheduledNotification notification in expiredNotifications) notification.NotificationStatus = ScheduledNotificationStatus.Expired;
 
                 await repository.SaveChangesAsync();
-                Console.WriteLine($"Successfully changed {expiredNotifications.Count} notifications to expired status.");
+                _logger.LogInformation($"Successfully changed {expiredNotifications.Count} notifications to expired status.");
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
+                _logger.LogError($"Error occurred: {ex.Message}");
             }
 
             await Task.Delay(DelayInterval, cancellationToken);
