@@ -1,6 +1,6 @@
 "use strict";
 
-import { initQuill } from "./editor.js";
+import { initQuill } from "../editor.js";
 
 // --- Images ---
 class Image {
@@ -175,11 +175,22 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
   document.querySelector("#updateProductForm").addEventListener("submit", function (e) {
     const plainText = quill.getText().trim();
+
     const descriptionInput = document.querySelector(`#descriptionInput`);
     const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
+    const minLength = parseInt(descriptionInput.dataset.textMinLength);
+    const errorSpan = document.getElementById(`description-input-error`);
 
-    if (plainText.length > maxLength) {
+    errorSpan.textContent = ``;
+
+    let errorMessage = ``;
+    //if (plainText.length < minLength) errorMessage = `Описанието не трябва да е по-кратко от ${minLength} символа.`;
+    //else if (plainText.length > maxLength) errorMessage = `Описанието не трябва да надвишава ${maxLength} символа.`;
+
+    if (errorMessage) {
       e.preventDefault();
+      errorSpan.textContent = errorMessage;
+      quill.scrollIntoView({ behavior: `smooth`, block: `center` });
       return;
     }
 

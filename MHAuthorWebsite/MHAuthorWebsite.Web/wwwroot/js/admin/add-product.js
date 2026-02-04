@@ -1,7 +1,7 @@
 "use strict";
 
-import { initQuill } from "./editor.js";
-import { pushNotification } from "../js/notification.js";
+import { initQuill } from "../editor.js";
+import { pushNotification } from "../notification.js";
 
 document.addEventListener(`DOMContentLoaded`, async function (e) {
   const categorySelect = document.getElementById(`selectProductType`);
@@ -11,13 +11,12 @@ document.addEventListener(`DOMContentLoaded`, async function (e) {
   categorySelect.addEventListener(`change`, RetrieveAttributes);
 
   document.querySelector(`#addProductForm`).addEventListener(`submit`, function (e) {
-    const plainText = quill.getText().trim();
-
     const descriptionInput = document.querySelector(`#descriptionInput`);
-    const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
 
-    if (plainText.length > maxLength) {
+    const counterModule = quill.getModule("counter");
+    if (counterModule && counterModule.hasError) {
       e.preventDefault();
+      quill.container.scrollIntoView({ behavior: `smooth`, block: `center` });
       return;
     }
 

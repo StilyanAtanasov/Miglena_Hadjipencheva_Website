@@ -45,7 +45,7 @@ public class AdminProductController : AdminBaseController
     }
 
     [HttpPost]
-    [SecurityHeaders(CspFeature.Editor)]
+    [SecurityHeaders(CspFeature.Editor | CspFeature.Notifications)]
     public async Task<IActionResult> AddProduct(AddProductForm model)
     {
         if (!ModelState.IsValid)
@@ -64,6 +64,13 @@ public class AdminProductController : AdminBaseController
 
         string delta = model.Description;
         string plainText = ExtractPlainTextFromQuillDelta(delta);
+
+        if (plainText.Length < DescriptionTextMinLength)
+        {
+            ModelState.AddModelError(nameof(model.Description), $"Описанието не трябва да е по-кратко от {DescriptionTextMinLength} символа.");
+            await PrepareViewBagForAddProduct();
+            return View(model);
+        }
 
         if (plainText.Length > DescriptionTextMaxLength)
         {
@@ -245,10 +252,15 @@ public class AdminProductController : AdminBaseController
         string delta = model.Description;
         string plainText = ExtractPlainTextFromQuillDelta(delta);
 
-        // TODO FIX BUG - this check does not work
+        if (plainText.Length < DescriptionTextMinLength)
+        {
+            ModelState.AddModelError(nameof(model.Description), $"Описанието не трябва да е по-кратко от {DescriptionTextMinLength} символа.");
+            return View(model);
+        }
+
         if (plainText.Length > DescriptionTextMaxLength)
         {
-            ModelState.AddModelError(nameof(model.Description), "Описание не трябва да надвишава 4000 символа текст.");
+            ModelState.AddModelError(nameof(model.Description), $"Описанието не трябва да надвишава {DescriptionTextMaxLength} символа.");
             return View(model);
         }
 

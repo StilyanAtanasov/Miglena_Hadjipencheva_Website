@@ -6,6 +6,8 @@ class Counter {
     quill.on(Quill.events.TEXT_CHANGE, () => {
       this.calculate(quill, container);
     });
+
+    this.hasError = false;
   }
 
   calculate(quill, container) {
@@ -18,12 +20,13 @@ class Counter {
     const descriptionInput = document.querySelector(`#descriptionInput`);
     const descriptionError = document.querySelector(`#description-input-error`);
     const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
+    const minLength = parseInt(descriptionInput.dataset.textMinLength);
 
-    if (text.length > maxLength) {
-      descriptionError.textContent = `Описанието не може да е повече от ${maxLength} символа.`;
-    } else {
-      descriptionError.textContent = ``;
-    }
+    if (text.length < minLength) descriptionError.textContent = `Описанието не може да е по-кратко от ${minLength} символа.`;
+    else if (text.length > maxLength) descriptionError.textContent = `Описанието не може да е повече от ${maxLength} символа.`;
+    else descriptionError.textContent = ``;
+
+    this.hasError = descriptionError.textContent !== ``;
   }
 }
 
