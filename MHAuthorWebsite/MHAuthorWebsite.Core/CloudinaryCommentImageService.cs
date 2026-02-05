@@ -5,6 +5,7 @@ using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Images;
 using MHAuthorWebsite.Core.Dtos.ProductComment;
+using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ProductCommentImages;
 
@@ -13,11 +14,15 @@ namespace MHAuthorWebsite.Core;
 public class CloudinaryCommentImageService : CloudinaryImageService, ICommentImageService
 {
     private readonly IImageService _imageService;
+    private readonly ILogger<CloudinaryCommentImageService> _logger;
 
     public CloudinaryCommentImageService(IImageService imageService,
-        ICloudinaryService cloudinaryService)
-        : base(cloudinaryService)
-        => _imageService = imageService;
+        ICloudinaryService cloudinaryService, ILogger<CloudinaryCommentImageService> logger, ILogger<CloudinaryImageService> baseLogger)
+        : base(cloudinaryService, baseLogger)
+    {
+        _imageService = imageService;
+        _logger = logger;
+    }
 
     public async Task<ServiceResult<ICollection<ProductCommentImagesUploadDto>>> UploadCommentImagesAsync(
         ICollection<UploadImageRequestDto> images)
@@ -67,6 +72,7 @@ public class CloudinaryCommentImageService : CloudinaryImageService, ICommentIma
                 });
             }
 
+            _logger.LogInformation("Successfully uploaded {Count} comment images.", uploadResults.Count);
             return ServiceResult<ICollection<ProductCommentImagesUploadDto>>.Ok(uploadResults);
         }
         finally
@@ -87,7 +93,11 @@ public class CloudinaryCommentImageService : CloudinaryImageService, ICommentIma
         await Task.WhenAll(deleteTasks);
 
         bool allSucceeded = deleteTasks.All(t => t.Result.Success);
-        if (allSucceeded) return ServiceResult.Ok();
+        if (allSucceeded)
+        {
+            _logger.LogInformation("Successfully deleted {Count} comment images.", deleteTasks.Count);
+            return ServiceResult.Ok();
+        }
 
         string[] failed = deleteTasks
             .Where(t => !t.Result.Success)

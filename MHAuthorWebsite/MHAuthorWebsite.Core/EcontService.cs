@@ -3,6 +3,7 @@ using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Configuration.EcontApi;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Order;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
@@ -14,11 +15,13 @@ public class EcontService : IEcontService
 {
     protected readonly HttpClient Http;
     protected readonly EcontApiSettings EcontSettings;
+    private readonly ILogger<EcontService> _logger;
 
-    public EcontService(HttpClient http, IOptions<EcontApiSettings> econtSettings)
+    public EcontService(HttpClient http, IOptions<EcontApiSettings> econtSettings, ILogger<EcontService> logger)
     {
         Http = http;
         EcontSettings = econtSettings.Value;
+        _logger = logger;
     }
 
     public async Task<ServiceResult<EcontOrderDto>> UpdateOrderAsync(EcontOrderDto order)
@@ -33,6 +36,8 @@ public class EcontService : IEcontService
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
         })!;
 
+
+        _logger.LogInformation("Successfully updated Econt order. Status: {Status}", responseDto.Status);
         return ServiceResult<EcontOrderDto>.Ok(responseDto);
     }
 
@@ -48,6 +53,8 @@ public class EcontService : IEcontService
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
         })!;
 
+
+        _logger.LogInformation("Successfully retrieved tracking info for order.");
         return ServiceResult<EcontShipmentStatusDto>.Ok(responseDto);
     }
 

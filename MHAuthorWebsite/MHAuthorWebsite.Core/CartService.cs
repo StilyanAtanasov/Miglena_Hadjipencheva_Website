@@ -4,6 +4,7 @@ using MHAuthorWebsite.Core.Contracts.DataServices;
 using MHAuthorWebsite.Core.Dtos.Cart;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
+using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheDefaultDurations;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Order;
@@ -17,13 +18,15 @@ public class CartService : ICartService
     private readonly IApplicationRepository _repository;
     private readonly ICartDataService _cartDataService;
     private readonly IGlobalCacheKeysManagementService _globalCacheKeysManagementService;
+    private readonly ILogger<CartService> _logger;
 
-    public CartService(ICartDataService cartDataService, IFastCacheService cacheService, IApplicationRepository repository, IGlobalCacheKeysManagementService globalCacheKeysManagementService)
+    public CartService(ICartDataService cartDataService, IFastCacheService cacheService, IApplicationRepository repository, IGlobalCacheKeysManagementService globalCacheKeysManagementService, ILogger<CartService> logger)
     {
         _cache = cacheService;
         _repository = repository;
         _cartDataService = cartDataService;
         _globalCacheKeysManagementService = globalCacheKeysManagementService;
+        _logger = logger;
     }
 
     public async Task<ServiceResult> AddItemToCartAsync(string userId, Guid productId, int quantity)
@@ -88,10 +91,15 @@ public class CartService : ICartService
 
             await InvalidateCacheAsync(userId);
 
+            await InvalidateCacheAsync(userId);
+
+            _logger.LogInformation("User {UserId} added {Quantity} items of Product {ProductId} to cart.", userId, quantity, productId);
+
             return ServiceResult.Ok();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Error adding item to cart for User {UserId}, Product {ProductId}", userId, productId);
             return ServiceResult.Failure();
         }
     }
@@ -146,6 +154,8 @@ public class CartService : ICartService
 
         _cache.SetFireAndForget(CartKey(userId), cartDto, cacheExpiration);
 
+        _cache.SetFireAndForget(CartKey(userId), cartDto, cacheExpiration);
+        _logger.LogInformation("Successfully retrieved cart for User {UserId}. Items count: {Count}", userId, cartDto.Items.Count);
         return cartDto;
     }
 
@@ -166,6 +176,10 @@ public class CartService : ICartService
         await _repository.SaveChangesAsync();
 
         await InvalidateCacheAsync(userId);
+
+        await InvalidateCacheAsync(userId);
+
+        _logger.LogInformation("User {UserId} removed Item {ItemId} from cart.", userId, itemId);
 
         return ServiceResult.Ok();
     }
@@ -194,6 +208,10 @@ public class CartService : ICartService
         await _repository.SaveChangesAsync();
 
         await InvalidateCacheAsync(userId);
+
+        await InvalidateCacheAsync(userId);
+
+        _logger.LogInformation("User {UserId} updated quantity for Item {ItemId} to {Quantity}. Total updated.", userId, itemId, quantity);
 
         return ServiceResult<UpdatedItemQuantityDto>.Ok(new()
         {
@@ -224,6 +242,10 @@ public class CartService : ICartService
         await _repository.SaveChangesAsync();
 
         await InvalidateCacheAsync(userId);
+
+        await InvalidateCacheAsync(userId);
+
+        _logger.LogInformation("User {UserId} updated selection for Item {ItemId} to {IsSelected}.", userId, itemId, isSelected);
 
         return ServiceResult.Ok();
     }

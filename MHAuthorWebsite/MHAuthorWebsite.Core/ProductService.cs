@@ -53,7 +53,9 @@ public class ProductService : IProductService
             query = query.Where(p => p.Name.Contains(searchString) || p.Description.Contains(searchString)
             || p.ProductType.Name.Contains(searchString));
 
-        return await query.CountAsync();
+        int count = await query.CountAsync();
+        _logger.LogInformation("Found {Count} products matching search string: '{SearchString}'.", count, searchString);
+        return count;
     }
 
     public async Task<ServiceResult<ProductDetailsDto>> GetProductDetailsReadonlyAsync(Guid productId, string? userId)
@@ -350,10 +352,12 @@ public class ProductService : IProductService
                 }
             }
 
+            _logger.LogInformation("Successfully retrieved product details for ProductId: {ProductId}, UserId: {UserId}", productId, userId);
             return ServiceResult<ProductDetailsDto>.Ok(model);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve product details for ProductId: {ProductId}", productId);
             return ServiceResult<ProductDetailsDto>.Failure();
         }
     }
@@ -412,6 +416,7 @@ public class ProductService : IProductService
             : TimeSpan.FromDays(LikedProductTtlDays);
 
         Cache.SetFireAndForget(LikedProductsKey(userId), likedProducts, cacheDuration);
+        _logger.LogInformation("Successfully retrieved liked products for UserId: {UserId}. Count: {Count}", userId, likedProducts.LikedProducts.Count);
         return likedProducts.LikedProducts;
     }
 
@@ -459,9 +464,13 @@ public class ProductService : IProductService
         }
 
         // Ensure the results are returned in the exact order determined by the DB in Step 1.
-        return productCardViewModels
+        List<ProductCardDto> result = productCardViewModels
             .OrderBy(r => Array.IndexOf(pagedProductIds, r.Id))
             .ToList();
+
+        _logger.LogInformation("Successfully retrieved {Count} product cards. Page: {Page}, Search: '{SearchString}'", result.Count, page, searchString);
+
+        return result;
     }
 
     public async Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId)

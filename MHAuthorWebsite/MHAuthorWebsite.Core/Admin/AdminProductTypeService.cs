@@ -6,14 +6,20 @@ using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace MHAuthorWebsite.Core.Admin;
 
 public class AdminProductTypeService : IAdminProductTypeService
 {
     private readonly IApplicationRepository _repository;
+    private readonly ILogger<AdminProductTypeService> _logger;
 
-    public AdminProductTypeService(IApplicationRepository repository) => _repository = repository;
+    public AdminProductTypeService(IApplicationRepository repository, ILogger<AdminProductTypeService> logger)
+    {
+        _repository = repository;
+        _logger = logger;
+    }
 
     public async Task<ServiceResult> AddProductTypeAsync(AddProductTypeDto model)
     {
@@ -53,11 +59,13 @@ public class AdminProductTypeService : IAdminProductTypeService
             return ServiceResult.Failure();
         }
 
+        _logger.LogInformation("Admin added new product type: {Name}", model.Name);
         return ServiceResult.Ok();
     }
 
-    public async Task<ICollection<ProductTypeDto>> GetAllReadonlyAsync() =>
-        await _repository
+    public async Task<ICollection<ProductTypeDto>> GetAllReadonlyAsync()
+    {
+        var result = await _repository
             .AllReadonly<ProductType>()
             .Select(pt => new ProductTypeDto
             {
@@ -65,4 +73,9 @@ public class AdminProductTypeService : IAdminProductTypeService
                 Name = pt.Name
             })
             .ToArrayAsync();
+
+        _logger.LogInformation("Admin retrieved all product types.");
+
+        return result;
+    }
 }

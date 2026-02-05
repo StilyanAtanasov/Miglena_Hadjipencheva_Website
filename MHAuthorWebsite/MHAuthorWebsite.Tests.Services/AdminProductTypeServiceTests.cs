@@ -9,6 +9,7 @@ using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace MHAuthorWebsite.Tests.Services;
@@ -18,6 +19,7 @@ public class AdminProductTypeServiceTests
 {
     private IAdminProductTypeService _adminProductTypeService = null!;
     private ApplicationDbContext _dbContext = null!;
+    private readonly Mock<ILogger<AdminProductTypeService>> _loggerMock = new();
 
     private ProductType _defaultProductType = null!;
 
@@ -29,7 +31,7 @@ public class AdminProductTypeServiceTests
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
-        _adminProductTypeService = new AdminProductTypeService(new ApplicationRepository(_dbContext));
+        _adminProductTypeService = new AdminProductTypeService(new ApplicationRepository(_dbContext), _loggerMock.Object);
 
         // Arrange
         _defaultProductType = await SeedProductTypeAsync();
@@ -108,7 +110,7 @@ public class AdminProductTypeServiceTests
         Assert.IsNotNull(addedProductType);
         Assert.That(_dbContext.ProductTypes.Count(), Is.EqualTo(2));
         Assert.That(addedProductType!.AttributeDefinitions.Count, Is.EqualTo(1));
-        Assert.That(addedProductType!.AttributeDefinitions.ElementAt(0).Key, Is.EqualTo(newProductType.Attributes.First().Key));
+        Assert.That(addedProductType.AttributeDefinitions.ElementAt(0).Key, Is.EqualTo(newProductType.Attributes.First().Key));
     }
 
     [Test]
@@ -149,7 +151,7 @@ public class AdminProductTypeServiceTests
 
         // Simulate an error by throwing an exception in the repository
         Mock<IApplicationRepository> repoMock = new();
-        AdminProductTypeService mockedRepoService = new(repoMock.Object);
+        AdminProductTypeService mockedRepoService = new(repoMock.Object, _loggerMock.Object);
 
         repoMock
             .Setup(r => r.AddAsync(It.IsAny<ProductType>()))

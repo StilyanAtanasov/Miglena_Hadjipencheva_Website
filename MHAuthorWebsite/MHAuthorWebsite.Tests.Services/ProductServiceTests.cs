@@ -10,6 +10,7 @@ using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Linq.Expressions;
 
@@ -25,6 +26,7 @@ public class ProductServiceTests
     private Mock<IFastCacheService> _cacheMock = null!;
     private readonly Mock<IProductDataService> _productDataServiceMock = null!;
     private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
+    private readonly Mock<ILogger<ProductService>> _loggerMock = new();
 
     private Product _defaultProduct = null!;
     private const string DefaultUserId = "test-user";
@@ -45,7 +47,7 @@ public class ProductServiceTests
 
         _dbContext = new ApplicationDbContext(options);
         _productService = new ProductService(_cacheMock.Object, _productDataServiceMock.Object, _globalCacheKeysManagementServiceMock.Object,
-            new ApplicationRepository(_dbContext), _userManagerMock.Object);
+            new ApplicationRepository(_dbContext), _userManagerMock.Object, _loggerMock.Object);
 
         // Arrange
         _defaultProduct = await SeedProductAsync();
@@ -235,7 +237,7 @@ public class ProductServiceTests
             .Throws(new Exception("Simulated failure"));
 
         ProductService service = new ProductService(_cacheMock.Object, _productDataServiceMock.Object, _globalCacheKeysManagementServiceMock.Object,
-            repoMock.Object, _userManagerMock.Object);
+            repoMock.Object, _userManagerMock.Object, _loggerMock.Object);
 
         // Act
         ServiceResult<ProductDetailsDto> result = await service

@@ -3,6 +3,7 @@ using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Configuration.EcontApi;
 using MHAuthorWebsite.Core.Dtos.Order;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Econt;
@@ -11,7 +12,13 @@ namespace MHAuthorWebsite.Core.Admin;
 
 public class AdminEcontService : EcontService, IAdminEcontService
 {
-    public AdminEcontService(HttpClient http, IOptions<EcontApiSettings> econtSettings) : base(http, econtSettings) { }
+    private readonly ILogger<AdminEcontService> _logger;
+
+    public AdminEcontService(HttpClient http, IOptions<EcontApiSettings> econtSettings, ILogger<AdminEcontService> logger, ILogger<EcontService> baseLogger)
+        : base(http, econtSettings, baseLogger)
+    {
+        _logger = logger;
+    }
 
     public async Task<ServiceResult<EcontShipmentStatusDto>> CreateAwbAsync(EcontOrderDto order)
     {
@@ -25,6 +32,7 @@ public class AdminEcontService : EcontService, IAdminEcontService
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
         })!;
 
+        _logger.LogInformation("Successfully created AWB for Econt order with Order number {OrderNumber}", order.OrderNumber);
         return ServiceResult<EcontShipmentStatusDto>.Ok(responseDto);
     }
 
@@ -33,6 +41,7 @@ public class AdminEcontService : EcontService, IAdminEcontService
         HttpResponseMessage response = await SendRequestAsync(DeleteLabelEndpoint, order);
         if (!response.IsSuccessStatusCode) return ServiceResult<EcontOrderDto>.Failure();
 
+        _logger.LogInformation("Successfully deleted Econt label for order with Order number {OrderNumber}", order.OrderNumber);
         return ServiceResult.Ok();
     }
 }

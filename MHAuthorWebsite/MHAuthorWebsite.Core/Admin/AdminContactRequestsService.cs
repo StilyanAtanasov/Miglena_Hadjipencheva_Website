@@ -7,6 +7,7 @@ using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ContactRequestsBoard;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Emails;
@@ -15,13 +16,19 @@ namespace MHAuthorWebsite.Core.Admin;
 
 public class AdminContactRequestsService : ContactsService, IAdminContactRequestsService
 {
+    private readonly ILogger<AdminContactRequestsService> _logger;
+
     public AdminContactRequestsService(IEmailService emailService, IEmailUserProvider emailUserProvider,
         IApplicationRepository repository, UserManager<ApplicationUser> userManager, IUrlProvider urlProvider,
-        IServiceProvider serviceProvider)
-        : base(emailService, emailUserProvider, repository, userManager, urlProvider, serviceProvider) { }
+        IServiceProvider serviceProvider, ILogger<AdminContactRequestsService> logger, ILogger<ContactsService> baseLogger)
+        : base(emailService, emailUserProvider, repository, userManager, urlProvider, serviceProvider, baseLogger)
+    {
+        _logger = logger;
+    }
 
     public async Task<ICollection<ContactRequestCardDto>> GetContactRequestsPagedReadonlyAsync(int page)
-        => await Repository
+    {
+        var result = await Repository
             .AllReadonly<ContactRequest>()
             .OrderByDescending(cr => cr.CreatedOn)
             .Skip((page - 1) * RequestsPerPage)
@@ -37,6 +44,11 @@ public class AdminContactRequestsService : ContactsService, IAdminContactRequest
                 IsAnswered = cr.ReplyMessage != null
             })
             .ToArrayAsync();
+
+        _logger.LogInformation("Successfully retrieved contact requests page {Page}. Count: {Count}", page, result.Length);
+
+        return result;
+    }
 
     public async Task<ServiceResult<ContactRequestDetailsDto>> GetContactRequestDetailsReadonlyAsync(Guid requestId)
     {
@@ -58,6 +70,7 @@ public class AdminContactRequestsService : ContactsService, IAdminContactRequest
             IsAnswered = contactRequest.ReplyMessage != null
         };
 
+        _logger.LogInformation("Successfully retrieved details for contact request {RequestId}.", requestId);
         return ServiceResult<ContactRequestDetailsDto>.Ok(dto);
     }
 
@@ -136,6 +149,7 @@ public class AdminContactRequestsService : ContactsService, IAdminContactRequest
 
         await Repository.SaveChangesAsync();
 
+        _logger.LogInformation("Admin {AdminId} replied to contact request {RequestId}.", adminId, requestId);
         return ServiceResult.Ok();
     }
 }

@@ -14,6 +14,7 @@ namespace MHAuthorWebsite.Core;
 
 public class ContactsService : IContactsService
 {
+    private readonly ILogger<ContactsService> _logger;
     protected readonly IEmailService EmailService;
     protected readonly IEmailUserProvider EmailUserProvider;
     protected readonly IApplicationRepository Repository;
@@ -23,7 +24,7 @@ public class ContactsService : IContactsService
 
     public ContactsService(IEmailService emailService, IEmailUserProvider emailUserProvider,
         IApplicationRepository repository, UserManager<ApplicationUser> userManager, IUrlProvider urlProvider,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider, ILogger<ContactsService> logger)
     {
         EmailService = emailService;
         EmailUserProvider = emailUserProvider;
@@ -31,6 +32,7 @@ public class ContactsService : IContactsService
         UserManager = userManager;
         UrlProvider = urlProvider;
         ServiceProvider = serviceProvider;
+        _logger = logger;
     }
 
     public async Task<ServiceResult> SendContactMessageAsync(SendContactMessageDto model, string? userId)
@@ -138,6 +140,8 @@ public class ContactsService : IContactsService
                 logger.LogError(ex.Message);
             }
         });
+
+        _logger.LogInformation("Contact request created from {Name} ({Email}). Subject: {Subject}", model.Name, model.Email, model.Subject);
 
         return ServiceResult.Ok();
     }

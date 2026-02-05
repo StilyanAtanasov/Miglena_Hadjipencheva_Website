@@ -6,6 +6,7 @@ using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Images;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 
 namespace MHAuthorWebsite.Core.Admin;
@@ -13,13 +14,20 @@ namespace MHAuthorWebsite.Core.Admin;
 public class CloudinaryImageService : IImageService
 {
     private readonly ICloudinaryService _cloudinaryService;
+    private readonly ILogger<CloudinaryImageService> _logger;
 
-    public CloudinaryImageService(ICloudinaryService cloudinaryService) => _cloudinaryService = cloudinaryService;
+    public CloudinaryImageService(ICloudinaryService cloudinaryService, ILogger<CloudinaryImageService> logger)
+    {
+        _cloudinaryService = cloudinaryService;
+        _logger = logger;
+    }
 
     public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<UploadImageRequestDto> images, string folder, short width)
     {
         if (images.Count == 0)
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure(new Dictionary<string, string> { { "Images", "Не са намерени изображения." } });
+
+        _logger.LogInformation("Uploading {Count} images to folder {Folder}.", images.Count, folder);
 
         IEnumerable<Task<ImageUploadResult>> uploadTasks = images.Select(async image =>
         {
@@ -60,6 +68,8 @@ public class CloudinaryImageService : IImageService
         if (imageUrls.Count == 0 || imageUrls.Any(i => i.Length == 0))
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure();
 
+        _logger.LogInformation("Uploading {Count} images from URLs to folder {Folder}.", imageUrls.Count, folder);
+
         IEnumerable<Task<ImageUploadResult>> uploadTasks = imageUrls.Select(imageUrl =>
         {
             string fileName = Path.GetFileNameWithoutExtension(new Uri(imageUrl).AbsolutePath);
@@ -97,6 +107,8 @@ public class CloudinaryImageService : IImageService
     {
         if (images.Count == 0 || images.Any(i => i.Length == 0) || titleImageId > images.Count - 1 || titleImageId < 0)
             return ServiceResult<ICollection<ProductImageUploadResultDto>>.Failure();
+
+        _logger.LogInformation("Uploading {Count} product images with preview.", images.Count);
 
         List<ProductImageUploadResultDto> results = new();
 
@@ -177,6 +189,8 @@ public class CloudinaryImageService : IImageService
 
         if (result.Result != "ok") return ServiceResult.Failure();
 
+        _logger.LogInformation("Deleting Cloudinary image {PublicId}.", publicId);
+
         return ServiceResult.Ok();
     }
 
@@ -189,6 +203,8 @@ public class CloudinaryImageService : IImageService
 
         if (results.Any(result => !result.Success))
             return ServiceResult.Failure();
+
+        _logger.LogInformation("Deleting {Count} Cloudinary images.", publicIds.Count);
 
         return ServiceResult.Ok();
     }

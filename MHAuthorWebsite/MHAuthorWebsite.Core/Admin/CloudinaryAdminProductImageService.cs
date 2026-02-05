@@ -6,6 +6,7 @@ using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Images;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
+using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ProductImage;
 
@@ -16,13 +17,15 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
     private readonly IApplicationRepository _repository;
     private readonly IImageService _imageService;
     private readonly ICloudinaryAdminProductImageDataService _dataService;
+    private readonly ILogger<CloudinaryAdminProductImageService> _logger;
 
-    public CloudinaryAdminProductImageService(IApplicationRepository repository, ICloudinaryAdminProductImageDataService dataService, IImageService imageService, ICloudinaryService cloudinaryService)
-        : base(cloudinaryService)
+    public CloudinaryAdminProductImageService(IApplicationRepository repository, ICloudinaryAdminProductImageDataService dataService, IImageService imageService, ICloudinaryService cloudinaryService, ILogger<CloudinaryAdminProductImageService> logger, ILogger<CloudinaryImageService> baseLogger)
+        : base(cloudinaryService, baseLogger)
     {
         _repository = repository;
         _imageService = imageService;
         _dataService = dataService;
+        _logger = logger;
     }
 
     public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<UploadImageRequestDto> images)
@@ -67,6 +70,9 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
         }
 
         await _repository.SaveChangesAsync();
+
+        _logger.LogInformation("Linked {Count} images to product {ProductId}.", sr.Result!.Count, productId);
+
         return ServiceResult<Guid?>.Ok(titleImage?.Id);
     }
 
@@ -82,6 +88,7 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
         // Delete the full image
         ServiceResult deleteResult = await _imageService.DeleteImageAsync(image.PublicId);
 
+        _logger.LogInformation("Deleted product image {ImageId}.", imageId);
         return !deleteResult.Success ? ServiceResult.Failure() : ServiceResult.Ok();
     }
 
@@ -121,6 +128,9 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
         if (!r.Success) return ServiceResult.Failure();
 
         await _repository.SaveChangesAsync();
+
+        _logger.LogInformation("Updated title image for product {ProductId} to {NewTitleImageId}.", productId, newTitleImageId);
+
         return ServiceResult.Ok();
     }
 }

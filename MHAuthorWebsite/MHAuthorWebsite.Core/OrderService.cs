@@ -9,6 +9,7 @@ using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Data.Common.Extensions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Order;
@@ -23,15 +24,17 @@ public class OrderService : IOrderService
     protected readonly UserManager<ApplicationUser> UserManager;
     protected readonly IEcontService EcontService;
     protected readonly EcontApiSettings EcontApiSettings;
+    private readonly ILogger<OrderService> _logger;
 
     public OrderService(IApplicationRepository repository, IOrderDataService orderDataService, UserManager<ApplicationUser> userManager,
-        IEcontService econtService, IOptions<EcontApiSettings> econtApiSettings)
+        IEcontService econtService, IOptions<EcontApiSettings> econtApiSettings, ILogger<OrderService> logger)
     {
         Repository = repository;
         UserManager = userManager;
         EcontService = econtService;
         EcontApiSettings = econtApiSettings.Value;
         OrderDataService = orderDataService;
+        _logger = logger;
     }
 
     public async Task<OrderSummaryDto> GetOrderSummary(string userId)
@@ -53,7 +56,7 @@ public class OrderService : IOrderService
             })
             .ToListAsync();
 
-        return new OrderSummaryDto
+        OrderSummaryDto result = new()
         {
             UserData = new()
             {
@@ -64,6 +67,9 @@ public class OrderService : IOrderService
             SelectedProducts = selectedProducts,
             EcontShopId = EcontApiSettings.EcontApiShopId
         };
+        _logger.LogInformation("Successfully retrieved order summary for User {UserId}.", userId);
+
+        return result;
     }
 
     public async Task<ServiceResult<Guid>> Order(string userId, EcontDeliveryDetailsDto model)
@@ -159,11 +165,13 @@ public class OrderService : IOrderService
         Repository.DeleteRange(cartItems);
         await Repository.SaveChangesAsync();
 
+        _logger.LogInformation("Successfully created Order {OrderId} for User {UserId}.", order.Id, userId);
         return ServiceResult<Guid>.Ok(order.Id);
     }
 
-    public async Task<ICollection<MyOrderDto>> GetUserOrders(string userId, int page) =>
-    await Repository
+    public async Task<ICollection<MyOrderDto>> GetUserOrders(string userId, int page)
+    {
+        var result = await Repository
         .WhereReadonly<Order>(o => o.UserId == userId)
         .OrderByDescending(o => o.Date)
         .Skip((page - 1) * MyOrdersPageSize)
@@ -183,6 +191,11 @@ public class OrderService : IOrderService
                 .ToArray()
         })
         .ToArrayAsync();
+
+        _logger.LogInformation("Successfully retrieved orders for User {UserId}, Page {Page}. Count: {Count}", userId, page, result.Length);
+
+        return result;
+    }
 
     public async Task<ServiceResult<OrderDetailsDto>> GetOrderDetails(string userId, Guid orderId)
     {
@@ -233,6 +246,7 @@ public class OrderService : IOrderService
             }
         };
 
+        _logger.LogInformation("Successfully retrieved details for Order {OrderId}, User {UserId}.", orderId, userId);
         return ServiceResult<OrderDetailsDto>.Ok(model);
     }
 

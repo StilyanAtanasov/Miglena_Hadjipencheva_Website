@@ -6,6 +6,7 @@ using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.DataCollection;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
@@ -18,14 +19,16 @@ public class AdminUserManagementService : IAdminUserManagementService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IFastCacheService _cache;
+    private readonly ILogger<AdminUserManagementService> _logger;
 
     public AdminUserManagementService(IFastCacheService cache, IApplicationRepository repository, UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<IdentityRole> roleManager, ILogger<AdminUserManagementService> logger)
     {
         _cache = cache;
         _repository = repository;
         _userManager = userManager;
         _roleManager = roleManager;
+        _logger = logger;
     }
 
     public async Task<ICollection<UserSummaryRowDto>> GetAllUsersReadonlyAsync(string? searchString)
@@ -40,7 +43,7 @@ public class AdminUserManagementService : IAdminUserManagementService
                 : query.Where(u => (u.Name != null && u.Name.Contains(searchString))
                                    || (u.Email != null && u.Email.Contains(searchString)));
 
-        return await query
+        UserSummaryRowDto[] result = await query
             .Select(u => new UserSummaryRowDto
             {
                 Id = u.Id,
@@ -52,6 +55,10 @@ public class AdminUserManagementService : IAdminUserManagementService
                 IsDeleted = u.IsDeleted
             })
             .ToArrayAsync();
+
+        _logger.LogInformation("Admin retrieved list of users. Search: '{SearchString}'. Count: {Count}", searchString, result.Length);
+
+        return result;
     }
 
     public async Task<ServiceResult<UserDetailsDto>> GetUserDetailsReadonlyAsync(string userId)
@@ -75,6 +82,7 @@ public class AdminUserManagementService : IAdminUserManagementService
             LastActive = user.LastActive
         };
 
+        _logger.LogInformation("Admin retrieved details for user {UserId}.", userId);
         return ServiceResult<UserDetailsDto>.Ok(userDetails);
     }
 
@@ -99,6 +107,7 @@ public class AdminUserManagementService : IAdminUserManagementService
 
         if (roleName == AdminRoleName) await _cache.RemoveAsync(AdminIdsKey());
 
+        _logger.LogInformation("Admin assigned role '{RoleName}' to user {UserId}.", roleName, userId);
         return ServiceResult.Ok();
     }
 
@@ -112,6 +121,7 @@ public class AdminUserManagementService : IAdminUserManagementService
         user.IsBanned = !user.IsBanned;
         await _userManager.UpdateAsync(user);
 
+        _logger.LogInformation("Admin toggled ban status for user {UserId}. New Status: {IsBanned}", userId, user.IsBanned);
         return ServiceResult<bool>.Ok(user.IsBanned);
     }
 }

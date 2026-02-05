@@ -7,6 +7,7 @@ using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ProductComment;
@@ -20,13 +21,15 @@ public class ProductCommentService : IProductCommentService
     private readonly IApplicationRepository _repository;
     private readonly IProductCommentDataService _productCommentDataService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILogger<ProductCommentService> _logger;
 
-    public ProductCommentService(IFastCacheService cache, IApplicationRepository repository, IProductCommentDataService productCommentDataService, UserManager<ApplicationUser> userManager)
+    public ProductCommentService(IFastCacheService cache, IApplicationRepository repository, IProductCommentDataService productCommentDataService, UserManager<ApplicationUser> userManager, ILogger<ProductCommentService> logger)
     {
         _cache = cache;
         _repository = repository;
         _productCommentDataService = productCommentDataService;
         _userManager = userManager;
+        _logger = logger;
     }
 
     public async Task<ServiceResult<ProductCommentDetailsDto>> GetCommentDetailsReadonlyAsync(Guid commentId, string? userId)
@@ -60,6 +63,7 @@ public class ProductCommentService : IProductCommentService
             })
             .FirstOrDefaultAsync();
 
+        _logger.LogInformation("Successfully retrieved comment details for CommentId: {CommentId}", commentId);
         return comment is null
             ? ServiceResult<ProductCommentDetailsDto>.NotFound()
             : ServiceResult<ProductCommentDetailsDto>.Ok(comment);
@@ -115,6 +119,8 @@ public class ProductCommentService : IProductCommentService
         await _repository.SaveChangesAsync();
 
         await _cache.RemoveAsync(ProductCommentsKey(model.ProductId));
+        await _cache.RemoveAsync(ProductCommentsKey(model.ProductId));
+        _logger.LogInformation("User {UserId} added a comment for Product {ProductId}.", userId, model.ProductId);
         return ServiceResult.Ok();
     }
 
@@ -140,6 +146,7 @@ public class ProductCommentService : IProductCommentService
             }).ToArray()
         };
 
+        _logger.LogInformation("Successfully retrieved comment {CommentId} for edit by User {UserId}.", commentId, userId);
         return ServiceResult<EditProductCommentDto>.Ok(model);
     }
 
@@ -186,6 +193,7 @@ public class ProductCommentService : IProductCommentService
         await _repository.SaveChangesAsync();
         await _cache.RemoveAsync(ProductCommentsKey(model.ProductId));
 
+        _logger.LogInformation("User {UserId} successfully edited Comment {CommentId}.", userId, model.CommentId);
         return ServiceResult<ICollection<string>>.Ok(publicIdsToDelete);
     }
 
@@ -235,6 +243,7 @@ public class ProductCommentService : IProductCommentService
             })
             .ToArray();
 
+        _logger.LogInformation("User {UserId} reacted to Comment {CommentId} with {ReactionType}.", userId, commentId, reactionType);
         return ServiceResult<ICollection<ProductCommentReactionDto>>.Ok(reactions);
     }
 
@@ -303,6 +312,7 @@ public class ProductCommentService : IProductCommentService
                 }).ToArray()
         };
 
+        _logger.LogInformation("Successfully loaded comments for Product {ProductId}, Page {Page}.", productId, page);
         return ServiceResult<CommentPageDto>.Ok(model);
     }
 
@@ -343,6 +353,7 @@ public class ProductCommentService : IProductCommentService
                 }).ToArray()
         };
 
+        _logger.LogInformation("Successfully loaded replies for Comment {CommentId}, Page {Page}.", commentId, page);
         return ServiceResult<ReplyPageDto>.Ok(model);
     }
 
@@ -362,6 +373,7 @@ public class ProductCommentService : IProductCommentService
         await _cache.RemoveAsync(ProductDetailsUserDataKey(comment.ProductId, userId));
         await _cache.RemoveAsync(ProductCommentsKey(comment.ProductId));
 
+        _logger.LogInformation("User {UserId} successfully deleted Comment {CommentId}.", userId, commentId);
         return ServiceResult.Ok();
     }
 

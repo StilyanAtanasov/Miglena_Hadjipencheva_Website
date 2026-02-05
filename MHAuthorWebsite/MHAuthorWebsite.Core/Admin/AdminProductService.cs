@@ -21,6 +21,7 @@ namespace MHAuthorWebsite.Core.Admin;
 public class AdminProductService : ProductService, IAdminProductService
 {
     private readonly IAdminProductDataService _adminProductDataService;
+    private readonly ILogger<AdminProductService> _logger;
 
     public AdminProductService(
         IFastCacheService cacheService,
@@ -29,9 +30,13 @@ public class AdminProductService : ProductService, IAdminProductService
         UserManager<ApplicationUser> userManager,
         IProductDataService productDataService,
         IAdminProductDataService adminProductDataService,
-        ILogger<ProductService> logger)
-        : base(cacheService, productDataService, globalCacheKeysManagementService, repository, userManager, logger)
-        => _adminProductDataService = adminProductDataService;
+        ILogger<ProductService> baseLogger,
+        ILogger<AdminProductService> logger)
+        : base(cacheService, productDataService, globalCacheKeysManagementService, repository, userManager, baseLogger)
+    {
+        _adminProductDataService = adminProductDataService;
+        _logger = logger;
+    }
 
     public async Task<ServiceResult> AddProductAsync(AddProductDto model)
     {
@@ -117,10 +122,13 @@ public class AdminProductService : ProductService, IAdminProductService
             await Repository.AddAsync(product);
             await Repository.SaveChangesAsync();
 
+            _logger.LogInformation("Admin added new product: {ProductName}", model.Name);
+
             return ServiceResult.Ok();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Error adding product: {ProductName}", model.Name);
             return ServiceResult.Failure(new Dictionary<string, string>() { { "DBError", "Грешка при добавяне на продукта в базата!" } });
         }
     }
@@ -173,6 +181,7 @@ public class AdminProductService : ProductService, IAdminProductService
                 .ToArray()
         };
 
+        _logger.LogInformation("Admin retrieved product {ProductId} for edit.", productId);
         return ServiceResult<EditProductDto>.Ok(model);
     }
 
@@ -203,6 +212,7 @@ public class AdminProductService : ProductService, IAdminProductService
         await Cache.RemoveAsync(ProductDetailsKey(product.Id));
         await Cache.RemoveAsync(ProductCardKey(product.Id));
 
+        _logger.LogInformation("Admin updated product {ProductId}.", model.Id);
         return ServiceResult.Ok();
     }
 
@@ -220,10 +230,13 @@ public class AdminProductService : ProductService, IAdminProductService
             await Cache.RemoveAsync(ProductCardKey(product.Id));
             await Cache.RemoveAsync(ProductDetailsKey(product.Id));
 
+            _logger.LogInformation("Admin deleted product {ProductId}.", productId);
+
             return ServiceResult.Ok();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Error deleting product {ProductId}", productId);
             return ServiceResult.Failure();
         }
     }
@@ -262,6 +275,8 @@ public class AdminProductService : ProductService, IAdminProductService
             product.IsPublic = !product.IsPublic;
             await Repository.SaveChangesAsync();
 
+            _logger.LogInformation("Admin toggled publicity for product {ProductId}.", productId);
+
             return ServiceResult.Ok();
         }
         catch (Exception)
@@ -284,6 +299,7 @@ public class AdminProductService : ProductService, IAdminProductService
                 { "ProductId", "Продуктът не беше намерен!" }
             });
 
+        _logger.LogInformation("Admin retrieved price for product {ProductId}.", productId);
         return ServiceResult<decimal>.Ok(price.Value);
     }
 
@@ -316,6 +332,7 @@ public class AdminProductService : ProductService, IAdminProductService
         await Cache.RemoveAsync(ProductDetailsKey(model.ProductId));
         await Cache.RemoveAsync(ProductCardKey(model.ProductId));
 
+        _logger.LogInformation("Admin added discount for product {ProductId}. New Price: {NewPrice}", model.ProductId, model.NewPrice);
         return ServiceResult.Ok();
     }
 
@@ -334,6 +351,7 @@ public class AdminProductService : ProductService, IAdminProductService
         await Cache.RemoveAsync(ProductCardKey(productId));
         await Cache.RemoveAsync(GlobalDiscountsStateIdKey());
 
+        _logger.LogInformation("Admin ended discount for product {ProductId}.", productId);
         return ServiceResult.Ok();
     }
 }

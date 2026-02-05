@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Core.Admin;
+﻿using MHAuthorWebsite.Core;
+using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
 using MHAuthorWebsite.Core.Admin.Dto;
@@ -14,6 +15,7 @@ using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using AddProductDto = MHAuthorWebsite.Core.Admin.Dto.AddProductDto;
 
@@ -30,6 +32,8 @@ public class AdminProductServiceTests
     private readonly Mock<IAdminProductDataService> _adminProductDataServiceMock = null!;
     private readonly Mock<IProductDataService> _productDataServiceMock = null!;
     private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
+    private readonly Mock<ILogger<AdminProductService>> _loggerMock = new();
+    private readonly Mock<ILogger<ProductService>> _baseLoggerMock = new();
 
     private Product _defaultProduct = null!;
 
@@ -50,7 +54,7 @@ public class AdminProductServiceTests
         _dbContext = new ApplicationDbContext(options);
         _adminProductService = new AdminProductService(_cacheMock.Object, new ApplicationRepository(_dbContext),
             _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object, _productDataServiceMock.Object,
-            _adminProductDataServiceMock.Object);
+            _adminProductDataServiceMock.Object, _baseLoggerMock.Object, _loggerMock.Object);
 
         // Arrange
         _defaultProduct = await SeedProductAsync();
@@ -147,7 +151,7 @@ public class AdminProductServiceTests
 
         _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object,
             _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object,
-            _productDataServiceMock.Object, _adminProductDataServiceMock.Object);
+            _productDataServiceMock.Object, _adminProductDataServiceMock.Object, _baseLoggerMock.Object, _loggerMock.Object);
 
         // Act
         ServiceResult result = await _adminProductService.AddProductAsync(model);
@@ -291,7 +295,7 @@ public class AdminProductServiceTests
 
         _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object,
             _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object,
-            _productDataServiceMock.Object, _adminProductDataServiceMock.Object);
+            _productDataServiceMock.Object, _adminProductDataServiceMock.Object, _baseLoggerMock.Object, _loggerMock.Object);
 
         // Act
         ServiceResult result = await _adminProductService.DeleteProductAsync(Guid.NewGuid());
@@ -394,7 +398,7 @@ public class AdminProductServiceTests
 
         _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object,
             _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object,
-            _productDataServiceMock.Object, _adminProductDataServiceMock.Object);
+            _productDataServiceMock.Object, _adminProductDataServiceMock.Object, _baseLoggerMock.Object, _loggerMock.Object);
 
         // Act
         ServiceResult result = await _adminProductService.ToggleProductPublicityAsync(_defaultProduct.Id);

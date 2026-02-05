@@ -10,6 +10,7 @@ using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace MHAuthorWebsite.Tests.Services;
@@ -21,7 +22,9 @@ public class CloudinaryImageServiceTests
 
     private Mock<ICloudinaryService> _cloudinaryMock = null!;
     private Mock<IImageService> _imageServiceMock = null!;
-    private Mock<ICloudinaryAdminProductImageDataService> _dataServiceMock = null!;
+    private readonly Mock<ICloudinaryAdminProductImageDataService> _dataServiceMock = null!;
+    private readonly Mock<ILogger<CloudinaryAdminProductImageService>> _loggerMock = new();
+    private readonly Mock<ILogger<CloudinaryImageService>> _baseLoggerMock = new();
 
     private ProductImage _defaultImage = null!;
     private Product _defaultProduct = null!;
@@ -38,7 +41,7 @@ public class CloudinaryImageServiceTests
 
         _dbContext = new ApplicationDbContext(options);
         _adminProductImageService = new CloudinaryAdminProductImageService(
-            new ApplicationRepository(_dbContext), _dataServiceMock.Object, _imageServiceMock.Object, _cloudinaryMock.Object);
+            new ApplicationRepository(_dbContext), _dataServiceMock.Object, _imageServiceMock.Object, _cloudinaryMock.Object, _loggerMock.Object, _baseLoggerMock.Object);
 
         // Arrange
         _defaultImage = await SeedImageAsync();

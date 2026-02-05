@@ -16,6 +16,7 @@ using MHAuthorWebsite.Data.Common.Extensions;
 using MHAuthorWebsite.Data.Shared.Filters;
 using MHAuthorWebsite.Data.Shared.Filters.Criteria;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
 
@@ -28,6 +29,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
     private readonly IEmailUserProvider _emailUserProvider;
     private readonly IUrlProvider _urlProvider;
     private readonly IAdminOrderDataService _adminOrderDataService;
+    private readonly ILogger<AdminOrderService> _logger;
 
     public AdminOrderService
     (IApplicationRepository repository,
@@ -39,18 +41,22 @@ public class AdminOrderService : OrderService, IAdminOrderService
         IOptions<EcontApiSettings> econtSettings,
         IEmailService emailService,
         IEmailUserProvider emailUserProvider,
-        IUrlProvider urlProvider)
-        : base(repository, orderDataService, userManager, econtService, econtSettings)
+        IUrlProvider urlProvider,
+        ILogger<AdminOrderService> logger,
+        ILogger<OrderService> baseLogger)
+        : base(repository, orderDataService, userManager, econtService, econtSettings, baseLogger)
     {
         _adminEcontService = adminEcontService;
         _emailService = emailService;
         _emailUserProvider = emailUserProvider;
         _urlProvider = urlProvider;
         _adminOrderDataService = adminOrderDataService;
+        _logger = logger;
     }
 
     public async Task<ICollection<AllOrdersListItemDto>> GetAllOrders(AllOrdersFilterCriteria filter)
-        => await Repository
+    {
+        AllOrdersListItemDto[] result = await Repository
             .AllReadonly(new AllOrdersFilter(filter))
             .Select(o => new AllOrdersListItemDto
             {
@@ -62,6 +68,11 @@ public class AdminOrderService : OrderService, IAdminOrderService
                 Status = o.Status
             })
             .ToArrayAsync();
+
+        _logger.LogInformation("Successfully retrieved all orders from admin panel. Count: {Count}", result.Length);
+
+        return result;
+    }
 
     public async Task<ServiceResult<AdminOrderDetailsDto>> GetOrderDetailsAsync(Guid orderId)
     {
@@ -124,6 +135,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
             }
         };
 
+        _logger.LogInformation("Successfully retrieved admin details for order {OrderId}.", orderId);
         return ServiceResult<AdminOrderDetailsDto>.Ok(model);
     }
 
@@ -241,6 +253,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
             </html>",
              true);
 
+        _logger.LogInformation("Admin accepted order {OrderId}.", orderId);
         return ServiceResult.Ok();
     }
 
@@ -314,6 +327,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
             </html>",
             true);
 
+        _logger.LogInformation("Admin rejected order {OrderId}.", orderId);
         return ServiceResult.Ok();
     }
 
@@ -390,6 +404,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
             </html>",
             true);
 
+        _logger.LogInformation("Admin terminated order {OrderId}.", orderId);
         return ServiceResult.Ok();
     }
 

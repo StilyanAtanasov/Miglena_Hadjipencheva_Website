@@ -7,6 +7,7 @@ using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace MHAuthorWebsite.Tests.Services;
@@ -20,6 +21,7 @@ public class CartServiceTests
     private readonly Mock<IFastCacheService> _cacheMock = new();
     private readonly Mock<ICartDataService> _cartDataServiceMock = new();
     private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
+    private readonly Mock<ILogger<CartService>> _loggerMock = new();
 
     private Cart _cart = null!;
     private CartItem _item = null!;
@@ -35,7 +37,7 @@ public class CartServiceTests
 
         _dbContext = new ApplicationDbContext(options);
         _cartService = new CartService(_cartDataServiceMock.Object, _cacheMock.Object, new ApplicationRepository(_dbContext),
-            _globalCacheKeysManagementServiceMock.Object);
+            _globalCacheKeysManagementServiceMock.Object, _loggerMock.Object);
 
         // Arrange
         (_cart, _item) = await SeedCartAsync(DefaultUserId);
