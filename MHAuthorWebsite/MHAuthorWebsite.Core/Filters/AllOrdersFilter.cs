@@ -1,9 +1,9 @@
-﻿using MHAuthorWebsite.Core.Models;
+﻿using MHAuthorWebsite.Core.Filters.Criteria;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
-using MHAuthorWebsite.Data.Shared.Filters.Contracts;
-using MHAuthorWebsite.Data.Shared.Filters.Criteria;
 
-namespace MHAuthorWebsite.Data.Shared.Filters;
+namespace MHAuthorWebsite.Core.Filters;
 
 public class AllOrdersFilter : IFilter<Order>
 {

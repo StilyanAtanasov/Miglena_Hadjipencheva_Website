@@ -2,14 +2,14 @@
 using System.Linq.Expressions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.SortTypes;
 
-namespace MHAuthorWebsite.Web.Utils;
+namespace MHAuthorWebsite.Web.Utils.Mappers;
 
 public static class SortValueMapper
 {
     public static readonly Dictionary<string, (bool descending, Expression<Func<Product, object>>? expression)> SortMap =
         new()
         {
-            [Recommended] = (true, null),
+            [Recommended] = (true, p => p.Orders.Sum(op => op.Quantity)),
             [PriceDesc] = (true, p => p.Discounts
                 .Where(d => d.EndDate > DateTime.UtcNow)
                 .OrderBy(d => d.NewPrice)

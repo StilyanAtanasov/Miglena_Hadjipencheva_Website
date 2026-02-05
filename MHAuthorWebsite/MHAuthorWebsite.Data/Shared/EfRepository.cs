@@ -1,5 +1,4 @@
 ﻿using MHAuthorWebsite.Core.Models.Contracts;
-using MHAuthorWebsite.Data.Shared.Filters.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;

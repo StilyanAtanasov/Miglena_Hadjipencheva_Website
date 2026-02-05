@@ -434,6 +434,8 @@ public class ProductService : IProductService
             .Select(p => p.Id)
             .ToArrayAsync();
 
+        Console.WriteLine(string.Join(", ", pagedProductIds));
+
         if (!pagedProductIds.Any()) return Array.Empty<ProductCardDto>();
 
         ICollection<ProductCardGeneralInfoDto> productCards = await GetProductDetailsBatchAsync(pagedProductIds);

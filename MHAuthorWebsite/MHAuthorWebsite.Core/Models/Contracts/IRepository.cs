@@ -1,5 +1,4 @@
-﻿using MHAuthorWebsite.Data.Shared.Filters.Contracts;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace MHAuthorWebsite.Core.Models.Contracts;
 

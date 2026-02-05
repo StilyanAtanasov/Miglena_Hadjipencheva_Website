@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Common.Extensions;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Configuration.EcontApi;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Contracts.DataServices;
@@ -7,7 +8,6 @@ using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
-using MHAuthorWebsite.Data.Common.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

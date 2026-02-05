@@ -8,6 +8,7 @@ using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.Web.Utils;
+using MHAuthorWebsite.Web.Utils.Mappers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

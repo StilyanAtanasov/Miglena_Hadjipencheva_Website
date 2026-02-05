@@ -2,9 +2,9 @@
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Product;
 using MHAuthorWebsite.Core.Models;
-using MHAuthorWebsite.Web.Utils;
 using MHAuthorWebsite.Web.Utils.Attributes;
 using MHAuthorWebsite.Web.Utils.Enums;
+using MHAuthorWebsite.Web.Utils.Mappers;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Authorization;

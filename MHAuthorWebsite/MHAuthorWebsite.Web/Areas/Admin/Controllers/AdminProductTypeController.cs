@@ -1,8 +1,8 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Common.Extensions;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Dtos.Admin.ProductType;
 using MHAuthorWebsite.Core.Models.Enums;
-using MHAuthorWebsite.Data.Common.Extensions;
 using MHAuthorWebsite.Web.ViewModels.Admin.ProductType;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

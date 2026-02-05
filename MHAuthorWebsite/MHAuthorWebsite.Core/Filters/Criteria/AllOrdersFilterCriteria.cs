@@ -1,4 +1,4 @@
-﻿namespace MHAuthorWebsite.Data.Shared.Filters.Criteria;
+﻿namespace MHAuthorWebsite.Core.Filters.Criteria;
 
 public class AllOrdersFilterCriteria
 {

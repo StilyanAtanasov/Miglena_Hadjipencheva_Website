@@ -1,6 +1,6 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Dtos.Admin.Order;
-using MHAuthorWebsite.Data.Shared.Filters.Criteria;
+using MHAuthorWebsite.Core.Filters.Criteria;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 

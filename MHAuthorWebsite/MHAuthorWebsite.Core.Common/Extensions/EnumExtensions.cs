@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace MHAuthorWebsite.Data.Common.Extensions;
+namespace MHAuthorWebsite.Core.Common.Extensions;
 
 public static class EnumExtensions
 {

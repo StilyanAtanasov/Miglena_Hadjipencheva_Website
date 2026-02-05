@@ -1,4 +1,4 @@
-﻿namespace MHAuthorWebsite.Data.Shared.Filters.Contracts;
+﻿namespace MHAuthorWebsite.Core.Models.Contracts;
 
 public interface IFilter<T> where T : class
 {
