@@ -54,6 +54,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<ScheduledNotification> ScheduledNotifications { get; set; } = null!;
 
+    public DbSet<Work> Works { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

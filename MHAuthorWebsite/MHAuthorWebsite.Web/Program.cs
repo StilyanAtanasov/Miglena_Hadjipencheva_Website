@@ -132,6 +132,8 @@ try
     builder.Services
         .AddScoped<IScheduledEmailNotificationSenderDataService, ScheduledEmailNotificationSenderDataService>();
     builder.Services.AddScoped<IScheduledNotificationIntegrityDataService, ScheduledNotificationIntegrityDataService>();
+    builder.Services.AddScoped<IWorkDataService, WorkDataService>();
+    builder.Services.AddScoped<IAdminWorkDataService, AdminWorkDataService>();
 
     // Core Services
     builder.Services.AddScoped<IImageService, CloudinaryImageService>();
@@ -143,7 +145,9 @@ try
     builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 
     builder.Services.AddScoped<IProductService, ProductService>();
+    builder.Services.AddScoped<IWorkService, WorkService>();
     builder.Services.AddScoped<IProductCommentService, ProductCommentService>();
+    builder.Services.AddScoped<IAdminWorkService, AdminWorkService>();
     builder.Services.AddScoped<ICartService, CartService>();
     builder.Services.AddScoped<IOrderService, OrderService>();
     builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();

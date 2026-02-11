@@ -1,0 +1,72 @@
+@using MHAuthorWebsite.Web.ViewModels.Admin.Work
+@model EditWorkFormViewModel
+
+@{
+    ViewData["Title"] = "Редактиране на творба";
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/image-preview.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin/admin-work.css" asp-append-version="true" />
+}
+
+<div class="admin-form-container">
+    <h2 class="admin-page-title">Редактиране на: @Model.Title</h2>
+
+    <form asp-area="Admin" asp-controller="AdminWork" asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="CurrentCoverImageUrl" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="Title">Заглавие</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="NewCoverImage">Корица (оставете празно ако не променяте)</label>
+            <div class="image-upload-wrapper">
+                <div class="image-preview-box" id="coverPreview">
+                     <img src="@Model.CurrentCoverImageUrl" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                </div>
+                <input asp-for="NewCoverImage" type="file" id="coverUpload" accept="image/*" class="file-input" />
+                <button id ="coverUploadBtn" type="button" class="btn btn-secondary">Промени изображение</button>
+            </div>
+            <span asp-validation-for="NewCoverImage" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Съдържание</label>
+            <partial name="_QuillToolbar" />
+            <div id="description-editor"></div>
+            <input type="hidden" asp-for="Content" id="descriptionInput" value="@Model.Content" />
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <label class="switch">
+                <input asp-for="IsPublic" type="checkbox" />
+                <span class="slider round"></span>
+            </label>
+            <label asp-for="IsPublic">Публична</label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Запази промените</button>
+            <a asp-controller="Work" asp-action="Index" asp-area="" class="btn btn-outline">Отказ</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script type="module" src="~/js/admin/manage-work.js" asp-append-version="true"></script>
+}

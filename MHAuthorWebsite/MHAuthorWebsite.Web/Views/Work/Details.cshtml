@@ -1,0 +1,46 @@
+@model MHAuthorWebsite.Core.Dtos.Work.WorkDetailsDto
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+@section Styles {
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/work-details.css" asp-append-version="true" />
+}
+
+<section class="work-details-container">
+    <div class="work-details-header">
+        <a asp-controller="Work" asp-action="Index" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> Назад към всички
+        </a>
+    </div>
+    
+    <div class="work-details-content-wrapper">
+        <div class="work-details-cover">
+            <img src="@Model.CoverImageUrl" alt="@Model.Title">
+        </div>
+        
+        <div class="work-details-info">
+            <h1 class="work-details-title">@Model.Title</h1>
+            <div class="work-meta">
+                <span class="work-date"><i class="fa-regular fa-calendar"></i> @Model.DatePublished.ToLocalTime().ToString("dd MMMM yyyy")</span>
+            </div>
+            
+            <div class="work-content">
+                <div id="description-editor"></div>
+                <input type="hidden" id="descriptionInput" value="@Model.Content" />
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script type="module" src="~/js/work-details.js" asp-append-version="true"></script>
+}

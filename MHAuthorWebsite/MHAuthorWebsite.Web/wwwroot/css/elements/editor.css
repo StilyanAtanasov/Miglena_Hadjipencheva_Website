@@ -2,6 +2,10 @@
   font-family: var(--font-primary);
 }
 
+.ql-snow .ql-picker.ql-font {
+  overflow: hidden;
+}
+
 /* Set dropdown font-families */
 #toolbar .ql-font span[data-label="Sofia Sans Condensed"]::before {
   font-family: var(--font-primary);

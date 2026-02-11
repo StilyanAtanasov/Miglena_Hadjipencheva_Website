@@ -185,4 +185,13 @@ public static class EntityConstraints
 
         public const byte TargetDeliveryDetailsMaxLength = 100;
     }
+
+    public static class Work
+    {
+        public const int TitleMaxLength = 200;
+
+        public const int ContentTextMinLength = 10;
+        public const int ContentTextMaxLength = 20000;
+        public const int ContentDeltaMaxLength = 100000;
+    }
 }

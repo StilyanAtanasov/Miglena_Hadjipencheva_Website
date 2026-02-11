@@ -19,7 +19,7 @@ public class AdminProductTypeServiceTests
 {
     private IAdminProductTypeService _adminProductTypeService = null!;
     private ApplicationDbContext _dbContext = null!;
-    private readonly Mock<ILogger<AdminProductTypeService>> _loggerMock = new();
+    private readonly Mock<ILogger<AdminProductTypeService>> _loggerMock = null!;
 
     private ProductType _defaultProductType = null!;
 
@@ -110,7 +110,7 @@ public class AdminProductTypeServiceTests
         Assert.IsNotNull(addedProductType);
         Assert.That(_dbContext.ProductTypes.Count(), Is.EqualTo(2));
         Assert.That(addedProductType!.AttributeDefinitions.Count, Is.EqualTo(1));
-        Assert.That(addedProductType.AttributeDefinitions.ElementAt(0).Key, Is.EqualTo(newProductType.Attributes.First().Key));
+        Assert.That(addedProductType!.AttributeDefinitions.ElementAt(0).Key, Is.EqualTo(newProductType.Attributes.First().Key));
     }
 
     [Test]

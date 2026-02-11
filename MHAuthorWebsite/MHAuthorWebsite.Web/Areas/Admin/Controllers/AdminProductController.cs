@@ -12,11 +12,10 @@ using MHAuthorWebsite.Web.ViewModels.Admin.Product;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Text;
-using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Product;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
+using static MHAuthorWebsite.Web.Utils.Helpers.EditorHelper;
 using static MHAuthorWebsite.Web.Utils.Mappers.ImageMapper;
 using AddProductDto = MHAuthorWebsite.Core.Admin.Dto.AddProductDto;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -458,20 +457,6 @@ public class AdminProductController : AdminBaseController
         if (!result.Success) return StatusCode(500);
 
         return RedirectToAction(nameof(ProductsList));
-    }
-
-    private static string ExtractPlainTextFromQuillDelta(string deltaJson)
-    {
-        using JsonDocument doc = JsonDocument.Parse(deltaJson);
-        if (!doc.RootElement.TryGetProperty("ops", out JsonElement ops)) return string.Empty;
-
-        StringBuilder sb = new();
-
-        foreach (JsonElement op in ops.EnumerateArray())
-            if (op.TryGetProperty("insert", out JsonElement insert))
-                sb.Append(insert.GetString());
-
-        return sb.ToString();
     }
 
     private async Task PrepareViewBagForAddProduct()

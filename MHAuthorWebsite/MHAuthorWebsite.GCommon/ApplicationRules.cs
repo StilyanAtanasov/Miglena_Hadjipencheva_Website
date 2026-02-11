@@ -32,6 +32,10 @@ public static class ApplicationRules
         public static string GlobalDiscountsStateIdKey() => "GlobalDiscountsStateId";
 
         public static string CartKey(string userId) => $"Cart:{userId}";
+
+        public static string WorkDetailsKey(Guid id) => $"Work:{id}";
+
+        public static string WorkCardKey(Guid workId) => $"Work:Card:{workId}";
     }
 
     public static class CacheDefaultDurations
@@ -40,6 +44,8 @@ public static class ApplicationRules
         public const int ProductDetailsTtlDays = 5;
         public const int LikedProductTtlDays = 1;
         public const int CartTtlDays = 2;
+        public const int WorkCardTtlDays = 7;
+        public const int WorkDetailsTtlDays = 7;
     }
 
     public static class CurrencyRates
@@ -109,7 +115,7 @@ public static class ApplicationRules
 
     public static class Pagination
     {
-        public const byte PageSize = 20;
+        public const byte PageSize = 1;
     }
 
     public static class Product

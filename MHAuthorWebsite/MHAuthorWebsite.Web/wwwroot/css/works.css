@@ -1,0 +1,238 @@
+/* Works Page Styling */
+
+/* Hero Section */
+.works-hero {
+    background: linear-gradient(135deg, var(--clr-primary-100) 0%, #fff 100%);
+    padding: 4rem 1rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    border-radius: 0 0 30% 30% / 4rem;
+    border-bottom: 1px solid var(--clr-primary-200);
+}
+
+.works-hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.works-hero h1 {
+    font-family: var(--ff-heading);
+    color: var(--clr-primary-900);
+    margin-bottom: 1.25rem;
+    font-size: 3.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.works-hero p {
+    color: var(--clr-neutral-600);
+    font-size: 1.25rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.work-add-btn {
+    margin-top: 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(var(--clr-primary-500-rgb), 0.3);
+}
+
+/* Works Grid */
+.works-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem 1.5rem;
+}
+
+.works-actions {
+    margin-bottom: 3.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2.5rem;
+}
+
+.work-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--clr-neutral-100);
+}
+
+.work-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border-color: var(--clr-primary-200);
+}
+
+.work-card.private-work {
+    opacity: 0.85;
+    background: var(--clr-neutral-50);
+}
+
+.work-card-image {
+    position: relative;
+    padding-top: 140%; /* Aspect ratio suitable for book covers */
+    background-color: var(--clr-neutral-200);
+    overflow: hidden;
+}
+
+.work-card-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.work-card:hover .work-card-image img {
+    transform: scale(1.08);
+}
+
+.work-admin-overlay {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2;
+    transform: translateX(50px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.work-card:hover .work-admin-overlay {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.work-admin-overlay .btn {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.work-card-content {
+    padding: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #fff;
+}
+
+.work-title {
+    font-family: var(--ff-heading);
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: var(--clr-neutral-900);
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.work-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--clr-primary-600);
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: auto;
+    transition: color 0.2s ease, transform 0.2s ease;
+    font-size: 1rem;
+}
+
+.work-link i {
+    font-size: 0.9rem;
+    transition: transform 0.3s ease;
+}
+
+.work-link:hover {
+    color: var(--clr-primary-700);
+}
+
+.work-link:hover i {
+    transform: translateX(5px);
+}
+
+/* No Works State */
+.no-works-message {
+    text-align: center;
+    padding: 6rem 2rem;
+    color: var(--clr-neutral-500);
+    background: var(--clr-neutral-50);
+    border-radius: 20px;
+}
+
+.no-works-message i {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: var(--clr-neutral-300);
+    display: block;
+}
+
+.no-works-message p {
+    font-size: 1.2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .works-hero h1 {
+        font-size: 2.8rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .works-hero {
+        padding: 3rem 1.5rem;
+        border-radius: 0 0 20% 20% / 2rem;
+    }
+
+    .works-hero h1 {
+        font-size: 2.25rem;
+    }
+
+    .works-hero p {
+        font-size: 1.1rem;
+    }
+
+    .works-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .work-admin-overlay {
+        transform: none;
+        opacity: 1;
+        flex-direction: row;
+        top: auto;
+        bottom: 12px;
+        left: 12px;
+        right: auto;
+    }
+}

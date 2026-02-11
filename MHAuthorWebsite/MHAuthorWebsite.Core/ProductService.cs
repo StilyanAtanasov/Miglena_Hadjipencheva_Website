@@ -434,8 +434,6 @@ public class ProductService : IProductService
             .Select(p => p.Id)
             .ToArrayAsync();
 
-        Console.WriteLine(string.Join(", ", pagedProductIds));
-
         if (!pagedProductIds.Any()) return Array.Empty<ProductCardDto>();
 
         ICollection<ProductCardGeneralInfoDto> productCards = await GetProductDetailsBatchAsync(pagedProductIds);
@@ -525,7 +523,8 @@ public class ProductService : IProductService
         DateTime now = DateTime.UtcNow;
         if (missingIds.Any())
         {
-            ProductCardServiceDataDto[] dbItems = await Repository.WhereReadonly<Product>(p => missingIds.Contains(p.Id))
+            ProductCardServiceDataDto[] dbItems = await Repository
+                .WhereReadonly<Product>(p => missingIds.Contains(p.Id))
                 .Select(p => new ProductCardServiceDataDto
                 {
                     Id = p.Id,

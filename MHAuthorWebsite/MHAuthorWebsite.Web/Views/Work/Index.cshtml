@@ -1,0 +1,72 @@
+@using MHAuthorWebsite.Core.Dtos.Work
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using MHAuthorWebsite.Web.ViewModels.Shared.Enums
+@model ICollection<WorkCardDto>
+
+@{
+    ViewData["Title"] = "Творчество";
+    bool isAdmin = User.IsInRole("Admin");
+    
+    int worksCount = ViewBag.WorksCount ?? Model.Count;
+    string? currentSearch = ViewBag.CurrentSearch;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/elements/search-bar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/elements/pagination.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/works.css" asp-append-version="true" />
+}
+
+<section class="works-hero">
+    <div class="works-hero-content">
+        <h1>Творчество</h1>
+        <p>Разгледайте колекцията от творби и публикации на Миглена Хаджипенчева.</p>
+        
+        @if (isAdmin)
+        {
+            <a asp-area="Admin" asp-controller="AdminWork" asp-action="Add" class="btn btn-primary work-add-btn">
+                <i class="fa-solid fa-plus"></i> Добави творба
+            </a>
+        }
+    </div>
+</section>
+
+<section class="works-container" id="works-container">
+    @if (worksCount > 0 || !string.IsNullOrEmpty(currentSearch))
+    {
+        <div class="works-actions">
+            @await Html.PartialAsync("_SearchBar", new SearchBarViewModel
+            {
+                FormCustomId = "work-search-form",
+                InputCustomId = "work-search-input",
+                PlaceholderText = "Търсете творби по заглавие...",
+                DefaultValue = currentSearch,
+                Align = SearchBarAlignOptions.Center
+            })
+        </div>
+    }
+
+    @if (Model.Any())
+    {
+        @await Html.PartialAsync("_WorkCardsPartial", Model)
+    }
+    else
+    {
+        <div class="no-works-message">
+            @if (!string.IsNullOrEmpty(currentSearch))
+            {
+                <i class="fa-solid fa-filter"></i>
+                <p>Няма намерени творби за: @currentSearch</p>
+            }
+            else
+            {
+                <i class="fa-regular fa-books"></i>
+                <p>Все още няма добавени творби.</p>
+            }
+        </div>
+    }
+</section>
+
+@section Scripts {
+    <script type="module" src="~/js/works.js" asp-append-version="true"></script>
+}
