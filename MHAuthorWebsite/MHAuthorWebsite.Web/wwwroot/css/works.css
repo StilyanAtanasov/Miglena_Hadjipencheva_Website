@@ -83,8 +83,13 @@
 }
 
 .work-card.private-work {
-  opacity: 0.85;
+  opacity: 0.7;
   background: var(--color-light-grey);
+  border: 0.2rem solid var(--color-secondary);
+}
+
+.work-card.private-work:hover {
+  opacity: 1;
 }
 
 .work-card-image {

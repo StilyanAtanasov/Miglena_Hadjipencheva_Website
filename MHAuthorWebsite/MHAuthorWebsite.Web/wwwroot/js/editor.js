@@ -8,6 +8,20 @@ class Counter {
     });
 
     this.hasError = false;
+
+    this.descriptionInput = document.querySelector(`#descriptionInput`);
+    this.descriptionError = document.querySelector(`#description-input-error`);
+
+    this.minLength = parseInt(this.descriptionInput?.dataset.textMinLength);
+    this.maxLength = parseInt(this.descriptionInput?.dataset.textMaxLength);
+
+    this.isErrorHandlingConfigured = !!(this.descriptionInput && this.descriptionError && !isNaN(this.minLength) && !isNaN(this.maxLength));
+    if (!this.isErrorHandlingConfigured)
+      console.warn(
+        `Counter module: Error handling is not properly configured. Please ensure that the description input and error elements exist and have valid data attributes for min and max length.`,
+      );
+
+    this.calculate(quill, container);
   }
 
   calculate(quill, container) {
@@ -15,18 +29,15 @@ class Counter {
     const words = text.length === 0 ? 0 : text.split(/\s+/).length;
     const chars = text.length;
 
-    container.innerText = `${words} дум${words === 1 ? "а" : "и"}, ${chars} символ${chars === 1 ? "" : "а"}!`;
+    container.innerText = `${words} дум${words === 1 ? `а` : `и`}, ${chars} символ${chars === 1 ? `` : `а`}!`;
 
-    const descriptionInput = document.querySelector(`#descriptionInput`);
-    const descriptionError = document.querySelector(`#description-input-error`);
-    const maxLength = parseInt(descriptionInput.dataset.textMaxLength);
-    const minLength = parseInt(descriptionInput.dataset.textMinLength);
+    if (!this.isErrorHandlingConfigured) return;
 
-    if (text.length < minLength) descriptionError.textContent = `Описанието не може да е по-кратко от ${minLength} символа.`;
-    else if (text.length > maxLength) descriptionError.textContent = `Описанието не може да е повече от ${maxLength} символа.`;
-    else descriptionError.textContent = ``;
+    if (text.length < this.minLength) this.descriptionError.textContent = `Описанието не може да е по-кратко от ${this.minLength} символа.`;
+    else if (text.length > this.maxLength) this.descriptionError.textContent = `Описанието не може да е повече от ${this.maxLength} символа.`;
+    else this.descriptionError.textContent = ``;
 
-    this.hasError = descriptionError.textContent !== ``;
+    this.hasError = this.descriptionError.textContent !== ``;
   }
 }
 

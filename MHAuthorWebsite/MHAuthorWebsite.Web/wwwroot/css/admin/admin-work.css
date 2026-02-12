@@ -50,7 +50,7 @@
 
 .text-danger {
   color: var(--color-error);
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   margin-top: 0.5rem;
 }
 
@@ -87,8 +87,12 @@
 }
 
 .image-preview-box i {
-  font-size: 4rem;
+  font-size: 6rem;
   color: var(--color-secondary-light);
+}
+
+.image-preview-box span {
+  font-size: 1.6rem;
 }
 
 .image-preview-box img {
@@ -222,6 +226,10 @@ input:checked + .slider:before {
 .btn-secondary:hover {
   background-color: var(--color-secondary-lighter);
   box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.05);
+}
+
+#counter {
+  font-size: 1.9rem;
 }
 
 /* ========================================

@@ -1,6 +1,5 @@
 import { initQuill } from "./editor.js";
 
-document.addEventListener("DOMContentLoaded", async function () {
-  // Initialize Quill in read-only mode
+document.addEventListener(`DOMContentLoaded`, async function () {
   await initQuill(false, false);
 });
