@@ -1,5 +1,4 @@
 using MHAuthorWebsite.Core.Admin.Contracts;
-using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
 using MHAuthorWebsite.Core.Admin.Dto.Work;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
@@ -14,16 +13,14 @@ namespace MHAuthorWebsite.Core.Admin;
 
 public class AdminWorkService : IAdminWorkService
 {
-    private readonly IAdminWorkDataService _dataService;
     private readonly IApplicationRepository _repository;
     private readonly IAdminProductImageService _imageService;
     private readonly IFastCacheService _cache;
     private readonly ILogger<AdminWorkService> _logger;
 
-    public AdminWorkService(IAdminWorkDataService dataService, IApplicationRepository repository,
+    public AdminWorkService(IApplicationRepository repository,
         IAdminProductImageService imageService, IFastCacheService cache, ILogger<AdminWorkService> logger)
     {
-        _dataService = dataService;
         _repository = repository;
         _imageService = imageService;
         _cache = cache;
@@ -67,7 +64,7 @@ public class AdminWorkService : IAdminWorkService
 
     public async Task<ServiceResult<EditWorkDto>> GetWorkForEditReadonlyAsync(Guid id)
     {
-        Work? work = await _dataService.GetWorkForEditReadonlyAsync(id);
+        Work? work = await _repository.FindByExpressionAsync<Work>(w => w.Id == id, ignoreFilters: true);
 
         if (work == null) return ServiceResult<EditWorkDto>.NotFound();
 
@@ -85,7 +82,7 @@ public class AdminWorkService : IAdminWorkService
     {
         try
         {
-            Work? work = await _dataService.GetWorkForEditAsync(model.Id);
+            Work? work = await _repository.FindByExpressionAsync<Work>(w => w.Id == model.Id, ignoreFilters: true);
 
             if (work == null) return ServiceResult.NotFound();
 
@@ -127,7 +124,7 @@ public class AdminWorkService : IAdminWorkService
     {
         try
         {
-            Work? work = await _dataService.GetWorkForEditAsync(id);
+            Work? work = await _repository.FindByExpressionAsync<Work>(w => w.Id == id, ignoreFilters: true);
 
             if (work == null) return ServiceResult.NotFound();
 
@@ -153,7 +150,7 @@ public class AdminWorkService : IAdminWorkService
     {
         try
         {
-            Work? work = await _dataService.GetWorkForEditAsync(id);
+            Work? work = await _repository.FindByExpressionAsync<Work>(w => w.Id == id, ignoreFilters: true);
 
             if (work == null) return ServiceResult.NotFound();
 

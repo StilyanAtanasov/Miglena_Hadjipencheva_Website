@@ -9,7 +9,7 @@
     
 	int worksCount = ViewBag.WorksCount ?? Model.Count;
 	int currentPage = int.TryParse(Context.Request.Query["page"].ToString(), out int page) ? page : 1;
-	int totalPages = (int)Math.Ceiling((double)worksCount / PageSize);
+	int totalPages = (int)Math.Ceiling((double)worksCount / WorksPageSize);
 }
 
 <div class="works-grid" id="works-grid">
@@ -51,5 +51,5 @@
 {
     CurrentPage = currentPage,
     TotalPages = totalPages,
-    PageSize = PageSize
+    PageSize = WorksPageSize
 })

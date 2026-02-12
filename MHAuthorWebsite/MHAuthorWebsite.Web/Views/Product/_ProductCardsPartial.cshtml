@@ -9,7 +9,7 @@
 @{
 	int currentPage = int.TryParse(Context.Request.Query["page"].ToString(), out int page) ? page : 1;
 	int productsCount = ViewBag.ProductsCount ?? Model.Count;
-	int totalPages = (int)Math.Ceiling((double)productsCount / PageSize);
+	int totalPages = (int)Math.Ceiling((double)productsCount / StorePageSize);
 	string searchString = Context.Request.Query["search"].ToString();
 }
 
@@ -75,5 +75,5 @@
 {
 	CurrentPage = currentPage,
 	       TotalPages = totalPages,
-	       PageSize = PageSize
+	       PageSize = StorePageSize
        })

@@ -1,11 +1,11 @@
 using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Contracts.DataServices;
 using MHAuthorWebsite.Core.Dtos.Work;
 using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Data;
-using MHAuthorWebsite.Data.DataServices;
+using MHAuthorWebsite.Data.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -30,8 +30,8 @@ public class WorkServiceTests
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
-        IWorkDataService dataService = new WorkDataService(_dbContext);
-        _workService = new WorkService(dataService, _cacheServiceMock.Object, _loggerMock.Object);
+
+        _workService = new WorkService(new ApplicationRepository(_dbContext), _cacheServiceMock.Object, _loggerMock.Object);
 
         // Arrange
         _defaultWork = await SeedWorkAsync();
@@ -51,63 +51,10 @@ public class WorkServiceTests
     }
 
     [Test]
-    public async Task GetAllWorksAsync_ReturnsOnlyPublicWorks_WhenUserIsNotAdmin()
-    {
-        // Arrange
-        Work privateWork = new()
-        {
-            Id = Guid.NewGuid(),
-            Title = "Private Work",
-            Content = "{\"ops\":[{\"insert\":\"Private content\\n\"}]}",
-            CoverImageUrl = "https://example.com/private.jpg",
-            CoverImagePublicId = "private-id",
-            DatePublished = DateTime.UtcNow,
-            IsPublic = false
-        };
-
-        _dbContext.Works.Add(privateWork);
-        await _dbContext.SaveChangesAsync();
-
-        // Act
-        ICollection<WorkCardDto> works = await _workService.GetAllWorksAsync(isUserAdmin: false);
-
-        // Assert
-        Assert.That(works.Count, Is.EqualTo(1));
-        Assert.That(works.All(w => w.IsPublic), Is.True);
-        Assert.That(works.Any(w => w.Id == privateWork.Id), Is.False);
-    }
-
-    [Test]
-    public async Task GetAllWorksAsync_ReturnsAllWorks_WhenUserIsAdmin()
-    {
-        // Arrange
-        Work privateWork = new()
-        {
-            Id = Guid.NewGuid(),
-            Title = "Private Work",
-            Content = "{\"ops\":[{\"insert\":\"Private content\\n\"}]}",
-            CoverImageUrl = "https://example.com/private.jpg",
-            CoverImagePublicId = "private-id",
-            DatePublished = DateTime.UtcNow,
-            IsPublic = false
-        };
-
-        _dbContext.Works.Add(privateWork);
-        await _dbContext.SaveChangesAsync();
-
-        // Act
-        ICollection<WorkCardDto> works = await _workService.GetAllWorksAsync(isUserAdmin: true);
-
-        // Assert
-        Assert.That(works.Count, Is.EqualTo(2));
-        Assert.That(works.Any(w => w.Id == privateWork.Id), Is.True);
-    }
-
-    [Test]
     public async Task GetWorkDetailsAsync_ReturnsWork_WhenWorkExists()
     {
         // Act
-        ServiceResult<WorkDetailsDto> result = await _workService.GetWorkDetailsAsync(_defaultWork.Id);
+        ServiceResult<WorkDetailsDto> result = await _workService.GetWorkDetailsAsync(_defaultWork.Id, false);
 
         // Assert
         Assert.IsTrue(result.Success);
@@ -121,12 +68,27 @@ public class WorkServiceTests
     public async Task GetWorkDetailsAsync_ReturnsNotFound_WhenWorkDoesNotExist()
     {
         // Act
-        ServiceResult<WorkDetailsDto> result = await _workService.GetWorkDetailsAsync(Guid.NewGuid());
+        ServiceResult<WorkDetailsDto> result = await _workService.GetWorkDetailsAsync(Guid.NewGuid(), false);
 
         // Assert
         Assert.IsFalse(result.Success);
         Assert.IsFalse(result.Found);
         Assert.IsNull(result.Result);
+    }
+
+    [Test]
+    public async Task GetWorkDetailsAsync_RespectsPublicity()
+    {
+        // Arrange
+        Work privateWork = await SeedWorkAsync("Private", false);
+
+        // Act
+        ServiceResult<WorkDetailsDto> publicResult = await _workService.GetWorkDetailsAsync(privateWork.Id, false);
+        ServiceResult<WorkDetailsDto> adminResult = await _workService.GetWorkDetailsAsync(privateWork.Id, true);
+
+        // Assert
+        Assert.IsFalse(publicResult.Found);
+        Assert.IsTrue(adminResult.Success);
     }
 
     [Test]
@@ -139,7 +101,7 @@ public class WorkServiceTests
 
         // Act
         ICollection<WorkCardDto> searchResult = await _workService.GetPagedWorksAsync(false, 1, "Title");
-        ICollection<WorkCardDto> allResult = await _workService.GetPagedWorksAsync(false, 1, null);
+        ICollection<WorkCardDto> allResult = await _workService.GetPagedWorksAsync(false, 1);
 
         // Assert
         Assert.That(searchResult.Count, Is.EqualTo(2));
@@ -154,8 +116,8 @@ public class WorkServiceTests
         await SeedWorkAsync("Private", false);
 
         // Act
-        int publicCount = await _workService.GetWorksCountAsync(false, null);
-        int adminCount = await _workService.GetWorksCountAsync(true, null);
+        int publicCount = await _workService.GetWorksCountAsync(false);
+        int adminCount = await _workService.GetWorksCountAsync(true);
 
         // Assert
         Assert.That(publicCount, Is.EqualTo(2)); // Default + 1 Public

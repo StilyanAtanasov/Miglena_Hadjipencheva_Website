@@ -1,6 +1,5 @@
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Contracts.DataServices;
 using MHAuthorWebsite.Core.Dtos.Work;
 using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System.Linq.Expressions;
 using System.Text.Json;
-using static MHAuthorWebsite.Core.Common.Extensions.ExpressionExtensions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheDefaultDurations;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
@@ -18,14 +16,12 @@ namespace MHAuthorWebsite.Core;
 
 public class WorkService : IWorkService
 {
-    private readonly IWorkDataService _dataService;
     private readonly IApplicationRepository _repository;
     private readonly IFastCacheService _cache;
     private readonly ILogger<WorkService> _logger;
 
-    public WorkService(IWorkDataService dataService, IApplicationRepository repository, IFastCacheService cache, ILogger<WorkService> logger)
+    public WorkService(IApplicationRepository repository, IFastCacheService cache, ILogger<WorkService> logger)
     {
-        _dataService = dataService;
         _repository = repository;
         _cache = cache;
         _logger = logger;
@@ -35,15 +31,18 @@ public class WorkService : IWorkService
     {
         Expression<Func<Work, bool>>? filter = null;
 
-        if (searchString != null) filter = w => w.Title.Contains(searchString);
+        if (!string.IsNullOrWhiteSpace(searchString)) filter = w => w.Title.Contains(searchString);
+
         if (!isUserAdmin)
         {
             Expression<Func<Work, bool>> publicFilter = w => w.IsPublic;
-            filter = filter == null ? publicFilter : filter.AndAlso(publicFilter);
+            filter = filter == null ? publicFilter : Expression.Lambda<Func<Work, bool>>(
+                Expression.AndAlso(filter.Body, Expression.Invoke(publicFilter, filter.Parameters)),
+                filter.Parameters);
         }
 
         Guid[] pagedWorksIds = await _repository
-            .GetPagedAsync(page, PageSize, true, filter)
+            .GetPagedAsync(page, WorksPageSize, true, filter)
             .Select(w => w.Id)
             .ToArrayAsync();
 
@@ -91,11 +90,11 @@ public class WorkService : IWorkService
                 return ServiceResult<WorkDetailsDto>.Ok(cachedWork);
             }
 
-            Work? work = await _dataService.GetWorkByIdAsync(id, isUserAdmin);
+            Work? work = await _repository.FindByExpressionAsync<Work>(w => w.Id == id, ignoreFilters: isUserAdmin);
 
-            if (work == null)
+            if (work == null || (!work.IsPublic && !isUserAdmin))
             {
-                _logger.LogInformation("Work not found. WorkId: {WorkId}. Is User Admin: {IsUserAdmin}", id, isUserAdmin);
+                _logger.LogInformation("Work not found or not accessible. WorkId: {WorkId}. Is User Admin: {IsUserAdmin}", id, isUserAdmin);
                 return ServiceResult<WorkDetailsDto>.NotFound();
             }
 
@@ -105,7 +104,8 @@ public class WorkService : IWorkService
                 Title = work.Title,
                 Content = work.Content,
                 CoverImageUrl = work.CoverImageUrl,
-                DatePublished = work.DatePublished
+                DatePublished = work.DatePublished,
+                IsPublic = work.IsPublic
             };
 
             _cache.SetFireAndForget(WorkDetailsKey(id), workDetails, TimeSpan.FromDays(WorkDetailsTtlDays));

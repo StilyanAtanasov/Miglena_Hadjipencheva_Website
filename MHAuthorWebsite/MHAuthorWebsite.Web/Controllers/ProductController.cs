@@ -124,7 +124,7 @@ public class ProductController : BaseController
         if (!result) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
 
         int productsCount = await _productService.GetAllProductsCountAsync(search);
-        if (productsCount > 0 && Math.Ceiling((double)productsCount / PageSize) < page) return NotFound();
+        if (productsCount > 0 && Math.Ceiling((double)productsCount / StorePageSize) < page) return NotFound();
 
         (bool descending, Expression<Func<Product, object>>? expression) sortType = (sortValue.descending, sortValue.expression);
         ICollection<ProductCardDto> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page, sortType, search);

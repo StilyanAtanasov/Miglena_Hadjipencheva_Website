@@ -115,7 +115,9 @@ public static class ApplicationRules
 
     public static class Pagination
     {
-        public const byte PageSize = 1;
+        public const byte StorePageSize = 20;
+
+        public const byte WorksPageSize = 25;
     }
 
     public static class Product

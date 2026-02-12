@@ -25,7 +25,7 @@ namespace MHAuthorWebsite.Web.Controllers
             bool isAdmin = User.IsInRole("Admin");
             int worksCount = await _workService.GetWorksCountAsync(isAdmin, search);
 
-            if (worksCount > 0 && Math.Ceiling((double)worksCount / PageSize) < page)
+            if (worksCount > 0 && Math.Ceiling((double)worksCount / WorksPageSize) < page)
                 return NotFound();
 
             ICollection<WorkCardDto> works = await _workService.GetPagedWorksAsync(isAdmin, page, search);

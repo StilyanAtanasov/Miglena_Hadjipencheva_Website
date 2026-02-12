@@ -19,12 +19,12 @@
 
 <section class="works-hero">
     <div class="works-hero-content">
-        <h1>Творчество</h1>
+        <h1 class="title">Творчество</h1>
         <p>Разгледайте колекцията от творби и публикации на Миглена Хаджипенчева.</p>
         
         @if (isAdmin)
         {
-            <a asp-area="Admin" asp-controller="AdminWork" asp-action="Add" class="btn btn-primary work-add-btn">
+            <a asp-area="Admin" asp-controller="AdminWork" asp-action="Add" class="btn link work-add-btn">
                 <i class="fa-solid fa-plus"></i> Добави творба
             </a>
         }

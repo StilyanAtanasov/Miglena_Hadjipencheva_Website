@@ -4,15 +4,15 @@ using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Admin.Dto.Work;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Contracts.DataServices;
 using MHAuthorWebsite.Core.Dtos.Images;
 using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Data;
-using MHAuthorWebsite.Data.DataServices;
 using MHAuthorWebsite.Data.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Linq.Expressions;
 
 namespace MHAuthorWebsite.Tests.Services;
 
@@ -36,8 +36,8 @@ public class AdminWorkServiceTests
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
-        IWorkDataService dataService = new WorkDataService(_dbContext);
-        _adminWorkService = new AdminWorkService(dataService, new ApplicationRepository(_dbContext),
+
+        _adminWorkService = new AdminWorkService(new ApplicationRepository(_dbContext),
             _imageServiceMock.Object, _cacheMock.Object, _loggerMock.Object);
 
         // Arrange
@@ -127,10 +127,10 @@ public class AdminWorkServiceTests
     }
 
     [Test]
-    public async Task GetWorkForEditAsync_ReturnsWork_WhenWorkExists()
+    public async Task GetWorkForEditReadonlyAsync_ReturnsWork_WhenWorkExists()
     {
         // Act
-        ServiceResult<EditWorkDto> result = await _adminWorkService.GetWorkForEditAsync(_defaultWork.Id);
+        ServiceResult<EditWorkDto> result = await _adminWorkService.GetWorkForEditReadonlyAsync(_defaultWork.Id);
 
         // Assert
         Assert.IsTrue(result.Success);
@@ -142,10 +142,10 @@ public class AdminWorkServiceTests
     }
 
     [Test]
-    public async Task GetWorkForEditAsync_ReturnsNotFound_WhenWorkDoesNotExist()
+    public async Task GetWorkForEditReadonlyAsync_ReturnsNotFound_WhenWorkDoesNotExist()
     {
         // Act
-        ServiceResult<EditWorkDto> result = await _adminWorkService.GetWorkForEditAsync(Guid.NewGuid());
+        ServiceResult<EditWorkDto> result = await _adminWorkService.GetWorkForEditReadonlyAsync(Guid.NewGuid());
 
         // Assert
         Assert.IsFalse(result.Success);
@@ -315,13 +315,13 @@ public class AdminWorkServiceTests
     }
 
     [Test]
-    public async Task AddWorkAsync_ReturnsFailure_WhenDataServiceThrows()
+    public async Task AddWorkAsync_ReturnsFailure_WhenRepositoryThrows()
     {
         // Arrange
-        var mockDataService = new Mock<IWorkDataService>();
-        mockDataService.Setup(s => s.AddWorkAsync(It.IsAny<Work>())).ThrowsAsync(new Exception("DB Error"));
-        
-        var service = new AdminWorkService(mockDataService.Object, new Mock<IRepository>().Object, 
+        var mockRepo = new Mock<IApplicationRepository>();
+        mockRepo.Setup(s => s.AddAsync(It.IsAny<Work>())).ThrowsAsync(new Exception("DB Error"));
+
+        var service = new AdminWorkService(mockRepo.Object,
             _imageServiceMock.Object, _cacheMock.Object, _loggerMock.Object);
 
         AddWorkDto model = new()
@@ -364,7 +364,6 @@ public class AdminWorkServiceTests
 
         // Assert
         // The service currently proceeds even if old image deletion fails (it logs an error usually)
-        // Let's verify it still succeeds but logs the error
         Assert.IsTrue(result.Success);
     }
 
@@ -380,23 +379,23 @@ public class AdminWorkServiceTests
 
         // Assert
         // In current implementation, if image deletion fails, we still delete the database record
-        // (This is a design choice, but let's verify current behavior)
         Assert.IsTrue(result.Success);
         Assert.IsNull(await _dbContext.Works.FindAsync(_defaultWork.Id));
     }
 
     [Test]
-    public async Task GetWorkForEditAsync_ReturnsFailure_WhenExceptionOccurs()
+    public async Task GetWorkForEditReadonlyAsync_ReturnsFailure_WhenExceptionOccurs()
     {
         // Arrange
-        var mockDataService = new Mock<IWorkDataService>();
-        mockDataService.Setup(s => s.GetWorkByIdAsync(It.IsAny<Guid>())).ThrowsAsync(new Exception());
-        
-        var service = new AdminWorkService(mockDataService.Object, new Mock<IRepository>().Object, 
+        var mockRepo = new Mock<IApplicationRepository>();
+        mockRepo.Setup(s => s.FindByExpressionAsync<Work>(It.IsAny<Expression<Func<Work, bool>>>(), It.IsAny<bool>(), It.IsAny<Expression<Func<Work, object>>[]>()))
+                .ThrowsAsync(new Exception());
+
+        var service = new AdminWorkService(mockRepo.Object,
             _imageServiceMock.Object, _cacheMock.Object, _loggerMock.Object);
 
         // Act
-        ServiceResult<EditWorkDto> result = await service.GetWorkForEditAsync(Guid.NewGuid());
+        ServiceResult<EditWorkDto> result = await service.GetWorkForEditReadonlyAsync(Guid.NewGuid());
 
         // Assert
         Assert.IsFalse(result.Success);

@@ -430,7 +430,7 @@ public class ProductService : IProductService
                 p.Name.Contains(searchString) || p.Description.Contains(searchString) || p.ProductType.Name.Contains(searchString);
 
         Guid[] pagedProductIds = await Repository
-            .GetPagedAsync(page, PageSize, true, filter, sortType.expression, sortType.descending)
+            .GetPagedAsync(page, StorePageSize, true, filter, sortType.expression, sortType.descending)
             .Select(p => p.Id)
             .ToArrayAsync();
 
