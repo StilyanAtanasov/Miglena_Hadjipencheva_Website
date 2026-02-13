@@ -155,6 +155,7 @@ try
     builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
     builder.Services.AddScoped<IAdminUserManagementService, AdminUserManagementService>();
 
+    builder.Services.AddScoped<IAdminAnnouncementsService, AdminAnnouncementsService>();
     builder.Services.AddScoped<IAdminContactRequestsService, AdminContactRequestsService>();
     builder.Services.AddScoped<IContactsService, ContactsService>();
 

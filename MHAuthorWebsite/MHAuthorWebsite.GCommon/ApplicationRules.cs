@@ -109,6 +109,7 @@ public static class ApplicationRules
             public const string AddProductType = nameof(AddProductType);
             public const string AllOrders = nameof(AllOrders);
             public const string ContactRequestsBoardPage = nameof(ContactRequestsBoardPage);
+            public const string AnnouncementsBoardPage = nameof(AnnouncementsBoardPage);
             public const string ManageUsers = nameof(ManageUsers);
         }
     }
@@ -129,6 +130,12 @@ public static class ApplicationRules
     {
         public const byte RequestsPerPage = 10;
         public const byte MaxMessageLength = 60;
+    }
+
+    public static class AnnouncementsBoard
+    {
+        public const byte AnnouncementsPerPage = 20;
+        public const byte MaxMessagePreviewLength = 140;
     }
 
     public static class SortTypes

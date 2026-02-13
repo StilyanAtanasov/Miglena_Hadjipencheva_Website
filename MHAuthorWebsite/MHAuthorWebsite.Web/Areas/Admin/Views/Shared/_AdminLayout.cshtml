@@ -50,6 +50,10 @@
 					<i class="fa-regular fa-comments-question"></i>
 					<p class="flex-row">Табло на запитванията</p>
 				</li>
+				<li data-url="@Url.Action("AnnouncementsBoard", "AdminAnnouncements")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AnnouncementsBoardPage ? "current" : "")">
+					<i class="fa-regular fa-megaphone"></i>
+					<p class="flex-row">Съобщения</p>
+				</li>
 				<li data-url="@Url.Action("ManageUsers", "AdminUserManagement")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.ManageUsers ? "current" : "")">
 					<i class="fa-regular fa-users-gear"></i>
 					<p class="flex-row">Управление на потребителите</p>

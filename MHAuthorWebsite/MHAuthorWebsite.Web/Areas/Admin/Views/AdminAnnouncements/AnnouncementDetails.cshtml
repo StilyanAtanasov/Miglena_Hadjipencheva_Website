@@ -1,0 +1,64 @@
+@using MHAuthorWebsite.Web.ViewModels.Admin.Announcements
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@model AnnouncementDetailsViewModel
+
+@{
+	ViewData["Title"] = "Детайли на съобщение";
+	ViewData["CurrentPage"] = Pages.Admin.AnnouncementsBoardPage;
+	ViewData["RequireTimeZoneManager"] = true;
+
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/announcements.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper announcements-page flex-column">
+	<a asp-controller="AdminAnnouncements" asp-action="AnnouncementsBoard" class="btn link flex-row announcement-back-btn">
+		<i class="fa-regular fa-arrow-left"></i>
+		Обратно към съобщенията
+	</a>
+
+	<article class="announcement-details-shell flex-column">
+		<header class="announcement-details-head flex-column">
+			<h1 class="title-small">@Model.Subject</h1>
+
+			<div class="announcement-details-meta flex-row">
+				<span class="recipient-chip">@Model.RecipientGroupLabel</span>
+				<span class="meta-line"><i class="fa-regular fa-users"></i>@Model.RecipientCount получатели</span>
+				<span class="meta-line"><i class="fa-regular fa-user-shield"></i>@Model.AdminName</span>
+				<span class="meta-line">
+					<i class="fa-regular fa-clock"></i>
+					<time to-local no-seconds datetime="@Model.CreatedOn.ToString("O")">
+						@TimeZoneInfo.ConvertTimeFromUtc(Model.CreatedOn, defaultZone)
+					</time>
+				</span>
+			</div>
+		</header>
+
+		@if (!string.IsNullOrWhiteSpace(Model.AdditionalRecipients))
+		{
+			<section class="announcement-extra-recipients flex-column">
+				<h2 class="subheading">Допълнителни имейли</h2>
+				<p>@Model.AdditionalRecipients</p>
+			</section>
+		}
+
+		<section class="announcement-editor-view">
+			<div id="description-editor"></div>
+			<input type="hidden" id="descriptionInput" value="@Model.MessageDelta" />
+		</section>
+	</article>
+</section>
+
+@section Scripts {
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+	<script type="module" src="~/js/admin/announcement-details.js" asp-append-version="true"></script>
+}

@@ -178,6 +178,18 @@ public static class EntityConstraints
         public const ushort ReplyMessageMaxLength = 4000;
     }
 
+    public static class Announcement
+    {
+        public const byte SubjectMinLength = 5;
+        public const byte SubjectMaxLength = 150;
+
+        public const int MessageTextMinLength = 10;
+        public const int MessageTextMaxLength = 20000;
+        public const int MessageDeltaMaxLength = 100000;
+
+        public const ushort AdditionalRecipientsMaxLength = 4000;
+    }
+
     public static class ScheduledNotification
     {
         public const byte SubjectMinLength = 5;
