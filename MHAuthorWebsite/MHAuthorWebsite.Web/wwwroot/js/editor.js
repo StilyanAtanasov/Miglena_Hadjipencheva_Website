@@ -41,15 +41,20 @@ class Counter {
   }
 }
 
-export async function initQuill(isEnabled = false, counter = false) {
+export async function initQuill(isEnabled = false, counter = false, inlineAttributorStyles = false) {
   return new Promise(resolve => {
     const descriptionInput = document.querySelector(`#descriptionInput`);
 
     counter && Quill.register("modules/counter", Counter);
+    inlineAttributorStyles && registerAttributorsAsInlineStyles();
 
     const Font = Quill.import("formats/font");
     Font.whitelist = ["sofia-sans-condensed", "sans-serif", "serif", "monospace"];
     Quill.register(Font, true);
+    const ColorClass = Quill.import("attributors/class/color");
+    const SizeClass = Quill.import("attributors/class/size");
+    Quill.register(ColorClass, true);
+    Quill.register(SizeClass, true);
 
     const quill = new Quill("#description-editor", {
       theme: "snow",
@@ -70,4 +75,20 @@ export async function initQuill(isEnabled = false, counter = false) {
 
     resolve(quill);
   });
+}
+
+function registerAttributorsAsInlineStyles() {
+  const BackgroundStyle = Quill.import("attributors/style/background");
+  const ColorStyle = Quill.import("attributors/style/color");
+  const SizeStyle = Quill.import("attributors/style/size");
+  const FontStyle = Quill.import("attributors/style/font");
+  const AlignStyle = Quill.import("attributors/style/align");
+  const DirectionStyle = Quill.import("attributors/style/direction");
+
+  Quill.register(ColorStyle, true);
+  Quill.register(BackgroundStyle, true);
+  Quill.register(SizeStyle, true);
+  Quill.register(FontStyle, true);
+  Quill.register(AlignStyle, true);
+  Quill.register(DirectionStyle, true);
 }

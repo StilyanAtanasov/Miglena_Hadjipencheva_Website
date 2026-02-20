@@ -108,8 +108,11 @@ public class AdminAnnouncementsController : AdminBaseController
         if (model.MessageDelta.Length > MessageDeltaMaxLength)
             ModelState.AddModelError(nameof(model.MessageDelta), "Съдържанието е прекалено голямо.");
 
-        if (!ModelState.IsValid)
+        if (model.RecipientGroup == AnnouncementRecipientGroup.AdditionalRecipientsOnly
+            && (model.AdditionalRecipients is null || model.AdditionalRecipients.Length == 0))
         {
+            ModelState.AddModelError(nameof(model.AdditionalRecipients),
+                $"При избор \"{AnnouncementRecipientGroup.AdditionalRecipientsOnly.GetDisplayName()}\" трябва да добавите поне един имейл адрес.");
             PopulateRecipientGroups();
             return View(model);
         }
@@ -118,6 +121,7 @@ public class AdminAnnouncementsController : AdminBaseController
         {
             Subject = model.Subject,
             MessageDelta = model.MessageDelta,
+            MessageHtml = model.MessageHtml,
             RecipientGroup = model.RecipientGroup,
             AdditionalRecipients = model.AdditionalRecipients
         };

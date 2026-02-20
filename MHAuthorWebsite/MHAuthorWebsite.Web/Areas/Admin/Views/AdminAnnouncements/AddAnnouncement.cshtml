@@ -49,7 +49,9 @@
 				<partial name="_QuillToolbar" />
 				<input type="hidden" asp-for="MessageDelta" id="descriptionInput"
 				       data-text-min-length="@MessageTextMinLength" data-text-max-length="@MessageTextMaxLength" />
+				<input type="hidden" asp-for="MessageHtml" id="messageHtmlInput" />
 				<span id="description-input-error" class="input-error" asp-validation-for="MessageDelta"></span>
+				<span class="input-error" asp-validation-for="MessageHtml"></span>
 			</div>
 
 			<div class="announcement-actions flex-row">

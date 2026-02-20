@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Core.Contracts;
@@ -9,32 +9,43 @@ using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.AnnouncementsBoard;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
+using static MHAuthorWebsite.GCommon.ApplicationRules.CacheDefaultDurations;
+using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
 namespace MHAuthorWebsite.Core.Admin;
 
-// TODO / Caching, uses none 
 public class AdminAnnouncementsService : IAdminAnnouncementsService
 {
     private readonly IEmailService _emailService;
     private readonly IEmailUserProvider _emailUserProvider;
     private readonly IApplicationRepository _repository;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IFastCacheService _cache;
     private readonly ILogger<AdminAnnouncementsService> _logger;
 
+    private readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
+    };
+
     public AdminAnnouncementsService(IEmailService emailService, IEmailUserProvider emailUserProvider,
-        IApplicationRepository repository, UserManager<ApplicationUser> userManager, ILogger<AdminAnnouncementsService> logger)
+        IApplicationRepository repository, UserManager<ApplicationUser> userManager, IFastCacheService cache,
+        ILogger<AdminAnnouncementsService> logger)
     {
         _emailService = emailService;
         _emailUserProvider = emailUserProvider;
         _repository = repository;
         _userManager = userManager;
+        _cache = cache;
         _logger = logger;
     }
 
@@ -44,38 +55,25 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
         if (!string.IsNullOrWhiteSpace(search))
             query = query.Where(a => a.Subject.Contains(search));
 
-        Announcement[] announcements = await query
+        Guid[] announcementIds = await query
             .OrderByDescending(a => a.CreatedOn)
             .Skip((page - 1) * AnnouncementsPerPage)
             .Take(AnnouncementsPerPage)
+            .Select(a => a.Id)
             .ToArrayAsync();
 
-        string[] adminIds = announcements.Select(a => a.AdminId).Distinct(StringComparer.Ordinal).ToArray();
+        if (!announcementIds.Any()) return Array.Empty<AnnouncementListItemDto>();
 
-        ApplicationUser[] admins = await _repository
-            .WhereReadonly<ApplicationUser>(u => adminIds.Contains(u.Id))
-            .ToArrayAsync();
-        Dictionary<string, string> adminNames = admins.ToDictionary(
-            u => u.Id,
-            u => string.IsNullOrWhiteSpace(u.Name) ? (u.Email ?? "Администратор") : u.Name!,
-            StringComparer.Ordinal);
+        ICollection<AnnouncementListItemDto> cards = await GetAnnouncementCardsBatchAsync(announcementIds);
 
-        AnnouncementListItemDto[] result = announcements
-            .Select(a => new AnnouncementListItemDto
-            {
-                Id = a.Id,
-                Subject = a.Subject,
-                MessagePreview = ToMessagePreview(ExtractPlainTextFromQuillDelta(a.MessageDelta)),
-                RecipientGroup = a.RecipientGroup,
-                RecipientCount = a.RecipientCount,
-                CreatedOn = a.CreatedOn,
-                AdminName = adminNames.TryGetValue(a.AdminId, out string? adminName) ? adminName : "Администратор"
-            })
+        AnnouncementListItemDto[] orderedCards = cards
+            .OrderBy(c => Array.IndexOf(announcementIds, c.Id))
             .ToArray();
 
         _logger.LogInformation("Successfully retrieved announcements page {Page}. Search: {Search}. Count: {Count}",
-            page, search, result.Length);
-        return result;
+            page, search, orderedCards.Length);
+
+        return orderedCards;
     }
 
     public async Task<int> GetAnnouncementsCountReadonlyAsync(string? search = null)
@@ -91,6 +89,9 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
 
     public async Task<ServiceResult<AnnouncementDetailsDto>> GetAnnouncementDetailsReadonlyAsync(Guid id)
     {
+        AnnouncementDetailsDto? cached = await _cache.GetAsync<AnnouncementDetailsDto>(AnnouncementDetailsKey(id));
+        if (cached is not null) return ServiceResult<AnnouncementDetailsDto>.Ok(cached);
+
         Announcement? announcement = await _repository.WhereReadonly<Announcement>(a => a.Id == id).FirstOrDefaultAsync();
         if (announcement is null) return ServiceResult<AnnouncementDetailsDto>.NotFound();
 
@@ -111,6 +112,7 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
             AdminName = adminName
         };
 
+        _cache.SetFireAndForget(AnnouncementDetailsKey(id), details, TimeSpan.FromDays(AnnouncementDetailsTtlDays));
         return ServiceResult<AnnouncementDetailsDto>.Ok(details);
     }
 
@@ -123,8 +125,17 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
         if (string.IsNullOrWhiteSpace(messageText))
             return ServiceResult.BadRequest(new() { [nameof(model.MessageDelta)] = "Съобщението е задължително." });
 
+        if (string.IsNullOrWhiteSpace(model.MessageHtml))
+            return ServiceResult.BadRequest(new() { [nameof(model.MessageHtml)] = "HTML съдържанието е задължително." });
+
         ServiceResult<ICollection<string>> customEmailsResult = ParseAndValidateEmails(model.AdditionalRecipients);
         if (!customEmailsResult.Success) return ServiceResult.BadRequest(customEmailsResult.Errors);
+        if (model.RecipientGroup == AnnouncementRecipientGroup.AdditionalRecipientsOnly && customEmailsResult.Result!.Count == 0)
+            return ServiceResult.BadRequest(new()
+            {
+                [nameof(model.AdditionalRecipients)] =
+                    "При избор \"Само допълнителни имейли\" трябва да въведете поне един имейл адрес."
+            });
 
         ICollection<string> recipients = await ResolveRecipientsAsync(model.RecipientGroup);
         HashSet<string> uniqueRecipients = new(recipients, StringComparer.OrdinalIgnoreCase);
@@ -133,8 +144,7 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
         if (uniqueRecipients.Count == 0)
             return ServiceResult.BadRequest(new() { [nameof(model.RecipientGroup)] = "Няма намерени получатели за избраната аудитория." });
 
-        string messageHtml = ConvertQuillDeltaToHtml(model.MessageDelta);
-        string body = BuildAnnouncementEmailBody(model.Subject, messageHtml, admin.Name ?? admin.Email ?? "Администратор");
+        string body = BuildAnnouncementEmailBody(model.Subject, model.MessageHtml, admin.Name ?? admin.Email ?? "Администратор");
 
         try
         {
@@ -166,41 +176,152 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
         await _repository.AddAsync(announcement);
         await _repository.SaveChangesAsync();
 
+        AnnouncementListItemDto cardDto = new()
+        {
+            Id = announcement.Id,
+            Subject = announcement.Subject,
+            MessagePreview = ToMessagePreview(messageText),
+            RecipientGroup = announcement.RecipientGroup,
+            RecipientCount = announcement.RecipientCount,
+            CreatedOn = announcement.CreatedOn,
+            AdminName = string.IsNullOrWhiteSpace(admin.Name) ? (admin.Email ?? "Администратор") : admin.Name
+        };
+        _cache.SetFireAndForget(AnnouncementCardKey(announcement.Id), cardDto, TimeSpan.FromDays(AnnouncementCardTtlDays));
+
+        AnnouncementDetailsDto detailsDto = new()
+        {
+            Id = announcement.Id,
+            Subject = announcement.Subject,
+            MessageDelta = announcement.MessageDelta,
+            RecipientGroup = announcement.RecipientGroup,
+            AdditionalRecipients = announcement.AdditionalRecipients,
+            RecipientCount = announcement.RecipientCount,
+            CreatedOn = announcement.CreatedOn,
+            AdminName = cardDto.AdminName
+        };
+        _cache.SetFireAndForget(AnnouncementDetailsKey(announcement.Id), detailsDto, TimeSpan.FromDays(AnnouncementDetailsTtlDays));
+
         _logger.LogInformation("Announcement {AnnouncementId} sent by admin {AdminId} to {RecipientCount} recipients.",
             announcement.Id, adminId, uniqueRecipients.Count);
 
         return ServiceResult.Ok();
     }
 
-    private async Task<ICollection<string>> ResolveRecipientsAsync(AnnouncementRecipientGroup group)
+    private async Task<ICollection<AnnouncementListItemDto>> GetAnnouncementCardsBatchAsync(Guid[] announcementIds)
     {
-        ICollection<ApplicationUser> admins = await _userManager.GetUsersInRoleAsync(AdminRoleName);
-
-        string[] adminEmails = admins
-            .Where(u => u is { IsDeleted: false, IsBanned: false, EmailConfirmed: true } && !string.IsNullOrWhiteSpace(u.Email))
-            .Select(u => u.Email!)
+        RedisKey[] keys = announcementIds
+            .Select(id => (RedisKey)AnnouncementCardKey(id))
             .ToArray();
 
-        string[] adminIds = admins.Select(u => u.Id).ToArray();
+        IBatch readBatch = _cache.CreateBatch();
+        Task<RedisValue>[] readTasks = keys.Select(key => readBatch.StringGetAsync(key)).ToArray();
+        readBatch.Execute();
 
-        string[] subscribedUsers = await _repository
+        RedisValue[] cachedValues = await Task.WhenAll(readTasks);
+        List<AnnouncementListItemDto> cards = new();
+        List<Guid> missingIds = new();
+
+        for (int i = 0; i < announcementIds.Length; i++)
+        {
+            if (cachedValues[i].HasValue)
+            {
+                AnnouncementListItemDto? cachedCard = JsonSerializer.Deserialize<AnnouncementListItemDto>(cachedValues[i].ToString(), _jsonOptions);
+                if (cachedCard is not null) cards.Add(cachedCard);
+            }
+            else
+                missingIds.Add(announcementIds[i]);
+        }
+
+        if (!missingIds.Any()) return cards;
+
+        Announcement[] missingAnnouncements = await _repository
+            .WhereReadonly<Announcement>(a => missingIds.Contains(a.Id))
+            .ToArrayAsync();
+
+        string[] adminIds = missingAnnouncements.Select(a => a.AdminId).Distinct(StringComparer.Ordinal).ToArray();
+        ApplicationUser[] admins = await _repository
+            .WhereReadonly<ApplicationUser>(u => adminIds.Contains(u.Id))
+            .ToArrayAsync();
+        Dictionary<string, string> adminNames = admins.ToDictionary(
+            u => u.Id,
+            u => string.IsNullOrWhiteSpace(u.Name) ? (u.Email ?? "Администратор") : u.Name!,
+            StringComparer.Ordinal);
+
+        IBatch writeBatch = _cache.CreateBatch();
+        foreach (Announcement announcement in missingAnnouncements)
+        {
+            AnnouncementListItemDto dto = new()
+            {
+                Id = announcement.Id,
+                Subject = announcement.Subject,
+                MessagePreview = ToMessagePreview(ExtractPlainTextFromQuillDelta(announcement.MessageDelta)),
+                RecipientGroup = announcement.RecipientGroup,
+                RecipientCount = announcement.RecipientCount,
+                CreatedOn = announcement.CreatedOn,
+                AdminName = adminNames.TryGetValue(announcement.AdminId, out string? adminName) ? adminName : "Администратор"
+            };
+
+            await writeBatch.StringSetAsync(
+                (RedisKey)AnnouncementCardKey(dto.Id),
+                (RedisValue)JsonSerializer.Serialize(dto, _jsonOptions),
+                TimeSpan.FromDays(AnnouncementCardTtlDays),
+                flags: CommandFlags.FireAndForget);
+
+            cards.Add(dto);
+        }
+        writeBatch.Execute();
+
+        return cards;
+    }
+
+    private async Task<ICollection<string>> ResolveRecipientsAsync(AnnouncementRecipientGroup group)
+    {
+        if (group == AnnouncementRecipientGroup.AdditionalRecipientsOnly)
+            return Array.Empty<string>();
+
+        IQueryable<ApplicationUser> baseQuery = _repository
             .WhereReadonly<ApplicationUser>(u =>
                 !u.IsDeleted &&
                 !u.IsBanned &&
                 u.EmailConfirmed &&
-                u.Email != null &&
-                !adminIds.Contains(u.Id))
-            .Select(u => u.Email!)
-            .ToArrayAsync();
+                u.Email != null);
 
-        return group switch
+        switch (group)
         {
-            AnnouncementRecipientGroup.SubscribedUsers => subscribedUsers,
-            AnnouncementRecipientGroup.Admins => adminEmails,
-            AnnouncementRecipientGroup.SubscribedUsersAndAdmins => subscribedUsers.Concat(adminEmails).ToArray(),
-            _ => Array.Empty<string>()
-        };
+            case AnnouncementRecipientGroup.Admins:
+                return await _userManager
+                    .GetUsersInRoleAsync(AdminRoleName)
+                    .ContinueWith(t => t.Result
+                        .Where(u => u is { Email: not null, IsDeleted: false, IsBanned: false, EmailConfirmed: true })
+                        .Select(u => u.Email!)
+                        .ToArray());
+
+            case AnnouncementRecipientGroup.SubscribedUsers:
+                return await baseQuery
+                    .Where(u => !_userManager.IsInRoleAsync(u, AdminRoleName).Result)
+                    .Select(u => u.Email!)
+                    .ToArrayAsync();
+
+            case AnnouncementRecipientGroup.SubscribedUsersAndAdmins:
+                string[] admins = await _userManager
+                    .GetUsersInRoleAsync(AdminRoleName)
+                    .ContinueWith(t => t.Result
+                        .Where(u => u is { Email: not null, IsDeleted: false, IsBanned: false, EmailConfirmed: true })
+                        .Select(u => u.Email!)
+                        .ToArray());
+
+                string[] users = await baseQuery
+                    .Where(u => !admins.Contains(u.Email!))
+                    .Select(u => u.Email!)
+                    .ToArrayAsync();
+
+                return users.Concat(admins).ToArray();
+
+            default:
+                return Array.Empty<string>();
+        }
     }
+
 
     private static ServiceResult<ICollection<string>> ParseAndValidateEmails(string? additionalRecipients)
     {
@@ -257,13 +378,6 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
                     .content-text {{ line-height: 1.6; color: #181717; font-size: 16px; }}
                     .message-box {{ border-left: 4px solid #f8dff8; padding-left: 15px; margin: 20px 0; color: #181717; }}
                     .message-box a {{ color: #2767e7; text-decoration: underline; }}
-                    .message-box h1 {{ font-size: 28px; margin: 14px 0; }}
-                    .message-box h2 {{ font-size: 22px; margin: 12px 0; }}
-                    .message-box p {{ margin: 8px 0; }}
-                    .message-box ul, .message-box ol {{ margin: 10px 0 10px 22px; padding: 0; }}
-                    .message-box blockquote {{ margin: 10px 0; padding-left: 12px; border-left: 3px solid #d8b2d8; color: #616161; }}
-                    .message-box code {{ background-color: #f4ebf4; padding: 0 4px; border-radius: 4px; }}
-                    .message-box pre {{ background-color: #f4ebf4; padding: 12px; border-radius: 6px; overflow-x: auto; }}
                 </style>
             </head>
             <body style=""margin: 0; padding: 0; background-color: #fcfcfc; font-family: 'Segoe UI', Arial, sans-serif;"">
@@ -303,194 +417,6 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
             </html>";
     }
 
-    private static string ConvertQuillDeltaToHtml(string deltaJson)
-    {
-        try
-        {
-            using JsonDocument document = JsonDocument.Parse(deltaJson);
-            if (!document.RootElement.TryGetProperty("ops", out JsonElement opsElement) || opsElement.ValueKind != JsonValueKind.Array)
-                return string.Empty;
-
-            StringBuilder htmlBuilder = new();
-            StringBuilder lineBuilder = new();
-            string? openListType = null;
-
-            foreach (JsonElement op in opsElement.EnumerateArray())
-            {
-                if (!op.TryGetProperty("insert", out JsonElement insertElement)) continue;
-                JsonElement attributesElement = op.TryGetProperty("attributes", out JsonElement attrs) ? attrs : default;
-
-                if (insertElement.ValueKind != JsonValueKind.String) continue;
-                string insert = insertElement.GetString() ?? string.Empty;
-
-                for (int index = 0; index < insert.Length; index++)
-                {
-                    char current = insert[index];
-                    if (current == '\n')
-                    {
-                        AppendLineHtml(lineBuilder.ToString(), attributesElement, htmlBuilder, ref openListType);
-                        lineBuilder.Clear();
-                        continue;
-                    }
-
-                    int segmentStart = index;
-                    while (index < insert.Length && insert[index] != '\n') index++;
-                    string segment = insert.Substring(segmentStart, index - segmentStart);
-                    lineBuilder.Append(ApplyInlineFormatting(segment, attributesElement));
-                    if (index < insert.Length && insert[index] == '\n') index--;
-                }
-            }
-
-            if (lineBuilder.Length > 0)
-                AppendLineHtml(lineBuilder.ToString(), default, htmlBuilder, ref openListType);
-
-            if (!string.IsNullOrEmpty(openListType))
-                htmlBuilder.Append(openListType == "ordered" ? "</ol>" : "</ul>");
-
-            return htmlBuilder.ToString();
-        }
-        catch
-        {
-            string fallbackText = WebUtility.HtmlEncode(ExtractPlainTextFromQuillDelta(deltaJson)).Replace("\n", "<br />");
-            return $"<p>{fallbackText}</p>";
-        }
-    }
-
-    private static void AppendLineHtml(string lineContent, JsonElement lineAttributes, StringBuilder htmlBuilder, ref string? openListType)
-    {
-        string content = string.IsNullOrWhiteSpace(lineContent) ? "<br />" : lineContent;
-
-        string? listType = null;
-        if (lineAttributes.ValueKind == JsonValueKind.Object &&
-            lineAttributes.TryGetProperty("list", out JsonElement listElement) &&
-            listElement.ValueKind == JsonValueKind.String)
-            listType = listElement.GetString();
-
-        if (listType is not null)
-        {
-            if (openListType != listType)
-            {
-                if (!string.IsNullOrEmpty(openListType))
-                    htmlBuilder.Append(openListType == "ordered" ? "</ol>" : "</ul>");
-
-                htmlBuilder.Append(listType == "ordered" ? "<ol>" : "<ul>");
-                openListType = listType;
-            }
-
-            htmlBuilder.Append($"<li>{content}</li>");
-            return;
-        }
-
-        if (!string.IsNullOrEmpty(openListType))
-        {
-            htmlBuilder.Append(openListType == "ordered" ? "</ol>" : "</ul>");
-            openListType = null;
-        }
-
-        string alignment = "left";
-        if (lineAttributes.ValueKind == JsonValueKind.Object &&
-            lineAttributes.TryGetProperty("align", out JsonElement alignElement) &&
-            alignElement.ValueKind == JsonValueKind.String &&
-            !string.IsNullOrWhiteSpace(alignElement.GetString()))
-            alignment = alignElement.GetString()!;
-
-        string alignStyle = alignment == "left" ? string.Empty : $" style=\"text-align:{alignment};\"";
-
-        if (lineAttributes.ValueKind == JsonValueKind.Object &&
-            lineAttributes.TryGetProperty("header", out JsonElement headerElement) &&
-            headerElement.ValueKind == JsonValueKind.Number)
-        {
-            int headerLevel = headerElement.GetInt32();
-            if (headerLevel < 1 || headerLevel > 2) headerLevel = 2;
-            htmlBuilder.Append($"<h{headerLevel}{alignStyle}>{content}</h{headerLevel}>");
-            return;
-        }
-
-        if (lineAttributes.ValueKind == JsonValueKind.Object &&
-            lineAttributes.TryGetProperty("blockquote", out JsonElement blockquoteElement) &&
-            blockquoteElement.ValueKind == JsonValueKind.True)
-        {
-            htmlBuilder.Append($"<blockquote{alignStyle}>{content}</blockquote>");
-            return;
-        }
-
-        if (lineAttributes.ValueKind == JsonValueKind.Object &&
-            lineAttributes.TryGetProperty("code-block", out JsonElement codeBlockElement) &&
-            codeBlockElement.ValueKind == JsonValueKind.True)
-        {
-            htmlBuilder.Append($"<pre><code>{content}</code></pre>");
-            return;
-        }
-
-        htmlBuilder.Append($"<p{alignStyle}>{content}</p>");
-    }
-
-    private static string ApplyInlineFormatting(string text, JsonElement attributes)
-    {
-        string encoded = WebUtility.HtmlEncode(text);
-        if (string.IsNullOrEmpty(encoded)) return string.Empty;
-
-        if (attributes.ValueKind != JsonValueKind.Object) return encoded;
-
-        bool bold = attributes.TryGetProperty("bold", out JsonElement boldElement) && boldElement.ValueKind == JsonValueKind.True;
-        bool italic = attributes.TryGetProperty("italic", out JsonElement italicElement) && italicElement.ValueKind == JsonValueKind.True;
-        bool underline = attributes.TryGetProperty("underline", out JsonElement underlineElement) && underlineElement.ValueKind == JsonValueKind.True;
-        bool strike = attributes.TryGetProperty("strike", out JsonElement strikeElement) && strikeElement.ValueKind == JsonValueKind.True;
-        bool code = attributes.TryGetProperty("code", out JsonElement codeElement) && codeElement.ValueKind == JsonValueKind.True;
-
-        string current = encoded;
-
-        if (code) current = $"<code>{current}</code>";
-        if (bold) current = $"<strong>{current}</strong>";
-        if (italic) current = $"<em>{current}</em>";
-
-        if (underline || strike)
-        {
-            List<string> textDecorations = new();
-            if (underline) textDecorations.Add("underline");
-            if (strike) textDecorations.Add("line-through");
-            current = $"<span style=\"text-decoration:{string.Join(" ", textDecorations)};\">{current}</span>";
-        }
-
-        List<string> styles = new();
-        if (attributes.TryGetProperty("color", out JsonElement colorElement) &&
-            colorElement.ValueKind == JsonValueKind.String &&
-            !string.IsNullOrWhiteSpace(colorElement.GetString()))
-            styles.Add($"color:{WebUtility.HtmlEncode(colorElement.GetString())}");
-
-        if (attributes.TryGetProperty("background", out JsonElement backgroundElement) &&
-            backgroundElement.ValueKind == JsonValueKind.String &&
-            !string.IsNullOrWhiteSpace(backgroundElement.GetString()))
-            styles.Add($"background-color:{WebUtility.HtmlEncode(backgroundElement.GetString())}");
-
-        if (styles.Count > 0)
-            current = $"<span style=\"{string.Join(";", styles)};\">{current}</span>";
-
-        if (attributes.TryGetProperty("link", out JsonElement linkElement) &&
-            linkElement.ValueKind == JsonValueKind.String)
-        {
-            string? rawLink = linkElement.GetString();
-            if (!string.IsNullOrWhiteSpace(rawLink))
-            {
-                string href = BuildSafeLinkHref(rawLink);
-                current = $"<a href=\"{WebUtility.HtmlEncode(href)}\" target=\"_blank\" rel=\"noopener noreferrer\">{current}</a>";
-            }
-        }
-
-        return current;
-    }
-
-    private static string BuildSafeLinkHref(string rawLink)
-    {
-        if (Uri.TryCreate(rawLink, UriKind.Absolute, out Uri? absolute))
-            return absolute.Scheme is "http" or "https" ? absolute.ToString() : "https://" + rawLink;
-
-        if (Uri.TryCreate("https://" + rawLink, UriKind.Absolute, out Uri? withHttps))
-            return withHttps.ToString();
-
-        return "https://example.com";
-    }
-
     private static string ExtractPlainTextFromQuillDelta(string deltaJson)
     {
         try
@@ -514,4 +440,3 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
         }
     }
 }
-

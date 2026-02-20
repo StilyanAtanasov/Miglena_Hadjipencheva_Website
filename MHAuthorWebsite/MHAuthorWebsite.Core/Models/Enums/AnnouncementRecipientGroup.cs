@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MHAuthorWebsite.Core.Models.Enums;
 
@@ -11,5 +11,9 @@ public enum AnnouncementRecipientGroup
     Admins = 2,
 
     [Display(Name = "Потребители и администратори")]
-    SubscribedUsersAndAdmins = 3
+    SubscribedUsersAndAdmins = 3,
+
+    [Display(Name = "Само допълнителни имейли")]
+    AdditionalRecipientsOnly = 4
 }
+

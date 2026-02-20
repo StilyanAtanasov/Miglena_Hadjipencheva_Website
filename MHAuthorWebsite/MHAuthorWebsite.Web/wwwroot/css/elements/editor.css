@@ -2,7 +2,7 @@
   font-family: var(--font-primary);
 }
 
-.ql-snow .ql-picker.ql-font {
+.ql-snow .ql-picker-label {
   overflow: hidden;
 }
 

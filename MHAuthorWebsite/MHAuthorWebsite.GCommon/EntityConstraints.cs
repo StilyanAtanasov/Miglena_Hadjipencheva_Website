@@ -186,6 +186,7 @@ public static class EntityConstraints
         public const int MessageTextMinLength = 10;
         public const int MessageTextMaxLength = 20000;
         public const int MessageDeltaMaxLength = 100000;
+        public const int MessageHtmlMaxLength = 200000;
 
         public const ushort AdditionalRecipientsMaxLength = 4000;
     }

@@ -3,7 +3,7 @@
 import { initQuill } from "../editor.js";
 
 document.addEventListener(`DOMContentLoaded`, async function () {
-  const quill = await initQuill(true, true);
+  const quill = await initQuill(true, true, true);
 
   const form = document.getElementById(`addAnnouncementForm`);
   const subjectInput = document.getElementById(`subjectInput`);
@@ -13,6 +13,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
   const additionalRecipientsInput = document.getElementById(`additionalRecipientsInput`);
   const additionalRecipientsError = document.getElementById(`additional-recipients-error`);
   const descriptionInput = document.getElementById(`descriptionInput`);
+  const messageHtmlInput = document.getElementById(`messageHtmlInput`);
   const descriptionError = document.getElementById(`description-input-error`);
 
   const subjectMinLength = parseInt(subjectInput.dataset.minLength || `0`);
@@ -58,6 +59,8 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
     const delta = quill.getContents();
     descriptionInput.value = JSON.stringify(delta);
+    const semanticHtml = typeof quill.getSemanticHTML === `function` ? quill.getSemanticHTML(0, quill.getLength()) : quill.root.innerHTML;
+    if (messageHtmlInput) messageHtmlInput.value = semanticHtml;
   });
 
   function validateSubject() {
@@ -98,6 +101,13 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
   function validateAdditionalRecipients() {
     const rawValue = additionalRecipientsInput.value;
+    const isAdditionalOnlyMode = parseInt(recipientGroupSelect.value) === 4;
+
+    if (isAdditionalOnlyMode && (!rawValue || rawValue.trim() === ``)) {
+      additionalRecipientsError.textContent = `При избор "Само допълнителни имейли" трябва да добавите поне един имейл адрес.`;
+      return false;
+    }
+
     if (!rawValue || rawValue.trim() === ``) {
       additionalRecipientsError.textContent = ``;
       return true;
