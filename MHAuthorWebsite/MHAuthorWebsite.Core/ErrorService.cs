@@ -3,24 +3,25 @@ using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Error;
 using MHAuthorWebsite.Core.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
 namespace MHAuthorWebsite.Core;
 
 public class ErrorService : IErrorService
 {
     private readonly IEmailService _emailService;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IAdminNotificationPreferencesService _adminNotificationPreferencesService;
     private readonly IEmailUserProvider _emailUserProvider;
     private readonly ILogger<ErrorService> _logger;
 
-    public ErrorService(IEmailService emailService, UserManager<ApplicationUser> userManager,
-        IEmailUserProvider emailUserProvider, ILogger<ErrorService> logger)
+    public ErrorService(
+        IEmailService emailService,
+        IAdminNotificationPreferencesService adminNotificationPreferencesService,
+        IEmailUserProvider emailUserProvider,
+        ILogger<ErrorService> logger)
     {
         _emailService = emailService;
-        _userManager = userManager;
+        _adminNotificationPreferencesService = adminNotificationPreferencesService;
         _emailUserProvider = emailUserProvider;
         _logger = logger;
     }
@@ -93,7 +94,8 @@ public class ErrorService : IErrorService
         </body>
         </html>";
 
-        string[] adminEmails = (await _userManager.GetUsersInRoleAsync(AdminRoleName)).Where(u => !u.IsDeleted).Select(u => u.Email).ToArray()!;
+        ICollection<string> adminEmails = await _adminNotificationPreferencesService
+            .GetAdminEmailsForNotificationAsync(Models.Enums.AdminNotificationType.ServerError);
 
         if (adminEmails.Any())
             await _emailService.SendEmailsBulkAsync(

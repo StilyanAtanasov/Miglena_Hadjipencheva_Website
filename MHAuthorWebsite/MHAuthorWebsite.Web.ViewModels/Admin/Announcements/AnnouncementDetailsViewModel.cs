@@ -14,6 +14,10 @@ public class AnnouncementDetailsViewModel
 
     public int RecipientCount { get; set; }
 
+    public int FailedRecipientCount { get; set; }
+
+    public ICollection<AnnouncementRecipientDeliveryViewModel> Deliveries { get; set; } = Array.Empty<AnnouncementRecipientDeliveryViewModel>();
+
     public DateTime CreatedOn { get; set; }
 
     public string AdminName { get; set; } = null!;

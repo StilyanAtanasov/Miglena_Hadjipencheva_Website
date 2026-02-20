@@ -1,0 +1,141 @@
+.legal-documents-page {
+  width: 92%;
+  margin-left: 4%;
+  gap: 2rem;
+}
+
+.legal-documents-header {
+  gap: 0.4rem;
+}
+
+.legal-documents-subtitle {
+  font-size: 1.8rem;
+  color: var(--color-grey);
+}
+
+.legal-documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+  gap: 1.6rem;
+}
+
+.legal-document-card {
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 1.4rem;
+  padding: 1.8rem;
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-secondary-lighter) 100%);
+  gap: 1rem;
+}
+
+.legal-document-title {
+  font-size: 1.8rem;
+  color: var(--color-dark);
+}
+
+.legal-document-meta {
+  font-size: 1.5rem;
+  color: var(--color-grey);
+}
+
+.legal-document-editor-page {
+  width: 92%;
+  margin-left: 4%;
+  gap: 1.6rem;
+}
+
+.legal-document-editor-shell {
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 1.6rem;
+  padding: 2.2rem;
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-secondary-lighter) 100%);
+  gap: 1.4rem;
+}
+
+.legal-document-version {
+  font-size: 1.7rem;
+  color: var(--color-grey);
+}
+
+.legal-nodes-list {
+  gap: 1.3rem;
+}
+
+.legal-node-item {
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 1.2rem;
+  padding: 1.2rem;
+  background-color: #ffffff;
+  gap: 1rem;
+}
+
+.legal-node-item.dragging {
+  opacity: 0.5;
+  border-color: var(--color-secondary);
+}
+
+.legal-node-head {
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.node-order-badge {
+  align-items: center;
+  gap: 0.6rem;
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 0.9rem;
+  padding: 0.6rem 0.9rem;
+  min-width: 5rem;
+}
+
+.drag-handle {
+  cursor: grab;
+  color: var(--color-secondary);
+}
+
+.node-order-number {
+  font-weight: 700;
+  color: var(--color-secondary);
+  min-width: 1.8rem;
+  text-align: center;
+}
+
+.legal-node-head .form-input-box {
+  margin-top: 0;
+}
+
+.node-title-wrap {
+  flex: 1;
+}
+
+.legal-node-editor .ql-editor {
+  min-height: 14rem;
+}
+
+.legal-node-actions {
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.6rem;
+}
+
+@media (max-width: 800px) {
+  .legal-documents-page,
+  .legal-document-editor-page {
+    width: 96%;
+    margin-left: 2%;
+  }
+
+  .legal-node-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .legal-node-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .legal-node-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

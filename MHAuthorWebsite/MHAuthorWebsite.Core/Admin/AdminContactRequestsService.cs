@@ -19,9 +19,10 @@ public class AdminContactRequestsService : ContactsService, IAdminContactRequest
     private readonly ILogger<AdminContactRequestsService> _logger;
 
     public AdminContactRequestsService(IEmailService emailService, IEmailUserProvider emailUserProvider,
-        IApplicationRepository repository, UserManager<ApplicationUser> userManager, IUrlProvider urlProvider,
+        IApplicationRepository repository, UserManager<ApplicationUser> userManager,
+        IAdminNotificationPreferencesService adminNotificationPreferencesService, IUrlProvider urlProvider,
         IServiceProvider serviceProvider, ILogger<AdminContactRequestsService> logger, ILogger<ContactsService> baseLogger)
-        : base(emailService, emailUserProvider, repository, userManager, urlProvider, serviceProvider, baseLogger)
+        : base(emailService, emailUserProvider, repository, userManager, adminNotificationPreferencesService, urlProvider, serviceProvider, baseLogger)
     {
         _logger = logger;
     }

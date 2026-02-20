@@ -15,5 +15,13 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder
             .Property(u => u.IsBanned)
             .HasDefaultValue(false);
+
+        builder
+            .Property(u => u.IsMarketingSubscribed)
+            .HasDefaultValue(false);
+
+        builder
+            .Property(u => u.HasAcceptedPrivacyPolicy)
+            .HasDefaultValue(false);
     }
 }

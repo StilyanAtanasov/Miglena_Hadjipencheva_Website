@@ -15,7 +15,9 @@ header,
   width: 100vw;
   top: 0;
   z-index: 1000;
-  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition:
+    background-color 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
   padding: 1rem 4rem;
   background-color: var(--color-primary);
   color: var(--color-dark);
@@ -60,7 +62,9 @@ nav a:hover {
 footer {
   font-size: 2.2rem;
   width: 100vw;
-  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition:
+    background-color 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
   padding: 2rem 15rem 2rem 12rem;
   color: var(--color-primary);
   background-color: var(--color-secondary);
@@ -71,6 +75,16 @@ footer {
   overflow: hidden;
   position: relative;
   z-index: 1000;
+}
+
+footer .privacy-policy-link {
+  color: var(--color-primary);
+  font-style: italic;
+  font-size: 2.1rem;
+}
+
+footer .link.active.privacy-policy-link::before {
+  border: 0.15rem solid var(--color-primary);
 }
 
 footer .social-media {
@@ -230,7 +244,9 @@ footer .social-media li:hover {
 
   #navLists.show {
     display: flex;
-    animation: scrollDown ease-out 500ms, delayTriggerBoxShadow linear 900ms;
+    animation:
+      scrollDown ease-out 500ms,
+      delayTriggerBoxShadow linear 900ms;
     animation-fill-mode: forwards;
   }
 

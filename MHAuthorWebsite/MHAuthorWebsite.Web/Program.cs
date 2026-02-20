@@ -20,9 +20,12 @@ using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.GCommon;
 using MHAuthorWebsite.Web.Common.Localization.Identity;
 using MHAuthorWebsite.Web.Infrastructure.Initialization;
+using MHAuthorWebsite.Web.Utils.Authorization;
 using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Middleware;
 using MHAuthorWebsite.Web.Utils.Providers;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -157,6 +160,9 @@ try
 
     builder.Services.AddScoped<IAdminAnnouncementsService, AdminAnnouncementsService>();
     builder.Services.AddScoped<IAdminContactRequestsService, AdminContactRequestsService>();
+    builder.Services.AddScoped<IAdminNotificationPreferencesService, AdminNotificationPreferencesService>();
+    builder.Services.AddScoped<IAdminLegalDocumentsService, AdminLegalDocumentsService>();
+    builder.Services.AddScoped<ILegalDocumentsService, LegalDocumentsService>();
     builder.Services.AddScoped<IContactsService, ContactsService>();
 
     builder.Services.AddHttpClient<IEcontService, EcontService>();
@@ -189,6 +195,23 @@ try
         options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
         options.Filters.Add(new SecurityHeadersAttribute());
     });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        AuthorizationPolicy policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .AddRequirements(new LatestLegalDocumentsAcceptedRequirement())
+            .Build();
+
+        options.DefaultPolicy = policy;
+        options.AddPolicy("RequireLatestLegalDocuments", policyBuilder =>
+        {
+            policyBuilder.RequireAuthenticatedUser();
+            policyBuilder.AddRequirements(new LatestLegalDocumentsAcceptedRequirement());
+        });
+    });
+
+    builder.Services.AddScoped<IAuthorizationHandler, LatestLegalDocumentsAcceptedHandler>();
 
     builder.Services.AddCors(options =>
     {
@@ -292,6 +315,7 @@ try
     app.UseCors("DefaultPolicy");
 
     app.UseAuthentication();
+    app.UseMiddleware<LegalDocumentsAccessMiddleware>();
     app.UseAuthorization();
 
     string[] supportedCultures = { "bg-BG" };

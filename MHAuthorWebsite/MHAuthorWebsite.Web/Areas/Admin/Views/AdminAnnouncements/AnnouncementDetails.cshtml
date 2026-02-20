@@ -30,7 +30,8 @@
 
 			<div class="announcement-details-meta flex-row">
 				<span class="recipient-chip">@Model.RecipientGroupLabel</span>
-				<span class="meta-line"><i class="fa-regular fa-users"></i>@Model.RecipientCount получатели</span>
+				<span class="meta-line"><i class="fa-regular fa-circle-check"></i>@Model.RecipientCount успешни</span>
+				<span class="meta-line"><i class="fa-regular fa-circle-xmark"></i>@Model.FailedRecipientCount неуспешни</span>
 				<span class="meta-line"><i class="fa-regular fa-user-shield"></i>@Model.AdminName</span>
 				<span class="meta-line">
 					<i class="fa-regular fa-clock"></i>
@@ -52,6 +53,44 @@
 		<section class="announcement-editor-view">
 			<div id="description-editor"></div>
 			<input type="hidden" id="descriptionInput" value="@Model.MessageDelta" />
+		</section>
+
+		<section class="announcement-deliveries flex-column">
+			<h2 class="subheading">Статус на доставяне</h2>
+
+			@if (!Model.Deliveries.Any())
+			{
+				<p class="announcement-empty-deliveries">Няма записани опити за изпращане.</p>
+			}
+			else
+			{
+				<div class="announcement-delivery-list flex-column">
+					@foreach (AnnouncementRecipientDeliveryViewModel delivery in Model.Deliveries)
+					{
+						<article class="announcement-delivery-item flex-row">
+							<div class="announcement-delivery-icon @(delivery.IsDelivered ? "success" : "error")">
+								<i class="fa-regular @(delivery.IsDelivered ? "fa-circle-check" : "fa-circle-xmark")"></i>
+							</div>
+
+							<div class="announcement-delivery-main flex-column">
+								<p class="announcement-delivery-email">@delivery.Email</p>
+								<p class="announcement-delivery-source">@delivery.RecipientSourceLabel</p>
+								@if (!delivery.IsDelivered && !string.IsNullOrWhiteSpace(delivery.ErrorMessage))
+								{
+									<p class="announcement-delivery-error">@delivery.ErrorMessage</p>
+								}
+							</div>
+
+							@if (delivery.DeliveredOn.HasValue)
+							{
+								<time class="announcement-delivery-time" to-local no-seconds datetime="@delivery.DeliveredOn.Value.ToString("O")">
+									@TimeZoneInfo.ConvertTimeFromUtc(delivery.DeliveredOn.Value, defaultZone)
+								</time>
+							}
+						</article>
+					}
+				</div>
+			}
 		</section>
 	</article>
 </section>

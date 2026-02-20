@@ -58,6 +58,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<Announcement> Announcements { get; set; } = null!;
 
+    public DbSet<AnnouncementEmailDelivery> AnnouncementEmailDeliveries { get; set; } = null!;
+
+    public DbSet<AdminNotificationPreference> AdminNotificationPreferences { get; set; } = null!;
+
+    public DbSet<LegalDocument> LegalDocuments { get; set; } = null!;
+
+    public DbSet<UserLegalAgreement> UserLegalAgreements { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

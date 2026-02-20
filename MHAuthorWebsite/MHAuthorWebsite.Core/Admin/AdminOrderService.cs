@@ -41,10 +41,11 @@ public class AdminOrderService : OrderService, IAdminOrderService
         IOptions<EcontApiSettings> econtSettings,
         IEmailService emailService,
         IEmailUserProvider emailUserProvider,
+        IAdminNotificationPreferencesService adminNotificationPreferencesService,
         IUrlProvider urlProvider,
         ILogger<AdminOrderService> logger,
         ILogger<OrderService> baseLogger)
-        : base(repository, orderDataService, userManager, econtService, econtSettings, baseLogger)
+        : base(repository, orderDataService, userManager, econtService, econtSettings, emailService, emailUserProvider, adminNotificationPreferencesService, urlProvider, baseLogger)
     {
         _adminEcontService = adminEcontService;
         _emailService = emailService;

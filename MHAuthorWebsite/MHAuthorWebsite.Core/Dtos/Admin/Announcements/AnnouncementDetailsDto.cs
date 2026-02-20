@@ -16,6 +16,10 @@ public class AnnouncementDetailsDto
 
     public int RecipientCount { get; set; }
 
+    public int FailedRecipientCount { get; set; }
+
+    public ICollection<AnnouncementRecipientDeliveryDto> Deliveries { get; set; } = Array.Empty<AnnouncementRecipientDeliveryDto>();
+
     public DateTime CreatedOn { get; set; }
 
     public string AdminName { get; set; } = null!;

@@ -1,0 +1,53 @@
+.email-preferences-box {
+  width: min(62rem, 100%);
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 1.6rem;
+  padding: 2rem;
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-secondary-lighter) 100%);
+  gap: 1.2rem;
+}
+
+#email-preferences-form {
+  width: min(78rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.email-preference-row {
+  justify-content: flex-start;
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 1.2rem;
+  padding: 1.2rem 1.4rem;
+  background-color: #ffffff;
+}
+
+.email-preference-meta {
+  flex: 1;
+  gap: 0.4rem;
+}
+
+.email-preference-title {
+  font-size: 1.75rem;
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.email-preference-description {
+  font-size: 1.55rem;
+  color: var(--color-grey);
+}
+
+.email-preferences-text {
+  font-size: 1.7rem;
+  color: var(--color-grey);
+  line-height: 1.55;
+}
+
+.toggle-state-label {
+  font-size: 1.7rem;
+  color: var(--color-secondary);
+  font-weight: 600;
+  min-width: 8rem;
+  text-align: right;
+}

@@ -1,0 +1,108 @@
+@using MHAuthorWebsite.Web.ViewModels.Admin.LegalDocuments
+@model EditLegalDocumentViewModel
+
+@{
+	ViewData["Title"] = $"Редакция: {Model.DocumentTypeDisplayName}";
+	ViewData["CurrentPage"] = Pages.Admin.LegalDocuments;
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/legal-documents.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper legal-document-editor-page flex-column">
+	<a asp-action="Documents" asp-controller="AdminLegalDocuments" class="btn link flex-row">
+		<i class="fa-regular fa-arrow-left"></i>
+		Назад
+	</a>
+
+	<section class="legal-document-editor-shell flex-column">
+		<h1 class="title">@Model.DocumentTypeDisplayName</h1>
+		<p class="legal-document-version">Текуща версия: @Model.CurrentVersion | При запис ще се създаде нова версия.</p>
+
+		<form id="legalDocumentForm" class="input-form flex-column" asp-action="SaveDocument" asp-controller="AdminLegalDocuments" method="post">
+			<input type="hidden" asp-for="DocumentType" />
+			<input type="hidden" asp-for="DocumentTypeDisplayName" />
+			<input type="hidden" asp-for="CurrentVersion" />
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Title">Заглавие на документа</label>
+				<input class="form-input" asp-for="Title" />
+				<span class="input-error" asp-validation-for="Title"></span>
+			</div>
+
+			<div id="nodes-container" class="legal-nodes-list flex-column">
+				@for (int i = 0; i < Model.Nodes.Count; i++)
+				{
+					<div class="legal-node-item flex-column" data-node-index="@i" draggable="true">
+						<div class="legal-node-head flex-row">
+							<div class="node-order-badge flex-row">
+								<i class="fa-regular fa-grip-dots-vertical drag-handle"></i>
+								<span class="node-order-number">@Model.Nodes.ElementAt(i).Number</span>
+							</div>
+							<div class="form-input-box flex-column node-title-wrap">
+								<label class="form-label">Заглавие на раздел</label>
+								<input class="form-input node-title-input" asp-for="@Model.Nodes.ElementAt(i).Title" />
+							</div>
+							<button type="button" class="btn btn-danger link flex-row remove-node-btn">
+								<i class="fa-regular fa-trash"></i>
+								Изтрий
+							</button>
+						</div>
+
+						<div class="legal-node-editor js-node-editor"></div>
+						<input type="hidden" class="node-number-input" asp-for="@Model.Nodes.ElementAt(i).Number" />
+						<input type="hidden" class="node-delta-input" asp-for="@Model.Nodes.ElementAt(i).ContentDelta" />
+						<span class="input-error node-error"></span>
+					</div>
+				}
+			</div>
+
+			<div class="legal-node-actions flex-row">
+				<button id="add-node-btn" type="button" class="btn btn-outline flex-row">
+					<i class="fa-regular fa-plus"></i>
+					Добави раздел
+				</button>
+				<button type="submit" class="btn btn-purple flex-row">
+					<i class="fa-regular fa-floppy-disk"></i>
+					Запази нова версия
+				</button>
+			</div>
+		</form>
+	</section>
+</section>
+
+<template id="legal-node-template">
+	<div class="legal-node-item flex-column" data-node-index="__index__" draggable="true">
+		<div class="legal-node-head flex-row">
+			<div class="node-order-badge flex-row">
+				<i class="fa-regular fa-grip-dots-vertical drag-handle"></i>
+				<span class="node-order-number">1</span>
+			</div>
+			<div class="form-input-box flex-column node-title-wrap">
+				<label class="form-label">Заглавие на раздел</label>
+				<input class="form-input node-title-input" name="Nodes[__index__].Title" />
+			</div>
+			<button type="button" class="btn btn-danger link flex-row remove-node-btn">
+				<i class="fa-regular fa-trash"></i>
+				Изтрий
+			</button>
+		</div>
+
+		<div class="legal-node-editor js-node-editor"></div>
+		<input type="hidden" class="node-number-input" name="Nodes[__index__].Number" value="1" />
+		<input type="hidden" class="node-delta-input" name="Nodes[__index__].ContentDelta" />
+		<span class="input-error node-error"></span>
+	</div>
+</template>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+	<script type="module" src="~/js/admin/legal-document-editor.js" asp-append-version="true"></script>
+}

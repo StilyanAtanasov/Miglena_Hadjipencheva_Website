@@ -1,0 +1,79 @@
+.privacy-policy-page {
+  width: min(100rem, 92%);
+  margin: 0 auto;
+  padding: 3.5rem 0;
+  gap: 2.2rem;
+}
+
+.privacy-policy-header {
+  gap: 0.6rem;
+  border-bottom: 0.1rem solid var(--color-secondary-light);
+  padding-bottom: 1.4rem;
+}
+
+.privacy-policy-subtitle {
+  font-size: 1.7rem;
+  color: var(--color-grey);
+}
+
+.privacy-policy-content {
+  width: 100%;
+  gap: 1.6rem;
+}
+
+.privacy-policy-section {
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 1.6rem;
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-secondary-lighter) 100%);
+  padding: 1.8rem 2rem;
+  gap: 0.9rem;
+}
+
+.privacy-policy-section h2 {
+  color: var(--color-secondary);
+  font-size: 2.2rem;
+}
+
+.privacy-policy-section p,
+.privacy-policy-section li {
+  font-size: 1.7rem;
+  line-height: 1.6;
+  color: var(--color-dark);
+}
+
+.privacy-policy-section .ql-toolbar {
+  display: none;
+}
+
+.privacy-policy-section .ql-container {
+  border: none;
+  font-size: 1.7rem;
+}
+
+.privacy-policy-section .ql-editor {
+  padding: 0;
+}
+
+.privacy-policy-section .ql-editor p,
+.privacy-policy-section .ql-editor li {
+  font-size: 1.7rem;
+}
+
+.privacy-policy-section ul {
+  padding-left: 2rem;
+}
+
+.privacy-policy-section a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .privacy-policy-page {
+    width: 96%;
+  }
+
+  .privacy-policy-section {
+    padding: 1.5rem 1.4rem;
+  }
+}

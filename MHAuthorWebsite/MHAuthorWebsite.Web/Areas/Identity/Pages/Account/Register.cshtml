@@ -39,6 +39,22 @@
 				<input class="form-input" asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="password" />
 				<span class="input-error" asp-validation-for="Input.ConfirmPassword"></span>
 			</div>
+			<div class="form-input-box boolean flex-row">
+				<input asp-for="Input.IsMarketingSubscribed" type="checkbox" />
+				<label class="form-label" asp-for="Input.IsMarketingSubscribed">
+					Желая да получавам маркетинг съобщения и бюлетин по имейл.
+				</label>
+			</div>
+			<div class="form-input-box boolean flex-row">
+				<input asp-for="Input.HasAcceptedLegalDocuments" type="checkbox" />
+				<label class="form-label" asp-for="Input.HasAcceptedLegalDocuments">
+					Съгласен/на съм с
+					<a class="link active" asp-controller="Home" asp-action="PrivacyPolicy" target="_blank" rel="noopener noreferrer">Политиката за поверителност</a>
+					и
+					<a class="link active" asp-controller="Home" asp-action="TermsOfService" target="_blank" rel="noopener noreferrer">Общите условия</a>.
+				</label>
+				<span class="input-error" asp-validation-for="Input.HasAcceptedLegalDocuments"></span>
+			</div>
 			<button data-trigger="load-unlimited" id="registerSubmit" type="submit" class="btn submit-btn flex-row"><i class="fa-solid fa-arrow-right-to-bracket"></i> Регистрирай се</button>
 
 			<div class="form-box flex-column actions">

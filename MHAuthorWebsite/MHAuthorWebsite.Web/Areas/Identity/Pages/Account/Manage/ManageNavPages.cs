@@ -61,6 +61,10 @@ namespace  MHAuthorWebsite.Web.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
 
+        public static string EmailPreferences => "EmailPreferences";
+
+        public static string LegalAgreements => "LegalAgreements";
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -108,6 +112,10 @@ namespace  MHAuthorWebsite.Web.Areas.Identity.Pages.Account.Manage
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public static string TwoFactorAuthenticationNavClass(ViewContext viewContext) => PageNavClass(viewContext, TwoFactorAuthentication);
+
+        public static string EmailPreferencesNavClass(ViewContext viewContext) => PageNavClass(viewContext, EmailPreferences);
+
+        public static string LegalAgreementsNavClass(ViewContext viewContext) => PageNavClass(viewContext, LegalAgreements);
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used

@@ -68,6 +68,15 @@ public class AdminUserManagementService : IAdminUserManagementService
             .FirstOrDefaultAsync();
         if (user == null) return ServiceResult<UserDetailsDto>.NotFound();
 
+        bool isAdmin = await _userManager.IsInRoleAsync(user, AdminRoleName);
+        AdminNotificationPreference? adminPreferences = null;
+        if (isAdmin)
+        {
+            adminPreferences = await _repository
+                .WhereReadonly<AdminNotificationPreference>(p => p.UserId == user.Id)
+                .FirstOrDefaultAsync();
+        }
+
         UserDetailsDto userDetails = new()
         {
             Id = user.Id,
@@ -75,9 +84,21 @@ public class AdminUserManagementService : IAdminUserManagementService
             Email = !user.IsDeleted ? user.Email : "",
             Phone = !user.IsDeleted ? user.PhoneNumber : "",
             IsActive = user.LastActive > DateTime.UtcNow.AddDays(-UsersActivityForPeriod),
-            IsAdmin = _userManager.IsInRoleAsync(user, AdminRoleName).Result,
+            IsAdmin = isAdmin,
             IsDeleted = user.IsDeleted,
             IsBanned = user.IsBanned,
+            HasAcceptedPrivacyPolicy = user.HasAcceptedPrivacyPolicy,
+            PrivacyPolicyAcceptedOn = user.PrivacyPolicyAcceptedOn,
+            PrivacyPolicyVersion = user.PrivacyPolicyVersion,
+            IsMarketingSubscribed = user.IsMarketingSubscribed,
+            MarketingSubscribedOn = user.MarketingSubscribedOn,
+            MarketingUnsubscribedOn = user.MarketingUnsubscribedOn,
+            HasMarketingUnsubscribeToken = !string.IsNullOrWhiteSpace(user.MarketingUnsubscribeToken),
+            MarketingUnsubscribeTokenCreatedOn = user.MarketingUnsubscribeTokenCreatedOn,
+            ReceiveNewOrderEmails = isAdmin ? adminPreferences?.ReceiveNewOrderEmails ?? true : null,
+            ReceiveContactRequestEmails = isAdmin ? adminPreferences?.ReceiveContactRequestEmails ?? true : null,
+            ReceiveServerErrorEmails = isAdmin ? adminPreferences?.ReceiveServerErrorEmails ?? true : null,
+            AdminNotificationPreferencesUpdatedOn = adminPreferences?.UpdatedOn,
             DateJoined = user.RegisteredOn,
             LastActive = user.LastActive
         };

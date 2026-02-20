@@ -16,6 +16,8 @@ public static class ApplicationRules
         public const string DefaultTimeZoneId = "FLE Standard Time";
 
         public const decimal FreeDeliveryThresholdEur = 50;
+
+        public const string PrivacyPolicyCurrentVersion = "2026-02-20";
     }
 
     public static class CacheKeys
@@ -117,6 +119,7 @@ public static class ApplicationRules
             public const string ContactRequestsBoardPage = nameof(ContactRequestsBoardPage);
             public const string AnnouncementsBoardPage = nameof(AnnouncementsBoardPage);
             public const string ManageUsers = nameof(ManageUsers);
+            public const string LegalDocuments = nameof(LegalDocuments);
         }
     }
 

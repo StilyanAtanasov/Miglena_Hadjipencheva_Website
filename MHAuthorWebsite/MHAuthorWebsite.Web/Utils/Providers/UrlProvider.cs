@@ -20,6 +20,13 @@ public class UrlProvider : IUrlProvider
             controller: "Order",
             values: new { orderId = orderId }) ?? string.Empty;
 
+    public string GetAdminOrderDetailsPageUrl(Guid orderId)
+    => _linkGenerator.GetUriByAction(
+            _httpContextAccessor.HttpContext!,
+            action: "OrderDetails",
+            controller: "AdminOrder",
+            values: new { area = "Admin", orderId = orderId }) ?? string.Empty;
+
     public string GetContactsPageUrl()
     => _linkGenerator.GetUriByAction(
             httpContext: _httpContextAccessor.HttpContext!,
@@ -33,4 +40,11 @@ public class UrlProvider : IUrlProvider
             action: "ContactRequestDetails",
             controller: "AdminContactRequests",
             values: new { area = "Admin", requestId }) ?? string.Empty;
+
+    public string GetMarketingUnsubscribeUrl(string email, string token)
+    => _linkGenerator.GetUriByAction(
+            _httpContextAccessor.HttpContext!,
+            action: "UnsubscribeMarketing",
+            controller: "Home",
+            values: new { email, token }) ?? string.Empty;
 }

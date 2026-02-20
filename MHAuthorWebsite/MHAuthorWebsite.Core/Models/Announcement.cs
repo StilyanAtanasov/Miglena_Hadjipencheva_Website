@@ -33,4 +33,6 @@ public class Announcement
     public string AdminId { get; set; } = null!;
 
     public ApplicationUser Admin { get; set; } = null!;
+
+    public ICollection<AnnouncementEmailDelivery> EmailDeliveries { get; set; } = new HashSet<AnnouncementEmailDelivery>();
 }

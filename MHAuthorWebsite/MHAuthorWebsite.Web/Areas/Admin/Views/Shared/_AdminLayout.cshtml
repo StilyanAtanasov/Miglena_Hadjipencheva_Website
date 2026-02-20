@@ -54,6 +54,10 @@
 					<i class="fa-regular fa-megaphone"></i>
 					<p class="flex-row">Съобщения</p>
 				</li>
+				<li data-url="@Url.Action("Documents", "AdminLegalDocuments")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.LegalDocuments ? "current" : "")">
+					<i class="fa-regular fa-file-contract"></i>
+					<p class="flex-row">Правни документи</p>
+				</li>
 				<li data-url="@Url.Action("ManageUsers", "AdminUserManagement")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.ManageUsers ? "current" : "")">
 					<i class="fa-regular fa-users-gear"></i>
 					<p class="flex-row">Управление на потребителите</p>

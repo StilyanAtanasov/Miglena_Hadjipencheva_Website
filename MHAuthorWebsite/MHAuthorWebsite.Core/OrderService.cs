@@ -1,6 +1,7 @@
 ﻿using MHAuthorWebsite.Core.Common.Extensions;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Configuration.EcontApi;
+using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Contracts.DataServices;
 using MHAuthorWebsite.Core.Dtos.Order;
@@ -24,16 +25,27 @@ public class OrderService : IOrderService
     protected readonly UserManager<ApplicationUser> UserManager;
     protected readonly IEcontService EcontService;
     protected readonly EcontApiSettings EcontApiSettings;
+    protected readonly IEmailService EmailService;
+    protected readonly IEmailUserProvider EmailUserProvider;
+    protected readonly IAdminNotificationPreferencesService AdminNotificationPreferencesService;
+    protected readonly IUrlProvider UrlProvider;
     private readonly ILogger<OrderService> _logger;
 
     public OrderService(IApplicationRepository repository, IOrderDataService orderDataService, UserManager<ApplicationUser> userManager,
-        IEcontService econtService, IOptions<EcontApiSettings> econtApiSettings, ILogger<OrderService> logger)
+        IEcontService econtService, IOptions<EcontApiSettings> econtApiSettings,
+        IEmailService emailService, IEmailUserProvider emailUserProvider,
+        IAdminNotificationPreferencesService adminNotificationPreferencesService, IUrlProvider urlProvider,
+        ILogger<OrderService> logger)
     {
         Repository = repository;
         UserManager = userManager;
         EcontService = econtService;
         EcontApiSettings = econtApiSettings.Value;
         OrderDataService = orderDataService;
+        EmailService = emailService;
+        EmailUserProvider = emailUserProvider;
+        AdminNotificationPreferencesService = adminNotificationPreferencesService;
+        UrlProvider = urlProvider;
         _logger = logger;
     }
 
@@ -164,6 +176,7 @@ public class OrderService : IOrderService
 
         Repository.DeleteRange(cartItems);
         await Repository.SaveChangesAsync();
+        await NotifyAdminsForNewOrderAsync(order);
 
         _logger.LogInformation("Successfully created Order {OrderId} for User {UserId}.", order.Id, userId);
         return ServiceResult<Guid>.Ok(order.Id);
@@ -254,4 +267,64 @@ public class OrderService : IOrderService
         => await Repository
             .WhereReadonly<Order>(o => o.Id == orderId && o.UserId == userId && o.Date > DateTime.UtcNow.AddSeconds(-SuccessPageMaxViewDelaySeconds))
             .AnyAsync();
+
+    private async Task NotifyAdminsForNewOrderAsync(Order order)
+    {
+        try
+        {
+            ICollection<string> adminEmails = await AdminNotificationPreferencesService
+                .GetAdminEmailsForNotificationAsync(AdminNotificationType.NewOrder);
+
+            if (!adminEmails.Any())
+                return;
+
+            string orderDetailsUrl = UrlProvider.GetAdminOrderDetailsPageUrl(order.Id);
+            string subject = $"Нова поръчка {order.Shipment.OrderNumber}";
+            string body = $@"
+                <!DOCTYPE html>
+                <html lang=""bg"">
+                <head>
+                    <meta charset=""UTF-8"">
+                </head>
+                <body style=""margin:0;padding:0;background:#f0f0f0;font-family:'Segoe UI',Arial,sans-serif;color:#181717;"">
+                    <table role=""presentation"" width=""100%"" cellspacing=""0"" cellpadding=""0"" style=""padding:20px;"">
+                        <tr>
+                            <td align=""center"">
+                                <table role=""presentation"" width=""100%"" style=""max-width:600px;background:#ffffff;border:1px solid #e8d7e8;border-radius:10px;overflow:hidden;"">
+                                    <tr>
+                                        <td style=""background:#3a053a;padding:16px;text-align:center;"">
+                                            <h2 style=""margin:0;color:#fcfcfc;font-size:18px;"">Нова поръчка в системата</h2>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style=""padding:24px;"">
+                                            <p style=""margin:0 0 8px 0;""><strong>Номер:</strong> {order.Shipment.OrderNumber}</p>
+                                            <p style=""margin:0 0 8px 0;""><strong>Клиент:</strong> {order.Shipment.Face}</p>
+                                            <p style=""margin:0 0 8px 0;""><strong>Имейл:</strong> {order.Shipment.Email}</p>
+                                            <p style=""margin:0 0 16px 0;""><strong>Телефон:</strong> {order.Shipment.Phone}</p>
+                                            <p style=""margin:0 0 18px 0;""><strong>Създадена на:</strong> {order.Date:dd.MM.yyyy HH:mm} UTC</p>
+                                            <a href=""{orderDetailsUrl}"" style=""background:#3a053a;color:#fcfcfc;padding:11px 20px;border-radius:8px;text-decoration:none;font-weight:700;display:inline-block;"">
+                                                Отвори поръчката в админ панела
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>";
+
+            await EmailService.SendEmailsBulkAsync(
+                EmailUserProvider.GetNotificationsUser(),
+                adminEmails,
+                subject,
+                body,
+                true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send admin new-order notifications for order {OrderId}.", order.Id);
+        }
+    }
 }

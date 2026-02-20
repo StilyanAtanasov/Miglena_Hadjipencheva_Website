@@ -83,6 +83,18 @@ public class AdminUserManagementController : AdminBaseController
             DateJoined = dto.DateJoined,
             IsActive = dto.IsActive,
             IsAdmin = dto.IsAdmin,
+            HasAcceptedPrivacyPolicy = dto.HasAcceptedPrivacyPolicy,
+            PrivacyPolicyAcceptedOn = dto.PrivacyPolicyAcceptedOn,
+            PrivacyPolicyVersion = dto.PrivacyPolicyVersion,
+            IsMarketingSubscribed = dto.IsMarketingSubscribed,
+            MarketingSubscribedOn = dto.MarketingSubscribedOn,
+            MarketingUnsubscribedOn = dto.MarketingUnsubscribedOn,
+            HasMarketingUnsubscribeToken = dto.HasMarketingUnsubscribeToken,
+            MarketingUnsubscribeTokenCreatedOn = dto.MarketingUnsubscribeTokenCreatedOn,
+            ReceiveNewOrderEmails = dto.ReceiveNewOrderEmails,
+            ReceiveContactRequestEmails = dto.ReceiveContactRequestEmails,
+            ReceiveServerErrorEmails = dto.ReceiveServerErrorEmails,
+            AdminNotificationPreferencesUpdatedOn = dto.AdminNotificationPreferencesUpdatedOn
         };
 
         return PartialView("_UserDetails", viewModel);

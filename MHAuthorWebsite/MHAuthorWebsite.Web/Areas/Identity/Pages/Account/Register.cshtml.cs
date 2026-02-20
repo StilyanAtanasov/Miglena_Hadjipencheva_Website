@@ -25,17 +25,20 @@ public class RegisterModel : PageModel
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<RegisterModel> _logger;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILegalDocumentsService _legalDocumentsService;
 
     public RegisterModel(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         ILogger<RegisterModel> logger,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        ILegalDocumentsService legalDocumentsService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _legalDocumentsService = legalDocumentsService;
     }
 
     /// <summary>
@@ -68,13 +71,13 @@ public class RegisterModel : PageModel
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         /// 
-        [Required]
+        [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
         [Display(Name = "Име и фамилия")]
         [RegularExpression(@"^\S+\s+\S+$", ErrorMessage = "Моля, въведете име и фамилия!")]
         [StringLength(NameMaxLength, MinimumLength = NameMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
         public string Name { get; set; }
 
-        [Required]
+        [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
         [EmailAddress]
         [Display(Name = "Имейл")]
         public string Email { get; set; }
@@ -83,7 +86,7 @@ public class RegisterModel : PageModel
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        [Required]
+        [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
         [StringLength(PasswordMaxLength, MinimumLength = PasswordMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
         [DataType(DataType.Password)]
         [Display(Name = "Парола")]
@@ -97,6 +100,13 @@ public class RegisterModel : PageModel
         [Display(Name = "Потвърди парола")]
         [Compare("Password", ErrorMessage = "Двете въведени пароли не съвпадат.")]
         public string ConfirmPassword { get; set; }
+
+        [Display(Name = "Съгласен съм с Политиката за поверителност и Общите условия")]
+        [Range(typeof(bool), "true", "true", ErrorMessage = "Трябва да приемете Политиката за поверителност и Общите условия.")]
+        public bool HasAcceptedLegalDocuments { get; set; }
+
+        [Display(Name = "Съгласен съм да получавам маркетинг съобщения")]
+        public bool IsMarketingSubscribed { get; set; }
     }
 
 
@@ -127,7 +137,14 @@ public class RegisterModel : PageModel
                 UserName = Input.Email,
                 NormalizedUserName = Input.Email.ToUpper(),
                 RegisteredOn = DateTime.UtcNow,
-                LastActive = DateTime.UtcNow
+                LastActive = DateTime.UtcNow,
+                HasAcceptedPrivacyPolicy = Input.HasAcceptedLegalDocuments,
+                PrivacyPolicyAcceptedOn = DateTime.UtcNow,
+                PrivacyPolicyVersion = PrivacyPolicyCurrentVersion,
+                IsMarketingSubscribed = Input.IsMarketingSubscribed,
+                MarketingSubscribedOn = Input.IsMarketingSubscribed ? DateTime.UtcNow : null,
+                MarketingUnsubscribeToken = Input.IsMarketingSubscribed ? GenerateOneTimeToken() : null,
+                MarketingUnsubscribeTokenCreatedOn = Input.IsMarketingSubscribed ? DateTime.UtcNow : null
             };
 
             IdentityResult result = await _userManager.CreateAsync(user, Input.Password);
@@ -147,6 +164,8 @@ public class RegisterModel : PageModel
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
 
+                await _legalDocumentsService.AcceptLatestDocumentsAsync(user.Id);
+
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return LocalRedirect(returnUrl);
             }
@@ -156,6 +175,9 @@ public class RegisterModel : PageModel
         // If we got this far, something failed, redisplay form
         return Page();
     }
+
+    private static string GenerateOneTimeToken()
+        => $"{Guid.NewGuid():N}{Guid.NewGuid():N}";
 
     private Task SendEmailConfirmationAsync(string userId, string code, string returnUrl)
     {

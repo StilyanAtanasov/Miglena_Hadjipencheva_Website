@@ -5,10 +5,10 @@ using MHAuthorWebsite.Core.Dtos.Contacts;
 using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
 namespace MHAuthorWebsite.Core;
 
@@ -19,17 +19,20 @@ public class ContactsService : IContactsService
     protected readonly IEmailUserProvider EmailUserProvider;
     protected readonly IApplicationRepository Repository;
     protected readonly UserManager<ApplicationUser> UserManager;
+    protected readonly IAdminNotificationPreferencesService AdminNotificationPreferencesService;
     protected readonly IUrlProvider UrlProvider;
     protected readonly IServiceProvider ServiceProvider;
 
     public ContactsService(IEmailService emailService, IEmailUserProvider emailUserProvider,
-        IApplicationRepository repository, UserManager<ApplicationUser> userManager, IUrlProvider urlProvider,
+        IApplicationRepository repository, UserManager<ApplicationUser> userManager,
+        IAdminNotificationPreferencesService adminNotificationPreferencesService, IUrlProvider urlProvider,
         IServiceProvider serviceProvider, ILogger<ContactsService> logger)
     {
         EmailService = emailService;
         EmailUserProvider = emailUserProvider;
         Repository = repository;
         UserManager = userManager;
+        AdminNotificationPreferencesService = adminNotificationPreferencesService;
         UrlProvider = urlProvider;
         ServiceProvider = serviceProvider;
         _logger = logger;
@@ -64,12 +67,14 @@ public class ContactsService : IContactsService
 
             try
             {
-                UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                IAdminNotificationPreferencesService adminNotificationPreferencesService =
+                    scope.ServiceProvider.GetRequiredService<IAdminNotificationPreferencesService>();
                 IEmailUserProvider emailUserProvider =
                     scope.ServiceProvider.GetRequiredService<IEmailUserProvider>();
                 IEmailService emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
 
-                string[] adminEmails = (await userManager.GetUsersInRoleAsync(AdminRoleName)).Where(u => !u.IsDeleted).Select(u => u.Email).ToArray()!;
+                ICollection<string> adminEmails = await adminNotificationPreferencesService
+                    .GetAdminEmailsForNotificationAsync(AdminNotificationType.ContactRequest);
                 string emailBody = $@"
                 <!DOCTYPE html>
                 <html>
@@ -131,8 +136,9 @@ public class ContactsService : IContactsService
                 </body>
                 </html>";
 
-                await emailService.SendEmailsBulkAsync(emailUserProvider.GetContactUser(),
-                    adminEmails, $"Ново запитване от {model.Name}", emailBody, true);
+                if (adminEmails.Any())
+                    await emailService.SendEmailsBulkAsync(emailUserProvider.GetContactUser(),
+                        adminEmails, $"Ново запитване от {model.Name}", emailBody, true);
             }
             catch (Exception ex)
             {

@@ -72,6 +72,19 @@ public class AdminAnnouncementsController : AdminBaseController
             RecipientGroupLabel = dto.RecipientGroup.GetDisplayName(),
             AdditionalRecipients = dto.AdditionalRecipients,
             RecipientCount = dto.RecipientCount,
+            FailedRecipientCount = dto.FailedRecipientCount,
+            Deliveries = dto.Deliveries
+                .OrderByDescending(d => d.DeliveryStatus == AnnouncementDeliveryStatus.Sent)
+                .ThenBy(d => d.Email)
+                .Select(d => new AnnouncementRecipientDeliveryViewModel
+                {
+                    Email = d.Email,
+                    RecipientSourceLabel = d.RecipientSource.GetDisplayName(),
+                    IsDelivered = d.DeliveryStatus == AnnouncementDeliveryStatus.Sent,
+                    ErrorMessage = d.ErrorMessage,
+                    DeliveredOn = d.DeliveredOn
+                })
+                .ToArray(),
             CreatedOn = dto.CreatedOn,
             AdminName = dto.AdminName
         };

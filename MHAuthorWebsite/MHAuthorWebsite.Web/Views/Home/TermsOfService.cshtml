@@ -1,0 +1,43 @@
+@using MHAuthorWebsite.Core.Dtos.Legal
+@model LegalDocumentDto
+
+@{
+	ViewData["Title"] = Model.Title;
+	ViewData["MetaDescription"] = "Общи условия за използване на уебсайта и услугите.";
+	ViewData["RequireTimeZoneManager"] = true;
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link rel="stylesheet" href="~/css/privacy-policy.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper privacy-policy-page flex-column">
+	<header class="privacy-policy-header flex-column">
+		<h1 class="title">@Model.Title</h1>
+		<p class="privacy-policy-subtitle">Версия @Model.Version</p>
+		<p class="privacy-policy-subtitle">
+			Обновено на:
+			<time to-local no-seconds datetime="@Model.CreatedOn.ToString("O")">@Model.CreatedOn</time>
+		</p>
+	</header>
+
+	<article class="privacy-policy-content flex-column">
+		@foreach (LegalDocumentNodeDto node in Model.Nodes.OrderBy(n => n.Number))
+		{
+			<section class="privacy-policy-section flex-column">
+				<h2>@node.Number. @node.Title</h2>
+				<div class="js-legal-node-editor" data-delta="@node.ContentDelta"></div>
+			</section>
+		}
+	</article>
+</section>
+
+@section Scripts {
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+	<script src="~/js/legal-document-view.js" asp-append-version="true"></script>
+}

@@ -22,6 +22,34 @@ namespace MHAuthorWebsite.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("MHAuthorWebsite.Core.Models.AdminNotificationPreference", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("ReceiveContactRequestEmails")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("ReceiveNewOrderEmails")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("ReceiveServerErrorEmails")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("AdminNotificationPreferences");
+                });
+
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Announcement", b =>
                 {
                     b.Property<Guid>("Id")
@@ -61,6 +89,46 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.ToTable("Announcements");
                 });
 
+            modelBuilder.Entity("MHAuthorWebsite.Core.Models.AnnouncementEmailDelivery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AnnouncementId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeliveredOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DeliveryStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("RecipientSource")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("AnnouncementId", "Email")
+                        .IsUnique();
+
+                    b.ToTable("AnnouncementEmailDeliveries");
+                });
+
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -80,12 +148,22 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("HasAcceptedPrivacyPolicy")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsBanned")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
                     b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsMarketingSubscribed")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -98,6 +176,19 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime?>("MarketingSubscribedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MarketingUnsubscribeToken")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<DateTime?>("MarketingUnsubscribeTokenCreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("MarketingUnsubscribedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .HasMaxLength(120)
@@ -119,6 +210,13 @@ namespace MHAuthorWebsite.Data.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("PrivacyPolicyAcceptedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PrivacyPolicyVersion")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime>("RegisteredOn")
                         .HasColumnType("datetime2");
@@ -244,6 +342,44 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ContactRequests");
+                });
+
+            modelBuilder.Entity("MHAuthorWebsite.Core.Models.LegalDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AdminId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DocumentType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NodesJson")
+                        .IsRequired()
+                        .HasMaxLength(500000)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdminId");
+
+                    b.HasIndex("DocumentType", "Version")
+                        .IsUnique();
+
+                    b.ToTable("LegalDocuments");
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Order", b =>
@@ -872,6 +1008,38 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.ToTable("ShipmentServices");
                 });
 
+            modelBuilder.Entity("MHAuthorWebsite.Core.Models.UserLegalAgreement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("AgreedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DocumentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DocumentType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DocumentVersion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
+
+                    b.HasIndex("UserId", "DocumentType", "DocumentVersion")
+                        .IsUnique();
+
+                    b.ToTable("UserLegalAgreements");
+                });
+
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Work", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1058,6 +1226,17 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.ToTable("ProductsLikes", (string)null);
                 });
 
+            modelBuilder.Entity("MHAuthorWebsite.Core.Models.AdminNotificationPreference", b =>
+                {
+                    b.HasOne("MHAuthorWebsite.Core.Models.ApplicationUser", "User")
+                        .WithOne("AdminNotificationPreference")
+                        .HasForeignKey("MHAuthorWebsite.Core.Models.AdminNotificationPreference", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Announcement", b =>
                 {
                     b.HasOne("MHAuthorWebsite.Core.Models.ApplicationUser", "Admin")
@@ -1067,6 +1246,24 @@ namespace MHAuthorWebsite.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Admin");
+                });
+
+            modelBuilder.Entity("MHAuthorWebsite.Core.Models.AnnouncementEmailDelivery", b =>
+                {
+                    b.HasOne("MHAuthorWebsite.Core.Models.Announcement", "Announcement")
+                        .WithMany("EmailDeliveries")
+                        .HasForeignKey("AnnouncementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MHAuthorWebsite.Core.Models.ApplicationUser", "User")
+                        .WithMany("AnnouncementEmailDeliveries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Announcement");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Cart", b =>
@@ -1112,6 +1309,16 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.Navigation("Admin");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MHAuthorWebsite.Core.Models.LegalDocument", b =>
+                {
+                    b.HasOne("MHAuthorWebsite.Core.Models.ApplicationUser", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Admin");
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Order", b =>
@@ -1358,6 +1565,25 @@ namespace MHAuthorWebsite.Data.Migrations
                     b.Navigation("Shipment");
                 });
 
+            modelBuilder.Entity("MHAuthorWebsite.Core.Models.UserLegalAgreement", b =>
+                {
+                    b.HasOne("MHAuthorWebsite.Core.Models.LegalDocument", "Document")
+                        .WithMany("UserAgreements")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("MHAuthorWebsite.Core.Models.ApplicationUser", "User")
+                        .WithMany("LegalAgreements")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Document");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1424,9 +1650,20 @@ namespace MHAuthorWebsite.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MHAuthorWebsite.Core.Models.Announcement", b =>
+                {
+                    b.Navigation("EmailDeliveries");
+                });
+
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("AdminNotificationPreference");
+
+                    b.Navigation("AnnouncementEmailDeliveries");
+
                     b.Navigation("Carts");
+
+                    b.Navigation("LegalAgreements");
 
                     b.Navigation("Orders");
 
@@ -1438,6 +1675,11 @@ namespace MHAuthorWebsite.Data.Migrations
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Cart", b =>
                 {
                     b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("MHAuthorWebsite.Core.Models.LegalDocument", b =>
+                {
+                    b.Navigation("UserAgreements");
                 });
 
             modelBuilder.Entity("MHAuthorWebsite.Core.Models.Order", b =>

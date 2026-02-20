@@ -1,0 +1,61 @@
+@page
+@model LegalAgreementsModel
+
+@{
+	ViewData["Heading"] = "Правни съгласия";
+	ViewData["ActivePage"] = ManageNavPages.LegalAgreements;
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/profile/email-preferences.css" asp-append-version="true" />
+}
+
+<section class="content-body flex-column">
+	<input type="hidden" id="show-legal-prompt" value="@(Model.ShowPrompt ? "1" : "0")" />
+	<section class="email-preferences-box flex-column">
+		<h3 class="subheading">Необходимо е потвърждение</h3>
+		<p class="email-preferences-text">
+			За да продължите да използвате сайта, трябва да приемете последните версии на правните документи.
+		</p>
+
+		@if (!Model.PendingDocuments.Any())
+		{
+			<p class="email-preferences-text">Нямате чакащи правни документи за приемане.</p>
+		}
+		else
+		{
+			<ul class="flex-column">
+				@foreach (var doc in Model.PendingDocuments.OrderBy(d => (int)d.DocumentType))
+				{
+					<li>
+						<strong>@doc.Title</strong> (версия @doc.Version) -
+						<a class="link active" asp-controller="Home" asp-action="@(doc.DocumentType == MHAuthorWebsite.Core.Models.Enums.LegalDocumentType.PrivacyPolicy ? "PrivacyPolicy" : "TermsOfService")" target="_blank" rel="noopener noreferrer">
+							Преглед
+						</a>
+					</li>
+				}
+			</ul>
+			<form method="post" class="input-form flex-column">
+				<input type="hidden" asp-for="ReturnUrl" />
+				<div class="form-input-box boolean flex-row">
+					<input asp-for="AcceptLatestDocuments" type="checkbox" />
+					<label class="form-label" asp-for="AcceptLatestDocuments">
+						Приемам последната версия на Политиката за поверителност и Общите условия.
+					</label>
+				</div>
+				<span class="input-error" asp-validation-for="AcceptLatestDocuments"></span>
+				<button type="submit" class="btn submit-btn flex-row">
+					<i class="fa-solid fa-check"></i>
+					Потвърди
+				</button>
+			</form>
+		}
+	</section>
+</section>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script type="module" src="~/js/profile/legal-agreements.js" asp-append-version="true"></script>
+}

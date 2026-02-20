@@ -1,0 +1,43 @@
+@using MHAuthorWebsite.Web.ViewModels.Admin.LegalDocuments
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@model ICollection<LegalDocumentSummaryViewModel>
+
+@{
+	ViewData["Title"] = "Правни документи";
+	ViewData["CurrentPage"] = Pages.Admin.LegalDocuments;
+	ViewData["RequireTimeZoneManager"] = true;
+
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/admin/legal-documents.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper legal-documents-page flex-column">
+	<header class="legal-documents-header flex-column">
+		<h1 class="title">@ViewData["Title"]</h1>
+		<p class="legal-documents-subtitle">Управление на версии на Политика за поверителност и Общи условия.</p>
+	</header>
+
+	<section class="legal-documents-grid">
+		@foreach (LegalDocumentSummaryViewModel doc in Model)
+		{
+			<article class="legal-document-card flex-column">
+				<h2 class="subheading">@doc.DocumentType</h2>
+				<p class="legal-document-title">@doc.Title</p>
+				<p class="legal-document-meta"><strong>Версия:</strong> @doc.Version</p>
+				<p class="legal-document-meta">
+					<strong>Обновен:</strong>
+					<time to-local no-seconds datetime="@doc.CreatedOn.ToString("O")">
+						@TimeZoneInfo.ConvertTimeFromUtc(doc.CreatedOn, defaultZone)
+					</time>
+				</p>
+				<a class="btn btn-purple link flex-row" asp-action="@doc.EditAction" asp-controller="AdminLegalDocuments">
+					<i class="fa-regular fa-pen-to-square"></i>
+					Редакция
+				</a>
+			</article>
+		}
+	</section>
+</section>
