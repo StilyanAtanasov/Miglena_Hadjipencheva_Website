@@ -18,5 +18,16 @@
 	</div>
 </div>
 
-@await RenderSectionAsync("Styles", required: false)
-@await RenderSectionAsync("Scripts", required: false)
+@if (IsSectionDefined("Styles"))
+{
+	@section Styles {
+		@await RenderSectionAsync("Styles")
+	}
+}
+
+@if (IsSectionDefined("Scripts"))
+{
+	@section Scripts {
+		@await RenderSectionAsync("Scripts")
+	}
+}
