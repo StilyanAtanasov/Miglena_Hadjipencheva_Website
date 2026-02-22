@@ -7,13 +7,17 @@
 
 .privacy-policy-header {
   gap: 0.6rem;
-  border-bottom: 0.1rem solid var(--color-secondary-light);
+  border-bottom: 0.2rem solid var(--color-secondary);
+  text-align: center;
+  padding: 0 5rem;
   padding-bottom: 1.4rem;
 }
 
 .privacy-policy-subtitle {
   font-size: 1.7rem;
   color: var(--color-grey);
+  text-align: center;
+  justify-content: center;
 }
 
 .privacy-policy-content {

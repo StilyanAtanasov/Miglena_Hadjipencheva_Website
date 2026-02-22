@@ -15,14 +15,14 @@
 }
 
 <section class="page-wrapper privacy-policy-page flex-column">
-	<header class="privacy-policy-header flex-column">
+	<div class="privacy-policy-header flex-column">
 		<h1 class="title">@Model.Title</h1>
-		<p class="privacy-policy-subtitle">Версия @Model.Version</p>
-		<p class="privacy-policy-subtitle">
-			Обновено на:
-			<time to-local no-seconds datetime="@Model.CreatedOn.ToString("O")">@Model.CreatedOn</time>
+		<p class="flex-row privacy-policy-subtitle">
+			<span>Версия: @Model.Version</span>
+			|
+			<span>Обновено на: <time to-local no-seconds datetime="@Model.CreatedOn.ToString("O")">@Model.CreatedOn</time></span>
 		</p>
-	</header>
+	</div>
 
 	<article class="privacy-policy-content flex-column">
 		@foreach (LegalDocumentNodeDto node in Model.Nodes.OrderBy(n => n.Number))

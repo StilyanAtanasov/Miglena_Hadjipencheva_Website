@@ -5,6 +5,7 @@ using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
+using System.Reflection;
 using System.Text.Json;
 using static MHAuthorWebsite.GCommon.EntityConstraints.LegalDocumentNode;
 
@@ -14,6 +15,12 @@ public class LegalDocumentsService : ILegalDocumentsService
 {
     protected readonly IApplicationRepository Repository;
     private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
+    private const string SeedResourcePrefix = "MHAuthorWebsite.Core.SeedData.LegalDocuments.";
+    private static readonly IReadOnlyDictionary<LegalDocumentType, string> SeedResourceNames = new Dictionary<LegalDocumentType, string>
+    {
+        [LegalDocumentType.PrivacyPolicy] = "privacy-policy.v1.json",
+        [LegalDocumentType.TermsOfService] = "terms-of-service.v1.json"
+    };
 
     public LegalDocumentsService(IApplicationRepository repository)
         => Repository = repository;
@@ -84,9 +91,8 @@ public class LegalDocumentsService : ILegalDocumentsService
         foreach (LegalDocumentDto pending in pendingDocuments)
         {
             LegalDocument? doc = latestDocuments
-                .Where(d => d.DocumentType == pending.DocumentType)
-                .OrderByDescending(d => d.Version)
-                .FirstOrDefault();
+                .Where(d => d.DocumentType == pending.DocumentType).MaxBy(d => d.Version);
+
             if (doc is null) continue;
 
             UserLegalAgreement agreement = new()
@@ -129,28 +135,17 @@ public class LegalDocumentsService : ILegalDocumentsService
 
     protected LegalDocument CreateDefaultDocument(LegalDocumentType type)
     {
-        LegalDocumentNodeDto[] nodes = type switch
-        {
-            LegalDocumentType.PrivacyPolicy => new[]
-            {
-                CreateNode(1, "Администратор на лични данни", "Администратор на лични данни е Миглена Хаджипенчева. За контакт относно защита на данни: stilyan2008@gmail.com."),
-                CreateNode(2, "Какви данни обработваме", "Обработваме данни за профил, поръчки, комуникация и сигурност на платформата."),
-                CreateNode(3, "Вашите права", "Имате право на достъп, корекция, изтриване, ограничаване, преносимост и възражение по GDPR.")
-            },
-            _ => new[]
-            {
-                CreateNode(1, "Предмет", "Тези Общи условия уреждат използването на уебсайта и свързаните услуги."),
-                CreateNode(2, "Права и задължения", "Потребителят използва сайта добросъвестно и не злоупотребява с функционалностите."),
-                CreateNode(3, "Отговорност", "Собственикът полага грижа за наличност и сигурност, но не носи отговорност при форсмажорни обстоятелства.")
-            }
-        };
+        LegalDocumentSeedDto seed = LoadSeed(type);
+        LegalDocumentNodeDto[] nodes = seed.Nodes
+            .Select((node, index) => CreateNode(index + 1, node.Title.Trim(), NormalizeParagraphs(node.Paragraphs)))
+            .ToArray();
 
         return new LegalDocument
         {
             Id = Guid.NewGuid(),
             DocumentType = type,
-            Version = 1,
-            Title = type == LegalDocumentType.PrivacyPolicy ? "Политика за поверителност" : "Общи условия",
+            Version = Math.Max(1, seed.Version),
+            Title = seed.Title.Trim(),
             NodesJson = JsonSerializer.Serialize(nodes, _jsonOptions),
             CreatedOn = DateTime.UtcNow,
             AdminId = null
@@ -180,8 +175,7 @@ public class LegalDocumentsService : ILegalDocumentsService
             .Where(n =>
                 n.Number > 0 &&
                 !string.IsNullOrWhiteSpace(n.Title) &&
-                n.Title.Length >= TitleMinLength &&
-                n.Title.Length <= TitleMaxLength &&
+                n.Title.Length is >= TitleMinLength and <= TitleMaxLength &&
                 !string.IsNullOrWhiteSpace(n.ContentDelta) &&
                 n.ContentDelta.Length <= ContentDeltaMaxLength)
             .OrderBy(n => n.Number)
@@ -201,4 +195,53 @@ public class LegalDocumentsService : ILegalDocumentsService
                 }
             })
         };
+
+    private LegalDocumentSeedDto LoadSeed(LegalDocumentType type)
+    {
+        if (!SeedResourceNames.TryGetValue(type, out string? fileName) || string.IsNullOrWhiteSpace(fileName))
+            throw new InvalidOperationException($"No legal document seed file is configured for {type}.");
+
+        string resourceName = $"{SeedResourcePrefix}{fileName}";
+        Assembly assembly = Assembly.GetExecutingAssembly();
+        using Stream? stream = assembly.GetManifestResourceStream(resourceName);
+        if (stream is null)
+            throw new InvalidOperationException($"Missing embedded legal document seed: {resourceName}.");
+
+        LegalDocumentSeedDto? seed = JsonSerializer.Deserialize<LegalDocumentSeedDto>(stream, _jsonOptions);
+        if (seed is null || string.IsNullOrWhiteSpace(seed.Title))
+            throw new InvalidOperationException($"Invalid legal document seed content: {resourceName}.");
+
+        if (seed.Nodes.Count == 0)
+            throw new InvalidOperationException($"Legal document seed has no nodes: {resourceName}.");
+
+        foreach (LegalDocumentSeedNodeDto node in seed.Nodes)
+        {
+            if (string.IsNullOrWhiteSpace(node.Title))
+                throw new InvalidOperationException($"Legal document seed contains a node without title: {resourceName}.");
+
+            if (node.Paragraphs.Count == 0 || node.Paragraphs.All(string.IsNullOrWhiteSpace))
+                throw new InvalidOperationException($"Legal document seed contains a node without content: {resourceName}.");
+        }
+
+        return seed;
+    }
+
+    private static string NormalizeParagraphs(ICollection<string> paragraphs)
+        => string.Join("\n\n", paragraphs.Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => p.Trim()));
+
+    private sealed class LegalDocumentSeedDto
+    {
+        public int Version { get; set; }
+
+        public string Title { get; set; } = null!;
+
+        public List<LegalDocumentSeedNodeDto> Nodes { get; set; } = new();
+    }
+
+    private sealed class LegalDocumentSeedNodeDto
+    {
+        public string Title { get; set; } = null!;
+
+        public List<string> Paragraphs { get; set; } = new();
+    }
 }
