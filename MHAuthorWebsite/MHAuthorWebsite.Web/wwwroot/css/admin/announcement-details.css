@@ -1,0 +1,158 @@
+.announcements-page {
+  width: 92%;
+  margin-left: 4%;
+  gap: 2.2rem;
+}
+
+.announcement-back-btn {
+  font-size: 1.7rem;
+  align-self: flex-start;
+  margin-left: 2rem;
+}
+
+.announcement-details-shell {
+  width: 100%;
+  border-radius: 1.8rem;
+  border: 0.1rem solid var(--color-secondary-light);
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-secondary-lighter) 100%);
+  box-shadow: 0 1rem 2.2rem rgba(58, 5, 58, 0.08);
+  padding: 2.4rem;
+}
+
+.announcement-details-head {
+  gap: 1.2rem;
+}
+
+.announcement-details-meta {
+  flex-wrap: wrap;
+  row-gap: 1rem;
+}
+
+.recipient-chip {
+  padding: 0.45rem 1.1rem;
+  border-radius: 3rem;
+  font-size: 1.6rem;
+  border: 0.1rem solid var(--color-secondary);
+  background-color: rgba(58, 5, 58, 0.06);
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
+.meta-line {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.7rem;
+  color: var(--color-grey);
+}
+
+.meta-line i {
+  width: 2rem;
+  color: var(--color-secondary);
+}
+
+.announcement-extra-recipients {
+  margin: 1rem 0;
+  border-radius: 1.4rem;
+  border: 0.1rem solid var(--color-secondary-light);
+  background-color: var(--color-primary);
+  padding: 1.4rem 1.6rem;
+}
+
+.announcement-extra-recipients p {
+  font-size: 1.7rem;
+  line-height: 1.5;
+  color: var(--color-dark);
+}
+
+.announcement-editor-view #description-editor {
+  border-radius: 1.6rem;
+  min-height: 24rem;
+}
+
+.announcement-deliveries {
+  margin-top: 2.2rem;
+  gap: 1.2rem;
+}
+
+.announcement-empty-deliveries {
+  font-size: 1.8rem;
+  color: var(--color-grey);
+  border: 0.1rem dashed var(--color-secondary-light);
+  border-radius: 1.2rem;
+  padding: 1.6rem;
+  background-color: var(--color-primary);
+}
+
+.announcement-delivery-list {
+  gap: 1rem;
+}
+
+.announcement-delivery-item {
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.4rem;
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 1.2rem;
+  padding: 1.1rem 1.4rem;
+  background-color: #ffffff;
+}
+
+.announcement-delivery-icon {
+  font-size: 2.2rem;
+}
+
+.announcement-delivery-icon.success {
+  color: #1f8b4c;
+}
+
+.announcement-delivery-icon.error {
+  color: #c53939;
+}
+
+.announcement-delivery-main {
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.announcement-delivery-email {
+  font-size: 1.8rem;
+  color: var(--color-dark);
+  word-break: break-word;
+}
+
+.announcement-delivery-source {
+  font-size: 1.6rem;
+  color: var(--color-grey);
+}
+
+.announcement-delivery-error {
+  font-size: 1.5rem;
+  color: #c53939;
+}
+
+.announcement-delivery-time {
+  font-size: 1.7rem;
+  color: var(--color-grey);
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .announcements-page {
+    width: 96%;
+    margin-left: 2%;
+  }
+
+  .announcement-details-shell {
+    padding: 1.8rem 1.4rem;
+  }
+
+  .announcement-delivery-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .announcement-delivery-time {
+    align-self: flex-end;
+  }
+}

@@ -11,12 +11,14 @@
 }
 
 @section Styles {
-	<link rel="stylesheet" href="~/css/admin/legal-documents.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/legal-documents-board.css" asp-append-version="true" />
 }
 
 <section class="page-wrapper legal-documents-page flex-column">
-	<h1 class="title">@ViewData["Title"]</h1>
+	<div class="flex-column legal-documents-header">
+		<h1 class="title">@ViewData["Title"]</h1>
 		<p class="legal-documents-subtitle">Управление на версии на Политика за поверителност и Общи условия.</p>
+	</div>
 
 	<section class="legal-documents-grid">
 		@foreach (LegalDocumentSummaryViewModel doc in Model)
@@ -31,10 +33,12 @@
 						@TimeZoneInfo.ConvertTimeFromUtc(doc.CreatedOn, defaultZone)
 					</time>
 				</p>
-				<a class="btn btn-purple link flex-row" asp-action="@doc.EditAction" asp-controller="AdminLegalDocuments">
+				<a class="btn btn-purple link flex-row btn-edit" asp-action="@doc.EditAction" asp-controller="AdminLegalDocuments">
 					<i class="fa-regular fa-pen-to-square"></i>
 					Редакция
 				</a>
+
+				<i class="fa-regular fa-file-contract background-icon"></i>
 			</article>
 		}
 	</section>

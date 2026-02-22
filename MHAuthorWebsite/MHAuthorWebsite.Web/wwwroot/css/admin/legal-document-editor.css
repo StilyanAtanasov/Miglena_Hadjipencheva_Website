@@ -1,40 +1,13 @@
-.legal-documents-page {
-  width: 92%;
-  margin-left: 4%;
-  gap: 2rem;
+.back-btn {
+  align-self: baseline;
+  margin-left: 5rem;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
-.legal-documents-header {
-  gap: 0.4rem;
-}
-
-.legal-documents-subtitle {
-  font-size: 1.8rem;
-  color: var(--color-grey);
-}
-
-.legal-documents-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
-  gap: 1.6rem;
-}
-
-.legal-document-card {
-  border: 0.1rem solid var(--color-secondary-light);
-  border-radius: 1.4rem;
-  padding: 1.8rem;
-  background: linear-gradient(180deg, #ffffff 0%, var(--color-secondary-lighter) 100%);
-  gap: 1rem;
-}
-
-.legal-document-title {
-  font-size: 1.8rem;
-  color: var(--color-dark);
-}
-
-.legal-document-meta {
-  font-size: 1.5rem;
-  color: var(--color-grey);
+.title {
+  margin: 0;
+  text-align: center;
 }
 
 .legal-document-editor-page {
@@ -52,8 +25,9 @@
 }
 
 .legal-document-version {
-  font-size: 1.7rem;
+  font-size: 1.8rem;
   color: var(--color-grey);
+  text-align: center;
 }
 
 .legal-nodes-list {
@@ -118,7 +92,6 @@
 }
 
 @media (max-width: 800px) {
-  .legal-documents-page,
   .legal-document-editor-page {
     width: 96%;
     margin-left: 2%;
