@@ -62,10 +62,14 @@
   color: var(--color-grey);
 }
 
+#announcements-content {
+  width: 100%;
+}
+
 .announcements-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(40rem, 1fr));
   gap: 2rem;
 }
 
@@ -76,6 +80,7 @@
   background: linear-gradient(180deg, #ffffff 0%, var(--color-secondary-lighter) 100%);
   box-shadow: 0 1rem 2.2rem rgba(58, 5, 58, 0.08);
   min-height: 24rem;
+  position: relative;
 }
 
 .announcement-card:hover {
@@ -87,12 +92,23 @@
 .announcement-card-top {
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1.2rem;
+  gap: 2.5rem;
 }
 
 .announcement-card-top .subheading {
   font-size: 2.4rem;
   color: var(--color-secondary);
+}
+
+.announcement-card .background-icon {
+  position: absolute;
+  font-size: 20rem;
+  opacity: 0.35;
+  color: var(--color-secondary-light);
+  transform: rotate(-35deg);
+  bottom: 2rem;
+  right: 3rem;
+  z-index: 1;
 }
 
 .recipient-chip {
@@ -111,6 +127,8 @@
   color: var(--color-dark);
   margin: 0.8rem 0 1.4rem 0;
   flex: 1;
+  position: relative;
+  z-index: 5;
 }
 
 .announcement-card-meta {

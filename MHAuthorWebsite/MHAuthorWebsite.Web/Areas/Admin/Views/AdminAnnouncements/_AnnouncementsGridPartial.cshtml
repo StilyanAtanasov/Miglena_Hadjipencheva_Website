@@ -24,7 +24,7 @@ else
 		{
 			<article class="announcement-card clickable flex-column"
 			         data-details-url="@Url.Action("AnnouncementDetails", "AdminAnnouncements", new { id = item.Id })">
-				<div class="announcement-card-top flex-row">
+				<div class="announcement-card-top flex-column">
 					<h2 class="subheading">@item.Subject</h2>
 					<span class="recipient-chip">@item.RecipientGroupLabel</span>
 				</div>
@@ -45,6 +45,8 @@ else
 						<time to-local no-seconds datetime="@item.CreatedOn.ToString("O")">@item.CreatedOn</time>
 					</p>
 				</div>
+
+				<i class="fa-regular fa-megaphone background-icon"></i>
 			</article>
 		}
 	</section>
