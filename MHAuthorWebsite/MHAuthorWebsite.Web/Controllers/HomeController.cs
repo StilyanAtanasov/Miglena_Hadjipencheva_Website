@@ -132,6 +132,7 @@ public class HomeController : BaseController
     public async Task<IActionResult> SitemapXml()
     {
         XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
+
         IReadOnlyCollection<SitemapUrlDto> urls = await _sitemapService.GetPublicSitemapUrlsAsync();
 
         IEnumerable<XElement> urlElements = urls.Select(url =>

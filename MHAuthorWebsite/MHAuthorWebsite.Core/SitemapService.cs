@@ -39,7 +39,7 @@ public class SitemapService : ISitemapService
             {
                 RelativeUrl = $"/Work/Details/{work.Id}",
                 LastModifiedUtc = work.UpdatedOn == null
-                    ? null
+                    ? DateTime.SpecifyKind(work.DatePublished, DateTimeKind.Utc)
                     : DateTime.SpecifyKind(work.UpdatedOn.Value, DateTimeKind.Utc),
                 ChangeFrequency = "weekly",
                 Priority = 0.7m
