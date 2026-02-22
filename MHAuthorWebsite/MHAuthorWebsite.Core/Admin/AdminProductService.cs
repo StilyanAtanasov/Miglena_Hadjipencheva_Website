@@ -42,6 +42,8 @@ public class AdminProductService : ProductService, IAdminProductService
     {
         try
         {
+            DateTime now = DateTime.UtcNow;
+
             Product product = new()
             {
                 Name = model.Name,
@@ -49,7 +51,8 @@ public class AdminProductService : ProductService, IAdminProductService
                 Price = model.Price,
                 ProductTypeId = model.ProductTypeId,
                 StockQuantity = model.StockQuantity,
-                Weight = model.Weight
+                Weight = model.Weight,
+                UpdatedOn = now
             };
 
             ProductImage[] images = model.ImageUrls
@@ -196,6 +199,7 @@ public class AdminProductService : ProductService, IAdminProductService
         product.Price = model.Price;
         product.StockQuantity = model.StockQuantity;
         product.Weight = model.Weight;
+        product.UpdatedOn = DateTime.UtcNow;
 
         for (int i = 0; i < model.Attributes.Count; i++)
         {
@@ -225,6 +229,7 @@ public class AdminProductService : ProductService, IAdminProductService
             if (product is null) return ServiceResult.NotFound();
 
             product.IsDeleted = true;
+            product.UpdatedOn = DateTime.UtcNow;
             await Repository.SaveChangesAsync();
 
             await Cache.RemoveAsync(ProductCardKey(product.Id));
@@ -273,6 +278,7 @@ public class AdminProductService : ProductService, IAdminProductService
             if (product is null) return ServiceResult.NotFound();
 
             product.IsPublic = !product.IsPublic;
+            product.UpdatedOn = DateTime.UtcNow;
             await Repository.SaveChangesAsync();
 
             _logger.LogInformation("Admin toggled publicity for product {ProductId}.", productId);

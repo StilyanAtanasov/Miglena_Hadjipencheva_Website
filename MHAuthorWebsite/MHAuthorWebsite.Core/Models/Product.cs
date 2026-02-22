@@ -51,4 +51,6 @@ public class Product
     public bool IsPublic { get; set; }
 
     public bool IsDeleted { get; set; }
+
+    public DateTime? UpdatedOn { get; set; }
 }

@@ -31,6 +31,8 @@ public class AdminWorkService : IAdminWorkService
     {
         try
         {
+            DateTime now = DateTime.UtcNow;
+
             ServiceResult<ICollection<ImageUploadResultDto>> uploadResult = await _imageService
                 .UploadImagesAsync(new[] { model.CoverImage }, "Works", OriginalWidth);
 
@@ -46,7 +48,8 @@ public class AdminWorkService : IAdminWorkService
                 CoverImageUrl = image.ImageUrl,
                 CoverImagePublicId = image.PublicId,
                 IsPublic = model.IsPublic,
-                DatePublished = DateTime.UtcNow
+                DatePublished = now,
+                UpdatedOn = now
             };
 
             await _repository.AddAsync(work);
@@ -89,6 +92,7 @@ public class AdminWorkService : IAdminWorkService
             work.Title = model.Title;
             work.Content = model.Content;
             work.IsPublic = model.IsPublic;
+            work.UpdatedOn = DateTime.UtcNow;
 
             if (model.NewCoverImage != null)
             {
@@ -155,6 +159,7 @@ public class AdminWorkService : IAdminWorkService
             if (work == null) return ServiceResult.NotFound();
 
             work.IsPublic = !work.IsPublic;
+            work.UpdatedOn = DateTime.UtcNow;
             await _repository.SaveChangesAsync();
 
             await _cache.RemoveAsync(WorkDetailsKey(work.Id));

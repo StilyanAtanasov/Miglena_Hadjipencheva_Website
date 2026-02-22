@@ -26,5 +26,7 @@ public class Work
 
     public DateTime DatePublished { get; set; }
 
+    public DateTime? UpdatedOn { get; set; }
+
     public bool IsPublic { get; set; } = true;
 }

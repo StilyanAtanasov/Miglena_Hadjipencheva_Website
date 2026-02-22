@@ -149,6 +149,7 @@ try
 
     builder.Services.AddScoped<IProductService, ProductService>();
     builder.Services.AddScoped<IWorkService, WorkService>();
+    builder.Services.AddScoped<ISitemapService, SitemapService>();
     builder.Services.AddScoped<IProductCommentService, ProductCommentService>();
     builder.Services.AddScoped<IAdminWorkService, AdminWorkService>();
     builder.Services.AddScoped<ICartService, CartService>();
@@ -194,6 +195,15 @@ try
     {
         options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
         options.Filters.Add(new SecurityHeadersAttribute());
+    });
+
+    builder.Services.AddOutputCache(options =>
+    {
+        options.AddPolicy("SitemapPolicy", policyBuilder =>
+        {
+            policyBuilder.Expire(TimeSpan.FromHours(6));
+            policyBuilder.SetVaryByHost(true);
+        });
     });
 
     builder.Services.AddAuthorization(options =>
@@ -309,10 +319,12 @@ try
 
     app.UseHttpsRedirection();
     app.UseStaticFiles();
+    app.UseMiddleware<SeoEnvironmentMiddleware>();
 
     app.UseRouting();
 
     app.UseCors("DefaultPolicy");
+    app.UseOutputCache();
 
     app.UseAuthentication();
     app.UseMiddleware<LegalDocumentsAccessMiddleware>();
