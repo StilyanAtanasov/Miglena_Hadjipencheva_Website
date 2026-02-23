@@ -56,6 +56,21 @@ public static class CspPolicyBuilder
             styles.Add("https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css");
         }
 
+        if (features.HasFlag(CspFeature.Recaptcha))
+        {
+            scripts.Add("https://www.google.com/recaptcha/");
+            scripts.Add("https://www.gstatic.com/recaptcha/");
+
+            connects.Add("https://www.google.com/recaptcha/");
+            connects.Add("https://www.gstatic.com/recaptcha/");
+
+            frames.Add("https://www.google.com/recaptcha/");
+            frames.Add("https://recaptcha.google.com/recaptcha/");
+
+            images.Add("https://www.gstatic.com/recaptcha/");
+            images.Add("https://www.google.com/recaptcha/");
+        }
+
         return string.Join(" ", new[] {
             "default-src 'self';",
             $"script-src {string.Join(" ", scripts)};",

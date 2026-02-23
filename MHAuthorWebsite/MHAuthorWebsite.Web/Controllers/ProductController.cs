@@ -3,6 +3,7 @@ using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Product;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Contracts;
 using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.Utils.Mappers;
 using MHAuthorWebsite.Web.ViewModels.Product;
@@ -16,9 +17,19 @@ namespace MHAuthorWebsite.Web.Controllers;
 
 public class ProductController : BaseController
 {
-    private readonly IProductService _productService;
+    private const string AutomationBlockMessage = "Вашата активност наподобява автоматизирано поведение. Моля, опитайте отново.";
+    private const string ManualCaptchaMessage = "Моля, потвърдете ръчно, че не сте робот.";
 
-    public ProductController(IProductService productService) => _productService = productService;
+    private readonly IProductService _productService;
+    private readonly IRecaptchaValidationService _recaptchaValidationService;
+
+    public ProductController(
+        IProductService productService,
+        IRecaptchaValidationService recaptchaValidationService)
+    {
+        _productService = productService;
+        _recaptchaValidationService = recaptchaValidationService;
+    }
 
     [AllowAnonymous]
     [HttpGet("Product/Details/{productId}")]
@@ -111,14 +122,45 @@ public class ProductController : BaseController
         return View(viewModel);
     }
 
-    [SecurityHeaders(CspFeature.TomSelect | CspFeature.Notifications)]
+    [SecurityHeaders(CspFeature.TomSelect | CspFeature.Notifications | CspFeature.Recaptcha)]
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> AllProducts([FromQuery] int page = 1,
-        [FromQuery] string? orderType = null, [FromQuery] string? search = null)
+        [FromQuery] string? orderType = null,
+        [FromQuery] string? search = null,
+        [FromQuery] string? recaptchaToken = null,
+        [FromQuery] string? recaptchaV2Token = null,
+        CancellationToken cancellationToken = default)
     {
         if (page < 1) page = 1;
         if (orderType is null) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
+
+        bool isAjaxRequest = HttpContext.Request.Headers.Any(h => h.Key == "X-Requested-With" && h.Value == "XMLHttpRequest");
+        if (isAjaxRequest && !(User.Identity?.IsAuthenticated ?? false) && !string.IsNullOrWhiteSpace(search))
+        {
+            RecaptchaValidationResult v3VerificationResult = await _recaptchaValidationService.VerifyV3Async(
+                recaptchaToken,
+                "product_search",
+                cancellationToken: cancellationToken);
+
+            if (!v3VerificationResult.IsSuccess)
+            {
+                if (v3VerificationResult.RequiresManualChallenge)
+                {
+                    bool hasManualToken = !string.IsNullOrWhiteSpace(recaptchaV2Token);
+                    RecaptchaValidationResult v2VerificationResult = await _recaptchaValidationService.VerifyV2Async(
+                        recaptchaV2Token,
+                        cancellationToken);
+
+                    if (!v2VerificationResult.IsSuccess)
+                    {
+                        if (hasManualToken) return BadRequest(new { message = AutomationBlockMessage });
+                        return StatusCode(StatusCodes.Status428PreconditionRequired, new { message = ManualCaptchaMessage });
+                    }
+                }
+                else return BadRequest(new { message = AutomationBlockMessage });
+            }
+        }
 
         bool result = SortValueMapper.SortMap.TryGetValue(orderType, out var sortValue);
         if (!result) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
@@ -146,7 +188,7 @@ public class ProductController : BaseController
             })
             .ToArray();
 
-        if (HttpContext.Request.Headers.Any(h => h.Key == "X-Requested-With" && h.Value == "XMLHttpRequest"))
+        if (isAjaxRequest)
             return PartialView("_ProductCardsPartial", productsViewModel);
 
         return View(productsViewModel);

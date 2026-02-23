@@ -1,5 +1,9 @@
 import { pushNotification } from "../notification.js";
+import { executeRecaptchaV3Async, getRecaptchaV2Response, renderRecaptchaV2Async } from "../recaptcha-v3.js";
 import { injectLoader } from "./loader.js";
+
+const AUTOMATION_BLOCK_MESSAGE = "Вашата активност наподобява автоматизирано поведение. Моля, опитайте отново.";
+const MANUAL_CAPTCHA_MESSAGE = "Моля, потвърдете ръчно, че не сте робот.";
 
 export class SearchBarHandler {
   constructor(config) {
@@ -7,46 +11,64 @@ export class SearchBarHandler {
     this.target = document.querySelector(config.targetSelector);
     this.form = document.querySelector(config.formSelector);
     this.url = config.url;
-    this.param = config.param || `search`;
+    this.param = config.param || "search";
     this.debounceTimeoutMilliseconds = config.debounceTimeoutMilliseconds || 300;
-    this.debounceTimer = null;
-    this.abortController = null;
-    this.submitBtn = this.form?.querySelector(`.search-btn`);
-    this.loader = null;
-    this.enableLoader = config.enableLoader || true;
+    this.enableLoader = config.enableLoader !== undefined ? config.enableLoader : true;
     this.resetParams = config.resetParams || [];
     this.submitBtnLoaderConfig = config.submitBtnLoaderConfig || {
-      size: `small`,
-      theme: `light`,
-      screenColor: `var(--color-secondary)`,
+      size: "small",
+      theme: "light",
+      screenColor: "var(--color-secondary)",
     };
-    this.targetLoaderConfig = config.targetLoaderConfig || {
-      size: `large`,
-    };
+    this.targetLoaderConfig = config.targetLoaderConfig || { size: "large" };
 
-    console.log(this.targetLoaderConfig);
+    this.debounceTimer = null;
+    this.abortController = null;
+    this.submitBtn = this.form?.querySelector(".search-btn");
+
+    this.recaptchaV3Enabled = this.form?.dataset.recaptchaV3Enabled === "true";
+    this.recaptchaV3SiteKey = this.form?.dataset.recaptchaV3SiteKey || "";
+    this.recaptchaV3Action = this.form?.dataset.recaptchaV3Action || "search_query";
+    this.recaptchaV2SiteKey = this.form?.dataset.recaptchaV2SiteKey || "";
+
+    this.manualCaptchaContainer = this.form?.parentElement?.querySelector(".search-manual-captcha-box");
+    this.manualCaptchaWidgetHost = this.form?.parentElement?.querySelector(".search-recaptcha-v2-widget");
+    this.recaptchaV2TokenInput = this.form?.querySelector(".recaptcha-v2-token");
+    this.requiresManualCaptcha = false;
+    this.manualCaptchaWidgetId = null;
 
     if (this.input && this.target && this.form) this.init();
-    else {
-      pushNotification(`Полето за търсене е неактивно!`, `warning`);
-      console.error(`Search bar not properly configured!`);
-      throw new Error(`Search bar not properly configured!`);
-    }
+    else throw new Error("Search bar not properly configured!");
   }
 
   init() {
-    this.input.addEventListener(`input`, e => {
+    this.input.addEventListener("input", event => {
       clearTimeout(this.debounceTimer);
-      this.debounceTimer = setTimeout(() => this.performSearch(e.target.value), this.debounceTimeoutMilliseconds);
+      this.debounceTimer = setTimeout(() => this.performSearch(event.target.value), this.debounceTimeoutMilliseconds);
     });
 
-    if (this.form) {
-      this.form.addEventListener(`submit`, e => {
-        e.preventDefault();
-        clearTimeout(this.debounceTimer);
-        this.performSearch(this.input.value);
-      });
-    }
+    this.form.addEventListener("submit", event => {
+      event.preventDefault();
+      clearTimeout(this.debounceTimer);
+      this.performSearch(this.input.value);
+    });
+  }
+
+  async ensureManualCaptchaAsync() {
+    this.requiresManualCaptcha = true;
+    this.manualCaptchaContainer?.classList.remove("hidden");
+
+    if (this.manualCaptchaWidgetId !== null || !this.manualCaptchaWidgetHost) return true;
+    this.manualCaptchaWidgetId = await renderRecaptchaV2Async(
+      this.manualCaptchaWidgetHost,
+      this.recaptchaV2SiteKey,
+      token => {
+        if (this.recaptchaV2TokenInput) this.recaptchaV2TokenInput.value = token || "";
+      },
+      this.recaptchaV3SiteKey,
+    );
+
+    return this.manualCaptchaWidgetId !== null;
   }
 
   async performSearch(query) {
@@ -61,16 +83,34 @@ export class SearchBarHandler {
       localBtnLoader = injectLoader(this.submitBtn, this.submitBtnLoaderConfig);
     }
 
-    if (this.enableLoader) {
-      localTargetLoader = injectLoader(this.target, this.targetLoaderConfig);
-    }
+    if (this.enableLoader) localTargetLoader = injectLoader(this.target, this.targetLoaderConfig);
 
     try {
       const currentUrlParams = new URLSearchParams(window.location.search);
 
-      query.trim() === "" ? currentUrlParams.delete(this.param) : currentUrlParams.set(this.param, query);
+      let recaptchaV3Token = null;
+      if (this.recaptchaV3Enabled && query.trim() !== "") {
+        recaptchaV3Token = await executeRecaptchaV3Async(this.recaptchaV3SiteKey, this.recaptchaV3Action);
+        if (!recaptchaV3Token) {
+          pushNotification(AUTOMATION_BLOCK_MESSAGE, "error");
+          return;
+        }
+      }
 
-      this.resetParams.forEach(p => currentUrlParams.delete(p));
+      let recaptchaV2Token = "";
+      if (this.requiresManualCaptcha) {
+        recaptchaV2Token = getRecaptchaV2Response(this.manualCaptchaWidgetId);
+        if (!recaptchaV2Token) {
+          pushNotification(MANUAL_CAPTCHA_MESSAGE, "warning");
+          return;
+        }
+      }
+
+      query.trim() === "" ? currentUrlParams.delete(this.param) : currentUrlParams.set(this.param, query);
+      recaptchaV3Token ? currentUrlParams.set("recaptchaToken", recaptchaV3Token) : currentUrlParams.delete("recaptchaToken");
+      recaptchaV2Token ? currentUrlParams.set("recaptchaV2Token", recaptchaV2Token) : currentUrlParams.delete("recaptchaV2Token");
+
+      this.resetParams.forEach(param => currentUrlParams.delete(param));
 
       const queryString = currentUrlParams.toString();
       const requestUrl = queryString ? `${this.url}?${queryString}` : this.url;
@@ -80,13 +120,26 @@ export class SearchBarHandler {
         signal: this.abortController.signal,
       });
 
+      if (response.status === 428) {
+        const payload = await response.json().catch(() => null);
+        const didRender = await this.ensureManualCaptchaAsync();
+        pushNotification(payload?.message || (didRender ? MANUAL_CAPTCHA_MESSAGE : AUTOMATION_BLOCK_MESSAGE), "warning");
+        return;
+      }
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        pushNotification(payload?.message || AUTOMATION_BLOCK_MESSAGE, "error");
+        return;
+      }
+
       const html = await response.text();
       this.target.innerHTML = html;
-      window.history.pushState(null, ``, requestUrl);
+      window.history.pushState(null, "", requestUrl);
     } catch (error) {
-      if (error.name !== `AbortError`) {
-        console.error(`Search failed:`, error);
-        pushNotification(`Грешка при търсенето!`, `error`);
+      if (error.name !== "AbortError") {
+        console.error("Search failed:", error);
+        pushNotification("Грешка при търсенето!", "error");
       }
     } finally {
       if (localBtnLoader) localBtnLoader.close();

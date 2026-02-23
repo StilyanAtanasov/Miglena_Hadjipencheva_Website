@@ -3,6 +3,7 @@
 @using MHAuthorWebsite.Web.ViewModels.Shared
 @using MHAuthorWebsite.Web.ViewModels.Shared.Enums
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.Extensions.Options.IOptions<MHAuthorWebsite.Core.Configuration.Security.RecaptchaSettings> RecaptchaOptions
 @model ICollection<ProductCardViewModel>
 
 @section Styles {
@@ -31,6 +32,8 @@
 		orderType);
 
 	string? currentSearch = Context.Request.Query["search"];
+	string recaptchaV3SiteKey = RecaptchaOptions.Value.V3SiteKey;
+	string recaptchaV2SiteKey = RecaptchaOptions.Value.V2SiteKey;
 }
 
 <section class="page-wrapper flex-column">
@@ -47,7 +50,11 @@
 				       InputCustomId = "product-search-input",
 				       PlaceholderText = "Търсете продукти по име, категория или описание...",
 				       DefaultValue = currentSearch,
-				       Align = SearchBarAlignOptions.Left
+				       Align = SearchBarAlignOptions.Left,
+				       EnableRecaptchaV3 = true,
+				       RecaptchaV3SiteKey = recaptchaV3SiteKey,
+				       RecaptchaV3Action = "product_search",
+				       RecaptchaV2SiteKey = recaptchaV2SiteKey
 			       })
 
 			<div class="shop-action-btn flex-row">
@@ -72,3 +79,4 @@
 	<script type="module" src="~/js/store.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/add-to-cart.js" asp-append-version="true"></script>
 }
+

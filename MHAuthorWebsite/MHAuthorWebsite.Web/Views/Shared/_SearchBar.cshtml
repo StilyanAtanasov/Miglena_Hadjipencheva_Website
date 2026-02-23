@@ -7,15 +7,24 @@
 }
 
 <section class="search-bar-wrapper @alignPosition flex-row">
-	<form id="@Model.FormCustomId" class="search-bar flex-row">
+	<form id="@Model.FormCustomId"
+		  class="search-bar flex-row"
+		  data-recaptcha-v3-enabled="@Model.EnableRecaptchaV3.ToString().ToLowerInvariant()"
+		  data-recaptcha-v3-site-key="@Model.RecaptchaV3SiteKey"
+		  data-recaptcha-v3-action="@Model.RecaptchaV3Action"
+		  data-recaptcha-v2-site-key="@Model.RecaptchaV2SiteKey">
 		<input type="text"
 			   id="@Model.InputCustomId"
 			   class="input search-input"
 			   placeholder="@Model.PlaceholderText"
 			   value="@Model.DefaultValue" />
+		<input type="hidden" class="recaptcha-v2-token" />
 
 		<button type="submit" class="search-btn btn btn-purple flex-row">
 			<i class="fa-solid fa-magnifying-glass"></i> Търси
 		</button>
 	</form>
+	<div class="hidden search-manual-captcha-box">
+		<div class="search-recaptcha-v2-widget"></div>
+	</div>
 </section>

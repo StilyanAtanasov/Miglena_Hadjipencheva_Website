@@ -8,6 +8,7 @@ using MHAuthorWebsite.Core.Background_Services.Data_Services;
 using MHAuthorWebsite.Core.Configuration.EcontApi;
 using MHAuthorWebsite.Core.Configuration.EmailConfiguration;
 using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
+using MHAuthorWebsite.Core.Configuration.Security;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Contracts.DataServices;
 using MHAuthorWebsite.Core.Models;
@@ -22,8 +23,11 @@ using MHAuthorWebsite.Web.Common.Localization.Identity;
 using MHAuthorWebsite.Web.Infrastructure.Initialization;
 using MHAuthorWebsite.Web.Utils.Attributes;
 using MHAuthorWebsite.Web.Utils.Authorization;
+using MHAuthorWebsite.Web.Utils.Contracts;
+using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.Utils.Middleware;
 using MHAuthorWebsite.Web.Utils.Providers;
+using MHAuthorWebsite.Web.Utils.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +36,7 @@ using Microsoft.EntityFrameworkCore;
 using RazorLight;
 using Serilog;
 using StackExchange.Redis;
+using System.Globalization;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -45,6 +50,7 @@ try
 
     WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+    if (builder.Environment.IsDevelopment()) builder.Configuration.AddUserSecrets<Program>(optional: true);
     if (builder.Environment.IsStaging()) builder.Configuration.AddEnvironmentVariables(prefix: "Staging__");
 
     // Add services to the container.
@@ -165,6 +171,7 @@ try
     builder.Services.AddScoped<IAdminLegalDocumentsService, AdminLegalDocumentsService>();
     builder.Services.AddScoped<ILegalDocumentsService, LegalDocumentsService>();
     builder.Services.AddScoped<IContactsService, ContactsService>();
+    builder.Services.AddHttpClient<IRecaptchaValidationService, RecaptchaValidationService>();
 
     builder.Services.AddHttpClient<IEcontService, EcontService>();
     builder.Services.AddHttpClient<IAdminEcontService, AdminEcontService>();
@@ -194,7 +201,7 @@ try
     builder.Services.AddControllersWithViews(options =>
     {
         options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-        options.Filters.Add(new SecurityHeadersAttribute());
+        options.Filters.Add(new SecurityHeadersAttribute(CspFeature.Recaptcha));
     });
 
     builder.Services.AddOutputCache(options =>
@@ -249,6 +256,28 @@ try
         .SetApplicationName(ApplicationRules.Application.ProjectName);
 
     builder.Services.Configure<EcontApiSettings>(builder.Configuration.GetSection("Econt"));
+    builder.Services.Configure<RecaptchaSettings>(options =>
+    {
+        options.V2SiteKey = builder.Configuration["Recaptcha:V2SiteKey"]
+                            ?? builder.Configuration["RECAPTCHA_V2_SITE_KEY"]
+                            ?? string.Empty;
+
+        options.V2SecretKey = builder.Configuration["Recaptcha:V2SecretKey"]
+                              ?? builder.Configuration["RECAPTCHA_V2_SECRET_KEY"]
+                              ?? string.Empty;
+
+        options.V3SiteKey = builder.Configuration["Recaptcha:V3SiteKey"]
+                            ?? builder.Configuration["RECAPTCHA_V3_SITE_KEY"]
+                            ?? string.Empty;
+
+        options.V3SecretKey = builder.Configuration["Recaptcha:V3SecretKey"]
+                              ?? builder.Configuration["RECAPTCHA_V3_SECRET_KEY"]
+                              ?? string.Empty;
+
+        string? minimumScoreRaw = builder.Configuration["Recaptcha:V3MinimumScore"];
+        if (double.TryParse(minimumScoreRaw, NumberStyles.Float, CultureInfo.InvariantCulture, out double minimumScore))
+            options.V3MinimumScore = minimumScore;
+    });
 
     builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
     builder.Services.AddSingleton<IEmailUserProvider, EmailUserProvider>();

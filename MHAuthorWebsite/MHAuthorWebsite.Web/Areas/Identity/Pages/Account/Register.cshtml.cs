@@ -3,14 +3,18 @@
 #nullable disable
 
 using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
+using MHAuthorWebsite.Core.Configuration.Security;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Web.Common.Localization;
+using MHAuthorWebsite.Web.Utils.Contracts;
+using MHAuthorWebsite.Web.Utils.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -26,19 +30,25 @@ public class RegisterModel : PageModel
     private readonly ILogger<RegisterModel> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILegalDocumentsService _legalDocumentsService;
+    private readonly IRecaptchaValidationService _recaptchaValidationService;
+    private readonly RecaptchaSettings _recaptchaSettings;
 
     public RegisterModel(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         ILogger<RegisterModel> logger,
         IServiceProvider serviceProvider,
-        ILegalDocumentsService legalDocumentsService)
+        ILegalDocumentsService legalDocumentsService,
+        IRecaptchaValidationService recaptchaValidationService,
+        IOptions<RecaptchaSettings> recaptchaSettings)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
         _serviceProvider = serviceProvider;
         _legalDocumentsService = legalDocumentsService;
+        _recaptchaValidationService = recaptchaValidationService;
+        _recaptchaSettings = recaptchaSettings.Value;
     }
 
     /// <summary>
@@ -59,6 +69,8 @@ public class RegisterModel : PageModel
     ///     directly from your code. This API may change or be removed in future releases.
     /// </summary>
     public IList<AuthenticationScheme> ExternalLogins { get; set; }
+
+    public string RecaptchaV2SiteKey => _recaptchaSettings.V2SiteKey;
 
     /// <summary>
     ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -102,7 +114,7 @@ public class RegisterModel : PageModel
         public string ConfirmPassword { get; set; }
 
         [Display(Name = "Съгласен съм с Политиката за поверителност и Общите условия")]
-        [Range(typeof(bool), "true", "true", ErrorMessage = "Трябва да приемете Политиката за поверителност и Общите условия.")]
+        [MustBeTrue(ErrorMessage = "Трябва да приемете Политиката за поверителност и Общите условия.")]
         public bool HasAcceptedLegalDocuments { get; set; }
 
         [Display(Name = "Съгласен съм да получавам маркетинг съобщения")]
@@ -122,13 +134,21 @@ public class RegisterModel : PageModel
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
     }
 
-    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+    public async Task<IActionResult> OnPostAsync(string returnUrl = null, CancellationToken cancellationToken = default)
     {
         if (User.Identity?.IsAuthenticated ?? false) return Forbid();
         returnUrl ??= Url.Content("~/");
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         if (ModelState.IsValid)
         {
+            string recaptchaToken = Request.Form["g-recaptcha-response"].ToString();
+            RecaptchaValidationResult v2VerificationResult = await _recaptchaValidationService.VerifyV2Async(recaptchaToken, cancellationToken);
+            if (!v2VerificationResult.IsSuccess)
+            {
+                ModelState.AddModelError(string.Empty, "Моля, потвърдете, че не сте робот.");
+                return Page();
+            }
+
             ApplicationUser user = new()
             {
                 Name = Input.Name,

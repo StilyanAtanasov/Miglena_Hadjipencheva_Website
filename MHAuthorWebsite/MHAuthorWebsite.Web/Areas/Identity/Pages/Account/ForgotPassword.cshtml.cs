@@ -3,12 +3,15 @@
 #nullable disable
 
 using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
+using MHAuthorWebsite.Core.Configuration.Security;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Web.Utils.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
@@ -17,13 +20,24 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
 {
     public class ForgotPasswordModel : PageModel
     {
+        private const string AutomationBlockMessage = "Вашата активност наподобява автоматизирано поведение. Моля, опитайте отново.";
+        private const string ManualCaptchaMessage = "Моля, потвърдете ръчно, че не сте робот.";
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IRecaptchaValidationService _recaptchaValidationService;
+        private readonly RecaptchaSettings _recaptchaSettings;
 
-        public ForgotPasswordModel(UserManager<ApplicationUser> userManager, IServiceProvider serviceProvider)
+        public ForgotPasswordModel(
+            UserManager<ApplicationUser> userManager,
+            IServiceProvider serviceProvider,
+            IRecaptchaValidationService recaptchaValidationService,
+            IOptions<RecaptchaSettings> recaptchaSettings)
         {
             _userManager = userManager;
             _serviceProvider = serviceProvider;
+            _recaptchaValidationService = recaptchaValidationService;
+            _recaptchaSettings = recaptchaSettings.Value;
         }
 
         /// <summary>
@@ -32,6 +46,12 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
+
+        public string RecaptchaV3SiteKey => _recaptchaSettings.V3SiteKey;
+
+        public string RecaptchaV2SiteKey => _recaptchaSettings.V2SiteKey;
+
+        public bool RequireManualRecaptcha { get; private set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -46,11 +66,49 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+
+            public string RecaptchaV3Token { get; set; }
+
+            public string RecaptchaV2Token { get; set; }
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid) return Page();
+
+            RecaptchaValidationResult v3VerificationResult = await _recaptchaValidationService.VerifyV3Async(
+                Input.RecaptchaV3Token,
+                "forgot_password",
+                cancellationToken: cancellationToken);
+
+            if (!v3VerificationResult.IsSuccess)
+            {
+                if (v3VerificationResult.RequiresManualChallenge)
+                {
+                    RequireManualRecaptcha = true;
+                    bool hasManualToken = !string.IsNullOrWhiteSpace(Input.RecaptchaV2Token);
+
+                    if (!hasManualToken)
+                    {
+                        ModelState.AddModelError(string.Empty, ManualCaptchaMessage);
+                        return Page();
+                    }
+
+                    RecaptchaValidationResult v2VerificationResult =
+                        await _recaptchaValidationService.VerifyV2Async(Input.RecaptchaV2Token, cancellationToken);
+
+                    if (!v2VerificationResult.IsSuccess)
+                    {
+                        ModelState.AddModelError(string.Empty, AutomationBlockMessage);
+                        return Page();
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, AutomationBlockMessage);
+                    return Page();
+                }
+            }
 
             TempData["RedirectSource"] = "ForgotPassword";
 

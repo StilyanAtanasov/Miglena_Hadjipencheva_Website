@@ -7,5 +7,6 @@ public enum CspFeature
     Editor = 2,
     Notifications = 4,
     QrCodes = 8,
-    TomSelect = 16
+    TomSelect = 16,
+    Recaptcha = 32
 }

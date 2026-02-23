@@ -1,5 +1,4 @@
 ﻿@page
-@using MHAuthorWebsite.Web.Utils
 @using MHAuthorWebsite.Web.Utils.Mappers
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -55,6 +54,13 @@
 				</label>
 				<span class="input-error" asp-validation-for="Input.HasAcceptedLegalDocuments"></span>
 			</div>
+
+			<div class="form-input-box flex-column">
+				<div class="g-recaptcha" data-sitekey="@Model.RecaptchaV2SiteKey"></div>
+			</div>
+
+			<br/>
+
 			<button data-trigger="load-unlimited" id="registerSubmit" type="submit" class="btn submit-btn flex-row"><i class="fa-solid fa-arrow-right-to-bracket"></i> Регистрирай се</button>
 
 			<div class="form-box flex-column actions">
@@ -96,4 +102,6 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script src="~/js/validation/must-be-true.js" asp-append-version="true"></script>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 }

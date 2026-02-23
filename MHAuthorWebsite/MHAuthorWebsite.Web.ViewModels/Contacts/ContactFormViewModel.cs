@@ -20,4 +20,8 @@ public class ContactFormViewModel
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     [StringLength(MessageMaxLength, MinimumLength = MessageMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
     public string Message { get; set; } = null!;
+
+    public string? RecaptchaV3Token { get; set; }
+
+    public string? RecaptchaV2Token { get; set; }
 }

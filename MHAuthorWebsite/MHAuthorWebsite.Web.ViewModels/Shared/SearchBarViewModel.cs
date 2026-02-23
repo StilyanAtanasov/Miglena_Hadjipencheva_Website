@@ -13,4 +13,12 @@ public class SearchBarViewModel
     public string? DefaultValue { get; set; }
 
     public SearchBarAlignOptions Align { get; set; } = SearchBarAlignOptions.Center;
+
+    public bool EnableRecaptchaV3 { get; set; }
+
+    public string? RecaptchaV3SiteKey { get; set; }
+
+    public string RecaptchaV3Action { get; set; } = "search_query";
+
+    public string? RecaptchaV2SiteKey { get; set; }
 }

@@ -1,14 +1,17 @@
-@using MHAuthorWebsite.Core.Dtos.Work
+﻿@using MHAuthorWebsite.Core.Dtos.Work
 @using MHAuthorWebsite.Web.ViewModels.Shared
 @using MHAuthorWebsite.Web.ViewModels.Shared.Enums
+@inject Microsoft.Extensions.Options.IOptions<MHAuthorWebsite.Core.Configuration.Security.RecaptchaSettings> RecaptchaOptions
 @model ICollection<WorkCardDto>
 
 @{
-    ViewData["Title"] = "Творчество";
+    ViewData["Title"] = "РўРІРѕСЂС‡РµСЃС‚РІРѕ";
     bool isAdmin = User.IsInRole("Admin");
     
     int worksCount = ViewBag.WorksCount ?? Model.Count;
     string? currentSearch = ViewBag.CurrentSearch;
+    string recaptchaV3SiteKey = RecaptchaOptions.Value.V3SiteKey;
+    string recaptchaV2SiteKey = RecaptchaOptions.Value.V2SiteKey;
 }
 
 @section Styles {
@@ -19,13 +22,13 @@
 
 <section class="works-hero">
     <div class="works-hero-content">
-        <h1 class="title">Творчество</h1>
-        <p>Разгледайте колекцията от творби и публикации на Миглена Хаджипенчева.</p>
+        <h1 class="title">РўРІРѕСЂС‡РµСЃС‚РІРѕ</h1>
+        <p>Р Р°Р·РіР»РµРґР°Р№С‚Рµ РєРѕР»РµРєС†РёСЏС‚Р° РѕС‚ С‚РІРѕСЂР±Рё Рё РїСѓР±Р»РёРєР°С†РёРё РЅР° РњРёРіР»РµРЅР° РҐР°РґР¶РёРїРµРЅС‡РµРІР°.</p>
         
         @if (isAdmin)
         {
             <a asp-area="Admin" asp-controller="AdminWork" asp-action="Add" class="btn link work-add-btn">
-                <i class="fa-solid fa-plus"></i> Добави творба
+                <i class="fa-solid fa-plus"></i> Р”РѕР±Р°РІРё С‚РІРѕСЂР±Р°
             </a>
         }
     </div>
@@ -39,9 +42,13 @@
             {
                 FormCustomId = "work-search-form",
                 InputCustomId = "work-search-input",
-                PlaceholderText = "Търсете творби по заглавие...",
+                PlaceholderText = "РўСЉСЂСЃРµС‚Рµ С‚РІРѕСЂР±Рё РїРѕ Р·Р°РіР»Р°РІРёРµ...",
                 DefaultValue = currentSearch,
-                Align = SearchBarAlignOptions.Center
+                Align = SearchBarAlignOptions.Center,
+                EnableRecaptchaV3 = true,
+                RecaptchaV3SiteKey = recaptchaV3SiteKey,
+                RecaptchaV3Action = "work_search",
+                RecaptchaV2SiteKey = recaptchaV2SiteKey
             })
         </div>
     }
@@ -56,12 +63,12 @@
             @if (!string.IsNullOrEmpty(currentSearch))
             {
                 <i class="fa-solid fa-filter"></i>
-                <p>Няма намерени творби за: @currentSearch</p>
+                <p>РќСЏРјР° РЅР°РјРµСЂРµРЅРё С‚РІРѕСЂР±Рё Р·Р°: @currentSearch</p>
             }
             else
             {
                 <i class="fa-regular fa-books"></i>
-                <p>Все още няма добавени творби.</p>
+                <p>Р’СЃРµ РѕС‰Рµ РЅСЏРјР° РґРѕР±Р°РІРµРЅРё С‚РІРѕСЂР±Рё.</p>
             }
         </div>
     }
@@ -70,3 +77,4 @@
 @section Scripts {
     <script type="module" src="~/js/works.js" asp-append-version="true"></script>
 }
+
