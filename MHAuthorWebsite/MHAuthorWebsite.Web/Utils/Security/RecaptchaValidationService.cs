@@ -1,5 +1,6 @@
 using MHAuthorWebsite.Core.Configuration.Security;
 using MHAuthorWebsite.Web.Utils.Contracts;
+using MHAuthorWebsite.Web.Utils.Enums;
 using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
 

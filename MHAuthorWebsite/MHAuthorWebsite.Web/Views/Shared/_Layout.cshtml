@@ -22,6 +22,7 @@
 	<link rel="stylesheet" href="~/css/elements/loadingScreen.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/inline-loader.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/scroll-to-top.css" asp-append-version="true" />
 	
 	<link rel="icon" type="image/x-icon" href="~/img/icons/favicon.ico">
 	@await RenderSectionAsync("Styles", required: false)
@@ -114,6 +115,7 @@
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/js/layout.js" asp-append-version="true"></script>
 	<script src="~/js/loadingScreen.js" asp-append-version="true"></script>
+	<script src="~/js/elements/scroll-to-top.js" asp-append-version="true"></script>
 
 	@if (ViewData["RequireTimeZoneManager"] is not null && (bool)ViewData["RequireTimeZoneManager"]!)
 	{
