@@ -1,6 +1,7 @@
 "use strict";
 
 import { initQuill } from "../editor.js";
+import { validateImageSizes, MAX_IMAGE_SIZE_BYTES } from "../utils/image-size-validation.js";
 
 // --- Images ---
 class Image {
@@ -68,6 +69,15 @@ document.addEventListener(`DOMContentLoaded`, async () => {
       updateFileInput();
       return;
     }
+
+    // Size check
+    if (!validateImageSizes(files, imageErrorField)) {
+      this.value = ``;
+      updateFileInput();
+      return;
+    }
+
+    imageErrorField.textContent = ``;
 
     for (const file of files) {
       const previewUrl = await readFileAsync(file);
@@ -175,6 +185,14 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
   document.querySelector("#updateProductForm").addEventListener("submit", function (e) {
     const descriptionInput = document.querySelector(`#descriptionInput`);
+
+    // Block if any queued file is oversized
+    if (imageState.added.some(i => i.file.size > MAX_IMAGE_SIZE_BYTES)) {
+      e.preventDefault();
+      imageErrorField.textContent = `Всяко изображение трябва да е до 10 MB.`;
+      imageErrorField.scrollIntoView({ behavior: `smooth`, block: `center` });
+      return;
+    }
 
     const counterModule = quill.getModule("counter");
     if (counterModule && counterModule.hasError) {

@@ -27,6 +27,12 @@ public class CloudinaryImageService : IImageService
         if (images.Count == 0)
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure(new Dictionary<string, string> { { "Images", "Не са намерени изображения." } });
 
+        if (images.Any(i => i.Content.Length > MaxImageSizeBytes))
+            return ServiceResult<ICollection<ImageUploadResultDto>>.Failure(new Dictionary<string, string>
+            {
+                { "Images", $"Всяко изображение трябва да е до {MaxImageSizeMb} MB." }
+            });
+
         _logger.LogInformation("Uploading {Count} images to folder {Folder}.", images.Count, folder);
 
         IEnumerable<Task<ImageUploadResult>> uploadTasks = images.Select(async image =>

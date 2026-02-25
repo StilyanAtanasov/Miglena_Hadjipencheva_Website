@@ -5,7 +5,7 @@
 @model ICollection<WorkCardDto>
 
 @{
-    ViewData["Title"] = "РўРІРѕСЂС‡РµСЃС‚РІРѕ";
+    ViewData["Title"] = "Творчество";
     bool isAdmin = User.IsInRole("Admin");
     
     int worksCount = ViewBag.WorksCount ?? Model.Count;
@@ -25,13 +25,13 @@
         <a class="back-btn works-back-btn" asp-controller="Home" asp-action="Index">
             <i class="fa-solid fa-arrow-left"></i> Назад към начало
         </a>
-        <h1 class="title">РўРІРѕСЂС‡РµСЃС‚РІРѕ</h1>
-        <p>Р Р°Р·РіР»РµРґР°Р№С‚Рµ РєРѕР»РµРєС†РёСЏС‚Р° РѕС‚ С‚РІРѕСЂР±Рё Рё РїСѓР±Р»РёРєР°С†РёРё РЅР° РњРёРіР»РµРЅР° РҐР°РґР¶РёРїРµРЅС‡РµРІР°.</p>
+        <h1 class="title">Творчество</h1>
+        <p>Разглеждайте колекцията от творби и публикации на Миглена Хаджипенчева.</p>
         
         @if (isAdmin)
         {
             <a asp-area="Admin" asp-controller="AdminWork" asp-action="Add" class="btn link work-add-btn">
-                <i class="fa-solid fa-plus"></i> Р”РѕР±Р°РІРё С‚РІРѕСЂР±Р°
+                <i class="fa-solid fa-plus"></i> Добави творба
             </a>
         }
     </div>
@@ -45,7 +45,7 @@
             {
                 FormCustomId = "work-search-form",
                 InputCustomId = "work-search-input",
-                PlaceholderText = "РўСЉСЂСЃРµС‚Рµ С‚РІРѕСЂР±Рё РїРѕ Р·Р°РіР»Р°РІРёРµ...",
+                PlaceholderText = "Търсете творби по заглавие...",
                 DefaultValue = currentSearch,
                 Align = SearchBarAlignOptions.Center,
                 EnableRecaptchaV3 = true,
@@ -66,12 +66,12 @@
             @if (!string.IsNullOrEmpty(currentSearch))
             {
                 <i class="fa-solid fa-filter"></i>
-                <p>РќСЏРјР° РЅР°РјРµСЂРµРЅРё С‚РІРѕСЂР±Рё Р·Р°: @currentSearch</p>
+                <p>Няма намерени творби за: @currentSearch</p>
             }
             else
             {
                 <i class="fa-regular fa-books"></i>
-                <p>Р’СЃРµ РѕС‰Рµ РЅСЏРјР° РґРѕР±Р°РІРµРЅРё С‚РІРѕСЂР±Рё.</p>
+                <p>Все още няма добавени творби.</p>
             }
         </div>
     }
@@ -80,4 +80,3 @@
 @section Scripts {
     <script type="module" src="~/js/works.js" asp-append-version="true"></script>
 }
-

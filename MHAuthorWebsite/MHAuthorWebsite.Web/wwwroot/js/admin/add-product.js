@@ -2,6 +2,7 @@
 
 import { initQuill } from "../editor.js";
 import { pushNotification } from "../notification.js";
+import { validateImageSizes, MAX_IMAGE_SIZE_BYTES } from "../utils/image-size-validation.js";
 
 document.addEventListener(`DOMContentLoaded`, async function (e) {
   const categorySelect = document.getElementById(`selectProductType`);
@@ -12,6 +13,13 @@ document.addEventListener(`DOMContentLoaded`, async function (e) {
 
   document.querySelector(`#addProductForm`).addEventListener(`submit`, function (e) {
     const descriptionInput = document.querySelector(`#descriptionInput`);
+
+    if (selectedFiles.some(f => f.size > MAX_IMAGE_SIZE_BYTES)) {
+      e.preventDefault();
+      imageErrorField.textContent = `Всяко изображение трябва да е до 10 MB.`;
+      imageErrorField.scrollIntoView({ behavior: `smooth`, block: `center` });
+      return;
+    }
 
     const counterModule = quill.getModule("counter");
     if (counterModule && counterModule.hasError) {
@@ -79,6 +87,15 @@ imageInput.addEventListener(`change`, function () {
     updateFileInput();
     return;
   }
+
+  // Size check
+  if (!validateImageSizes(files, imageErrorField)) {
+    this.value = ``;
+    updateFileInput();
+    return;
+  }
+
+  imageErrorField.textContent = ``;
 
   files.forEach(file => {
     if (!file.type.startsWith(`image/`)) return;

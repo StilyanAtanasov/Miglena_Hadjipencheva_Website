@@ -6,6 +6,7 @@ using MHAuthorWebsite.Core.Dtos.Images;
 using MHAuthorWebsite.Core.Dtos.Product;
 using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Web.Dto.Product;
+using MHAuthorWebsite.Web.Utils.Extensions;
 using MHAuthorWebsite.Web.Utils.Attributes;
 using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.ViewModels.Admin.Product;
@@ -62,6 +63,13 @@ public class AdminProductController : AdminBaseController
             return View(model);
         }
 
+        if (model.Images.ContainsImageExceedingCloudinarySizeLimit())
+        {
+            ModelState.AddModelError(nameof(model.Images), ImageValidationExtensions.GetCloudinarySizeLimitValidationMessage());
+            await PrepareViewBagForAddProduct();
+            return View(model);
+        }
+
         string delta = model.Description;
         string plainText = ExtractPlainTextFromQuillDelta(delta);
 
@@ -93,14 +101,38 @@ public class AdminProductController : AdminBaseController
             await _imageService.UploadProductImagesAsync(
                 await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.Images));
 
-        if (!imageResult.Success) return StatusCode(500);
+        if (!imageResult.Success)
+        {
+            if (imageResult.Errors.Any())
+            {
+                foreach (string error in imageResult.Errors.Values)
+                    ModelState.AddModelError(nameof(model.Images), error);
+
+                await PrepareViewBagForAddProduct();
+                return View(model);
+            }
+
+            return StatusCode(500);
+        }
         if (imageResult.Result is null || !imageResult.Result.Any()) return StatusCode(500);
 
         ServiceResult<ICollection<ImageUploadResultDto>> thumbnailUploadResult =
             await _imageService.UploadProductThumbnailAsync(
                 await MapIFormFileToUploadImageRequestDtoAsync(model.Images.ElementAt(model.TitleImageId)));
 
-        if (!thumbnailUploadResult.Success) return StatusCode(500);
+        if (!thumbnailUploadResult.Success)
+        {
+            if (thumbnailUploadResult.Errors.Any())
+            {
+                foreach (string error in thumbnailUploadResult.Errors.Values)
+                    ModelState.AddModelError(nameof(model.Images), error);
+
+                await PrepareViewBagForAddProduct();
+                return View(model);
+            }
+
+            return StatusCode(500);
+        }
         if (thumbnailUploadResult.Result is null || !thumbnailUploadResult.Result.Any()) return StatusCode(500);
 
         AddProductDto dto = new()
@@ -309,6 +341,14 @@ public class AdminProductController : AdminBaseController
             return View(model);
         }
 
+        if (images.Added.Any() && model.NewImages is not null
+            && model.NewImages.ContainsImageExceedingCloudinarySizeLimit())
+        {
+            ModelState.AddModelError(nameof(model.NewImages), ImageValidationExtensions.GetCloudinarySizeLimitValidationMessage());
+            UpdateExistingProductImagesBasedOnImagesJsonDto(model);
+            return View(model);
+        }
+
 
         Guid? newTitleImageId = null;
         if (images.Existing.Any(i => i.IsTitle))
@@ -321,7 +361,19 @@ public class AdminProductController : AdminBaseController
                await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.NewImages!),
                titleImageIndex != -1 ? titleImageIndex : null, productId);
 
-            if (!imageResult.Success) return StatusCode(500);
+            if (!imageResult.Success)
+            {
+                if (imageResult.Errors.Any())
+                {
+                    foreach (string error in imageResult.Errors.Values)
+                        ModelState.AddModelError(nameof(model.NewImages), error);
+
+                    UpdateExistingProductImagesBasedOnImagesJsonDto(model);
+                    return View(model);
+                }
+
+                return StatusCode(500);
+            }
 
             if ((imageResult.Result is null && newTitleImageId is null)
                 || imageResult.Result is not null && newTitleImageId is not null) return StatusCode(500);

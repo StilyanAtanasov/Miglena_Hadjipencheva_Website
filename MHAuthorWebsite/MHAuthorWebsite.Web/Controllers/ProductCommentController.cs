@@ -86,6 +86,12 @@ public class ProductCommentController : BaseController
         ServiceResult<ICollection<ProductCommentImagesUploadDto>>? srImages = null;
         if (model.ParentCommentId is null && model.Images is not null)
         {
+            if (model.Images.ContainsImageExceedingCloudinarySizeLimit())
+            {
+                ModelState.AddModelError(nameof(model.Images), ImageValidationExtensions.GetCloudinarySizeLimitValidationMessage());
+                return View(model);
+            }
+
             srImages = await _imageService.UploadCommentImagesAsync(
                 await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.Images));
             if (!srImages.Success) return StatusCode(500);
@@ -150,10 +156,18 @@ public class ProductCommentController : BaseController
     {
         if (!ModelState.IsValid) return View(model);
 
-        ServiceResult<ICollection<ProductCommentImagesUploadDto>>? uploadSr =
-            model.NewImages is not null && model.NewImages.Count > 0
-            ? await _imageService.UploadCommentImagesAsync(await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.NewImages))
-            : null;
+        ServiceResult<ICollection<ProductCommentImagesUploadDto>>? uploadSr = null;
+        if (model.NewImages is not null && model.NewImages.Count > 0)
+        {
+            if (model.NewImages.ContainsImageExceedingCloudinarySizeLimit())
+            {
+                ModelState.AddModelError(nameof(model.NewImages), ImageValidationExtensions.GetCloudinarySizeLimitValidationMessage());
+                return View(model);
+            }
+
+            uploadSr = await _imageService.UploadCommentImagesAsync(
+                await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.NewImages));
+        }
         if (uploadSr is not null && !uploadSr.Success) return StatusCode(500);
 
         EditProductCommentDto dto = new EditProductCommentDto

@@ -165,6 +165,9 @@ public static class ApplicationRules
 
     public static class Cloudinary
     {
+        public const byte MaxImageSizeMb = 10;
+        public const int MaxImageSizeBytes = MaxImageSizeMb * 1024 * 1024;
+
         public static readonly string ImageFolder = $"{Application.ProjectName}/{EnvironmentName}/products/originals";
         public static readonly string ThumbnailFolder = $"{Application.ProjectName}/{EnvironmentName}/products/thumbnails";
 

@@ -3,6 +3,7 @@ using MHAuthorWebsite.Core.Admin.Dto.Work;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Web.Utils.Attributes;
 using MHAuthorWebsite.Web.Utils.Enums;
+using MHAuthorWebsite.Web.Utils.Extensions;
 using MHAuthorWebsite.Web.ViewModels.Admin.Work;
 using Microsoft.AspNetCore.Mvc;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Work;
@@ -26,6 +27,12 @@ public class AdminWorkController : AdminBaseController
     public async Task<IActionResult> Add(AddWorkForm model)
     {
         if (!ModelState.IsValid) return View(model);
+
+        if (model.CoverImage.ExceedsCloudinarySizeLimit())
+        {
+            ModelState.AddModelError(nameof(model.CoverImage), ImageValidationExtensions.GetCloudinarySizeLimitValidationMessage());
+            return View(model);
+        }
 
         string delta = model.Content;
         string plainText = ExtractPlainTextFromQuillDelta(delta);
@@ -94,6 +101,12 @@ public class AdminWorkController : AdminBaseController
     public async Task<IActionResult> Edit(EditWorkFormViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
+
+        if (model.NewCoverImage != null && model.NewCoverImage.ExceedsCloudinarySizeLimit())
+        {
+            ModelState.AddModelError(nameof(model.NewCoverImage), ImageValidationExtensions.GetCloudinarySizeLimitValidationMessage());
+            return View(model);
+        }
 
         string delta = model.Content;
         string plainText = ExtractPlainTextFromQuillDelta(delta);

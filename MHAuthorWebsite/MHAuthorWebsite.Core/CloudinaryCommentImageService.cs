@@ -27,6 +27,14 @@ public class CloudinaryCommentImageService : CloudinaryImageService, ICommentIma
     public async Task<ServiceResult<ICollection<ProductCommentImagesUploadDto>>> UploadCommentImagesAsync(
         ICollection<UploadImageRequestDto> images)
     {
+        if (images.Count == 0)
+            return ServiceResult<ICollection<ProductCommentImagesUploadDto>>.Failure(
+                new Dictionary<string, string> { { "Images", "Не са намерени изображения." } });
+
+        if (images.Any(i => i.Content.Length > MaxImageSizeBytes))
+            return ServiceResult<ICollection<ProductCommentImagesUploadDto>>.Failure(
+                new Dictionary<string, string> { { "Images", $"Всяко изображение трябва да е до {MaxImageSizeMb} MB." } });
+
         ICollection<UploadImageRequestDto> originals = new List<UploadImageRequestDto>();
         ICollection<UploadImageRequestDto> copies = new List<UploadImageRequestDto>();
 
