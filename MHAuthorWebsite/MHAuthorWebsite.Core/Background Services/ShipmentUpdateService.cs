@@ -146,8 +146,12 @@ public class ShipmentUpdateService : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occurred: {ex.Message}");
-                // TODO Email the admin about the error
+                _logger.LogError(ex, "Error occurred in {ServiceName}.", nameof(ShipmentUpdateService));
+                await BackgroundServiceErrorReporter.ReportAsync(
+                    _services,
+                    ex,
+                    nameof(ShipmentUpdateService),
+                    _logger);
             }
 
             await Task.Delay(DelayInterval, cancellationToken);

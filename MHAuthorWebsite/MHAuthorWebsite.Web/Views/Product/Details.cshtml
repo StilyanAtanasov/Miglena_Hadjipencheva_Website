@@ -32,6 +32,9 @@
 }
 
 <div class="page-wrapper">
+	<a class="back-btn" asp-controller="Product" asp-action="AllProducts">
+		<i class="fa-solid fa-arrow-left"></i> Назад към продуктите
+	</a>
 	
 @if (Model.Discount is not null)
 {

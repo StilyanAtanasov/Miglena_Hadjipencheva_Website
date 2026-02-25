@@ -13,6 +13,9 @@
 
 <div class="page-wrapper flex-column">
 	<section class="modal-invisible large flex-column">
+		<a class="back-btn" asp-area="Admin" asp-controller="AdminDashboard" asp-action="Dashboard">
+			<i class="fa-solid fa-arrow-left"></i> Назад към таблото
+		</a>
 		<h1 class="title">Добави категория</h1>
 
 		<form class="input-form flex-column" method="POST" asp-area="Admin" asp-controller="AdminProductType" asp-action="AddProductType" id="AddProductTypeForm">

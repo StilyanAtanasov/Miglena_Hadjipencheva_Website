@@ -51,9 +51,9 @@ body.animate {
 .page-wrapper {
   width: 100vw;
   align-items: center;
-  padding: 3rem 5rem;
+  padding: 5rem;
   font-size: 1.6rem;
-  min-height: calc(100vh - 17rem);
+  min-height: calc(100vh - 36rem);
 }
 
 .link {
@@ -170,6 +170,30 @@ button.italic {
   opacity: 0.5;
   pointer-events: none;
   cursor: not-allowed;
+}
+
+.back-btn:not(.btn) {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  font-size: 1.9rem;
+  width: fit-content;
+  padding: 0.8rem 1.6rem;
+  border: 0.14rem solid var(--color-secondary);
+  border-radius: 2.5rem;
+  color: var(--color-secondary);
+  background-color: var(--color-secondary-lighter);
+}
+
+.back-btn:not(.btn) i {
+  font-size: 1.5rem;
+}
+
+.back-btn:not(.btn):hover {
+  color: var(--color-primary);
+  background-color: var(--color-secondary);
+  transform: translateX(-0.3rem);
 }
 
 img.icon {

@@ -69,7 +69,12 @@ public class ScheduledEmailNotificationSenderService : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occurred: {ex.Message}");
+                _logger.LogError(ex, "Error occurred in {ServiceName}.", nameof(ScheduledEmailNotificationSenderService));
+                await BackgroundServiceErrorReporter.ReportAsync(
+                    _services,
+                    ex,
+                    nameof(ScheduledEmailNotificationSenderService),
+                    _logger);
             }
 
             await Task.Delay(DelayInterval, cancellationToken);

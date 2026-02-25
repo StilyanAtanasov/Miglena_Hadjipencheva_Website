@@ -24,6 +24,9 @@
 @section Heading
 {
 	<div class="section-heading flex-row">
+		<a class="back-btn" asp-controller="Order" asp-action="MyOrders">
+			<i class="fa-solid fa-arrow-left"></i> Назад към поръчките
+		</a>
 		<h3 class="title-small visible">@ViewData["Heading"]</h3>
 		<p class="status-message"><strong>@Model.Status</strong></p>
 	</div>

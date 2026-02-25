@@ -2,6 +2,10 @@
   padding: 4rem 30rem 8rem 30rem;
 }
 
+.page-wrapper > .back-btn {
+  margin-bottom: 2rem;
+}
+
 .hero-info {
   justify-content: start;
   height: calc(100vh - 10rem);

@@ -52,6 +52,10 @@ public class HomeController : BaseController
         return View(document);
     }
 
+    [HttpGet("/faq")]
+    [AllowAnonymous]
+    public IActionResult Faq() => View();
+
     [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> UnsubscribeMarketing([FromQuery] string email, [FromQuery] string token)

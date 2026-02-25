@@ -4,6 +4,8 @@
 
 .section-heading {
   gap: 3rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .warning {

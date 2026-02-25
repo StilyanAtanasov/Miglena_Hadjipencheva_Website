@@ -14,6 +14,9 @@
 
 <div class="page-wrapper flex-column">
 	<section class="modal-invisible large flex-column">
+		<a class="back-btn" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="@Model.ProductId">
+			<i class="fa-solid fa-arrow-left"></i> Назад към продукта
+		</a>
 		<h1 class="title">@ViewData["Title"]</h1>
 
 		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="AddDiscount" method="post">

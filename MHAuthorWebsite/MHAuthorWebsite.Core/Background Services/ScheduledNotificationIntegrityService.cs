@@ -41,7 +41,12 @@ public class ScheduledNotificationIntegrityService : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occurred: {ex.Message}");
+                _logger.LogError(ex, "Error occurred in {ServiceName}.", nameof(ScheduledNotificationIntegrityService));
+                await BackgroundServiceErrorReporter.ReportAsync(
+                    _services,
+                    ex,
+                    nameof(ScheduledNotificationIntegrityService),
+                    _logger);
             }
 
             await Task.Delay(DelayInterval, cancellationToken);
