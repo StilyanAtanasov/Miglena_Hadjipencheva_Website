@@ -21,7 +21,7 @@ function createButton() {
   button.type = `button`;
   button.className = `scroll-to-top-btn`;
   button.setAttribute(`aria-label`, `Scroll to top`);
-  button.innerHTML = `<i class="fa-regular fa-arrow-up"></i>`;
+  button.innerHTML = `<span class="material-symbols-outlined" aria-hidden="true">arrow_upward</span>`;
 
   button.addEventListener(`click`, () => {
     window.scrollTo({ top: 0, behavior: `smooth` });

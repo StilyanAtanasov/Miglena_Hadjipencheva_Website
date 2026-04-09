@@ -9,6 +9,7 @@
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/profile/email-preferences.css" asp-append-version="true" />
 }
@@ -27,11 +28,11 @@
 		}
 		else
 		{
-			<ul class="flex-column">
+			<ul class="flex-column" style="margin-bottom: 2rem;">
 				@foreach (var doc in Model.PendingDocuments.OrderBy(d => (int)d.DocumentType))
 				{
 					<li>
-						<strong>@doc.Title</strong> (версия @doc.Version) -
+						<strong style="font-size: 1.6rem;">@doc.Title</strong> <span style="font-size: 1.4rem;">(версия @doc.Version)</span> -
 						<a class="link active" asp-controller="Home" asp-action="@(doc.DocumentType == MHAuthorWebsite.Core.Models.Enums.LegalDocumentType.PrivacyPolicy ? "PrivacyPolicy" : "TermsOfService")" target="_blank" rel="noopener noreferrer">
 							Преглед
 						</a>
@@ -40,12 +41,17 @@
 			</ul>
 			<form method="post" class="input-form flex-column">
 				<input type="hidden" asp-for="ReturnUrl" />
-				<div class="form-input-box boolean flex-row">
-					<input asp-for="AcceptLatestDocuments" type="checkbox" />
-					<label class="form-label" asp-for="AcceptLatestDocuments">
+				
+				<div class="toggle-row" style="margin-bottom: 2rem; align-items: flex-start;">
+					<label class="switch" style="margin-top: 0.5rem;">
+						<input asp-for="AcceptLatestDocuments" type="checkbox" />
+						<span class="toggle-slider round"></span>
+					</label>
+					<label class="toggle-label" asp-for="AcceptLatestDocuments" style="font-size: 1.6rem; font-weight: normal;">
 						Приемам последната версия на Политиката за поверителност и Общите условия.
 					</label>
 				</div>
+
 				<span class="input-error" asp-validation-for="AcceptLatestDocuments"></span>
 				<button type="submit" class="btn submit-btn flex-row">
 					<i class="fa-solid fa-check"></i>

@@ -1,0 +1,48 @@
+@page
+@model ConfirmEmailChangeModel
+@{
+    ViewData["Title"] = "Потвърждаване на промяна на имейл";
+    bool isConfirmed = (bool)(ViewData["Result"] ?? false);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/confirm-email.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+    <h1 class="title">@ViewData["Title"]</h1>
+
+    @if (isConfirmed)
+    {
+        <video autoplay muted playsinline class="animation">
+            <source src="~/videos/success.webm" type="video/webm">
+        </video>
+        <div class="success-message flex-column">
+            <h2 class="heading">Вашият имейл адрес беше успешно променен!</h2>
+            <p class="submessage">Вече можете да използвате новия си имейл за вход.</p>
+        </div>
+        <nav class="navigation-btns flex-row">
+            <a asp-controller="Home" asp-action="Index" class="btn flex-row">
+                <i class="fa-regular fa-house"></i> Начало
+            </a>
+            <a asp-area="Identity" asp-page="/Account/Manage/Index" class="btn flex-row">
+                <i class="fa-regular fa-user"></i> Профил
+            </a>
+        </nav>
+    }
+    else
+    {
+        <video autoplay muted playsinline loop class="animation">
+            <source src="~/videos/error-sad-emote.webm" type="video/webm">
+        </video>
+        <div class="error-message flex-column">
+            <h2 class="heading">Възникна грешка при промяната на имейл адреса!</h2>
+            <p class="submessage">Линкът може да е невалиден или вече изтекъл. Моля, опитайте отново от настройките на профила си.</p>
+        </div>
+        <nav class="navigation-btns flex-row">
+            <a asp-area="Identity" asp-page="/Account/Manage/Index" class="btn flex-row">
+                <i class="fa-regular fa-rotate"></i> Опитай пак
+            </a>
+        </nav>
+    }
+</section>

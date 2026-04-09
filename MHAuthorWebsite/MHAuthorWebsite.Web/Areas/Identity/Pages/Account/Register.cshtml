@@ -11,6 +11,7 @@
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
@@ -38,28 +39,36 @@
 				<input class="form-input" asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="password" />
 				<span class="input-error" asp-validation-for="Input.ConfirmPassword"></span>
 			</div>
-			<div class="form-input-box boolean flex-row">
-				<input asp-for="Input.IsMarketingSubscribed" type="checkbox" />
-				<label class="form-label" asp-for="Input.IsMarketingSubscribed">
+
+			<div class="toggle-row" style="margin-bottom: 2rem; align-items: flex-start;">
+				<label class="switch" style="margin-top: 0.5rem;">
+					<input asp-for="Input.IsMarketingSubscribed" type="checkbox" />
+					<span class="toggle-slider round"></span>
+				</label>
+				<label class="toggle-label" asp-for="Input.IsMarketingSubscribed" style="font-size: 1.6rem; font-weight: normal;">
 					Желая да получавам маркетинг съобщения и бюлетин по имейл.
 				</label>
 			</div>
-			<div class="form-input-box boolean flex-row">
-				<input asp-for="Input.HasAcceptedLegalDocuments" type="checkbox" />
-				<label class="form-label" asp-for="Input.HasAcceptedLegalDocuments">
-					Съгласен/на съм с
-					<a class="link active" asp-controller="Home" asp-action="PrivacyPolicy" target="_blank" rel="noopener noreferrer">Политиката за поверителност</a>
-					и
-					<a class="link active" asp-controller="Home" asp-action="TermsOfService" target="_blank" rel="noopener noreferrer">Общите условия</a>.
+
+			<div class="toggle-row" style="margin-bottom: 2rem; align-items: flex-start;">
+				<label class="switch" style="margin-top: 0.5rem;">
+					<input asp-for="Input.HasAcceptedLegalDocuments" type="checkbox" />
+					<span class="toggle-slider round"></span>
 				</label>
-				<span class="input-error" asp-validation-for="Input.HasAcceptedLegalDocuments"></span>
+				<div>
+					<label class="toggle-label" asp-for="Input.HasAcceptedLegalDocuments" style="font-size: 1.6rem; font-weight: normal;">
+						Съгласен/на съм с
+						<a class="link active" asp-controller="Home" asp-action="PrivacyPolicy" target="_blank" rel="noopener noreferrer">Политиката за поверителност</a>
+						и
+						<a class="link active" asp-controller="Home" asp-action="TermsOfService" target="_blank" rel="noopener noreferrer">Общите условия</a>.
+					</label>
+					<span class="input-error" asp-validation-for="Input.HasAcceptedLegalDocuments" style="display: block;"></span>
+				</div>
 			</div>
 
 			<div class="form-input-box flex-column">
 				<div class="g-recaptcha" data-sitekey="@Model.RecaptchaV2SiteKey"></div>
 			</div>
-
-			<br/>
 
 			<button data-trigger="load-unlimited" id="registerSubmit" type="submit" class="btn submit-btn flex-row"><i class="fa-solid fa-arrow-right-to-bracket"></i> Регистрирай се</button>
 

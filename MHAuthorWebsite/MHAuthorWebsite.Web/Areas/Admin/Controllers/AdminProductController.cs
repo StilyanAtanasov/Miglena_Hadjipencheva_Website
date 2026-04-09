@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Dtos.Admin.Product;
@@ -99,7 +99,8 @@ public class AdminProductController : AdminBaseController
 
         ServiceResult<ICollection<ImageUploadResultDto>> imageResult =
             await _imageService.UploadProductImagesAsync(
-                await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.Images));
+                await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.Images, HttpContext.RequestAborted),
+                HttpContext.RequestAborted);
 
         if (!imageResult.Success)
         {
@@ -118,7 +119,8 @@ public class AdminProductController : AdminBaseController
 
         ServiceResult<ICollection<ImageUploadResultDto>> thumbnailUploadResult =
             await _imageService.UploadProductThumbnailAsync(
-                await MapIFormFileToUploadImageRequestDtoAsync(model.Images.ElementAt(model.TitleImageId)));
+                await MapIFormFileToUploadImageRequestDtoAsync(model.Images.ElementAt(model.TitleImageId), HttpContext.RequestAborted),
+                HttpContext.RequestAborted);
 
         if (!thumbnailUploadResult.Success)
         {
@@ -165,7 +167,7 @@ public class AdminProductController : AdminBaseController
         if (!productResult.Success)
         {
             string[] publicIds = imageResult.Result.Select(x => x.PublicId).ToArray();
-            await _imageService.DeleteImagesAsync(publicIds);
+            await _imageService.DeleteImagesAsync(publicIds, HttpContext.RequestAborted);
 
             return StatusCode(500, "Грешка при запис в базата. Снимките бяха изтрити.");
         }
@@ -358,8 +360,8 @@ public class AdminProductController : AdminBaseController
         {
             int titleImageIndex = Array.IndexOf(images.Added, true);
             ServiceResult<Guid?> imageResult = await _imageService.LinkImagesToProductAsync(
-               await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.NewImages!),
-               titleImageIndex != -1 ? titleImageIndex : null, productId);
+               await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.NewImages!, HttpContext.RequestAborted),
+               titleImageIndex != -1 ? titleImageIndex : null, productId, HttpContext.RequestAborted);
 
             if (!imageResult.Success)
             {
@@ -381,13 +383,13 @@ public class AdminProductController : AdminBaseController
                 newTitleImageId = imageResult.Result.Value;
         }
 
-        ServiceResult updateTitleImageResult = await _imageService.UpdateProductTitleImageAsync(productId, newTitleImageId!.Value);
+        ServiceResult updateTitleImageResult = await _imageService.UpdateProductTitleImageAsync(productId, newTitleImageId!.Value, HttpContext.RequestAborted);
         if (!updateTitleImageResult.Success) return StatusCode(500);
 
         if (images.Deleted.Any())
             foreach (Guid id in images.Deleted)
             {
-                ServiceResult r = await _imageService.DeleteProductImageByIdAsync(id);
+                ServiceResult r = await _imageService.DeleteProductImageByIdAsync(id, HttpContext.RequestAborted);
                 if (!r.Found) return NotFound();
                 if (!r.Success) return StatusCode(500);
             }
@@ -420,7 +422,6 @@ public class AdminProductController : AdminBaseController
                     IsTitle = i.IsTitle
                 })
                 .ToArray(),
-            NewImages = model.NewImages,
             ProductTypeName = model.ProductTypeName,
             ImagesJson = model.ImagesJson
         };
@@ -441,7 +442,7 @@ public class AdminProductController : AdminBaseController
         ICollection<Guid> productImageIds = await _productService.GetImageIdsByProductId(productId);
         foreach (Guid id in productImageIds)
         {
-            ServiceResult deleteImagesResult = await _imageService.DeleteProductImageByIdAsync(id);
+            ServiceResult deleteImagesResult = await _imageService.DeleteProductImageByIdAsync(id, HttpContext.RequestAborted);
             if (!deleteImagesResult.Success) return StatusCode(500);
         }
 

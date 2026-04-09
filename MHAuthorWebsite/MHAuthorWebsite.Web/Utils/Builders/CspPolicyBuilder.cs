@@ -6,10 +6,10 @@ public static class CspPolicyBuilder
 {
     public static string Build(CspFeature features)
     {
-        HashSet<string> scripts = new() { "'self'", "https://site-assets.fontawesome.com" };
-        HashSet<string> styles = new() { "'self'", "https://fonts.googleapis.com", "https://site-assets.fontawesome.com" };
+        HashSet<string> scripts = new() { "'self'", "https://cdnjs.cloudflare.com" };
+        HashSet<string> styles = new() { "'self'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com" };
         HashSet<string> connects = new() { "'self'", "ws:", "wss:", "http://localhost:*", "https://localhost:*" };
-        HashSet<string> fonts = new() { "'self'", "https://fonts.gstatic.com", "https://site-assets.fontawesome.com" };
+        HashSet<string> fonts = new() { "'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com" };
         HashSet<string> frames = new() { "'self'" };
         HashSet<string> frameAncestors = new() { "'self'" };
         HashSet<string> images = new() { "'self'", "data:", "https://res.cloudinary.com" };

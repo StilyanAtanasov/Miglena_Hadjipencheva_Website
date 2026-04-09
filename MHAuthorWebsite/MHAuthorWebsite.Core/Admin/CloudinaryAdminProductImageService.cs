@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
@@ -28,30 +28,30 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
         _logger = logger;
     }
 
-    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<UploadImageRequestDto> images)
-         => UploadImagesAsync(images, ImageFolder, OriginalWidth);
+    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<UploadImageRequestDto> images, CancellationToken cancellationToken = default)
+         => UploadImagesAsync(images, ImageFolder, OriginalWidth, cancellationToken);
 
-    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<string> imageUrls)
-        => UploadImagesAsync(imageUrls, ImageFolder, OriginalWidth);
+    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<string> imageUrls, CancellationToken cancellationToken = default)
+        => UploadImagesAsync(imageUrls, ImageFolder, OriginalWidth, cancellationToken);
 
-    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(UploadImageRequestDto image)
-        => UploadImagesAsync(new[] { image }, ThumbnailFolder, ThumbnailWidth);
+    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(UploadImageRequestDto image, CancellationToken cancellationToken = default)
+        => UploadImagesAsync(new[] { image }, ThumbnailFolder, ThumbnailWidth, cancellationToken);
 
-    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(string imageUrl)
-        => UploadImagesAsync(new[] { imageUrl }, ThumbnailFolder, ThumbnailWidth);
+    public Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(string imageUrl, CancellationToken cancellationToken = default)
+        => UploadImagesAsync(new[] { imageUrl }, ThumbnailFolder, ThumbnailWidth, cancellationToken);
 
-    public async Task<ServiceResult<Guid?>> LinkImagesToProductAsync(ICollection<UploadImageRequestDto> images, int? titleImageIndex, Guid productId)
+    public async Task<ServiceResult<Guid?>> LinkImagesToProductAsync(ICollection<UploadImageRequestDto> images, int? titleImageIndex, Guid productId, CancellationToken cancellationToken = default)
     {
-        if (images.Count == 0 || images.Any(i => i.Content.Length == 0)
+        if (images.Count == 0 || images.Any(i => i.Content.CanSeek && i.Content.Length == 0)
             || titleImageIndex > images.Count - 1 || titleImageIndex < 0)
             return ServiceResult<Guid?>.Failure();
 
-        Product? product = await _dataService.GetNonDeletedProductByIdAsync(productId);
+        Product? product = await _dataService.GetNonDeletedProductByIdAsync(productId, cancellationToken);
 
         if (product is null) return ServiceResult<Guid?>.Failure();
 
         ProductImage? titleImage = null;
-        ServiceResult<ICollection<ImageUploadResultDto>> sr = await UploadProductImagesAsync(images);
+        ServiceResult<ICollection<ImageUploadResultDto>> sr = await UploadProductImagesAsync(images, cancellationToken);
 
         for (int i = 0; i < sr.Result!.Count; i++)
         {
@@ -76,9 +76,9 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
         return ServiceResult<Guid?>.Ok(titleImage?.Id);
     }
 
-    public async Task<ServiceResult> DeleteProductImageByIdAsync(Guid imageId)
+    public async Task<ServiceResult> DeleteProductImageByIdAsync(Guid imageId, CancellationToken cancellationToken = default)
     {
-        ProductImage? image = await _dataService.GetProductImageByIdAsync(imageId);
+        ProductImage? image = await _dataService.GetProductImageByIdAsync(imageId, cancellationToken);
 
         if (image is null) return ServiceResult.NotFound();
 
@@ -86,24 +86,24 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
         await _repository.SaveChangesAsync();
 
         // Delete the full image
-        ServiceResult deleteResult = await _imageService.DeleteImageAsync(image.PublicId);
+        ServiceResult deleteResult = await _imageService.DeleteImageAsync(image.PublicId, cancellationToken);
 
         _logger.LogInformation("Deleted product image {ImageId}.", imageId);
         return !deleteResult.Success ? ServiceResult.Failure() : ServiceResult.Ok();
     }
 
-    public async Task<ServiceResult> UpdateProductTitleImageAsync(Guid productId, Guid newTitleImageId)
+    public async Task<ServiceResult> UpdateProductTitleImageAsync(Guid productId, Guid newTitleImageId, CancellationToken cancellationToken = default)
     {
-        Product product = await _dataService.GetNonDeletedProductForTitleImageUpdateByIdAsync(productId);
+        Product product = await _dataService.GetNonDeletedProductForTitleImageUpdateByIdAsync(productId, cancellationToken);
 
         if (product.Thumbnail.Image.Id == newTitleImageId) return ServiceResult.Ok();
 
         ProductImage? newTitleImage =
-            await _dataService.GetProductImageForTitleImageUpdateByIdAsync(productId, newTitleImageId);
+            await _dataService.GetProductImageForTitleImageUpdateByIdAsync(productId, newTitleImageId, cancellationToken);
 
         if (newTitleImage is null) return ServiceResult.Failure();
 
-        ServiceResult<ICollection<ImageUploadResultDto>> sr = await UploadProductThumbnailAsync(newTitleImage.ImageUrl);
+        ServiceResult<ICollection<ImageUploadResultDto>> sr = await UploadProductThumbnailAsync(newTitleImage.ImageUrl, cancellationToken);
         if (!sr.Success) return ServiceResult.Failure();
 
         ProductImage oldImage = product.Thumbnail.Image;
@@ -124,7 +124,7 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
 
         _repository.Delete(oldImage);
 
-        ServiceResult r = await _imageService.DeleteImageAsync(oldPublicId);
+        ServiceResult r = await _imageService.DeleteImageAsync(oldPublicId, cancellationToken);
         if (!r.Success) return ServiceResult.Failure();
 
         await _repository.SaveChangesAsync();

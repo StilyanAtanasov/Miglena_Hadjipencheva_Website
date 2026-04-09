@@ -51,7 +51,7 @@
 						}
 
 						<td class="align-center">@product.ProductTypeName</td>
-						<td class="align-center">@product.Price.ToString("F2") лв.</td>
+						<td class="align-center">@product.Price.ToString("F2") €</td>
 						<td class="align-center">@product.StockQuantity</td>
 						<td class="actions-column action-btns flex-row">
 							<form asp-area="Admin" asp-controller="AdminProduct" asp-action="TogglePublicity" asp-route-productId="@product.Id" method="post">

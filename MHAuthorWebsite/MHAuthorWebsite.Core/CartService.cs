@@ -69,6 +69,7 @@ public class CartService : ICartService
 
                 existingCartItem.Quantity += quantity;
                 existingCartItem.Price = product.Price;
+                existingCartItem.Currency = product.Currency;
 
                 _repository.Update(existingCartItem);
 
@@ -84,6 +85,7 @@ public class CartService : ICartService
                 Quantity = quantity,
                 CartId = cart.Id,
                 Price = product.Price,
+                Currency = product.Currency,
                 IsSelected = IsSelectedDefaultValue
             });
 

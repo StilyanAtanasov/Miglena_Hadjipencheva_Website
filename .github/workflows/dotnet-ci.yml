@@ -1,0 +1,30 @@
+name: .NET Core CI
+
+on:
+  push:
+    branches: [ development, staging, production ]
+  pull_request:
+    branches: [ development, staging, production ]
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore Dependencies
+      run: dotnet restore MHAuthorWebsite/MHAuthorWebsite.sln
+
+    - name: Build Solution
+      run: dotnet build MHAuthorWebsite/MHAuthorWebsite.sln --no-restore --configuration Release
+
+    - name: Run Tests
+      run: dotnet test MHAuthorWebsite/MHAuthorWebsite.sln --no-build --configuration Release --verbosity normal

@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.ProductComment;
 using MHAuthorWebsite.Core.Models;
@@ -93,7 +93,8 @@ public class ProductCommentController : BaseController
             }
 
             srImages = await _imageService.UploadCommentImagesAsync(
-                await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.Images));
+                await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.Images, HttpContext.RequestAborted),
+                HttpContext.RequestAborted);
             if (!srImages.Success) return StatusCode(500);
         }
 
@@ -138,7 +139,6 @@ public class ProductCommentController : BaseController
             ParentCommentId = dto.ParentCommentId,
             ReplyCommentId = dto.ReplyCommentId,
             RemovedImagesUrls = dto.RemovedImagesUrls,
-            NewImages = dto.NewImages,
             ImagePreviewUrls = dto.ImagePreviewUrls
                 .Select(i => new EditProductCommentImageViewModel
                 {
@@ -166,7 +166,8 @@ public class ProductCommentController : BaseController
             }
 
             uploadSr = await _imageService.UploadCommentImagesAsync(
-                await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.NewImages));
+                await MapIFormFileCollectionToUploadImageRequestDtoAsync(model.NewImages, HttpContext.RequestAborted),
+                HttpContext.RequestAborted);
         }
         if (uploadSr is not null && !uploadSr.Success) return StatusCode(500);
 
@@ -184,7 +185,6 @@ public class ProductCommentController : BaseController
                     ImageId = i.ImageId,
                 })
                 .ToArray(),
-            NewImages = model.NewImages,
             RemovedImagesUrls = model.RemovedImagesUrls,
             ProductId = model.ProductId
         };
@@ -195,7 +195,7 @@ public class ProductCommentController : BaseController
 
         ServiceResult? deleteImagesSr =
             sr.Result is not null && sr.Result.Count > 0
-            ? await _imageService.DeleteCommentImagesAsync(sr.Result!)
+            ? await _imageService.DeleteCommentImagesAsync(sr.Result!, HttpContext.RequestAborted)
             : null;
         if (deleteImagesSr is not null && !deleteImagesSr.Success) return StatusCode(500);
 

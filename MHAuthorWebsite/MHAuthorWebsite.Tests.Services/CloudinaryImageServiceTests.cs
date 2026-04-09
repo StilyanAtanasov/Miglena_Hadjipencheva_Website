@@ -1,4 +1,4 @@
-﻿using CloudinaryDotNet.Actions;
+using CloudinaryDotNet.Actions;
 using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
@@ -8,7 +8,6 @@ using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -22,7 +21,7 @@ public class CloudinaryImageServiceTests
 
     private Mock<ICloudinaryService> _cloudinaryMock = null!;
     private Mock<IImageService> _imageServiceMock = null!;
-    private readonly Mock<ICloudinaryAdminProductImageDataService> _dataServiceMock = null!;
+    private Mock<ICloudinaryAdminProductImageDataService> _dataServiceMock = null!;
     private readonly Mock<ILogger<CloudinaryAdminProductImageService>> _loggerMock = new();
     private readonly Mock<ILogger<CloudinaryImageService>> _baseLoggerMock = new();
 
@@ -38,6 +37,7 @@ public class CloudinaryImageServiceTests
 
         _cloudinaryMock = new Mock<ICloudinaryService>();
         _imageServiceMock = new Mock<IImageService>();
+        _dataServiceMock = new Mock<ICloudinaryAdminProductImageDataService>();
 
         _dbContext = new ApplicationDbContext(options);
         _adminProductImageService = new CloudinaryAdminProductImageService(
@@ -46,6 +46,36 @@ public class CloudinaryImageServiceTests
         // Arrange
         _defaultImage = await SeedImageAsync();
         _defaultProduct = await SeedProductAsync(_defaultImage);
+
+        // Wire up data service mock to read from in-memory DB
+        _dataServiceMock
+            .Setup(ds => ds.GetNonDeletedProductByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Guid id, CancellationToken _) =>
+                _dbContext.Products
+                    .IgnoreQueryFilters()
+                    .FirstOrDefault(p => p.Id == id && !p.IsDeleted));
+
+        _dataServiceMock
+            .Setup(ds => ds.GetNonDeletedProductForTitleImageUpdateByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Guid id, CancellationToken _) =>
+                _dbContext.Products
+                    .IgnoreQueryFilters()
+                    .Include(p => p.Thumbnail).ThenInclude(t => t.Image)
+                    .First(p => p.Id == id && !p.IsDeleted));
+
+        _dataServiceMock
+            .Setup(ds => ds.GetProductImageByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Guid id, CancellationToken _) =>
+                _dbContext.ProductsImages
+                    .IgnoreQueryFilters()
+                    .FirstOrDefault(i => i.Id == id));
+
+        _dataServiceMock
+            .Setup(ds => ds.GetProductImageForTitleImageUpdateByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Guid productId, Guid imageId, CancellationToken _) =>
+                _dbContext.ProductsImages
+                    .IgnoreQueryFilters()
+                    .FirstOrDefault(i => i.Id == imageId && i.ProductId == productId));
     }
 
     [TearDown]
@@ -67,15 +97,15 @@ public class CloudinaryImageServiceTests
     public async Task UploadImageWithPreviewAsync_ReturnsOk_WhenAllDataValid()
     {
         // Arrange
-        ICollection<IFormFile> formFiles = new HashSet<IFormFile>()
+        ICollection<UploadImageRequestDto> formFiles = new HashSet<UploadImageRequestDto>()
         {
-            CreateInMemoryFormFile("image-1.jpeg", "image/jpeg", "Fake image data"),
-            CreateInMemoryFormFile("image-2.jpeg", "image/jpeg", "Another fake image data")
+            CreateInMemoryUploadImageRequest("image-1.jpeg", "image/jpeg", "Fake image data"),
+            CreateInMemoryUploadImageRequest("image-2.jpeg", "image/jpeg", "Another fake image data")
         };
 
         int callCount = 1;
         _cloudinaryMock
-            .Setup(c => c.UploadAsync(It.IsAny<ImageUploadParams>()))
+            .Setup(c => c.UploadAsync(It.IsAny<ImageUploadParams>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => new ImageUploadResult
             {
                 PublicId = $"publicId{callCount}",
@@ -99,7 +129,7 @@ public class CloudinaryImageServiceTests
     public async Task UploadImageWithPreviewAsync_ReturnsFailure_WhenImageCollectionIsInvalid()
     {
         // Arrange
-        ICollection<IFormFile> formFiles = new HashSet<IFormFile>(); // Empty collection
+        ICollection<UploadImageRequestDto> formFiles = new HashSet<UploadImageRequestDto>(); // Empty collection
 
         // Act
         ServiceResult<ICollection<ProductImageUploadResultDto>> sr = await
@@ -113,10 +143,10 @@ public class CloudinaryImageServiceTests
     public async Task UploadImageWithPreviewAsync_ReturnsFailure_WhenTitleImageIndexIsInvalid()
     {
         // Arrange
-        ICollection<IFormFile> formFiles = new HashSet<IFormFile>
+        ICollection<UploadImageRequestDto> formFiles = new HashSet<UploadImageRequestDto>
         {
-            CreateInMemoryFormFile("image-1.jpeg", "image/jpeg", "Fake image data"),
-            CreateInMemoryFormFile("image-2.jpeg", "image/jpeg", "Another fake image data")
+            CreateInMemoryUploadImageRequest("image-1.jpeg", "image/jpeg", "Fake image data"),
+            CreateInMemoryUploadImageRequest("image-2.jpeg", "image/jpeg", "Another fake image data")
         };
 
         // Act
@@ -149,21 +179,11 @@ public class CloudinaryImageServiceTests
     [Test]
     public async Task LinkImagesToProductAsync_ReturnsFailure_WhenTitleImageIndexIsInvalid()
     {
-        // Arrange
+        // Arrange — files with real streams so the Content.CanSeek check passes
         ICollection<UploadImageRequestDto> formFiles = new HashSet<UploadImageRequestDto>()
         {
-            new ()
-            {
-                Content = null!,
-                ContentType = "image/jpeg",
-                FileName = "image-1.jpeg"
-            },
-            new ()
-            {
-                Content = null!,
-                ContentType = "image/jpeg",
-                FileName = "image-2.jpeg"
-            }
+            CreateInMemoryUploadImageRequest("image-1.jpeg", "image/jpeg", "Fake image data"),
+            CreateInMemoryUploadImageRequest("image-2.jpeg", "image/jpeg", "Another fake image data")
         };
 
         // Act
@@ -181,21 +201,11 @@ public class CloudinaryImageServiceTests
     [Test]
     public async Task LinkImagesToProductAsync_ReturnsFailure_WhenProductIdIsInvalid()
     {
-        // Arrange
+        // Arrange — files with real streams
         ICollection<UploadImageRequestDto> formFiles = new HashSet<UploadImageRequestDto>()
         {
-            new ()
-            {
-                Content = null!,
-                ContentType = "image/jpeg",
-                FileName = "image-1.jpeg"
-            },
-            new ()
-            {
-                Content = null!,
-                ContentType = "image/jpeg",
-                FileName = "image-2.jpeg"
-            }
+            CreateInMemoryUploadImageRequest("image-1.jpeg", "image/jpeg", "Fake image data"),
+            CreateInMemoryUploadImageRequest("image-2.jpeg", "image/jpeg", "Another fake image data")
         };
 
         // Act
@@ -212,23 +222,13 @@ public class CloudinaryImageServiceTests
         // Arrange
         ICollection<UploadImageRequestDto> formFiles = new HashSet<UploadImageRequestDto>
         {
-            new ()
-            {
-                Content = null!,
-                ContentType = "image/jpeg",
-                FileName = "image-1.jpeg"
-            },
-            new ()
-            {
-                Content = null!,
-                ContentType = "image/jpeg",
-                FileName = "image-2.jpeg"
-            }
+            CreateInMemoryUploadImageRequest("image-1.jpeg", "image/jpeg", "Fake image data"),
+            CreateInMemoryUploadImageRequest("image-2.jpeg", "image/jpeg", "Another fake image data")
         };
 
         int callCount = 1;
         _cloudinaryMock
-            .Setup(c => c.UploadAsync(It.IsAny<ImageUploadParams>()))
+            .Setup(c => c.UploadAsync(It.IsAny<ImageUploadParams>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => new ImageUploadResult
             {
                 PublicId = $"publicId{callCount}",
@@ -261,7 +261,7 @@ public class CloudinaryImageServiceTests
     {
         // Arrange
         _cloudinaryMock
-            .Setup(c => c.DestroyAsync(It.IsAny<DeletionParams>()))
+            .Setup(c => c.DestroyAsync(It.IsAny<DeletionParams>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new DeletionResult { Result = "ok" });
 
         // Act
@@ -276,7 +276,7 @@ public class CloudinaryImageServiceTests
     {
         // Arrange
         _cloudinaryMock
-            .Setup(c => c.DestroyAsync(It.IsAny<DeletionParams>()))
+            .Setup(c => c.DestroyAsync(It.IsAny<DeletionParams>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new DeletionResult { Result = "error" });
 
         // Act
@@ -302,7 +302,7 @@ public class CloudinaryImageServiceTests
     {
         // Arrange
         _imageServiceMock
-            .Setup(c => c.DeleteImageAsync(It.IsAny<string>()))
+            .Setup(c => c.DeleteImageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult.Ok());
 
         ProductImage newImage = new()
@@ -330,7 +330,7 @@ public class CloudinaryImageServiceTests
     {
         // Arrange
         _imageServiceMock
-            .Setup(c => c.DeleteImageAsync(It.IsAny<string>()))
+            .Setup(c => c.DeleteImageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult.Failure());
 
         ProductImage newImage = new()
@@ -358,8 +358,8 @@ public class CloudinaryImageServiceTests
     [Test]
     public async Task UpdateProductTitleImageAsync_ReturnsFailure_WhenImageIdIsInvalid()
     {
-        // Act
-        ServiceResult result = await _adminProductImageService.UpdateProductTitleImageAsync(_defaultProduct.Id, new Guid());
+        // Act — newTitleImageId doesn't belong to this product
+        ServiceResult result = await _adminProductImageService.UpdateProductTitleImageAsync(_defaultProduct.Id, Guid.NewGuid());
 
         // Assert
         Assert.That(result.Success, Is.False);
@@ -370,7 +370,7 @@ public class CloudinaryImageServiceTests
     {
         // Arrange 
         _cloudinaryMock
-            .Setup(c => c.UploadAsync(It.IsAny<ImageUploadParams>()))
+            .Setup(c => c.UploadAsync(It.IsAny<ImageUploadParams>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => new ImageUploadResult
             {
                 PublicId = "thumbnail-public-id",
@@ -378,7 +378,7 @@ public class CloudinaryImageServiceTests
             });
 
         _imageServiceMock
-            .Setup(i => i.DeleteImageAsync(It.IsAny<string>()))
+            .Setup(i => i.DeleteImageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult.Ok());
 
         ProductImage newImage = new()
@@ -443,6 +443,7 @@ public class CloudinaryImageServiceTests
             IsPublic = true,
             ProductType = productType,
             Price = 10.99m,
+            Currency = "EUR",
             Images = new List<ProductImage> { image },
             Attributes = new List<ProductAttribute>
             {
@@ -473,15 +474,14 @@ public class CloudinaryImageServiceTests
         return product;
     }
 
-    private IFormFile CreateInMemoryFormFile(string fileName, string contentType, string content)
+    private UploadImageRequestDto CreateInMemoryUploadImageRequest(string fileName, string contentType, string content)
     {
         byte[] contentBytes = System.Text.Encoding.UTF8.GetBytes(content);
-        MemoryStream stream = new(contentBytes);
-
-        return new FormFile(stream, 0, stream.Length, "file", fileName)
+        return new UploadImageRequestDto
         {
-            Headers = new HeaderDictionary(),
-            ContentType = contentType
+            FileName = fileName,
+            ContentType = contentType,
+            Content = new MemoryStream(contentBytes)
         };
     }
 }

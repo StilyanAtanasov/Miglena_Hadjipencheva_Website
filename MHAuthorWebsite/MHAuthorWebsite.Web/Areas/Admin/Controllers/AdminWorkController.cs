@@ -60,7 +60,7 @@ public class AdminWorkController : AdminBaseController
             Title = model.Title,
             Content = model.Content,
             IsPublic = model.IsPublic,
-            CoverImage = await MapIFormFileToUploadImageRequestDtoAsync(model.CoverImage)
+            CoverImage = await MapIFormFileToUploadImageRequestDtoAsync(model.CoverImage, HttpContext.RequestAborted)
         };
 
         ServiceResult result = await _adminWorkService.AddWorkAsync(dto);
@@ -137,7 +137,7 @@ public class AdminWorkController : AdminBaseController
             IsPublic = model.IsPublic,
             CurrentCoverImageUrl = model.CurrentCoverImageUrl,
             NewCoverImage = model.NewCoverImage != null
-                ? await MapIFormFileToUploadImageRequestDtoAsync(model.NewCoverImage)
+                ? await MapIFormFileToUploadImageRequestDtoAsync(model.NewCoverImage, HttpContext.RequestAborted)
                 : null
         };
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using MHAuthorWebsite.Core.Admin.Dto;
 
 namespace MHAuthorWebsite.Core.Dtos.Admin.Product;
 
@@ -16,9 +16,9 @@ public class AddProductDto
 
     public decimal Weight { get; set; }
 
-    public int TitleImageId { get; set; } = 0; // Default is 0, meaning the first (if not only) image will have a thumbnail.
+    public int TitleImageId { get; set; } = 0;
 
-    public ICollection<IFormFile> Images { get; set; } = new HashSet<IFormFile>();
+    public ICollection<UploadImageRequestDto> Images { get; set; } = new HashSet<UploadImageRequestDto>();
 
     public ICollection<AttributeValueDto> Attributes { get; set; } = new HashSet<AttributeValueDto>();
 }

@@ -431,6 +431,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
             Id = order.Shipment.CourierShipmentId,
             Status = order.Status.GetDisplayName(),
             OrderNumber = order.Shipment.OrderNumber,
+            Currency = order.Shipment.Currency,
             Items = order.OrderedProducts
                 .Select(i => new OrderItemDto
                 {

@@ -1,0 +1,36 @@
+name: .NET Core CD (Production)
+
+on:
+  push:
+    branches: [ production ]
+
+jobs:
+  deploy:
+    name: Publish and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore Dependencies
+      run: dotnet restore MHAuthorWebsite/MHAuthorWebsite.sln
+
+    - name: Publish Web Project
+      run: dotnet publish MHAuthorWebsite/MHAuthorWebsite.Web/MHAuthorWebsite.Web.csproj --configuration Release --output ./publish
+      env:
+        ASPNETCORE_ENVIRONMENT: Production
+
+    - name: Deploy via FTP (Production)
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.PROD_FTP_SERVER }}
+        username: ${{ secrets.PROD_FTP_USERNAME }}
+        password: ${{ secrets.PROD_FTP_PASSWORD }}
+        local-dir: ./publish/
+        server-dir: /

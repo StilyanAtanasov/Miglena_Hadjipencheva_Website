@@ -1,6 +1,7 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Order
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Econt
+@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @using MHAuthorWebsite.Core.Models.Enums
 @using MHAuthorWebsite.Core.Common.Extensions
 
@@ -11,6 +12,9 @@
 	ViewData["RequireTimeZoneManager"] = true;
 
 	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+	bool isBgn = Model.Shipment.Currency == "BGN";
+	string primarySymbol = isBgn ? "лв." : "€";
+	string secondarySymbol = isBgn ? "€" : "лв.";
 }
 
 @section Styles {
@@ -60,7 +64,11 @@
 					@TimeZoneInfo.ConvertTimeFromUtc(Model.OrderDate, defaultZone)
 				</time>
 			</p>
-			<p class="flex-row"><strong>Обща стойност:</strong> @((Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice).ToString("F2")) @Currency</p>
+			@{
+				decimal totalSum = Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice;
+				decimal totalSumSecondary = isBgn ? totalSum * LevToEurRate : totalSum * EurToLevRate;
+			}
+			<p class="flex-row"><strong>Обща стойност:</strong> @totalSum.ToString("F2") @primarySymbol / @totalSumSecondary.ToString("F2") @secondarySymbol</p>
 			<p class="flex-row"><strong>Статус: </strong>@Model.Status.GetDisplayName()</p>
 		</article>
 
@@ -85,7 +93,10 @@
 				<p class="flex-row"><strong>Адрес:</strong> @Model.Shipment.Address, @Model.Shipment.City, @Model.Shipment.PostCode</p>
 			}
 
-			<p class="flex-row"><strong>Цена на доставка:</strong> @Model.Shipment.ShippingPrice @Model.Shipment.Currency</p>
+			@{
+				decimal shippingSecondary = isBgn ? Model.Shipment.ShippingPrice * LevToEurRate : Model.Shipment.ShippingPrice * EurToLevRate;
+			}
+			<p class="flex-row"><strong>Цена на доставка:</strong> @Model.Shipment.ShippingPrice.ToString("F2") @primarySymbol / @shippingSecondary.ToString("F2") @secondarySymbol</p>
 
 			@if (Model.Shipment.ExpectedDeliveryDate.HasValue)
 			{
@@ -184,13 +195,14 @@
 		<div class="flex-row">
 			@foreach (AdminOrderProductDetailsViewModel product in Model.Products)
 			{
+				decimal unitPriceSecondary = isBgn ? product.UnitPrice * LevToEurRate : product.UnitPrice * EurToLevRate;
 				<div class="product-item flex-column clickable" data-url="@Url.Action("Details", "Product", new { productId = product.Id })">
 					<div class="product-image-box">
 						<img src="@product.ImageUrl" alt="" />
 						<div class="quantity-badge">@(product.Quantity)x</div>
 					</div>
 					<p><strong>@product.ProductName</strong></p>
-					<p>Ед. цена: @product.UnitPrice.ToString("F2") @Currency</p>
+					<p>Ед. цена: @product.UnitPrice.ToString("F2") @primarySymbol / @unitPriceSecondary.ToString("F2") @secondarySymbol</p>
 				</div>
 			}
 		</div>
@@ -200,3 +212,4 @@
 @section Scripts {
 	<script src="~/js/click.js" asp-append-version="true"></script>
 }
+

@@ -17,7 +17,8 @@
 
 	<title>@ViewData["Title"] - Миглена Хаджипенчева</title>
 	<link rel="stylesheet" href="~/css/reset.css" asp-append-version="true" />
-	<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/all.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 	<link rel="stylesheet" href="~/css/common.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/loadingScreen.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
@@ -50,6 +51,20 @@
 				<li>
 					<a data-trigger="load-unlimited" class="active flex-row" asp-controller="cart" asp-action="Index">
 						<i class="fa-regular fa-cart-shopping"></i> Количка
+					</a>
+				</li>
+				
+				<li class="icon-link-container">
+					<a data-trigger="load-unlimited" class="icon-link-active active flex-row" asp-controller="cart" asp-action="Index">
+						<i class="fa-regular fa-cart-shopping"></i> 
+						<span class="link-text">Количка</span>
+					</a>
+				</li>
+				
+				<li class="icon-link-container">
+					<a data-trigger="load-unlimited" class="icon-link-active active flex-row" asp-controller="cart" asp-action="Index">
+						<i class="fa-regular fa-cart-shopping"></i>
+						<span class="link-text">Количка</span>
 					</a>
 				</li>
 				@if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole("Admin"))

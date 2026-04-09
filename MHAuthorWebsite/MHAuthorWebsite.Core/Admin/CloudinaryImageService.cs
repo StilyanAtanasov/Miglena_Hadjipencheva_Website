@@ -5,7 +5,7 @@ using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Images;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 
@@ -22,12 +22,12 @@ public class CloudinaryImageService : IImageService
         _logger = logger;
     }
 
-    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<UploadImageRequestDto> images, string folder, short width)
+    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<UploadImageRequestDto> images, string folder, short width, CancellationToken cancellationToken = default)
     {
         if (images.Count == 0)
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure(new Dictionary<string, string> { { "Images", "Не са намерени изображения." } });
 
-        if (images.Any(i => i.Content.Length > MaxImageSizeBytes))
+        if (images.Any(i => i.Content.CanSeek && i.Content.Length > MaxImageSizeBytes))
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure(new Dictionary<string, string>
             {
                 { "Images", $"Всяко изображение трябва да е до {MaxImageSizeMb} MB." }
@@ -55,7 +55,7 @@ public class CloudinaryImageService : IImageService
                     .FetchFormat("avif")
             };
 
-            return await _cloudinaryService.UploadAsync(fullUploadParams);
+            return await _cloudinaryService.UploadAsync(fullUploadParams, cancellationToken);
         });
 
         ImageUploadResult[] fullUploads = await Task.WhenAll(uploadTasks);
@@ -69,7 +69,7 @@ public class CloudinaryImageService : IImageService
             .ToArray());
     }
 
-    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<string> imageUrls, string folder, short width)
+    public async Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadImagesAsync(ICollection<string> imageUrls, string folder, short width, CancellationToken cancellationToken = default)
     {
         if (imageUrls.Count == 0 || imageUrls.Any(i => i.Length == 0))
             return ServiceResult<ICollection<ImageUploadResultDto>>.Failure();
@@ -94,7 +94,7 @@ public class CloudinaryImageService : IImageService
                     .FetchFormat("avif")
             };
 
-            return _cloudinaryService.UploadAsync(fullUploadParams);
+            return _cloudinaryService.UploadAsync(fullUploadParams, cancellationToken);
         });
 
         ImageUploadResult[] fullUploads = await Task.WhenAll(uploadTasks);
@@ -108,10 +108,10 @@ public class CloudinaryImageService : IImageService
             .ToArray());
     }
 
-    // TODO Use better approach fro abstraction
-    public async Task<ServiceResult<ICollection<ProductImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<IFormFile> images, int titleImageId)
+    // TODO Use better approach for abstraction
+    public async Task<ServiceResult<ICollection<ProductImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<UploadImageRequestDto> images, int titleImageId, CancellationToken cancellationToken = default)
     {
-        if (images.Count == 0 || images.Any(i => i.Length == 0) || titleImageId > images.Count - 1 || titleImageId < 0)
+        if (images.Count == 0 || images.Any(i => i.Content.CanSeek && i.Content.Length == 0) || titleImageId > images.Count - 1 || titleImageId < 0)
             return ServiceResult<ICollection<ProductImageUploadResultDto>>.Failure();
 
         _logger.LogInformation("Uploading {Count} product images with preview.", images.Count);
@@ -120,13 +120,13 @@ public class CloudinaryImageService : IImageService
 
         for (int i = 0; i < images.Count; i++)
         {
-            IFormFile image = images.ElementAt(i);
+            UploadImageRequestDto image = images.ElementAt(i);
 
-            await using Stream input = image.OpenReadStream();
+            await using Stream input = image.Content;
             using MemoryStream fullStream = new();
             using MemoryStream previewStream = new();
 
-            await input.CopyToAsync(fullStream);
+            await input.CopyToAsync(fullStream, cancellationToken);
             fullStream.Position = 0;
             previewStream.Write(fullStream.ToArray());
             previewStream.Position = 0;
@@ -149,7 +149,7 @@ public class CloudinaryImageService : IImageService
                     .FetchFormat("avif")
             };
 
-            ImageUploadResult fullUpload = await _cloudinaryService.UploadAsync(fullUploadParams);
+            ImageUploadResult fullUpload = await _cloudinaryService.UploadAsync(fullUploadParams, cancellationToken);
 
             ImageUploadResult? previewUpload = null;
             if (isThumbnail)
@@ -168,7 +168,7 @@ public class CloudinaryImageService : IImageService
                         .FetchFormat("avif")
                 };
 
-                previewUpload = await _cloudinaryService.UploadAsync(previewUploadParams);
+                previewUpload = await _cloudinaryService.UploadAsync(previewUploadParams, cancellationToken);
             }
 
             results.Add(new ProductImageUploadResultDto
@@ -184,14 +184,14 @@ public class CloudinaryImageService : IImageService
         return ServiceResult<ICollection<ProductImageUploadResultDto>>.Ok(results.ToArray());
     }
 
-    public async Task<ServiceResult> DeleteImageAsync(string publicId)
+    public async Task<ServiceResult> DeleteImageAsync(string publicId, CancellationToken cancellationToken = default)
     {
         DeletionParams deletionParams = new(publicId)
         {
             Type = "private"
         };
 
-        DeletionResult result = await _cloudinaryService.DestroyAsync(deletionParams);
+        DeletionResult result = await _cloudinaryService.DestroyAsync(deletionParams, cancellationToken);
 
         if (result.Result != "ok") return ServiceResult.Failure();
 
@@ -200,11 +200,11 @@ public class CloudinaryImageService : IImageService
         return ServiceResult.Ok();
     }
 
-    public async Task<ServiceResult> DeleteImagesAsync(ICollection<string> publicIds)
+    public async Task<ServiceResult> DeleteImagesAsync(ICollection<string> publicIds, CancellationToken cancellationToken = default)
     {
         if (publicIds.Count == 0) return ServiceResult.Failure();
 
-        IEnumerable<Task<ServiceResult>> deletionTasks = publicIds.Select(DeleteImageAsync);
+        IEnumerable<Task<ServiceResult>> deletionTasks = publicIds.Select(id => DeleteImageAsync(id, cancellationToken));
         ServiceResult[] results = await Task.WhenAll(deletionTasks);
 
         if (results.Any(result => !result.Success))

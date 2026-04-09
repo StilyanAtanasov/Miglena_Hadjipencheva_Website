@@ -5,18 +5,18 @@ import { formatBgNumber, parseBgNumber } from "./common.js";
 import { calcFreeDelivery } from "./elements/free-delivery.js";
 
 let productsCount;
-const levToEurRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.levToEurRate);
+const eurToLevRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.eurToLevRate);
 const freeShippingThresholdEur = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.freeShippingThresholdEur);
 
 document.addEventListener(`DOMContentLoaded`, function () {
   const grandTotalPriceElement = document.querySelector(`#grand-total`);
-  const grandTotalPriceEurElement = document.querySelector(`#grand-total-eur`);
+  const grandTotalPriceBgnElement = document.querySelector(`#grand-total-bgn`);
   const totalPriceElement = document.querySelector(`#total`);
-  const totalPriceEurElement = document.querySelector(`#total-eur`);
+  const totalPriceBgnElement = document.querySelector(`#total-bgn`);
   const discountElement = document.querySelector(`#discount-global`);
-  const discountEurElement = document.querySelector(`#discount-global-eur`);
+  const discountBgnElement = document.querySelector(`#discount-global-bgn`);
 
-  window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(+grandTotalPriceEurElement.textContent, freeShippingThresholdEur), 350));
+  window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(+grandTotalPriceElement.textContent, freeShippingThresholdEur), 350));
 
   const quantityInputs = document.querySelectorAll(`[data-role="quantity-input"]`);
   productsCount = quantityInputs.length;
@@ -39,7 +39,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
         const data = await response.json();
 
         document.querySelector(`#line-total-${itemId} .sum-price`).textContent = `${data.lineTotal}`;
-        document.querySelector(`#line-total-${itemId} .sum-price-eur`).textContent = `${formatBgNumber(parseBgNumber(data.lineTotal) * levToEurRate)}`;
+        document.querySelector(`#line-total-${itemId} .sum-price-bgn`).textContent = `${formatBgNumber(parseBgNumber(data.lineTotal) * eurToLevRate)}`;
 
         updateCartSummary(data.cartTotal);
       } else if (response.status === 400) pushNotification(Object.values(await response.json())[0], `warning`);
@@ -102,22 +102,22 @@ document.addEventListener(`DOMContentLoaded`, function () {
   function updateCartSummary(cartTotal) {
     const selectedItems = [...document.querySelectorAll(`tbody tr`)].filter(i => i.querySelector(`[data-role="is-selected-input"]`).checked === true);
 
-    const newPriceLev = cartTotal ?? selectedItems.reduce((partialSum, i) => partialSum + parseFloat(i.querySelector(`.sum-price`).textContent), 0);
-    grandTotalPriceElement.textContent = formatBgNumber(newPriceLev);
-    grandTotalPriceEurElement.textContent = `${formatBgNumber(newPriceLev * levToEurRate)}`;
+    const newPriceEur = cartTotal ?? selectedItems.reduce((partialSum, i) => partialSum + parseFloat(i.querySelector(`.sum-price`).textContent), 0);
+    grandTotalPriceElement.textContent = formatBgNumber(newPriceEur);
+    grandTotalPriceBgnElement.textContent = `${formatBgNumber(newPriceEur * eurToLevRate)}`;
 
-    const oldPriceLev = selectedItems.reduce(
+    const oldPriceEur = selectedItems.reduce(
       (partialSum, i) => partialSum + parseFloat(i.querySelector(`.unit-price:not(.discounted-price) .unit-price-value`).textContent) * i.querySelector(`.quantity-input .input`).value,
       0,
     );
 
-    totalPriceElement.textContent = formatBgNumber(oldPriceLev);
-    totalPriceEurElement.textContent = `${formatBgNumber(oldPriceLev * levToEurRate)}`;
+    totalPriceElement.textContent = formatBgNumber(oldPriceEur);
+    totalPriceBgnElement.textContent = `${formatBgNumber(oldPriceEur * eurToLevRate)}`;
 
-    const discount = oldPriceLev - newPriceLev;
+    const discount = oldPriceEur - newPriceEur;
     discountElement.textContent = formatBgNumber(discount);
-    discountEurElement.textContent = `${formatBgNumber(discount * levToEurRate)}`;
+    discountBgnElement.textContent = `${formatBgNumber(discount * eurToLevRate)}`;
 
-    calcFreeDelivery(newPriceLev * levToEurRate, freeShippingThresholdEur);
+    calcFreeDelivery(newPriceEur, freeShippingThresholdEur);
   }
 });

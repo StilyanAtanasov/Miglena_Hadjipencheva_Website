@@ -54,7 +54,11 @@
 	}
 
 	@{
+		bool isBgn = Model.Shipment.Currency == "BGN";
+		string primarySymbol = isBgn ? "лв." : "€";
+		string secondarySymbol = isBgn ? "€" : "лв.";
 		decimal totalSum = Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice;
+		decimal totalSumSecondary = isBgn ? totalSum * LevToEurRate : totalSum * EurToLevRate;
 	}
 
 	<section class="info-section flex-row">
@@ -69,7 +73,7 @@
 			</p>
 			<p class="flex-row">
 				<strong>Обща стойност:</strong>
-				@(totalSum.ToString("F2")) лв. / @((totalSum * LevToEurRate).ToString("F2")) €
+				@(totalSum.ToString("F2")) @primarySymbol / @((totalSumSecondary).ToString("F2")) @secondarySymbol
 			</p>
 			<p class="flex-row"><strong>Статус: </strong>@Model.Status</p>
 		</article>
@@ -95,7 +99,10 @@
 				<p class="flex-row"><strong>Адрес:</strong> @Model.Shipment.Address, @Model.Shipment.City, @Model.Shipment.PostCode</p>
 			}
 
-			<p class="flex-row"><strong>Цена на доставка:</strong> @Model.Shipment.ShippingPrice @Model.Shipment.Currency</p>
+			@{
+				decimal shippingSecondary = isBgn ? Model.Shipment.ShippingPrice * LevToEurRate : Model.Shipment.ShippingPrice * EurToLevRate;
+			}
+			<p class="flex-row"><strong>Цена на доставка:</strong> @Model.Shipment.ShippingPrice.ToString("F2") @primarySymbol / @shippingSecondary.ToString("F2") @secondarySymbol</p>
 
 			@if (Model.Shipment.ExpectedDeliveryDate.HasValue)
 			{
@@ -163,7 +170,10 @@
 						<div class="quantity-badge">@(product.Quantity)x</div>
 					</div>
 					<p><strong>@product.ProductName</strong></p>
-					<p>Ед. цена: <br/> @product.UnitPrice.ToString("F2") лв. / @((product.UnitPrice * LevToEurRate).ToString("F2")) €</p>
+					@{
+						decimal unitPriceSecondary = isBgn ? product.UnitPrice * LevToEurRate : product.UnitPrice * EurToLevRate;
+					}
+					<p>Ед. цена: <br/> @product.UnitPrice.ToString("F2") @primarySymbol / @(unitPriceSecondary.ToString("F2")) @secondarySymbol</p>
 				</div>
 			}
 		</div>

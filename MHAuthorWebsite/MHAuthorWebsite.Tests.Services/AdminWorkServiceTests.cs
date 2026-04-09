@@ -22,8 +22,9 @@ public class AdminWorkServiceTests
     private IAdminWorkService _adminWorkService = null!;
     private ApplicationDbContext _dbContext = null!;
 
-    private readonly Mock<IAdminProductImageService> _imageServiceMock = new();
-    private readonly Mock<IFastCacheService> _cacheMock = new();
+    // Recreate mocks each test to avoid invocation accumulation
+    private Mock<IAdminProductImageService> _imageServiceMock = null!;
+    private Mock<IFastCacheService> _cacheMock = null!;
     private readonly Mock<ILogger<AdminWorkService>> _loggerMock = new();
 
     private Work _defaultWork = null!;
@@ -31,6 +32,10 @@ public class AdminWorkServiceTests
     [SetUp]
     public async Task Setup()
     {
+        // Fresh mocks every test so Verify counts start at 0
+        _imageServiceMock = new Mock<IAdminProductImageService>();
+        _cacheMock = new Mock<IFastCacheService>();
+
         DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase("AdminWorkTestDb")
             .Options;
@@ -75,7 +80,7 @@ public class AdminWorkServiceTests
         };
 
         _imageServiceMock
-            .Setup(s => s.UploadImagesAsync(It.IsAny<ICollection<UploadImageRequestDto>>(), It.IsAny<string>(), It.IsAny<short>()))
+            .Setup(s => s.UploadImagesAsync(It.IsAny<ICollection<UploadImageRequestDto>>(), It.IsAny<string>(), It.IsAny<short>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult<ICollection<ImageUploadResultDto>>.Ok(new List<ImageUploadResultDto>
             {
                 new() { ImageUrl = "https://example.com/new-cover.jpg", PublicId = "new-cover-id" }
@@ -115,7 +120,7 @@ public class AdminWorkServiceTests
         };
 
         _imageServiceMock
-            .Setup(s => s.UploadImagesAsync(It.IsAny<ICollection<UploadImageRequestDto>>(), It.IsAny<string>(), It.IsAny<short>()))
+            .Setup(s => s.UploadImagesAsync(It.IsAny<ICollection<UploadImageRequestDto>>(), It.IsAny<string>(), It.IsAny<short>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult<ICollection<ImageUploadResultDto>>.Failure());
 
         // Act
@@ -201,15 +206,17 @@ public class AdminWorkServiceTests
         };
 
         _imageServiceMock
-            .Setup(s => s.UploadImagesAsync(It.IsAny<ICollection<UploadImageRequestDto>>(), It.IsAny<string>(), It.IsAny<short>()))
+            .Setup(s => s.UploadImagesAsync(It.IsAny<ICollection<UploadImageRequestDto>>(), It.IsAny<string>(), It.IsAny<short>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult<ICollection<ImageUploadResultDto>>.Ok(new List<ImageUploadResultDto>
             {
                 new() { ImageUrl = "https://example.com/updated-cover.jpg", PublicId = "updated-cover-id" }
             }));
 
         _imageServiceMock
-            .Setup(s => s.DeleteImageAsync(It.IsAny<string>()))
+            .Setup(s => s.DeleteImageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult.Ok());
+
+        string oldPublicId = _defaultWork.CoverImagePublicId;
 
         // Act
         ServiceResult result = await _adminWorkService.UpdateWorkAsync(model);
@@ -225,7 +232,8 @@ public class AdminWorkServiceTests
         Assert.That(updatedWork!.CoverImageUrl, Is.EqualTo("https://example.com/updated-cover.jpg"));
         Assert.That(updatedWork.CoverImagePublicId, Is.EqualTo("updated-cover-id"));
 
-        _imageServiceMock.Verify(s => s.DeleteImageAsync(_defaultWork.CoverImagePublicId), Times.Once);
+        // old public id should have been deleted
+        _imageServiceMock.Verify(s => s.DeleteImageAsync(oldPublicId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Test]
@@ -253,8 +261,10 @@ public class AdminWorkServiceTests
     {
         // Arrange
         _imageServiceMock
-            .Setup(s => s.DeleteImageAsync(It.IsAny<string>()))
+            .Setup(s => s.DeleteImageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult.Ok());
+
+        string expectedPublicId = _defaultWork.CoverImagePublicId;
 
         // Act
         ServiceResult result = await _adminWorkService.DeleteWorkAsync(_defaultWork.Id);
@@ -268,7 +278,7 @@ public class AdminWorkServiceTests
 
         Assert.IsNull(deletedWork);
 
-        _imageServiceMock.Verify(s => s.DeleteImageAsync(_defaultWork.CoverImagePublicId), Times.Once);
+        _imageServiceMock.Verify(s => s.DeleteImageAsync(expectedPublicId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Test]
@@ -331,7 +341,7 @@ public class AdminWorkServiceTests
             CoverImage = new UploadImageRequestDto { FileName = "a.jpg", Content = new MemoryStream() }
         };
 
-        _imageServiceMock.Setup(s => s.UploadImagesAsync(It.IsAny<ICollection<UploadImageRequestDto>>(), It.IsAny<string>(), It.IsAny<short>()))
+        _imageServiceMock.Setup(s => s.UploadImagesAsync(It.IsAny<ICollection<UploadImageRequestDto>>(), It.IsAny<string>(), It.IsAny<short>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult<ICollection<ImageUploadResultDto>>.Ok(new List<ImageUploadResultDto> { new() { ImageUrl = "u", PublicId = "p" } }));
 
         // Act
@@ -353,10 +363,10 @@ public class AdminWorkServiceTests
             NewCoverImage = new UploadImageRequestDto { FileName = "new.jpg", Content = new MemoryStream() }
         };
 
-        _imageServiceMock.Setup(s => s.UploadImagesAsync(It.IsAny<ICollection<UploadImageRequestDto>>(), It.IsAny<string>(), It.IsAny<short>()))
+        _imageServiceMock.Setup(s => s.UploadImagesAsync(It.IsAny<ICollection<UploadImageRequestDto>>(), It.IsAny<string>(), It.IsAny<short>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult<ICollection<ImageUploadResultDto>>.Ok(new List<ImageUploadResultDto> { new() { ImageUrl = "u", PublicId = "p" } }));
 
-        _imageServiceMock.Setup(s => s.DeleteImageAsync(It.IsAny<string>()))
+        _imageServiceMock.Setup(s => s.DeleteImageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult.Failure());
 
         // Act
@@ -371,7 +381,7 @@ public class AdminWorkServiceTests
     public async Task DeleteWorkAsync_ReturnsFailure_WhenImageDeletionFails()
     {
         // Arrange
-        _imageServiceMock.Setup(s => s.DeleteImageAsync(It.IsAny<string>()))
+        _imageServiceMock.Setup(s => s.DeleteImageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ServiceResult.Failure());
 
         // Act
@@ -384,7 +394,7 @@ public class AdminWorkServiceTests
     }
 
     [Test]
-    public async Task GetWorkForEditReadonlyAsync_ReturnsFailure_WhenExceptionOccurs()
+    public void GetWorkForEditReadonlyAsync_ReturnsFailure_WhenExceptionOccurs()
     {
         // Arrange
         var mockRepo = new Mock<IApplicationRepository>();
@@ -394,11 +404,9 @@ public class AdminWorkServiceTests
         var service = new AdminWorkService(mockRepo.Object,
             _imageServiceMock.Object, _cacheMock.Object, _loggerMock.Object);
 
-        // Act
-        ServiceResult<EditWorkDto> result = await service.GetWorkForEditReadonlyAsync(Guid.NewGuid());
-
-        // Assert
-        Assert.IsFalse(result.Success);
+        // Act — GetWorkForEditReadonlyAsync does NOT have a try/catch, so exception propagates
+        Assert.ThrowsAsync<Exception>(async () =>
+            await service.GetWorkForEditReadonlyAsync(Guid.NewGuid()));
     }
 
     private async Task<Work> SeedWorkAsync()

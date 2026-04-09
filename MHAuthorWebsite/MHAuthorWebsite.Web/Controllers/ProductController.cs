@@ -75,6 +75,7 @@ public class ProductController : BaseController
                 {
                     Label = a.Label,
                     Value = a.Value,
+                    AttributeType = a.AttributeType,
                     DisplayPosition = a.DisplayPosition
                 })
                 .ToArray(),

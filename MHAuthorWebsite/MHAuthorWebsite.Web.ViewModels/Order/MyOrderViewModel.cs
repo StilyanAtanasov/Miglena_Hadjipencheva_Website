@@ -8,6 +8,8 @@ public class MyOrderViewModel
 
     public decimal Total { get; set; }
 
+    public string Currency { get; set; } = null!;
+
     public string Status { get; set; } = null!;
 
     public ICollection<MyOrdersOrderProductViewModel> Products { get; set; } = null!;

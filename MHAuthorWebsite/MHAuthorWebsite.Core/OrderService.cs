@@ -141,6 +141,7 @@ public class OrderService : IOrderService
                    ProductId = ci.ProductId,
                    Quantity = ci.Quantity,
                    UnitPrice = productPricesWithDiscounts[ci.ProductId],
+                   Currency = ci.Product.Currency
                })
                .ToArray(),
             Shipment = new Shipment
@@ -189,13 +190,14 @@ public class OrderService : IOrderService
         .OrderByDescending(o => o.Date)
         .Skip((page - 1) * MyOrdersPageSize)
         .Take(MyOrdersPageSize)
-        .Select(o => new MyOrderDto
-        {
-            OrderId = o.Id,
-            CreatedAt = o.Date,
-            Total = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity) + o.Shipment.ShippingPrice,
-            Status = o.Status.GetDisplayName(),
-            Products = o.OrderedProducts
+            .Select(o => new MyOrderDto
+            {
+                OrderId = o.Id,
+                CreatedAt = o.Date,
+                Total = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity) + o.Shipment.ShippingPrice,
+                Currency = o.Shipment.Currency,
+                Status = o.Status.GetDisplayName(),
+                Products = o.OrderedProducts
                 .Select(op => new MyOrdersOrderProductDto
                 {
                     ImageUrl = op.Product.Thumbnail.Image.ImageUrl,

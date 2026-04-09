@@ -25,13 +25,14 @@ public class CloudinaryCommentImageService : CloudinaryImageService, ICommentIma
     }
 
     public async Task<ServiceResult<ICollection<ProductCommentImagesUploadDto>>> UploadCommentImagesAsync(
-        ICollection<UploadImageRequestDto> images)
+        ICollection<UploadImageRequestDto> images,
+        CancellationToken cancellationToken = default)
     {
         if (images.Count == 0)
             return ServiceResult<ICollection<ProductCommentImagesUploadDto>>.Failure(
                 new Dictionary<string, string> { { "Images", "Не са намерени изображения." } });
 
-        if (images.Any(i => i.Content.Length > MaxImageSizeBytes))
+        if (images.Any(i => i.Content.CanSeek && i.Content.Length > MaxImageSizeBytes))
             return ServiceResult<ICollection<ProductCommentImagesUploadDto>>.Failure(
                 new Dictionary<string, string> { { "Images", $"Всяко изображение трябва да е до {MaxImageSizeMb} MB." } });
 
@@ -45,7 +46,7 @@ public class CloudinaryCommentImageService : CloudinaryImageService, ICommentIma
             if (file.Content.CanSeek) file.Content.Position = 0;
 
             using var bufferStream = new MemoryStream();
-            await file.Content.CopyToAsync(bufferStream);
+            await file.Content.CopyToAsync(bufferStream, cancellationToken);
             byte[] buffer = bufferStream.ToArray();
 
             var originalStream = new MemoryStream(buffer);
@@ -61,9 +62,9 @@ public class CloudinaryCommentImageService : CloudinaryImageService, ICommentIma
         try
         {
             Task<ServiceResult<ICollection<ImageUploadResultDto>>> uploadImageTask =
-                _imageService.UploadImagesAsync(originals, CommentImagesFolder, ImageMaxWidth);
+                _imageService.UploadImagesAsync(originals, CommentImagesFolder, ImageMaxWidth, cancellationToken);
             Task<ServiceResult<ICollection<ImageUploadResultDto>>> uploadPreviewTask =
-                _imageService.UploadImagesAsync(copies, CommentImagePreviewsFolder, ImagePreviewMaxWidth);
+                _imageService.UploadImagesAsync(copies, CommentImagePreviewsFolder, ImagePreviewMaxWidth, cancellationToken);
 
             await Task.WhenAll(uploadImageTask, uploadPreviewTask);
 
@@ -89,14 +90,14 @@ public class CloudinaryCommentImageService : CloudinaryImageService, ICommentIma
         }
     }
 
-    public async Task<ServiceResult> DeleteCommentImagesAsync(ICollection<string> publicIds)
+    public async Task<ServiceResult> DeleteCommentImagesAsync(ICollection<string> publicIds, CancellationToken cancellationToken = default)
     {
         if (publicIds.Count == 0)
             return ServiceResult.Failure(new() { ["Count"] = "No image identifiers provided for deletion." });
 
         ICollection<Task<ServiceResult>> deleteTasks = new List<Task<ServiceResult>>();
 
-        foreach (string publicId in publicIds) deleteTasks.Add(_imageService.DeleteImageAsync(publicId));
+        foreach (string publicId in publicIds) deleteTasks.Add(_imageService.DeleteImageAsync(publicId, cancellationToken));
 
         await Task.WhenAll(deleteTasks);
 

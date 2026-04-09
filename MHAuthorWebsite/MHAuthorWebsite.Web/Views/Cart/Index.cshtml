@@ -7,7 +7,7 @@
 	ViewData["Title"] = "Моята количка";
 	ViewData["MetaDescription"] = "Прегледай всички книги във вашата количка";
 
-	decimal eurLeftUntilFreeDelivery = FreeDeliveryThresholdEur - Model.Total * LevToEurRate;
+	decimal eurLeftUntilFreeDelivery = FreeDeliveryThresholdEur - Model.Total;
 }
 
 @section Styles {
@@ -17,7 +17,7 @@
 	<link rel="stylesheet" href="~/css/elements/free-delivery.css" asp-append-version="true" />
 }
 
-<div class="page-wrapper flex-column" data-lev-to-eur-rate="@LevToEurRate" data-free-shipping-threshold-eur="@FreeDeliveryThresholdEur">
+<div class="page-wrapper flex-column" data-eur-to-lev-rate="@EurToLevRate" data-free-shipping-threshold-eur="@FreeDeliveryThresholdEur">
 	<h1 class="title">Моята количка</h1>
 	<div class="all-products flex-row">
 		<section class="products-sections flex-column">
@@ -68,11 +68,11 @@
 									</td>
 									<td class="product-price-info">
 										<p class="unit-price @((item.UnitDiscountedPrice.HasValue) ? "old-price" : "")">
-											<span class="unit-price-value">@item.UnitPrice.ToString("F2")</span> лв. / @((item.UnitPrice * LevToEurRate).ToString("F2")) €
+											<span class="unit-price-value">@item.UnitPrice.ToString("F2")</span> € / @((item.UnitPrice * EurToLevRate).ToString("F2")) лв.
 										</p>
 										@if (item.UnitDiscountedPrice.HasValue)
 										{
-											<p class="unit-price discounted-price">@item.UnitDiscountedPrice.Value.ToString("F2") лв. / @((item.UnitDiscountedPrice.Value * LevToEurRate).ToString("F2")) €</p>
+											<p class="unit-price discounted-price">@item.UnitDiscountedPrice.Value.ToString("F2") € / @((item.UnitDiscountedPrice.Value * EurToLevRate).ToString("F2")) лв.</p>
 										}
 									</td>
 									<td class="quantity-input">
@@ -83,9 +83,9 @@
 									<td id="line-total-@item.ItemId">
 										<p>
 											<span class="sum-price">@item.LineTotal.ToString("F2")</span>
-											<span> лв. / </span>
-											<span class="sum-price-eur">@((item.LineTotal * LevToEurRate).ToString("F2"))</span>
-											<span> €</span>
+											<span> € / </span>
+											<span class="sum-price-bgn">@((item.LineTotal * EurToLevRate).ToString("F2"))</span>
+											<span> лв.</span>
 										</p>
 									</td>
 									<td>
@@ -141,35 +141,34 @@
 			<aside id="cart-summary" class="cart-summary flex-column">
 				<div class="cart-summary-content flex-column">
 					@{
-						decimal totalWithoutDiscount = Model.Items.Sum(i => i.UnitPrice * i.Quantity);
 						decimal savedMoney = Model.Items.Where(i => i.UnitDiscountedPrice.HasValue).Select(i => (i.UnitPrice - i.UnitDiscountedPrice!.Value) * i.Quantity).Sum();
 					}
 					<h2 class="heading">Общо</h2>
 					<div class="price-summary-row flex-row">
 						<strong>Междинна стойност:</strong>
 						<p class="price-text">
-							<span id="total">@totalWithoutDiscount.ToString("F2")</span>
-							<span> лв. /</span>
-							<span id="total-eur">@((totalWithoutDiscount * LevToEurRate).ToString("F2"))</span>
-							<span> €</span>
+							<span id="total">@Model.SubTotal.ToString("F2")</span>
+							<span> € /</span>
+							<span id="total-bgn">@((Model.SubTotal * EurToLevRate).ToString("F2"))</span>
+							<span> лв.</span>
 						</p>
 					</div>
 					<div class="price-summary-row flex-row">
 						<strong>Отстъпка:</strong>
 						<p class="price-text discount">
 							<span id="discount-global">@savedMoney.ToString("F2")</span>
-							<span> лв. /</span>
-							<span id="discount-global-eur">@((savedMoney * LevToEurRate).ToString("F2"))</span>
-							<span> €</span>
+							<span> € /</span>
+							<span id="discount-global-bgn">@((savedMoney * EurToLevRate).ToString("F2"))</span>
+							<span> лв.</span>
 						</p>
 					</div>
 					<div class="price-summary-row flex-row">
 						<strong>Обща стойност:</strong>
 						<p class="price-text">
 							<span id="grand-total">@Model.Total.ToString("F2")</span>
-							<span> лв. /</span>
-							<span id="grand-total-eur">@((Model.Total * LevToEurRate).ToString("F2"))</span>
-							<span> €</span>
+							<span> € /</span>
+							<span id="grand-total-bgn">@((Model.Total * EurToLevRate).ToString("F2"))</span>
+							<span> лв.</span>
 						</p>
 					</div>
 				</div>

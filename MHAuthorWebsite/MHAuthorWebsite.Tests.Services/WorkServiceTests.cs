@@ -9,6 +9,7 @@ using MHAuthorWebsite.Data.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using StackExchange.Redis;
 
 namespace MHAuthorWebsite.Tests.Services;
 
@@ -18,7 +19,7 @@ public class WorkServiceTests
     private IWorkService _workService = null!;
     private ApplicationDbContext _dbContext = null!;
     private readonly Mock<ILogger<WorkService>> _loggerMock = new();
-    private readonly Mock<IFastCacheService> _cacheServiceMock = new();
+    private Mock<IFastCacheService> _cacheServiceMock = null!;
 
     private Work _defaultWork = null!;
 
@@ -30,6 +31,19 @@ public class WorkServiceTests
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
+
+        _cacheServiceMock = new Mock<IFastCacheService>();
+
+        // Set up CreateBatch so GetWorkCardsBatchAsync doesn't NullRef
+        var batchMock = new Mock<IBatch>();
+        batchMock
+            .Setup(b => b.StringGetAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
+            .ReturnsAsync(RedisValue.Null); // Nothing cached — forces DB lookup
+        batchMock.Setup(b => b.Execute());
+        batchMock
+            .Setup(b => b.StringSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<TimeSpan?>(), It.IsAny<bool>(), It.IsAny<When>(), It.IsAny<CommandFlags>()))
+            .ReturnsAsync(true);
+        _cacheServiceMock.Setup(c => c.CreateBatch()).Returns(batchMock.Object);
 
         _workService = new WorkService(new ApplicationRepository(_dbContext), _cacheServiceMock.Object, _loggerMock.Object);
 
