@@ -1,0 +1,34 @@
+name: .NET Core CD (Staging)
+
+on:
+  push:
+    branches: [ staging ]
+
+jobs:
+  deploy:
+    name: Publish and Deploy (Staging)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore Dependencies
+      run: dotnet restore MHAuthorWebsite/MHAuthorWebsite.sln
+
+    - name: Publish Web Project
+      run: dotnet publish MHAuthorWebsite/MHAuthorWebsite.Web/MHAuthorWebsite.Web.csproj --configuration Staging --output ./publish
+
+    - name: Deploy via FTP (Staging)
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.STAGING_FTP_SERVER }}
+        username: ${{ secrets.STAGING_FTP_USERNAME }}
+        password: ${{ secrets.STAGING_FTP_PASSWORD }}
+        local-dir: ./publish/
+        server-dir: /

@@ -8,6 +8,8 @@ public class MyOrderDto
 
     public decimal Total { get; set; }
 
+    public string Currency { get; set; } = null!;
+
     public string Status { get; set; } = null!;
 
     public ICollection<MyOrdersOrderProductDto> Products { get; set; } = null!;

@@ -18,8 +18,8 @@ public class CartServiceTests
     private ICartService _cartService = null!;
     private ApplicationDbContext _dbContext = null!;
 
-    private readonly Mock<IFastCacheService> _cacheMock = new();
-    private readonly Mock<ICartDataService> _cartDataServiceMock = new();
+    private Mock<IFastCacheService> _cacheMock = null!;
+    private Mock<ICartDataService> _cartDataServiceMock = null!;
     private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
     private readonly Mock<ILogger<CartService>> _loggerMock = new();
 
@@ -31,6 +31,9 @@ public class CartServiceTests
     [SetUp]
     public async Task Setup()
     {
+        _cacheMock = new Mock<IFastCacheService>();
+        _cartDataServiceMock = new Mock<ICartDataService>();
+
         DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase("CartTestDb")
             .Options;
@@ -41,6 +44,39 @@ public class CartServiceTests
 
         // Arrange
         (_cart, _item) = await SeedCartAsync(DefaultUserId);
+
+        // Wire up CartDataService mocks to delegate to the in-memory DB
+        _cartDataServiceMock
+            .Setup(ds => ds.GetCartByUserIdReadonlyAsync(It.IsAny<string>()))
+            .ReturnsAsync((string userId) =>
+                _dbContext.Carts
+                    .Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                            .ThenInclude(p => p.Thumbnail)
+                                .ThenInclude(t => t.Image)
+                    .Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                            .ThenInclude(p => p.ProductType)
+                    .Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                            .ThenInclude(p => p.Discounts)
+                    .FirstOrDefault(c => c.UserId == userId));
+
+        _cartDataServiceMock
+            .Setup(ds => ds.GetCartForItemQuantityUpdateAsync(It.IsAny<string>()))
+            .ReturnsAsync((string userId) =>
+                _dbContext.Carts
+                    .Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                            .ThenInclude(p => p.Discounts)
+                    .FirstOrDefault(c => c.UserId == userId));
+
+        _cartDataServiceMock
+            .Setup(ds => ds.GetCartForSelectionUpdateAsync(It.IsAny<string>()))
+            .ReturnsAsync((string userId) =>
+                _dbContext.Carts
+                    .Include(c => c.CartItems)
+                    .FirstOrDefault(c => c.UserId == userId));
     }
 
     [TearDown]
@@ -118,9 +154,12 @@ public class CartServiceTests
             Id = Guid.NewGuid(),
             Name = "Test Product 2",
             Description = "Test Description",
+            Price = 12.50m,
+            Currency = "EUR",
             StockQuantity = 10,
             IsDeleted = false,
             IsPublic = true,
+            Weight = 0.5m,
             ProductTypeId = 1,
             Images = new List<ProductImage>
             {
@@ -253,9 +292,12 @@ public class CartServiceTests
             Id = Guid.NewGuid(),
             Name = "Test Product",
             Description = "Test Description",
+            Price = 20.00m,
+            Currency = "EUR",
             StockQuantity = 10,
             IsDeleted = false,
             IsPublic = true,
+            Weight = 0.5m,
             ProductType = new ProductType { Id = 1, Name = "Books" },
             Thumbnail = new ProductThumbnail
             {
@@ -284,8 +326,10 @@ public class CartServiceTests
         {
             Id = Guid.NewGuid(),
             Price = 20,
+            Currency = "EUR",
             Quantity = quantity,
-            Product = product
+            Product = product,
+            IsSelected = true
         };
 
         Cart cart = new()

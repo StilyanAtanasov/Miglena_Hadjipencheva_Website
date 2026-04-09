@@ -19,13 +19,15 @@ public class AdminProductTypeServiceTests
 {
     private IAdminProductTypeService _adminProductTypeService = null!;
     private ApplicationDbContext _dbContext = null!;
-    private readonly Mock<ILogger<AdminProductTypeService>> _loggerMock = null!;
+    private Mock<ILogger<AdminProductTypeService>> _loggerMock = null!;
 
     private ProductType _defaultProductType = null!;
 
     [SetUp]
     public async Task Setup()
     {
+        _loggerMock = new Mock<ILogger<AdminProductTypeService>>();
+
         DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase("ProductTypeTestDb")
             .Options;

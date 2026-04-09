@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core;
+using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Contracts.DataServices;
@@ -7,12 +7,12 @@ using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.Utils;
 using MHAuthorWebsite.Web.Utils.Mappers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using StackExchange.Redis;
 using System.Linq.Expressions;
 
 namespace MHAuthorWebsite.Tests.Services;
@@ -25,7 +25,7 @@ public class ProductServiceTests
 
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
     private Mock<IFastCacheService> _cacheMock = null!;
-    private readonly Mock<IProductDataService> _productDataServiceMock = null!;
+    private Mock<IProductDataService> _productDataServiceMock = null!;
     private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
     private readonly Mock<ILogger<ProductService>> _loggerMock = new();
 
@@ -45,6 +45,23 @@ public class ProductServiceTests
         );
 
         _cacheMock = new Mock<IFastCacheService>();
+        _productDataServiceMock = new Mock<IProductDataService>();
+
+        // Set up Cache.CreateBatch() to return a mock IBatch so GetProductDetailsBatchAsync won't NullRef
+        var batchMock = new Mock<IBatch>();
+        batchMock
+            .Setup(b => b.StringGetAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
+            .ReturnsAsync(RedisValue.Null); // Nothing cached — forces DB lookup
+        batchMock.Setup(b => b.Execute());
+        batchMock
+            .Setup(b => b.StringSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<TimeSpan?>(), It.IsAny<bool>(), It.IsAny<When>(), It.IsAny<CommandFlags>()))
+            .ReturnsAsync(true);
+        _cacheMock.Setup(c => c.CreateBatch()).Returns(batchMock.Object);
+
+        // GlobalCacheKeysManagementService default: return empty admin set
+        _globalCacheKeysManagementServiceMock
+            .Setup(g => g.GetAllAdminIdsAsync())
+            .ReturnsAsync(Array.Empty<string>());
 
         _dbContext = new ApplicationDbContext(options);
         _productService = new ProductService(_cacheMock.Object, _productDataServiceMock.Object, _globalCacheKeysManagementServiceMock.Object,
@@ -52,6 +69,15 @@ public class ProductServiceTests
 
         // Arrange
         _defaultProduct = await SeedProductAsync();
+
+        // Wire up ProductDataService mock to delegate to in-memory DB
+        _productDataServiceMock
+            .Setup(ds => ds.GetProductWithLikesForEditByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync((Guid id) =>
+                _dbContext.Products
+                    .IgnoreQueryFilters()
+                    .Include(p => p.Likes)
+                    .FirstOrDefault(p => p.Id == id));
     }
 
     [TearDown]
@@ -190,6 +216,11 @@ public class ProductServiceTests
     [Test]
     public async Task ToggleLikeProduct_Returns403_WhenUserNotFound()
     {
+        // Arrange — ProductDataService returns the product; UserManager.FindByIdAsync returns null
+        _userManagerMock
+            .Setup(um => um.FindByIdAsync("invalid-user-id"))
+            .ReturnsAsync((ApplicationUser?)null);
+
         // Act
         ServiceResult sr = await _productService
             .ToggleLikeProduct("invalid-user-id", _defaultProduct.Id);
@@ -221,6 +252,10 @@ public class ProductServiceTests
 
         // Assert
         Assert.IsTrue(sr.Success);
+        Assert.IsTrue(sr.HasResult());
+        Assert.That(sr.Result!.Id == _defaultProduct.Id);
+        Assert.That(sr.Result.Images.Count == 1);
+        Assert.That(sr.Result.Attributes.Count == 1);
         Assert.IsTrue(sr.HasResult());
         Assert.That(sr.Result!.Id == _defaultProduct.Id);
         Assert.That(sr.Result.Images.Count == 1);
@@ -269,6 +304,14 @@ public class ProductServiceTests
 
         Guid originalImageId = Guid.NewGuid();
 
+        ApplicationUser user = new()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = "Commenter",
+            UserName = "commenter@test.com"
+        };
+        _dbContext.Users.Add(user);
+
         Product product = new()
         {
             Id = Guid.NewGuid(),
@@ -279,6 +322,8 @@ public class ProductServiceTests
             IsPublic = true,
             ProductType = productType,
             Price = 10.99m,
+            Currency = "EUR",
+            Weight = 0.5m,
             Thumbnail = new ProductThumbnail
             {
                 ImageOriginalId = originalImageId,
@@ -305,9 +350,29 @@ public class ProductServiceTests
                 new ()
                 {
                     Id = 1,
-                    Value = "John Doe"
+                    Value = "John Doe",
+                    AttributeDefinition = new ProductAttributeDefinition
+                    {
+                        Id = 1,
+                        DataType = Core.Models.Enums.AttributeDataType.Text,
+                        Label = "test",
+                        Key = "test",
+                        IsRequired = false,
+                        ProductTypeId = 1
+                    }
                 }
             },
+            Comments = new List<ProductComment>
+            {
+                new ()
+                {
+                    Id = Guid.NewGuid(),
+                    Text = "Great product!",
+                    Rating = 5,
+                    Date = DateTime.UtcNow,
+                    User = user
+                }
+            }
         };
 
         _dbContext.ProductTypes.Add(productType);

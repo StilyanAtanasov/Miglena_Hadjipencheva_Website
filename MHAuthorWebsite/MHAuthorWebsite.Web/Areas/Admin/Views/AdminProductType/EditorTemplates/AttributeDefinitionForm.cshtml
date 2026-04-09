@@ -34,8 +34,11 @@
 		<div class="values-hidden-container"></div>
 	</div>
 
-	<div class="form-input-box flex-column boolean">
-		<label class="form-label" asp-for="IsRequired">Задължително?</label>
-		<input class="input-error" class="form-input" asp-for="IsRequired" type="checkbox" />
+	<div class="toggle-row">
+		<label class="switch">
+			<input asp-for="IsRequired" type="checkbox" />
+			<span class="toggle-slider round"></span>
+		</label>
+		<label class="toggle-label" asp-for="IsRequired">Задължително?</label>
 	</div>
 </div>

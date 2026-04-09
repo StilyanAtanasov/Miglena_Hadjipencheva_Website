@@ -10,6 +10,8 @@ public class ApplicationUser : IdentityUser
     [MaxLength(NameMaxLength)]
     public string? Name { get; set; }
 
+    public string? PendingEmail { get; set; }
+
     public DateTime RegisteredOn { get; set; } = DateTime.UtcNow;
 
     public DateTime LastActive { get; set; } = DateTime.UtcNow;

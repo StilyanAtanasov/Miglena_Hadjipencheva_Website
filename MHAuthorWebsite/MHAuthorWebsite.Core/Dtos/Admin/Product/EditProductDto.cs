@@ -1,5 +1,6 @@
-﻿using MHAuthorWebsite.Core.Dtos.Product;
-using Microsoft.AspNetCore.Http;
+using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Dtos.Images;
+using MHAuthorWebsite.Core.Dtos.Product;
 
 namespace MHAuthorWebsite.Core.Dtos.Admin.Product;
 
@@ -19,7 +20,7 @@ public class EditProductDto
 
     public string ProductTypeName { get; set; } = null!;
 
-    public ICollection<IFormFile>? NewImages { get; set; } = new HashSet<IFormFile>();
+    public ICollection<UploadImageRequestDto>? NewImages { get; set; } = new HashSet<UploadImageRequestDto>();
 
     public ICollection<ProductImageDto> Images { get; set; } = new HashSet<ProductImageDto>();
 

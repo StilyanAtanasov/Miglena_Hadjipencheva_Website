@@ -1,24 +1,24 @@
-"use strict";
+﻿"use strict";
 
 import { pushNotification } from "./notification.js";
 import { formatBgNumber, parseBgNumber } from "./common.js";
 import { calcFreeDelivery } from "./elements/free-delivery.js";
 
 const form = document.getElementById(`confirm-form`);
-const currency = form.dataset.currency || `BGN`;
+const currency = form.dataset.currency || `EUR`;
 const frameUrl = form.dataset.econtCalcUrl;
 const econtFrame = document.getElementById(`econt-frame`);
 const subtotal = parseBgNumber(document.getElementById(`subtotal`).textContent);
-const subtotalEur = parseBgNumber(document.getElementById(`subtotal-eur`).textContent);
+const subtotalBgn = parseBgNumber(document.getElementById(`subtotal-bgn`).textContent);
 const discount = parseBgNumber(document.getElementById(`discount`).textContent);
-const discountEur = parseBgNumber(document.getElementById(`discount-eur`).textContent);
+const discountBgn = parseBgNumber(document.getElementById(`discount-bgn`).textContent);
 const grandEl = document.getElementById(`grand`);
-const grandEurEl = document.getElementById(`grand-eur`);
-const levToEurRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.levToEurRate);
+const grandBgnEl = document.getElementById(`grand-bgn`);
+const eurToLevRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.eurToLevRate);
 const freeShippingThresholdEur = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.freeShippingThresholdEur);
 const shippingPricesEl = document.getElementById(`shipping-prices`);
 
-window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(+grandEurEl.textContent, freeShippingThresholdEur), 700));
+window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(+grandEl.textContent, freeShippingThresholdEur), 700));
 
 class EcontDeliveryDetails {
   constructor(data = {}) {
@@ -58,27 +58,27 @@ function setIframeSrc() {
 
 function updateTotals() {
   const shippingEur = Number(econtDeliveryDetails?.shippingPrice || 0);
-  const shipping = shippingEur / levToEurRate;
+  const shippingBgn = shippingEur * eurToLevRate;
 
-  const orderSubtotalEur = parseBgNumber(grandEl.textContent) * levToEurRate;
+  const orderSubtotalEur = parseBgNumber(grandEl.textContent);
   if (econtDeliveryDetails && orderSubtotalEur >= freeShippingThresholdEur && econtDeliveryDetails.shippingPrice != 0) {
-    pushNotification(`Грешка при изчисляването на цената! Моля, опитайте по-късно!`, `error`);
+    pushNotification(`Р“СЂРµС€РєР° РїСЂРё РёР·С‡РёСЃР»СЏРІР°РЅРµС‚Рѕ РЅР° С†РµРЅР°С‚Р°! РњРѕР»СЏ, РѕРїРёС‚Р°Р№С‚Рµ РїРѕ-РєСЉСЃРЅРѕ!`, `error`);
     return;
   }
 
   if (orderSubtotalEur >= freeShippingThresholdEur && econtDeliveryDetails.shippingPrice == 0) {
     shippingPricesEl.style.color = "var(--color-success)";
-    shippingPricesEl.innerHTML = `БЕЗПЛАТНО`;
+    shippingPricesEl.innerHTML = `Р‘Р•Р—РџР›РђРўРќРћ`;
   } else {
     shippingPricesEl.innerHTML = `
-    <span id="shipping">${shipping.toFixed(2)}</span>
-    <span>лв. / </span>
-    <span id="shipping-eur">${shippingEur.toFixed(2)}</span>
-    <span> €</span>`;
+    <span id="shipping">${shippingEur.toFixed(2)}</span>
+    <span>€ / </span>
+    <span id="shipping-bgn">${shippingBgn.toFixed(2)}</span>
+    <span> лв.</span>`;
   }
 
-  grandEl.textContent = (subtotal - discount + shipping).toFixed(2);
-  grandEurEl.textContent = (subtotalEur - discountEur + shippingEur).toFixed(2);
+  grandEl.textContent = (subtotal - discount + shippingEur).toFixed(2);
+  grandBgnEl.textContent = (subtotalBgn - discountBgn + shippingBgn).toFixed(2);
 }
 
 window.addEventListener(
@@ -88,7 +88,7 @@ window.addEventListener(
     if (!data) return;
 
     if (data.shipment_error && data.shipment_error !== ``) {
-      pushNotification(`Грешка при изчесляването на цената за доставка. Моля опитайте по-късно!`, `error`);
+      pushNotification(`Р“СЂРµС€РєР° РїСЂРё РёР·С‡РёСЃР»СЏРІР°РЅРµС‚Рѕ РЅР° С†РµРЅР°С‚Р° Р·Р° РґРѕСЃС‚Р°РІРєР°. РњРѕР»СЏ РѕРїРёС‚Р°Р№С‚Рµ РїРѕ-РєСЉСЃРЅРѕ!`, `error`);
       return;
     }
 
@@ -102,7 +102,7 @@ form.addEventListener(`submit`, async function (e) {
   e.preventDefault();
 
   if (!econtDeliveryDetails) {
-    pushNotification(`Моля попълнете формата за доставка.`, `warning`);
+    pushNotification(`РњРѕР»СЏ РїРѕРїСЉР»РЅРµС‚Рµ С„РѕСЂРјР°С‚Р° Р·Р° РґРѕСЃС‚Р°РІРєР°.`, `warning`);
     return;
   }
 
@@ -121,7 +121,7 @@ form.addEventListener(`submit`, async function (e) {
     const orderId = await response.json();
     window.location = `/Order/OrderAccepted?orderId=${orderId}`;
   } else {
-    pushNotification(`Грешка при създаването на поръчка!`, `error`);
+    pushNotification(`Р“СЂРµС€РєР° РїСЂРё СЃСЉР·РґР°РІР°РЅРµС‚Рѕ РЅР° РїРѕСЂСЉС‡РєР°!`, `error`);
   }
 });
 

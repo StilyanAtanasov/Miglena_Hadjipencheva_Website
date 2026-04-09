@@ -49,6 +49,7 @@ public class AdminProductService : ProductService, IAdminProductService
                 Name = model.Name,
                 Description = model.Description,
                 Price = model.Price,
+                Currency = Currency,
                 ProductTypeId = model.ProductTypeId,
                 StockQuantity = model.StockQuantity,
                 Weight = model.Weight,
@@ -328,6 +329,7 @@ public class AdminProductService : ProductService, IAdminProductService
         {
             ProductId = model.ProductId,
             NewPrice = model.NewPrice,
+            Currency = Currency,
             StartDate = TimeZoneInfo.ConvertTimeToUtc(model.StartDate, bgZone),
             EndDate = TimeZoneInfo.ConvertTimeToUtc(model.EndDate, bgZone)
         };

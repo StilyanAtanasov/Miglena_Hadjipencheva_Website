@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Dtos.Images;
 
 namespace MHAuthorWebsite.Core.Dtos.ProductComment;
 
@@ -16,7 +17,7 @@ public class EditProductCommentDto
 
     public string Text { get; set; } = null!;
 
-    public ICollection<IFormFile>? NewImages { get; set; } = new HashSet<IFormFile>();
+    public ICollection<UploadImageRequestDto>? NewImages { get; set; } = new HashSet<UploadImageRequestDto>();
 
     public ICollection<EditProductCommentImageDto> ImagePreviewUrls { get; set; }
         = new HashSet<EditProductCommentImageDto>();

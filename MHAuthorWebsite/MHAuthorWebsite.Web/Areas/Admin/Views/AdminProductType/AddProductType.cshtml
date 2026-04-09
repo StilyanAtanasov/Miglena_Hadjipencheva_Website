@@ -8,6 +8,7 @@
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/admin/add-product-type.css" asp-append-version="true" />
 }
 
@@ -27,9 +28,12 @@
 			
 			<br/>
 
-			<div class="form-input-box flex-row boolean">
-				<input class="form-input" asp-for="HasAdditionalProperties" type="checkbox" id="HasAdditionalProperties" />
-				<label class="form-label" asp-for="HasAdditionalProperties">Допълнителни данни?</label>
+			<div class="toggle-row">
+				<label class="switch">
+					<input asp-for="HasAdditionalProperties" type="checkbox" id="HasAdditionalProperties" />
+					<span class="toggle-slider round"></span>
+				</label>
+				<label class="toggle-label" asp-for="HasAdditionalProperties">Допълнителни данни?</label>
 				<span class="input-error" asp-validation-for="HasAdditionalProperties"></span>
 			</div>
 

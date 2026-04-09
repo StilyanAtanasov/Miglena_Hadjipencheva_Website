@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core;
+using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
@@ -29,8 +29,8 @@ public class AdminProductServiceTests
 
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
     private Mock<IFastCacheService> _cacheMock = null!;
-    private readonly Mock<IAdminProductDataService> _adminProductDataServiceMock = null!;
-    private readonly Mock<IProductDataService> _productDataServiceMock = null!;
+    private Mock<IAdminProductDataService> _adminProductDataServiceMock = null!;
+    private Mock<IProductDataService> _productDataServiceMock = null!;
     private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
     private readonly Mock<ILogger<AdminProductService>> _loggerMock = new();
     private readonly Mock<ILogger<ProductService>> _baseLoggerMock = new();
@@ -46,18 +46,73 @@ public class AdminProductServiceTests
         );
 
         _cacheMock = new Mock<IFastCacheService>();
+        _adminProductDataServiceMock = new Mock<IAdminProductDataService>();
+        _productDataServiceMock = new Mock<IProductDataService>();
 
         DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase("AdminProductTestDb")
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
-        _adminProductService = new AdminProductService(_cacheMock.Object, new ApplicationRepository(_dbContext),
-            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object, _productDataServiceMock.Object,
-            _adminProductDataServiceMock.Object, _baseLoggerMock.Object, _loggerMock.Object);
+
+        _adminProductService = new AdminProductService(
+            _cacheMock.Object,
+            new ApplicationRepository(_dbContext),
+            _globalCacheKeysManagementServiceMock.Object,
+            _userManagerMock.Object,
+            _productDataServiceMock.Object,
+            _adminProductDataServiceMock.Object,
+            _baseLoggerMock.Object,
+            _loggerMock.Object);
 
         // Arrange
         _defaultProduct = await SeedProductAsync();
+
+        // Delegate data service mock calls to the in-memory DB
+        _adminProductDataServiceMock
+            .Setup(ds => ds.GetProductForEditByIdReadonlyAsync(It.IsAny<Guid>()))
+            .ReturnsAsync((Guid id) =>
+                _dbContext.Products
+                    .IgnoreQueryFilters()
+                    .Include(p => p.Images)
+                    .Include(p => p.Thumbnail)
+                    .Include(p => p.Attributes)
+                        .ThenInclude(a => a.AttributeDefinition)
+                    .Include(p => p.ProductType)
+                    .FirstOrDefault(p => p.Id == id));
+
+        _adminProductDataServiceMock
+            .Setup(ds => ds.GetProductForUpdateByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync((Guid id) =>
+                _dbContext.Products
+                    .IgnoreQueryFilters()
+                    .Include(p => p.Attributes)
+                    .FirstOrDefault(p => p.Id == id));
+
+        _adminProductDataServiceMock
+            .Setup(ds => ds.GetNonDeletedProductByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync((Guid id) =>
+                _dbContext.Products
+                    .IgnoreQueryFilters()
+                    .FirstOrDefault(p => p.Id == id && !p.IsDeleted));
+
+        _adminProductDataServiceMock
+            .Setup(ds => ds.GetProductsListReadonlyAsync())
+            .ReturnsAsync(() =>
+                (ICollection<ProductListItemDto>)_dbContext.Products
+                    .IgnoreQueryFilters()
+                    .Include(p => p.Thumbnail).ThenInclude(t => t.Image)
+                    .Include(p => p.ProductType)
+                    .Select(p => new ProductListItemDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Price = p.Price,
+                        StockQuantity = p.StockQuantity,
+                        IsPublic = p.IsPublic,
+                        ProductTypeName = p.ProductType.Name
+                    })
+                    .ToList());
     }
 
     [TearDown]
@@ -391,14 +446,9 @@ public class AdminProductServiceTests
     public async Task ToggleProductPublicityAsync_ReturnsFailure_OnError()
     {
         // Arrange
-        Mock<IApplicationRepository> repositoryMock = new();
-        repositoryMock
-            .Setup(r => r.All<Product>())
-            .Throws(new Exception("Db error"));
-
-        _adminProductService = new AdminProductService(_cacheMock.Object, repositoryMock.Object,
-            _globalCacheKeysManagementServiceMock.Object, _userManagerMock.Object,
-            _productDataServiceMock.Object, _adminProductDataServiceMock.Object, _baseLoggerMock.Object, _loggerMock.Object);
+        _adminProductDataServiceMock
+            .Setup(ds => ds.GetNonDeletedProductByIdAsync(It.IsAny<Guid>()))
+            .ThrowsAsync(new Exception("Db error"));
 
         // Act
         ServiceResult result = await _adminProductService.ToggleProductPublicityAsync(_defaultProduct.Id);
@@ -438,6 +488,7 @@ public class AdminProductServiceTests
             IsPublic = true,
             ProductType = productType,
             Price = 10.99m,
+            Currency = "EUR",
             Weight = 0.5m,
             Thumbnail = new ProductThumbnail
             {

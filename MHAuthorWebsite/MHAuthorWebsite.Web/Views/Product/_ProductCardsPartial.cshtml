@@ -35,19 +35,19 @@
 					<span class="text-faded">@product.ProductType</span>
 				</div>
 				<div class="price-box flex-column">
-					<p class="price @((product.DiscountPrice.HasValue) ? "old-price" : "")">@product.Price.ToString("F2") лв. / @((product.Price * LevToEurRate).ToString("F2")) €</p>
+					<p class="price @((product.DiscountPrice.HasValue) ? "old-price" : "")">@product.Price.ToString("F2") € / @((product.Price * EurToLevRate).ToString("F2")) лв.</p>
 					@if (product.DiscountPrice.HasValue)
 					{
-						<p class="price discounted-price">@product.DiscountPrice.Value.ToString("F2") лв. / @((product.DiscountPrice.Value * LevToEurRate).ToString("F2")) €</p>
+						<p class="price discounted-price">@product.DiscountPrice.Value.ToString("F2") € / @((product.DiscountPrice.Value * EurToLevRate).ToString("F2")) лв.</p>
 					}
 
 					<span class="price-text @(product.IsAvailable ? "available" : "unavailable")">@(product.IsAvailable ? "В наличност" : "Изчерпана наличност")</span>
 				</div>
 				<div class="action-btns flex-row">
 					<button data-role="like-item" data-item-id="@product.Id" class="btn like @(product.IsLiked ? "liked" : "")" aria-label="like">
-						<span class="fa-stack">
-							<i class="fa-regular fa-heart fa-stack-2x"></i>
-							<i class="fa-solid fa-heart fa-stack-2x"></i>
+						<span class="like-icon-stack" aria-hidden="true">
+							<span class="material-symbols-outlined heart-outline">favorite</span>
+							<span class="material-symbols-outlined fill heart-filled">favorite</span>
 						</span>
 					</button>
 					<input id="quantity" type="hidden" name="quantity" value="1" />

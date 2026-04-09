@@ -1,20 +1,20 @@
-﻿using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Images;
-using Microsoft.AspNetCore.Http;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 
 public interface IAdminProductImageService : IImageService
 {
-    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<UploadImageRequestDto> images);
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<UploadImageRequestDto> images, CancellationToken cancellationToken = default);
 
-    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<string> imageUrls);
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductImagesAsync(ICollection<string> imageUrls, CancellationToken cancellationToken = default);
 
-    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(UploadImageRequestDto image);
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(UploadImageRequestDto image, CancellationToken cancellationToken = default);
 
-    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(string imageUrl);
+    Task<ServiceResult<ICollection<ImageUploadResultDto>>> UploadProductThumbnailAsync(string imageUrl, CancellationToken cancellationToken = default);
+
 
     /// <summary>
     /// Deletes a product image identified by the specified image ID.
@@ -25,7 +25,7 @@ public interface IAdminProductImageService : IImageService
     /// <param name="imageId">The unique identifier of the product image to delete. Must not be an empty <see cref="Guid"/>.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The result contains a <see
     /// cref="ServiceResult"/>  indicating the success or failure of the operation.</returns>
-    Task<ServiceResult> DeleteProductImageByIdAsync(Guid imageId);
+    Task<ServiceResult> DeleteProductImageByIdAsync(Guid imageId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates the title image of a specified product.
@@ -35,12 +35,12 @@ public interface IAdminProductImageService : IImageService
     /// <param name="productId">The unique identifier of the product whose title image is to be updated.</param>
     /// <param name="newTitleImageId">The unique identifier of the new title image to associate with the product.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    Task<ServiceResult> UpdateProductTitleImageAsync(Guid productId, Guid newTitleImageId);
+    Task<ServiceResult> UpdateProductTitleImageAsync(Guid productId, Guid newTitleImageId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Links a collection of images to a specified product and designates one as the title image.
     /// </summary>
-    /// <param name="images">The collection of images to be linked to the product. Each image must be provided as an <see cref="IFormFile"/>.</param>
+    /// <param name="images">The collection of images to be linked to the product. Each image must be provided as an <see cref="UploadImageRequestDto"/>.</param>
     /// <param name="titleImageIndex">The zero-based index of the image in the <paramref name="images"/> collection to be set as the title image. Must
     /// be within the bounds of the collection.</param>
     /// <param name="productId">The unique identifier of the product to which the images will be linked.</param>
@@ -48,5 +48,5 @@ public interface IAdminProductImageService : IImageService
     /// cref="ServiceResult{T}"/> with the unique identifier of the title image if the operation succeeds, or
     /// <c>null</c> if no title image is set.</returns>
     Task<ServiceResult<Guid?>> LinkImagesToProductAsync(ICollection<UploadImageRequestDto> images, int? titleImageIndex,
-        Guid productId);
+        Guid productId, CancellationToken cancellationToken = default);
 }

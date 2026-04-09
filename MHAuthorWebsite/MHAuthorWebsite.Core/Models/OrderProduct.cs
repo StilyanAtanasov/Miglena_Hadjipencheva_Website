@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static MHAuthorWebsite.GCommon.EntityConstraints.OrderProduct;
+using static MHAuthorWebsite.GCommon.EntityConstraints.Shipment;
 
 namespace MHAuthorWebsite.Core.Models;
 
@@ -23,4 +24,8 @@ public class OrderProduct
 
     [Column(TypeName = UnitPriceSqlType)]
     public decimal UnitPrice { get; set; }
+
+    [Required]
+    [MaxLength(CurrencyMaxLength)]
+    public string Currency { get; set; } = null!;
 }

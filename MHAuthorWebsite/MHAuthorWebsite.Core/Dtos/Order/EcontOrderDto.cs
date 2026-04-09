@@ -1,4 +1,6 @@
-﻿namespace MHAuthorWebsite.Core.Dtos.Order;
+﻿using MHAuthorWebsite.GCommon;
+
+namespace MHAuthorWebsite.Core.Dtos.Order;
 
 public class EcontOrderDto
 {
@@ -16,7 +18,7 @@ public class EcontOrderDto
 
     public bool PartialDelivery { get; set; } = false;
 
-    public string Currency { get; set; } = "BGN";
+    public string Currency { get; set; } = ApplicationRules.Application.Currency;
 
     public string? ShipmentDescription { get; set; }
 

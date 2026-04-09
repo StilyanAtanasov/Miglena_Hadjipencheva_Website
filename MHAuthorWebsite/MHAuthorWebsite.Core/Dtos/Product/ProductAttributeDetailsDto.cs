@@ -8,5 +8,7 @@ public class ProductAttributeDetailsDto
 
     public string? Value { get; set; } = null!;
 
+    public AttributeDataType AttributeType { get; set; }
+
     public ProductAttributeDisplayPosition DisplayPosition { get; set; }
 }

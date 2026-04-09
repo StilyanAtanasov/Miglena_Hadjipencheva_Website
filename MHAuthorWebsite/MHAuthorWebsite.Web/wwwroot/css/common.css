@@ -187,7 +187,7 @@ button.italic {
 }
 
 .back-btn:not(.btn) i {
-  font-size: 1.5rem;
+  font-size: 1.4em;
 }
 
 .back-btn:not(.btn):hover {
@@ -271,48 +271,482 @@ hr.vertical {
   font-size: 1.25rem;
 }
 
-/* When not liked*/
+/* --- Material Symbols (Google Fonts) --- */
 
-.btn.like .fa-regular.fa-heart {
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.4em;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  vertical-align: middle;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.material-symbols-outlined.fill {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+/* Like button (Material) */
+.btn.like .like-icon-stack {
+  position: relative;
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.btn.like .like-icon-stack .material-symbols-outlined {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 180ms ease-in-out, transform 180ms ease-in-out;
+}
+
+.btn.like .heart-outline {
   color: var(--color-secondary);
-  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
 }
 
-.btn.like .fa-solid.fa-heart {
+.btn.like .heart-filled {
   color: transparent;
-  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.92);
 }
 
-.btn.like:hover .fa-regular.fa-heart {
+.btn.like:hover .heart-outline {
   color: transparent;
-  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.92);
 }
 
-.btn.like:hover .fa-solid.fa-heart {
+.btn.like:hover .heart-filled {
   color: var(--color-secondary);
-  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
 }
 
-/* When liked*/
-
-.btn.like.liked .fa-regular.fa-heart {
+.btn.like.liked .heart-outline {
   color: transparent;
-  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.92);
 }
 
-.btn.like.liked .fa-solid.fa-heart {
+.btn.like.liked .heart-filled {
   color: var(--color-secondary);
-  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
 }
 
-.btn.like.liked:hover .fa-regular.fa-heart {
+.btn.like.liked:hover .heart-outline {
   color: var(--color-secondary);
-  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
 }
 
-.btn.like.liked:hover .fa-solid.fa-heart {
+.btn.like.liked:hover .heart-filled {
   color: transparent;
-  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+/* --- Font Awesome compatibility layer (renders with Material Symbols) --- */
+
+i.fa,
+i.fas,
+i.far,
+i.fa-solid,
+i.fa-regular {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.4em;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+i.fa-solid,
+i.fas {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+i.fa-regular,
+i.far,
+i.fa {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+i.fa::before,
+i.fas::before,
+i.far::before,
+i.fa-solid::before,
+i.fa-regular::before {
+  content: "help";
+}
+
+/* Icon mappings (Font Awesome class -> Material Symbols ligature) */
+i.fa-arrow-left::before {
+  content: "arrow_back";
+}
+i.fa-arrow-right::before {
+  content: "arrow_forward";
+}
+i.fa-arrow-up::before {
+  content: "arrow_upward";
+}
+i.fa-arrow-left-from-bracket::before {
+  content: "logout";
+}
+i.fa-arrow-right-from-bracket::before,
+i.fa-arrow-right-to-bracket::before,
+i.fa-person-to-portal::before {
+  content: "login";
+}
+i.fa-arrow-up-right-from-square::before {
+  content: "open_in_new";
+}
+i.fa-down-to-bracket::before {
+  content: "download";
+}
+i.fa-arrow-rotate-left::before {
+  content: "undo";
+}
+i.fa-rotate::before,
+i.fa-rotate-right::before {
+  content: "refresh";
+}
+i.fa-arrows-repeat::before {
+  content: "repeat";
+}
+
+i.fa-house::before,
+i.fa-house-chimney::before {
+  content: "home";
+}
+i.fa-shop::before {
+  content: "store";
+}
+i.fa-shop-slash::before {
+  content: "store_off";
+}
+i.fa-cart-shopping::before {
+  content: "shopping_cart";
+}
+i.fa-cart-shopping-fast::before {
+  content: "shopping_cart_checkout";
+}
+i.fa-bags-shopping::before {
+  content: "shopping_bag";
+}
+i.fa-basket-shopping-minus::before {
+  content: "remove_shopping_cart";
+}
+
+i.fa-badge::before {
+  content: "sell";
+}
+i.fa-badge-check::before {
+  content: "verified";
+}
+i.fa-badge-percent::before {
+  content: "percent";
+}
+
+i.fa-filter::before {
+  content: "filter_alt";
+}
+i.fa-magnifying-glass::before {
+  content: "search";
+}
+
+i.fa-gear::before {
+  content: "settings";
+}
+i.fa-gears::before {
+  content: "settings_applications";
+}
+i.fa-screwdriver-wrench::before {
+  content: "build";
+}
+
+i.fa-user::before {
+  content: "person";
+}
+i.fa-users::before {
+  content: "group";
+}
+i.fa-users-gear::before {
+  content: "groups";
+}
+i.fa-user-gear::before {
+  content: "manage_accounts";
+}
+i.fa-user-magnifying-glass::before {
+  content: "manage_search";
+}
+i.fa-user-message::before {
+  content: "forum";
+}
+i.fa-user-question::before {
+  content: "help";
+}
+i.fa-user-lock::before {
+  content: "lock_person";
+}
+i.fa-user-unlock::before {
+  content: "person_check";
+}
+i.fa-user-shield::before {
+  content: "admin_panel_settings";
+}
+i.fa-user-xmark::before,
+i.fa-circle-user-circle-minus::before {
+  content: "person_remove";
+}
+
+i.fa-check::before {
+  content: "check";
+}
+i.fa-circle-check::before {
+  content: "check_circle";
+}
+i.fa-xmark::before {
+  content: "close";
+}
+i.fa-circle-xmark::before {
+  content: "cancel";
+}
+i.fa-circle-chevron-down::before {
+  content: "expand_circle_down";
+}
+i.fa-circle-info::before,
+i.fa-memo-circle-info::before {
+  content: "info";
+}
+i.fa-memo-circle-check::before {
+  content: "task_alt";
+}
+i.fa-circle-exclamation::before {
+  content: "warning";
+}
+i.fa-circle-exclamation-check::before {
+  content: "task_alt";
+}
+
+i.fa-comment-plus::before {
+  content: "add_comment";
+}
+i.fa-comment-pen::before {
+  content: "edit_note";
+}
+i.fa-message-dots::before {
+  content: "chat_bubble";
+}
+i.fa-comments-question::before {
+  content: "contact_support";
+}
+i.fa-comments-question-check::before {
+  content: "mark_chat_read";
+}
+i.fa-reply::before {
+  content: "reply";
+}
+
+i.fa-envelope::before {
+  content: "mail";
+}
+i.fa-envelope-open-text::before {
+  content: "drafts";
+}
+i.fa-paper-plane::before,
+i.fa-paper-plane-top::before {
+  content: "send";
+}
+i.fa-phone::before {
+  content: "call";
+}
+i.fa-location-dot::before {
+  content: "location_on";
+}
+
+i.fa-calendar::before {
+  content: "calendar_month";
+}
+i.fa-calendar-circle-minus::before {
+  content: "event_busy";
+}
+i.fa-clock::before {
+  content: "schedule";
+}
+
+i.fa-heart::before,
+i.fa-heart-circle-check::before,
+i.fa-heart-circle-minus::before,
+i.fa-heart-circle-xmark::before {
+  content: "favorite";
+}
+i.fa-thumbs-up::before {
+  content: "thumb_up";
+}
+i.fa-thumbs-down::before {
+  content: "thumb_down";
+}
+i.fa-star::before,
+i.fa-star-sharp::before {
+  content: "star";
+}
+
+i.fa-trash::before,
+i.fa-trash-can::before {
+  content: "delete";
+}
+i.fa-file-slash::before {
+  content: "delete";
+}
+i.fa-image::before {
+  content: "image";
+}
+i.fa-image-circle-xmark::before {
+  content: "hide_image";
+}
+
+i.fa-eye::before {
+  content: "visibility";
+}
+i.fa-eye-slash::before {
+  content: "visibility_off";
+}
+
+i.fa-lock-keyhole::before {
+  content: "lock";
+}
+i.fa-lock-keyhole-open::before {
+  content: "lock_open";
+}
+i.fa-key::before {
+  content: "key";
+}
+i.fa-id-card::before {
+  content: "badge";
+}
+
+i.fa-file-contract::before {
+  content: "description";
+}
+i.fa-file-signature::before {
+  content: "edit_note";
+}
+
+i.fa-floppy-disk::before {
+  content: "save";
+}
+i.fa-pen::before,
+i.fa-pencil::before,
+i.fa-pen-to-square::before {
+  content: "edit";
+}
+i.fa-plus::before {
+  content: "add";
+}
+i.fa-feather::before {
+  content: "edit_note";
+}
+
+i.fa-megaphone::before {
+  content: "campaign";
+}
+i.fa-chart-line::before {
+  content: "show_chart";
+}
+i.fa-books::before {
+  content: "menu_book";
+}
+i.fa-broom-wide::before {
+  content: "cleaning_services";
+}
+i.fa-icons::before {
+  content: "category";
+}
+i.fa-grip-dots-vertical::before {
+  content: "drag_indicator";
+}
+
+i.fa-box-open::before {
+  content: "unarchive";
+}
+i.fa-box-taped::before,
+i.fa-shelves::before {
+  content: "inventory_2";
+}
+i.fa-pallet-boxes::before {
+  content: "warehouse";
+}
+i.fa-person-dolly::before,
+i.fa-truck-fast::before {
+  content: "local_shipping";
+}
+i.fa-person-running-fast::before {
+  content: "directions_run";
+}
+
+i.fa-money-bill-1-wave::before,
+i.fa-money-check-dollar-pen::before {
+  content: "payments";
+}
+
+i.fa-clipboard-check::before {
+  content: "assignment_turned_in";
+}
+i.fa-clipboard-list-check::before {
+  content: "checklist";
+}
+
+i.fa-ban::before {
+  content: "block";
+}
+i.fa-stop::before {
+  content: "stop";
+}
+i.fa-shield-plus::before {
+  content: "gpp_good";
+}
+i.fa-shield-minus::before {
+  content: "gpp_bad";
+}
+
+i.fa-quote-left::before,
+i.fa-quote-right::before {
+  content: "format_quote";
 }
 
 .hidden {

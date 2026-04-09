@@ -97,6 +97,7 @@ public class OrderController : BaseController
                 OrderId = o.OrderId,
                 CreatedAt = o.CreatedAt,
                 Total = o.Total,
+                Currency = o.Currency,
                 Status = o.Status,
                 Products = o.Products
                         .Select(p => new MyOrdersOrderProductViewModel

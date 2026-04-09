@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
+using static MHAuthorWebsite.GCommon.EntityConstraints.Shipment;
 
 namespace MHAuthorWebsite.Core.Models;
 
@@ -22,6 +23,10 @@ public class CartItem
     [Required]
     [Column(TypeName = PriceSqlType)]
     public decimal Price { get; set; }
+
+    [Required]
+    [MaxLength(CurrencyMaxLength)]
+    public string Currency { get; set; } = null!;
 
     [Required]
     public bool IsSelected { get; set; }

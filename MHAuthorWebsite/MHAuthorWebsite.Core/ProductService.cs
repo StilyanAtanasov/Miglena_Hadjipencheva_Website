@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Contracts.DataServices;
 using MHAuthorWebsite.Core.Dtos.Product;
@@ -103,6 +103,7 @@ public class ProductService : IProductService
                                 Value = a.Value == null && a.ProductAttributeOptionId != null
                                     ? a.ProductAttributeOption!.Value
                                     : a.Value,
+                                AttributeType = a.AttributeDefinition.DataType,
                                 DisplayPosition = a.DisplayPosition
                             })
                     .ToArray()

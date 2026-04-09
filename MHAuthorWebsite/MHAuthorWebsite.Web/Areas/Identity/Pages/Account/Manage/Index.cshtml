@@ -12,11 +12,20 @@
 
 <section class="content-body flex-column">
 	<form id="profile-form" class="input-form flex-column" method="post">
-		<div asp-validation-summary="ModelOnly" role="alert"></div>
+		<partial name="_StatusMessage" for="StatusMessage" />
+		<div asp-validation-summary="ModelOnly" class="input-error" role="alert"></div>
+		
 		<div class="form-input-box flex-column">
-			<label class="form-label" asp-for="Username">Потребителско име</label>
-			<input class="form-input" asp-for="Username" placeholder="Напишете вашето потребителско име..." disabled />
+			<label class="form-label" asp-for="Input.Email">Имейл</label>
+			<div class="flex-row" style="width: 100%;">
+				<input class="form-input" asp-for="Input.Email" id="email-field" placeholder="Напишете вашият имейл..." disabled />
+				<button type="button" class="btn btn-secondary" id="edit-email-btn" title="Редактирай">
+					<i class="fa-solid fa-pen-to-square"></i>
+				</button>
+			</div>
+			<span class="input-error" asp-validation-for="Input.Email"></span>
 		</div>
+
 		<div class="form-input-box flex-column">
 			<label class="form-label" asp-for="Input.PhoneNumber">Телефонен номер</label>
 			<input class="form-input" asp-for="Input.PhoneNumber" placeholder="Напишете вашият телефонен номер..." />
@@ -29,3 +38,16 @@
 	</form>
 	<i class="fa-solid fa-pencil background-icon"></i>
 </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('edit-email-btn').addEventListener('click', function() {
+            const emailField = document.getElementById('email-field');
+            emailField.disabled = !emailField.disabled;
+            if (!emailField.disabled) {
+                emailField.focus();
+            }
+        });
+    </script>
+}

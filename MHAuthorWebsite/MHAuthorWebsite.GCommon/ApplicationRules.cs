@@ -9,7 +9,7 @@ public static class ApplicationRules
         public const string ProjectName = "MHAuthorWebsite";
         public const string WebsiteName = "Миглена Хаджипенчева"; // TODO Use this for Layout and branding
 
-        public const string Currency = "BGN";
+        public const string Currency = "EUR";
 
         public const string CurrentVersion = "1.0.1";
 
@@ -58,7 +58,8 @@ public static class ApplicationRules
 
     public static class CurrencyRates
     {
-        public const decimal LevToEurRate = 0.511m;
+        public const decimal EurToLevRate = 1.95583m;
+        public const decimal LevToEurRate = 1m / EurToLevRate;
     }
 
     public static class ProductComment

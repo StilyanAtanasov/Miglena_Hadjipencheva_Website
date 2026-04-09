@@ -10,6 +10,11 @@
 
 @foreach (MyOrderViewModel order in Model)
 {
+	bool isBgn = order.Currency == "BGN";
+	string primarySymbol = isBgn ? "лв." : "€";
+	string secondarySymbol = isBgn ? "€" : "лв.";
+	decimal totalSecondary = isBgn ? order.Total * LevToEurRate : order.Total * EurToLevRate;
+	
 <div class="order-card flex-column">
 	<div class="order-info flex-row">
 		<div class="product-list flex-row">
@@ -39,7 +44,7 @@
 			</time>
 		</p>
 		<p><strong>Статус:</strong> @order.Status</p>
-		<p><strong>Общо:</strong> @order.Total.ToString("F2") @Currency / @((order.Total * LevToEurRate).ToString("F2")) €</p>
+		<p><strong>Общо:</strong> @order.Total.ToString("F2") @primarySymbol / @totalSecondary.ToString("F2") @secondarySymbol</p>
 	</article>
 </div>
 }

@@ -93,7 +93,7 @@
 				@foreach (ProductAttributeDetailsViewModel attr in Model.Attributes
 					.Where(a => a.DisplayPosition == ProductAttributeDisplayPosition.MainInfo))
 				{
-					<p class="text-faded"><strong>@attr.Label:</strong> @attr.Value</p>
+					<p class="text-faded"><strong>@attr.Label:</strong> @attr.DisplayValue</p>
 				}
 			</section>
 		</section>
@@ -102,10 +102,10 @@
 		<section class="order-info flex-column">
 			<h4 class="heading">Наличност и поръчка</h4>
 			<div class="flex-column">
-				<p class="price @(Model.Discount is not null ? "old-price" : "")"> @Model.Price лв. / @((Model.Price * LevToEurRate).ToString("F2")) €</p>
+				<p class="price @(Model.Discount is not null ? "old-price" : "")"> @Model.Price € / @((Model.Price * EurToLevRate).ToString("F2")) лв.</p>
 				@if (Model.Discount is not null)
 				{
-					<p class="price discounted-price"> @Model.Discount.NewPrice.ToString("F2") лв. / @((Model.Discount.NewPrice * LevToEurRate).ToString("F2")) €</p>
+					<p class="price discounted-price"> @Model.Discount.NewPrice.ToString("F2") € / @((Model.Discount.NewPrice * EurToLevRate).ToString("F2")) лв.</p>
 				}
 			</div>
 			
@@ -124,17 +124,17 @@
 				<input class="input" type="number" id="quantity" name="quantity" 
 				       value="1" min="1" max="@Math.Min(Model.Quantity, MaxItemQuantityPerOrder)" />
 			</div>
-			<div class="order-btns flex-row">
-				<button type="button" id="like-button" data-product-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")" aria-label="Харесай продукт">
-					<span class="fa-stack">
-						<i class="fa-regular fa-heart fa-stack-2x"></i>
-						<i class="fa-solid fa-heart fa-stack-2x"></i>
+				<div class="order-btns flex-row">
+					<button type="button" id="like-button" data-product-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")" aria-label="Харесай продукт">
+					<span class="like-icon-stack" aria-hidden="true">
+						<span class="material-symbols-outlined heart-outline">favorite</span>
+						<span class="material-symbols-outlined fill heart-filled">favorite</span>
 					</span>
-				</button>
-				<button data-role="add-to-cart" data-item-id="@Model.Id" type="button" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled") aria-label="Добави в количката">
-					<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
-				</button>
-			</div>
+					</button>
+					<button data-role="add-to-cart" data-item-id="@Model.Id" type="button" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled") aria-label="Добави в количката">
+						<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
+					</button>
+				</div>
 		</section>
 	</section>
 
@@ -165,7 +165,7 @@
 				{
 					<tr>
 						<td>@a.Label</td>
-						<td>@a.Value</td>
+						<td>@a.DisplayValue</td>
 					</tr>
 				}
 				</tbody>

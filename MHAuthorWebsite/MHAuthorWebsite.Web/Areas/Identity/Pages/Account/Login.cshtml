@@ -11,6 +11,7 @@
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
@@ -33,12 +34,15 @@
 				<input class="form-input" asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="password" />
 				<span class="input-error" asp-validation-for="Input.Password"></span>
 			</div>
-			<div>
-				<label class="form-label" asp-for="Input.RememberMe">
+			
+			<div class="toggle-row" style="justify-content: center; margin-bottom: 2rem;">
+				<label class="switch">
 					<input asp-for="Input.RememberMe" />
-					Запомни ме?
+					<span class="toggle-slider round"></span>
 				</label>
+				<label class="toggle-label" asp-for="Input.RememberMe">Запомни ме?</label>
 			</div>
+
 			<button data-trigger="load-unlimited" id="login-submit" type="submit" class="btn submit-btn flex-row">
 				<i class="fa-solid fa-arrow-right-to-bracket"></i> Влез
 			</button>

@@ -27,10 +27,10 @@
 						<h2 class="product-name"><a data-trigger="load-unlimited" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="link">@product.Name</a></h2>
 						<p class="text-faded">@product.CategoryName</p>
 						<div class="price-box">
-							<p class="price @((product.DiscountedPrice.HasValue) ? "old-price" : "")">@product.Price.ToString("F2") лв. / @((product.Price * LevToEurRate).ToString("F2")) €</p>
+							<p class="price @((product.DiscountedPrice.HasValue) ? "old-price" : "")">@product.Price.ToString("F2") € / @((product.Price * EurToLevRate).ToString("F2")) лв.</p>
 							@if (product.DiscountedPrice.HasValue)
 							{
-								<p class="price discounted-price">@product.DiscountedPrice.Value.ToString("F2") лв. / @((product.DiscountedPrice.Value * LevToEurRate).ToString("F2")) €</p>
+								<p class="price discounted-price">@product.DiscountedPrice.Value.ToString("F2") € / @((product.DiscountedPrice.Value * EurToLevRate).ToString("F2")) лв.</p>
 							}
 						</div>
 						<span class="price-text @(product.IsInStock ? "available" : "unavailable")">@(product.IsInStock ? "В наличност" : "Изчерпана наличност")</span>

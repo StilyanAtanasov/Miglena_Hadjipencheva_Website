@@ -56,7 +56,9 @@
 }
 
 .preview-container .image-container .removeBtn:hover i,
-.preview-container .image-container .makeTitleBtn:hover i {
+.preview-container .image-container .makeTitleBtn:hover i,
+.preview-container .image-container .removeBtn:hover .material-symbols-outlined,
+.preview-container .image-container .makeTitleBtn:hover .material-symbols-outlined {
   transform: scale(1.2);
 }
 

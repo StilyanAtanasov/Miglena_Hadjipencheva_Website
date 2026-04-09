@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ProductDiscount;
+using static MHAuthorWebsite.GCommon.EntityConstraints.Shipment;
 
 namespace MHAuthorWebsite.Core.Models;
 
@@ -18,6 +19,10 @@ public class ProductDiscount
     [Required]
     [Column(TypeName = NewPriceSqlType)]
     public decimal NewPrice { get; set; }
+
+    [Required]
+    [MaxLength(CurrencyMaxLength)]
+    public string Currency { get; set; } = null!;
 
     [Required]
     public DateTime StartDate { get; set; }
