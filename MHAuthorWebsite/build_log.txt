@@ -1,0 +1,26 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  MHAuthorWebsite.GCommon -> D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.GCommon\bin\Debug\net8.0\MHAuthorWebsite.GCommon.dll
+  MHAuthorWebsite.Core.Common -> D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Core.Common\bin\Debug\net8.0\MHAuthorWebsite.Core.Common.dll
+  MHAuthorWebsite.Web.Common -> D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Web.Common\bin\Debug\net8.0\MHAuthorWebsite.Web.Common.dll
+  MHAuthorWebsite.Core -> D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Core\bin\Debug\net8.0\MHAuthorWebsite.Core.dll
+  MHAuthorWebsite.Web.ViewModels -> D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Web.ViewModels\bin\Debug\net8.0\MHAuthorWebsite.Web.ViewModels.dll
+  MHAuthorWebsite.Data -> D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Data\bin\Debug\net8.0\MHAuthorWebsite.Data.dll
+  MHAuthorWebsite.Infrastructure -> D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Infrastructure\bin\Debug\net8.0\MHAuthorWebsite.Infrastructure.dll
+  MHAuthorWebsite.Web.Infrastructure -> D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Web.Infrastructure\bin\Debug\net8.0\MHAuthorWebsite.Web.Infrastructure.dll
+  MHAuthorWebsite.Web -> D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Web\bin\Debug\net8.0\MHAuthorWebsite.Web.dll
+D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\CloudinaryImageServiceTests.cs(22,18): error CS0246: The type or namespace name 'ICloudinaryService' could not be found (are you missing a using directive or an assembly reference?) [D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\MHAuthorWebsite.Tests.Services.csproj]
+D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\CloudinaryImageServiceTests.cs(25,35): error CS0246: The type or namespace name 'CloudinaryAdminProductImageService' could not be found (are you missing a using directive or an assembly reference?) [D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\MHAuthorWebsite.Tests.Services.csproj]
+D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\CloudinaryImageServiceTests.cs(26,35): error CS0246: The type or namespace name 'CloudinaryImageService' could not be found (are you missing a using directive or an assembly reference?) [D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\MHAuthorWebsite.Tests.Services.csproj]
+
+Build FAILED.
+
+D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\CloudinaryImageServiceTests.cs(22,18): error CS0246: The type or namespace name 'ICloudinaryService' could not be found (are you missing a using directive or an assembly reference?) [D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\MHAuthorWebsite.Tests.Services.csproj]
+D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\CloudinaryImageServiceTests.cs(25,35): error CS0246: The type or namespace name 'CloudinaryAdminProductImageService' could not be found (are you missing a using directive or an assembly reference?) [D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\MHAuthorWebsite.Tests.Services.csproj]
+D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\CloudinaryImageServiceTests.cs(26,35): error CS0246: The type or namespace name 'CloudinaryImageService' could not be found (are you missing a using directive or an assembly reference?) [D:\My Documents\Stilyan\Programming\GitHub Repositories\Miglena Hadjipencheva Website\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\MHAuthorWebsite.Tests.Services.csproj]
+    0 Warning(s)
+    3 Error(s)
+
+Time Elapsed 00:00:01.65
+
+Workload updates are available. Run `dotnet workload list` for more information.

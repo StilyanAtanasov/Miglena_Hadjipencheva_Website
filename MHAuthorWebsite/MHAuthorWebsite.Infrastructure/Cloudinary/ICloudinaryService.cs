@@ -1,6 +1,6 @@
 using CloudinaryDotNet.Actions;
 
-namespace MHAuthorWebsite.Core.Admin.Contracts;
+namespace MHAuthorWebsite.Infrastructure.Cloudinary;
 
 public interface ICloudinaryService
 {

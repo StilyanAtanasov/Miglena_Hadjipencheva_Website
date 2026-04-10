@@ -5,13 +5,13 @@
 		@if (Model.eurLeftUntilFreeDelivery > 0)
 		{
 			<h2 class="message flex-row">
-				<i class="fa-regular fa-clipboard-list-check heading"></i> Още @Model.eurLeftUntilFreeDelivery.ToString("F2") евро до безплатна доставка
+				<i class="fa-solid fa-clipboard-list-check heading"></i> Още @Model.eurLeftUntilFreeDelivery.ToString("F2") евро до безплатна доставка
 			</h2>
 		}
 		else
 		{
 			<h2 class="message success flex-row">
-				<i class="fa-regular fa-clipboard-check heading"></i> БЕЗПЛАТНА ДОСТАВКА
+				<i class="fa-solid fa-clipboard-check heading"></i> БЕЗПЛАТНА ДОСТАВКА
 			</h2>
 		}
 		<div class="bar">

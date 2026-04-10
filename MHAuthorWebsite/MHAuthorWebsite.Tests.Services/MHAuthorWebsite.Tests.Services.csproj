@@ -23,7 +23,9 @@
     <ProjectReference Include="..\MHAuthorWebsite.Core.Common\MHAuthorWebsite.Core.Common.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Core\MHAuthorWebsite.Core.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Data\MHAuthorWebsite.Data.csproj" />
+    <ProjectReference Include="..\MHAuthorWebsite.Infrastructure\MHAuthorWebsite.Infrastructure.csproj" />
     <ProjectReference Include="..\MHAuthorWebsite.Web\MHAuthorWebsite.Web.csproj" />
+
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Configuration.EcontApi;
@@ -8,13 +8,17 @@ using Microsoft.Extensions.Options;
 using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Econt;
 
-namespace MHAuthorWebsite.Core.Admin;
+namespace MHAuthorWebsite.Infrastructure.Econt;
 
 public class AdminEcontService : EcontService, IAdminEcontService
 {
     private readonly ILogger<AdminEcontService> _logger;
 
-    public AdminEcontService(HttpClient http, IOptions<EcontApiSettings> econtSettings, ILogger<AdminEcontService> logger, ILogger<EcontService> baseLogger)
+    public AdminEcontService(
+        HttpClient http, 
+        IOptions<EcontApiSettings> econtSettings, 
+        ILogger<AdminEcontService> logger, 
+        ILogger<EcontService> baseLogger)
         : base(http, econtSettings, baseLogger)
     {
         _logger = logger;

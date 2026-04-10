@@ -1,6 +1,4 @@
-﻿using MHAuthorWebsite.Core.Admin.Dto;
-
-namespace MHAuthorWebsite.Core.Dtos.Admin.ProductType;
+﻿namespace MHAuthorWebsite.Core.Dtos.Admin.ProductType;
 
 public class AttributeDefinitionDto
 {

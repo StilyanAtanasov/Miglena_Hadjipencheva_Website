@@ -2,7 +2,6 @@
 using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Error;
-using MHAuthorWebsite.Core.Models;
 using Microsoft.Extensions.Logging;
 
 namespace MHAuthorWebsite.Core;

@@ -83,7 +83,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
     input.value = ``;
 
     parts.forEach(tagText => {
-  const tagHtml = `<span class="tag-badge">${tagText} <span class="remove-tag" data-val="${tagText}"><span class="material-symbols-outlined" aria-hidden="true">close</span></span></span>`;
+  const tagHtml = `<span class="tag-badge">${tagText} <span class="remove-tag" data-val="${tagText}"><i class="fa-solid fa-xmark"></i></span></span>`;
       tagsContainer.insertAdjacentHTML(`beforeend`, tagHtml);
     });
 

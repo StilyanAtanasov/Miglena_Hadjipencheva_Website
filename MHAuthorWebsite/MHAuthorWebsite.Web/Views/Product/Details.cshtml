@@ -126,9 +126,9 @@
 			</div>
 				<div class="order-btns flex-row">
 					<button type="button" id="like-button" data-product-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")" aria-label="Харесай продукт">
-					<span class="like-icon-stack" aria-hidden="true">
-						<span class="material-symbols-outlined heart-outline">favorite</span>
-						<span class="material-symbols-outlined fill heart-filled">favorite</span>
+					<span class="fa-stack">
+						<i class="fa-solid fa-heart fa-stack-2x"></i>
+						<i class="fa-solid fa-heart fa-stack-2x"></i>
 					</span>
 					</button>
 					<button data-role="add-to-cart" data-item-id="@Model.Id" type="button" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled") aria-label="Добави в количката">
@@ -226,7 +226,7 @@
 			if (Model.HasMoreComments)
 			{
 				<button id="more-comments-btn" class="btn-none link">
-					<i class="fa-regular fa-circle-chevron-down"></i>
+					<i class="fa-solid fa-circle-chevron-down"></i>
 					Още коментари
 				</button>
 			}

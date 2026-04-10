@@ -26,10 +26,10 @@ export async function reactToComment(reactionBtn) {
     });
 
     reactionBtn.querySelector(`i`).classList.toggle(`fa-solid`);
-    reactionBtn.querySelector(`i`).classList.toggle(`fa-regular`);
+    reactionBtn.querySelector(`i`).classList.toggle(`fa-solid`);
     reactionsBox.querySelectorAll(`button i`).forEach(i => {
       if (!reactionBtn.contains(i)) {
-        i.classList.replace(`fa-solid`, `fa-regular`);
+        i.classList.replace(`fa-solid`, `fa-solid`);
       }
     });
   } else if (response.status === 403) {

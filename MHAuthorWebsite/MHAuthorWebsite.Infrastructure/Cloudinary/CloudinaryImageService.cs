@@ -1,15 +1,13 @@
-﻿using CloudinaryDotNet;
+using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Images;
-
 using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 
-namespace MHAuthorWebsite.Core.Admin;
+namespace MHAuthorWebsite.Infrastructure.Cloudinary;
 
 public class CloudinaryImageService : IImageService
 {
@@ -108,7 +106,6 @@ public class CloudinaryImageService : IImageService
             .ToArray());
     }
 
-    // TODO Use better approach for abstraction
     public async Task<ServiceResult<ICollection<ProductImageUploadResultDto>>> UploadImageWithPreviewAsync(ICollection<UploadImageRequestDto> images, int titleImageId, CancellationToken cancellationToken = default)
     {
         if (images.Count == 0 || images.Any(i => i.Content.CanSeek && i.Content.Length == 0) || titleImageId > images.Count - 1 || titleImageId < 0)
@@ -135,7 +132,6 @@ public class CloudinaryImageService : IImageService
             string timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
             bool isThumbnail = i == titleImageId;
 
-            // FULL image - max width, AVIF, aspect preserved
             ImageUploadParams fullUploadParams = new()
             {
                 File = new FileDescription(image.FileName, fullStream),
@@ -145,7 +141,7 @@ public class CloudinaryImageService : IImageService
                 Type = "private",
                 Transformation = new Transformation()
                     .Width(1200)
-                    .Crop("limit") // Resize down, preserve aspect
+                    .Crop("limit")
                     .FetchFormat("avif")
             };
 
@@ -154,7 +150,6 @@ public class CloudinaryImageService : IImageService
             ImageUploadResult? previewUpload = null;
             if (isThumbnail)
             {
-                // Thumbnail image - small thumbnail, AVIF
                 ImageUploadParams previewUploadParams = new()
                 {
                     File = new FileDescription(image.FileName, previewStream),
@@ -164,7 +159,7 @@ public class CloudinaryImageService : IImageService
                     Type = "private",
                     Transformation = new Transformation()
                         .Width(250)
-                        .Crop("scale") // Shrink, preserve ratio
+                        .Crop("scale")
                         .FetchFormat("avif")
                 };
 

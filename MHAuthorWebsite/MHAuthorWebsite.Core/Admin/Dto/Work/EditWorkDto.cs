@@ -1,4 +1,3 @@
-using MHAuthorWebsite.Core.Dtos.Images;
 using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Work;
 
@@ -16,7 +15,7 @@ public class EditWorkDto
     public string Content { get; set; } = null!;
 
     public string? CurrentCoverImageUrl { get; set; }
-    
+
     public UploadImageRequestDto? NewCoverImage { get; set; }
 
     public bool IsPublic { get; set; }

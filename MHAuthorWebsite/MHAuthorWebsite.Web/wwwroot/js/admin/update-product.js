@@ -93,13 +93,13 @@ document.addEventListener(`DOMContentLoaded`, async () => {
       const removeBtn = document.createElement(`button`);
       removeBtn.type = `button`;
       removeBtn.classList = `removeBtn`;
-      removeBtn.innerHTML = `<span class="material-symbols-outlined" aria-hidden="true">delete</span>`;
+      removeBtn.innerHTML = `<i class="fa-solid fa-image-circle-xmark"></i>`;
       removeBtn.addEventListener(`click`, () => deleteImage(image, imgWrapper));
 
       const makeTitleBtn = document.createElement(`button`);
       makeTitleBtn.type = `button`;
       makeTitleBtn.classList = `makeTitleBtn`;
-      makeTitleBtn.innerHTML = `<span class="material-symbols-outlined fill" aria-hidden="true">star</span>`;
+      makeTitleBtn.innerHTML = `<i class="fa-solid fa-star-sharp"></i>`;
       makeTitleBtn.addEventListener(`click`, () => makeTitle(image, img));
 
       imgWrapper.appendChild(img);

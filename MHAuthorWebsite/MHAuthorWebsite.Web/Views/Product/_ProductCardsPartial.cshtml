@@ -45,9 +45,9 @@
 				</div>
 				<div class="action-btns flex-row">
 					<button data-role="like-item" data-item-id="@product.Id" class="btn like @(product.IsLiked ? "liked" : "")" aria-label="like">
-						<span class="like-icon-stack" aria-hidden="true">
-							<span class="material-symbols-outlined heart-outline">favorite</span>
-							<span class="material-symbols-outlined fill heart-filled">favorite</span>
+						<span class="fa-stack">
+							<i class="fa-solid fa-heart fa-stack-2x"></i>
+							<i class="fa-solid fa-heart fa-stack-2x"></i>
 						</span>
 					</button>
 					<input id="quantity" type="hidden" name="quantity" value="1" />

@@ -44,13 +44,13 @@
 					if (Model.IsMachineRemembered)
 					{
 						<form method="post">
-							<button type="submit" class="btn link flex-row"><i class="fa-regular fa-broom-wide"></i> Забрави този браузър</button>
+							<button type="submit" class="btn link flex-row"><i class="fa-solid fa-broom-wide"></i> Забрави този браузър</button>
 						</form>
 					}
 
 					<div class="flex-row">
-						<a asp-page="./Disable2fa" class="btn link flex-row"><i class="fa-regular fa-shield-minus"></i> Деактивирай</a>
-						<a asp-page="./GenerateRecoveryCodes" class="btn link flex-row"><i class="fa-regular fa-rotate-right"></i> Нулирай кодовете за възстановяване</a>
+						<a asp-page="./Disable2fa" class="btn link flex-row"><i class="fa-solid fa-shield-minus"></i> Деактивирай</a>
+						<a asp-page="./GenerateRecoveryCodes" class="btn link flex-row"><i class="fa-solid fa-rotate-right"></i> Нулирай кодовете за възстановяване</a>
 					</div>
 				}
 			</section>
@@ -60,12 +60,12 @@
 				<div class="flex-row">
 					@if (!Model.HasAuthenticator)
 					{
-						<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn link flex-row"> <i class="fa-regular fa-shield-plus"></i> Добави автентикатор</a>
+						<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn link flex-row"> <i class="fa-solid fa-shield-plus"></i> Добави автентикатор</a>
 					}
 					else
 					{
-						<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn link flex-row"> <i class="fa-regular fa-gears"></i> Настрой автентикатор</a>
-						<a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn link flex-row"> <i class="fa-regular fa-arrow-rotate-left"></i> Нулирай автентикатор</a>
+						<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn link flex-row"> <i class="fa-solid fa-gears"></i> Настрой автентикатор</a>
+						<a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn link flex-row"> <i class="fa-solid fa-arrow-rotate-left"></i> Нулирай автентикатор</a>
 					}
 				</div>
 				

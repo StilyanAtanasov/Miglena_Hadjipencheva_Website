@@ -1,5 +1,4 @@
-﻿using MHAuthorWebsite.Core.Dtos.Cart;
-using MHAuthorWebsite.Core.Models;
+﻿using MHAuthorWebsite.Core.Models;
 
 namespace MHAuthorWebsite.Core.Contracts.DataServices;
 

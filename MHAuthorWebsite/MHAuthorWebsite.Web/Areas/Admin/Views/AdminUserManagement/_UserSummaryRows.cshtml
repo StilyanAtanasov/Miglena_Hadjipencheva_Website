@@ -10,19 +10,19 @@
 			<strong class="name">@(!u.IsDeleted ? u.Name : " * Изтрит потребител *")</strong>
 			@if (u.IsAdmin)
 			{
-				<span class="badge admin-badge flex-row" title="Администратор"><i class="fa-regular fa-user-shield"></i> Админ</span>
+				<span class="badge admin-badge flex-row" title="Администратор"><i class="fa-solid fa-user-shield"></i> Админ</span>
 			}
 			@if (u.IsDeleted)
 			{
-				<span class="badge deleted-badge flex-row" title="Изтрит потребител"><i class="fa-regular fa-user-xmark"></i> Изтрит</span>
+				<span class="badge deleted-badge flex-row" title="Изтрит потребител"><i class="fa-solid fa-user-xmark"></i> Изтрит</span>
 			}
 			@if (u.IsActive)
 			{
-				<span class="badge active-badge flex-row" title="Активен потребител през последните @UsersActivityForPeriod дни!"><i class="fa-regular fa-person-running-fast"></i> Активен</span>
+				<span class="badge active-badge flex-row" title="Активен потребител през последните @UsersActivityForPeriod дни!"><i class="fa-solid fa-person-running-fast"></i> Активен</span>
 			}
 			@if (u.IsBanned)
 			{
-				<span class="badge banned-badge flex-row" title="Блокиран потребител"><i class="fa-regular fa-user-lock"></i> Блокиран</span>
+				<span class="badge banned-badge flex-row" title="Блокиран потребител"><i class="fa-solid fa-user-lock"></i> Блокиран</span>
 			}
 		</td>
 		<td class="align-center">@u.Email</td>
@@ -30,18 +30,18 @@
 			@if (u is { IsAdmin: false,IsDeleted: false })
 			{
 				<button class="btn btn-purple flex-row" data-action="assign" data-user-id="@u.Id" data-role-name="Admin">
-					<i class="fa-regular fa-user-shield"></i>
+					<i class="fa-solid fa-user-shield"></i>
 					Направи админ
 				</button>
 
 				<button class="btn btn-orange flex-row" data-action="ban" data-user-id="@u.Id">
 					@if (!u.IsBanned)
 					{
-						<i class="fa-regular fa-user-lock"></i>
+						<i class="fa-solid fa-user-lock"></i>
 					}
 					else
 					{
-						<i class="fa-regular fa-user-unlock"></i>
+						<i class="fa-solid fa-user-unlock"></i>
 					}
 					@(!u.IsBanned ? "Блокирай" : "Деблокирай")
 				</button>

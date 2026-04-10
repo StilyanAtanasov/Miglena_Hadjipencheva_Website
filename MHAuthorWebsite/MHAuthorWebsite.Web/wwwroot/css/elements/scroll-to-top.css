@@ -30,8 +30,7 @@
     background-color 300ms ease, color 300ms ease, border-color 300ms ease;
 }
 
-.scroll-to-top-btn i,
-.scroll-to-top-btn .material-symbols-outlined {
+.scroll-to-top-btn i {
   pointer-events: none;
   font-size: 2.1rem;
 }

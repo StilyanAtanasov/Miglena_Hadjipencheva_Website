@@ -23,7 +23,7 @@
 			@await Html.PartialAsync("_FreeDelivery", (eurLeftUntilFreeDelivery, FreeDeliveryThresholdEur))
 
 			<section class="section flex-column">
-				<h2 class="heading flex-row"><i class="fa-regular fa-bags-shopping"></i> Вашата поръчка</h2>
+				<h2 class="heading flex-row"><i class="fa-solid fa-bags-shopping"></i> Вашата поръчка</h2>
 
 				<table class="cart-table">
 					<thead>
@@ -58,7 +58,7 @@
 			</section>
 
 			<section class="section flex-column">
-				<h2 class="heading flex-row"><i class="fa-regular fa-money-check-dollar-pen"></i> Метод на плащане</h2>
+				<h2 class="heading flex-row"><i class="fa-solid fa-money-check-dollar-pen"></i> Метод на плащане</h2>
 				<div>
 					<div>
 						<label><input type="radio" name="paymentMethod" value="cod" checked /> Наложен платеж</label>
@@ -67,7 +67,7 @@
 			</section>
 
 			<section class="section flex-column">
-				<h2 class="heading flex-row"><i class="fa-regular fa-person-dolly"></i> Куриер</h2>
+				<h2 class="heading flex-row"><i class="fa-solid fa-person-dolly"></i> Куриер</h2>
 				<div>
 					<div>
 						<label><input type="radio" value="econt" checked /> Еконт</label>
@@ -80,7 +80,7 @@
 		</section>
 
 		<section class="section total-section flex-column">
-			<h2 class="heading flex-row"><i class="fa-regular fa-money-bill-1-wave"></i> Дължима сума</h2>
+			<h2 class="heading flex-row"><i class="fa-solid fa-money-bill-1-wave"></i> Дължима сума</h2>
 
 			<div class="total-section-content flex-column">
 				<div>
@@ -136,7 +136,7 @@
 						  data-user-email="@Model.UserData.Email"
 						  data-user-phone="@Model.UserData.PhoneNumber">
 
-						<button type="submit" class="btn order flex-row" id="placeOrderBtn"><i class="fa-regular fa-truck-fast"></i> Поръчай</button>
+						<button type="submit" class="btn order flex-row" id="placeOrderBtn"><i class="fa-solid fa-truck-fast"></i> Поръчай</button>
 					</form>
 				</div>
 			</div>

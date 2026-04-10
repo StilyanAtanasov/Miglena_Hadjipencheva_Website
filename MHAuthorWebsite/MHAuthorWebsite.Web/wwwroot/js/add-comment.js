@@ -46,7 +46,7 @@ imageInput.addEventListener(`change`, function () {
       const removeBtn = document.createElement(`button`);
       removeBtn.type = `button`;
       removeBtn.classList = `removeBtn`;
-      removeBtn.innerHTML = `<span class="material-symbols-outlined" aria-hidden="true">delete</span>`;
+      removeBtn.innerHTML = `<i class="fa-solid fa-file-slash"></i>`;
       removeBtn.addEventListener(`click`, () => remove(file, imgWrapper));
 
       imgWrapper.appendChild(img);

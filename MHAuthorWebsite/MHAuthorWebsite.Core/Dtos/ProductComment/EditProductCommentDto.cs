@@ -1,5 +1,4 @@
 using MHAuthorWebsite.Core.Admin.Dto;
-using MHAuthorWebsite.Core.Dtos.Images;
 
 namespace MHAuthorWebsite.Core.Dtos.ProductComment;
 

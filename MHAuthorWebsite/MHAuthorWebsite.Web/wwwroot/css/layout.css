@@ -58,27 +58,26 @@ nav a:hover {
   color: var(--color-secondary);
 }
 
-/* Контейнерът на линка */
 .icon-link-active {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  width: 40px; /* Ширина колкото само за иконата */
-  height: 40px;
-  overflow: hidden; /* Крие текста, който е извън тези 40px */
-  white-space: nowrap; /* Пречи на текста да се пренесе на нов ред */
-  transition: width 0.4s ease-in-out; /* Плавната анимация */
+  width: 3.5rem;
+  height: 3.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: width 0.4s ease-in-out;
   text-decoration: none;
-  background-color: #f8f8f8; /* Пример за фон */
-  border-radius: 20px;
-  padding: 0 12px;
+  background-color: #f8f8f8;
+  border-radius: 2rem;
+  padding: 0 1.2rem;
   position: relative;
 }
 
 /* Иконата */
 .icon-link-active i {
-  min-width: 16px; /* Фиксирана ширина за иконата, за да не мърда тя спрямо текста */
-  margin-right: 15px; /* Разстояние до скрития текст */
+  width: 2rem;
+  margin: 0 1.5rem 0 0.5rem;
 }
 
 /* Текстът */
@@ -89,7 +88,7 @@ nav a:hover {
 
 /* Ефектът при Hover */
 .icon-link-active:hover {
-  width: 130px; /* Достатъчно ширина, за да се види иконата + текста */
+  width: 13rem;
 }
 
 .icon-link-active:hover .link-text {
@@ -99,7 +98,7 @@ nav a:hover {
 .icon-link-container {
   list-style: none;
   display: flex;
-  justify-content: flex-end; /* Държи количката вдясно, разширявайки я наляво */
+  justify-content: flex-end;
 }
 
 /* --- Footer --- */

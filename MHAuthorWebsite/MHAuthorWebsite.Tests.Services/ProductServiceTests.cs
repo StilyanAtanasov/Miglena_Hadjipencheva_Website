@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using StackExchange.Redis;
 using System.Linq.Expressions;
 
 namespace MHAuthorWebsite.Tests.Services;
@@ -47,16 +46,14 @@ public class ProductServiceTests
         _cacheMock = new Mock<IFastCacheService>();
         _productDataServiceMock = new Mock<IProductDataService>();
 
-        // Set up Cache.CreateBatch() to return a mock IBatch so GetProductDetailsBatchAsync won't NullRef
-        var batchMock = new Mock<IBatch>();
-        batchMock
-            .Setup(b => b.StringGetAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
-            .ReturnsAsync(RedisValue.Null); // Nothing cached — forces DB lookup
-        batchMock.Setup(b => b.Execute());
-        batchMock
-            .Setup(b => b.StringSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<TimeSpan?>(), It.IsAny<bool>(), It.IsAny<When>(), It.IsAny<CommandFlags>()))
-            .ReturnsAsync(true);
-        _cacheMock.Setup(c => c.CreateBatch()).Returns(batchMock.Object);
+        _cacheMock
+            .Setup(c => c.GetBatchAsync<ProductCardGeneralInfoDto>(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync((IEnumerable<string> keys) => keys.Select(_ => (ProductCardGeneralInfoDto?)null).ToList());
+
+        _cacheMock
+            .Setup(c => c.SetBatchAsync<ProductCardGeneralInfoDto>(It.IsAny<IDictionary<string, ProductCardGeneralInfoDto>>(), It.IsAny<TimeSpan>(), It.IsAny<bool>()))
+            .Returns(Task.CompletedTask);
+
 
         // GlobalCacheKeysManagementService default: return empty admin set
         _globalCacheKeysManagementServiceMock
