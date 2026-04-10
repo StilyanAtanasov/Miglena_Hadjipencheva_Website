@@ -21,16 +21,6 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore MHAuthorWebsite/MHAuthorWebsite.sln
 
-    - name: Install EF Core CLI
-      run: dotnet tool install --global dotnet-ef
-
-    - name: Update Remote Database
-      run: |
-        dotnet ef database update \
-          --project MHAuthorWebsite/MHAuthorWebsite.Data/MHAuthorWebsite.Data.csproj \
-          --startup-project MHAuthorWebsite/MHAuthorWebsite.Web/MHAuthorWebsite.Web.csproj \
-          --connection "${{ secrets.AZURE_DB_CONNECTION_STRING }}"
-
     - name: Publish Web Project
       run: dotnet publish MHAuthorWebsite/MHAuthorWebsite.Web/MHAuthorWebsite.Web.csproj --configuration Staging --output ./publish
 
