@@ -20,7 +20,7 @@
 
 <section class="page-wrapper announcements-page flex-column">
 	<a asp-controller="AdminAnnouncements" asp-action="AnnouncementsBoard" class="btn link flex-row announcement-back-btn">
-		<i class="fa-regular fa-arrow-left"></i>
+		<i class="fa-solid fa-arrow-left"></i>
 		Обратно към съобщенията
 	</a>
 
@@ -30,11 +30,11 @@
 
 			<div class="announcement-details-meta flex-row">
 				<span class="recipient-chip">@Model.RecipientGroupLabel</span>
-				<span class="meta-line"><i class="fa-regular fa-circle-check"></i>@Model.RecipientCount успешни</span>
-				<span class="meta-line"><i class="fa-regular fa-circle-xmark"></i>@Model.FailedRecipientCount неуспешни</span>
-				<span class="meta-line"><i class="fa-regular fa-user-shield"></i>@Model.AdminName</span>
+				<span class="meta-line"><i class="fa-solid fa-circle-check"></i>@Model.RecipientCount успешни</span>
+				<span class="meta-line"><i class="fa-solid fa-circle-xmark"></i>@Model.FailedRecipientCount неуспешни</span>
+				<span class="meta-line"><i class="fa-solid fa-user-shield"></i>@Model.AdminName</span>
 				<span class="meta-line">
-					<i class="fa-regular fa-clock"></i>
+					<i class="fa-solid fa-clock"></i>
 					<time to-local no-seconds datetime="@Model.CreatedOn.ToString("O")">
 						@TimeZoneInfo.ConvertTimeFromUtc(Model.CreatedOn, defaultZone)
 					</time>
@@ -69,7 +69,7 @@
 					{
 						<article class="announcement-delivery-item flex-row">
 							<div class="announcement-delivery-icon @(delivery.IsDelivered ? "success" : "error")">
-								<i class="fa-regular @(delivery.IsDelivered ? "fa-circle-check" : "fa-circle-xmark")"></i>
+								<i class="fa-solid @(delivery.IsDelivered ? "fa-circle-check" : "fa-circle-xmark")"></i>
 							</div>
 
 							<div class="announcement-delivery-main flex-column">

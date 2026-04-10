@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Core.NotificationTemplates;
@@ -6,7 +6,7 @@ using RazorLight;
 using System.Reflection;
 using System.Text.Json;
 
-namespace MHAuthorWebsite.Core;
+namespace MHAuthorWebsite.Infrastructure.Rendering;
 
 public class RazorLightRenderingService : INotificationRenderingService
 {

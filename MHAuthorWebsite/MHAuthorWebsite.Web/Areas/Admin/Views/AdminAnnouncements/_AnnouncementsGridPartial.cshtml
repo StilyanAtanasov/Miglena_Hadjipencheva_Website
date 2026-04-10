@@ -12,7 +12,7 @@
 @if (!Model.Any())
 {
 	<article class="announcements-empty flex-column center">
-		<i class="fa-regular fa-megaphone"></i>
+		<i class="fa-solid fa-megaphone"></i>
 		<h2 class="subheading">Няма изпратени съобщения</h2>
 		<p>Създайте първото съобщение за вашите получатели.</p>
 	</article>
@@ -33,20 +33,20 @@ else
 
 				<div class="announcement-card-meta flex-column">
 					<p class="meta-line">
-						<i class="fa-regular fa-users"></i>
+						<i class="fa-solid fa-users"></i>
 						<span>@item.RecipientCount получатели</span>
 					</p>
 					<p class="meta-line">
-						<i class="fa-regular fa-user-shield"></i>
+						<i class="fa-solid fa-user-shield"></i>
 						<span>@item.AdminName</span>
 					</p>
 					<p class="meta-line">
-						<i class="fa-regular fa-clock"></i>
+						<i class="fa-solid fa-clock"></i>
 						<time to-local no-seconds datetime="@item.CreatedOn.ToString("O")">@item.CreatedOn</time>
 					</p>
 				</div>
 
-				<i class="fa-regular fa-megaphone background-icon"></i>
+				<i class="fa-solid fa-megaphone background-icon"></i>
 			</article>
 		}
 	</section>

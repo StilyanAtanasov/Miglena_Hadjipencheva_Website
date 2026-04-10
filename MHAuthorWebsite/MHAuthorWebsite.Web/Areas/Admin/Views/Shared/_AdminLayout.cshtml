@@ -8,7 +8,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>@ViewData["Title"] - Миглена Хаджипенчева</title>
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
 	<link rel="stylesheet" href="~/css/reset.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/common.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/admin/common.css" asp-append-version="true" />
@@ -28,41 +28,41 @@
 		<nav class="admin-nav flex-column">
 			<ul class="nav-elements flex-column">
 				<li data-url="@Url.Action("Index", "Home")" class="nav-element clickable flex-row">
-					<i class="fa-regular fa-house-chimney"></i>
+					<i class="fa-solid fa-house-chimney"></i>
 					<p class="flex-row">Към потребителския интерфейс</p>
 				</li>
 			</ul>
 			<ul class="nav-elements flex-column">
 				<li data-url="@Url.Action("Dashboard", "AdminDashboard")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.Dashboard ? "current" : "")">
-					<i class="fa-regular fa-chart-line"></i>
+					<i class="fa-solid fa-chart-line"></i>
 					<p class="flex-row">Табло</p>
 				</li>
 				<li data-url="@Url.Action("ProductsList", "AdminProduct")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AllProducts ? "current" : "")">
-					<i class="fa-regular fa-shelves"></i>
+					<i class="fa-solid fa-shelves"></i>
 					<p class="flex-row">Управление на продуктите</p>
 				</li>
 				<li data-url="@Url.Action("AddProductType", "AdminProductType")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AddProductType ? "current" : "")">
-					<i class="fa-regular fa-icons"></i>
+					<i class="fa-solid fa-icons"></i>
 					<p class="flex-row">Добавяне на категория</p>
 				</li>
 				<li data-url="@Url.Action("AllOrders", "AdminOrder")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AllOrders ? "current" : "")">
-					<i class="fa-regular fa-pallet-boxes"></i>
+					<i class="fa-solid fa-pallet-boxes"></i>
 					<p class="flex-row">Управление на поръчките</p>
 				</li>
 				<li data-url="@Url.Action("ContactRequestsBoard", "AdminContactRequests")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.ContactRequestsBoardPage ? "current" : "")">
-					<i class="fa-regular fa-comments-question"></i>
+					<i class="fa-solid fa-comments-question"></i>
 					<p class="flex-row">Табло на запитванията</p>
 				</li>
 				<li data-url="@Url.Action("AnnouncementsBoard", "AdminAnnouncements")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AnnouncementsBoardPage ? "current" : "")">
-					<i class="fa-regular fa-megaphone"></i>
+					<i class="fa-solid fa-megaphone"></i>
 					<p class="flex-row">Съобщения</p>
 				</li>
 				<li data-url="@Url.Action("Documents", "AdminLegalDocuments")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.LegalDocuments ? "current" : "")">
-					<i class="fa-regular fa-file-contract"></i>
+					<i class="fa-solid fa-file-contract"></i>
 					<p class="flex-row">Правни документи</p>
 				</li>
 				<li data-url="@Url.Action("ManageUsers", "AdminUserManagement")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.ManageUsers ? "current" : "")">
-					<i class="fa-regular fa-users-gear"></i>
+					<i class="fa-solid fa-users-gear"></i>
 					<p class="flex-row">Управление на потребителите</p>
 				</li>
 			</ul>

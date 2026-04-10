@@ -5,9 +5,7 @@ using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
 using System.Linq.Expressions;
-using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheDefaultDurations;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
@@ -122,25 +120,20 @@ public class WorkService : IWorkService
 
     private async Task<ICollection<WorkCardDto>> GetWorkCardsBatchAsync(Guid[] workIds)
     {
-        RedisKey[] keys = workIds
-            .Select(id => (RedisKey)WorkCardKey(id))
-            .ToArray();
+        ICollection<string> keys = workIds
+            .Select(WorkCardKey)
+            .ToList();
 
-        IBatch batch = _cache.CreateBatch();
-        Task<RedisValue>[] tasks = keys.Select(key => batch.StringGetAsync(key)).ToArray();
-        batch.Execute();
+        IEnumerable<WorkCardDto?> cachedValues = await _cache.GetBatchAsync<WorkCardDto>(keys);
 
-        RedisValue[] cachedValues = await Task.WhenAll(tasks);
         List<WorkCardDto> cachedWorks = new();
         List<Guid> missingIds = new();
 
+        var cachedValuesList = cachedValues.ToList();
         for (int i = 0; i < workIds.Length; i++)
         {
-            if (cachedValues[i].HasValue)
-            {
-                WorkCardDto? work = JsonSerializer.Deserialize<WorkCardDto>(cachedValues[i].ToString());
-                if (work != null) cachedWorks.Add(work);
-            }
+            WorkCardDto? work = cachedValuesList[i];
+            if (work != null) cachedWorks.Add(work);
             else missingIds.Add(workIds[i]);
         }
 
@@ -157,7 +150,7 @@ public class WorkService : IWorkService
                 })
                  .ToArrayAsync();
 
-            IBatch writeBatch = _cache.CreateBatch();
+            IDictionary<string, WorkCardDto> valuesToCache = new Dictionary<string, WorkCardDto>();
             foreach (WorkCardDto item in dbItems)
             {
                 WorkCardDto dto = new()
@@ -168,12 +161,14 @@ public class WorkService : IWorkService
                     IsPublic = item.IsPublic
                 };
 
-                string json = JsonSerializer.Serialize(dto);
-                await writeBatch.StringSetAsync((RedisKey)WorkCardKey(dto.Id), (RedisValue)json, TimeSpan.FromDays(WorkCardTtlDays), flags: CommandFlags.FireAndForget);
+                valuesToCache.Add(WorkCardKey(dto.Id), dto);
                 cachedWorks.Add(dto);
             }
 
-            writeBatch.Execute();
+            if (valuesToCache.Any())
+            {
+                await _cache.SetBatchAsync(valuesToCache, TimeSpan.FromDays(WorkCardTtlDays), fireAndForget: true);
+            }
         }
 
         return cachedWorks;

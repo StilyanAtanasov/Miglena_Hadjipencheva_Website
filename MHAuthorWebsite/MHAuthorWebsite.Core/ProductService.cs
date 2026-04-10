@@ -9,9 +9,7 @@ using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
 using System.Linq.Expressions;
-using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheDefaultDurations;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
@@ -499,25 +497,20 @@ public class ProductService : IProductService
 
     private async Task<ICollection<ProductCardGeneralInfoDto>> GetProductDetailsBatchAsync(Guid[] productIds)
     {
-        RedisKey[] keys = productIds
-            .Select(id => (RedisKey)ProductCardKey(id))
-            .ToArray();
+        ICollection<string> keys = productIds
+            .Select(ProductCardKey)
+            .ToList();
 
-        IBatch batch = Cache.CreateBatch();
-        Task<RedisValue>[] tasks = keys.Select(key => batch.StringGetAsync(key)).ToArray();
-        batch.Execute();
+        IEnumerable<ProductCardGeneralInfoDto?> cachedValues = await Cache.GetBatchAsync<ProductCardGeneralInfoDto>(keys);
 
-        RedisValue[] cachedValues = await Task.WhenAll(tasks);
         List<ProductCardGeneralInfoDto> cachedProducts = new();
         List<Guid> missingIds = new();
 
+        var cachedValuesList = cachedValues.ToList();
         for (int i = 0; i < productIds.Length; i++)
         {
-            if (cachedValues[i].HasValue)
-            {
-                ProductCardGeneralInfoDto? product = JsonSerializer.Deserialize<ProductCardGeneralInfoDto>(cachedValues[i].ToString());
-                if (product != null) cachedProducts.Add(product);
-            }
+            ProductCardGeneralInfoDto? product = cachedValuesList[i];
+            if (product != null) cachedProducts.Add(product);
             else missingIds.Add(productIds[i]);
         }
 
@@ -544,7 +537,6 @@ public class ProductService : IProductService
                 })
                  .ToArrayAsync();
 
-            IBatch writeBatch = Cache.CreateBatch();
             foreach (ProductCardServiceDataDto item in dbItems)
             {
                 ProductCardGeneralInfoDto dto = new()
@@ -559,16 +551,13 @@ public class ProductService : IProductService
                     DiscountPrice = item.DiscountPrice
                 };
 
-                string json = JsonSerializer.Serialize(dto);
                 TimeSpan cacheDuration = item.DiscountEnd != null && item.DiscountEnd.Value - now < TimeSpan.FromDays(ProductCardTtlDays)
                     ? item.DiscountEnd.Value - now
                     : TimeSpan.FromDays(ProductCardTtlDays);
 
-                await writeBatch.StringSetAsync((RedisKey)ProductCardKey(dto.Id), (RedisValue)json, cacheDuration, flags: CommandFlags.FireAndForget);
+                await Cache.SetAsync(ProductCardKey(dto.Id), dto, cacheDuration);
                 cachedProducts.Add(dto);
             }
-
-            writeBatch.Execute();
         }
 
         return cachedProducts;

@@ -1,5 +1,4 @@
-﻿using MHAuthorWebsite.Core.Dtos.Order;
-using MHAuthorWebsite.Core.Models;
+﻿using MHAuthorWebsite.Core.Models;
 
 namespace MHAuthorWebsite.Core.Contracts.DataServices;
 

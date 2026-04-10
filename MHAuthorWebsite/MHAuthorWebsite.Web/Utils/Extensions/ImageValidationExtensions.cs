@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 
 namespace MHAuthorWebsite.Web.Utils.Extensions;

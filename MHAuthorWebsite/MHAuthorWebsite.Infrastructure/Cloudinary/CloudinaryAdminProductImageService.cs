@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ProductImage;
 
-namespace MHAuthorWebsite.Core.Admin;
+namespace MHAuthorWebsite.Infrastructure.Cloudinary;
 
 public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdminProductImageService
 {
@@ -19,7 +19,13 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
     private readonly ICloudinaryAdminProductImageDataService _dataService;
     private readonly ILogger<CloudinaryAdminProductImageService> _logger;
 
-    public CloudinaryAdminProductImageService(IApplicationRepository repository, ICloudinaryAdminProductImageDataService dataService, IImageService imageService, ICloudinaryService cloudinaryService, ILogger<CloudinaryAdminProductImageService> logger, ILogger<CloudinaryImageService> baseLogger)
+    public CloudinaryAdminProductImageService(
+        IApplicationRepository repository, 
+        ICloudinaryAdminProductImageDataService dataService, 
+        IImageService imageService, 
+        ICloudinaryService cloudinaryService, 
+        ILogger<CloudinaryAdminProductImageService> logger, 
+        ILogger<CloudinaryImageService> baseLogger)
         : base(cloudinaryService, baseLogger)
     {
         _repository = repository;
@@ -59,7 +65,7 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
             ProductImage dbImage = new()
             {
                 ProductId = productId,
-                AltText = product.Name, // TODO Probably use the image title
+                AltText = product.Name,
                 ImageUrl = image.ImageUrl,
                 PublicId = image.PublicId,
             };
@@ -85,7 +91,6 @@ public class CloudinaryAdminProductImageService : CloudinaryImageService, IAdmin
         _repository.Delete(image);
         await _repository.SaveChangesAsync();
 
-        // Delete the full image
         ServiceResult deleteResult = await _imageService.DeleteImageAsync(image.PublicId, cancellationToken);
 
         _logger.LogInformation("Deleted product image {ImageId}.", imageId);

@@ -1,5 +1,4 @@
 using CloudinaryDotNet.Actions;
-using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Contracts.DataServices;
 using MHAuthorWebsite.Core.Admin.Dto;
@@ -8,6 +7,7 @@ using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
+using MHAuthorWebsite.Infrastructure.Cloudinary;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;

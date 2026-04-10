@@ -2,19 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using MHAuthorWebsite.Core.Configuration.EmailConfiguration;
+using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using MHAuthorWebsite.Core.Configuration.EmailConfiguration;
-using MHAuthorWebsite.Core.Contracts;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 
 namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account.Manage;
 

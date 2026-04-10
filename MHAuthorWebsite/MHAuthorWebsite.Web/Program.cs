@@ -19,6 +19,11 @@ using MHAuthorWebsite.Data.DataServices.Admin;
 using MHAuthorWebsite.Data.Seeding;
 using MHAuthorWebsite.Data.Shared;
 using MHAuthorWebsite.GCommon;
+using MHAuthorWebsite.Infrastructure.Caching;
+using MHAuthorWebsite.Infrastructure.Cloudinary;
+using MHAuthorWebsite.Infrastructure.Econt;
+using MHAuthorWebsite.Infrastructure.Email;
+using MHAuthorWebsite.Infrastructure.Rendering;
 using MHAuthorWebsite.Web.Common.Localization.Identity;
 using MHAuthorWebsite.Web.Infrastructure.Initialization;
 using MHAuthorWebsite.Web.Utils.Attributes;
@@ -284,21 +289,6 @@ try
     builder.Services.AddTransient<IEmailService, EmailService>();
 
     builder.Services.AddHttpContextAccessor();
-
-    string? redisConnectionString = builder.Configuration["Redis:ConnectionString"];
-    if (redisConnectionString is null) throw new ArgumentException("Connection string for Redis must me specified!");
-
-    string env = builder.Environment.EnvironmentName;
-    builder.Services.AddStackExchangeRedisCache(options =>
-    {
-        options.Configuration = redisConnectionString;
-        options.InstanceName = $"MHWebsite:{env}:";
-    });
-
-    // Register ConnectionMultiplexer for advanced usage (fire-and-forget)
-    builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
-        ConnectionMultiplexer.Connect(redisConnectionString)
-    );
 
     builder.Services.AddScoped<ICacheService, RedisCacheService>();
     builder.Services.AddScoped<IFastCacheService, RedisCacheService>();

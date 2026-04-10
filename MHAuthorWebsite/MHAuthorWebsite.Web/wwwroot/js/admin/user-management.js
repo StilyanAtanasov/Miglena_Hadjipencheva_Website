@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (response.ok) {
       const tr = button.closest(`tr`);
 
-      tr.querySelector(`.name-row .name`).insertAdjacentHTML(`afterend`, `<span class="badge admin-badge flex-row" title="Администратор"><span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span> Админ</span>`);
+      tr.querySelector(`.name-row .name`).insertAdjacentHTML(`afterend`, `<span class="badge admin-badge flex-row" title="Администратор"><i class="fa-solid fa-user-shield"></i> Админ</span>`);
 
       tr.querySelector(`.action-btns [data-action="assign"]`).remove();
       tr.querySelector(`.action-btns [data-action="ban"]`).remove();
@@ -63,11 +63,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (response.ok) {
       const isBanned = await response.json();
-      button.innerHTML = !isBanned ? `<span class="material-symbols-outlined" aria-hidden="true">lock_person</span> Блокирай` : `<span class="material-symbols-outlined" aria-hidden="true">person_check</span> Деблокирай`;
+      button.innerHTML = !isBanned ? `<i class="fa-solid fa-user-lock"></i> Блокирай` : `<i class="fa-solid fa-user-unlock"></i> Деблокирай`;
 
       if (isBanned) {
         const nameRow = button.closest(`tr`).querySelector(`.name-row`);
-        nameRow.innerHTML = nameRow.innerHTML + `<span class="badge banned-badge flex-row" title="Блокиран потребител"><span class="material-symbols-outlined" aria-hidden="true">lock_person</span> Блокиран</span>`;
+        nameRow.innerHTML = nameRow.innerHTML + `<span class="badge banned-badge flex-row" title="Блокиран потребител"><i class="fa-solid fa-user-lock"></i> Блокиран</span>`;
       } else button.closest(`tr`).querySelector(`.name-row .badge.banned-badge`).remove();
 
       await showPopupAsync({

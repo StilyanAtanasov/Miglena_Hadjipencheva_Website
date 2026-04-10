@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Configuration.EmailConfiguration;
+using MHAuthorWebsite.Core.Configuration.EmailConfiguration;
 using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Core.Contracts;
 using Microsoft.Extensions.Options;
@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Mail;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 
-namespace MHAuthorWebsite.Core;
+namespace MHAuthorWebsite.Infrastructure.Email;
 
 public class EmailService : IEmailService
 {

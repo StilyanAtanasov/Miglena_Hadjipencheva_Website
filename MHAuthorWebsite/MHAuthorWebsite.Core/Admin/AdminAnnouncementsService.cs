@@ -9,7 +9,6 @@ using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
@@ -32,12 +31,6 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
     private readonly IFastCacheService _cache;
     private readonly IUrlProvider _urlProvider;
     private readonly ILogger<AdminAnnouncementsService> _logger;
-
-    private readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = true,
-    };
 
     public AdminAnnouncementsService(
         IEmailService emailService,
@@ -317,30 +310,23 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
 
     private async Task<ICollection<AnnouncementListItemDto>> GetAnnouncementCardsBatchAsync(Guid[] announcementIds)
     {
-        RedisKey[] keys = announcementIds
-            .Select(id => (RedisKey)AnnouncementCardKey(id))
-            .ToArray();
+        ICollection<string> keys = announcementIds
+            .Select(AnnouncementCardKey)
+            .ToList();
 
-        IBatch readBatch = _cache.CreateBatch();
-        Task<RedisValue>[] readTasks = keys.Select(key => readBatch.StringGetAsync(key)).ToArray();
-        readBatch.Execute();
+        IEnumerable<AnnouncementListItemDto?> cachedValues = await _cache.GetBatchAsync<AnnouncementListItemDto>(keys);
 
-        RedisValue[] cachedValues = await Task.WhenAll(readTasks);
         List<AnnouncementListItemDto> cards = new();
         List<Guid> missingIds = new();
 
+        var cachedValuesList = cachedValues.ToList();
         for (int i = 0; i < announcementIds.Length; i++)
         {
-            if (cachedValues[i].HasValue)
-            {
-                AnnouncementListItemDto? cachedCard = JsonSerializer.Deserialize<AnnouncementListItemDto>(cachedValues[i].ToString(), _jsonOptions);
-                if (cachedCard is not null)
-                    cards.Add(cachedCard);
-            }
+            AnnouncementListItemDto? cachedCard = cachedValuesList[i];
+            if (cachedCard is not null)
+                cards.Add(cachedCard);
             else
-            {
                 missingIds.Add(announcementIds[i]);
-            }
         }
 
         if (!missingIds.Any())
@@ -360,7 +346,7 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
             u => string.IsNullOrWhiteSpace(u.Name) ? (u.Email ?? "Администратор") : u.Name!,
             StringComparer.Ordinal);
 
-        IBatch writeBatch = _cache.CreateBatch();
+        IDictionary<string, AnnouncementListItemDto> valuesToCache = new Dictionary<string, AnnouncementListItemDto>();
         foreach (Announcement announcement in missingAnnouncements)
         {
             AnnouncementListItemDto dto = new()
@@ -374,16 +360,15 @@ public class AdminAnnouncementsService : IAdminAnnouncementsService
                 AdminName = adminNames.TryGetValue(announcement.AdminId, out string? adminName) ? adminName : "Администратор"
             };
 
-            await writeBatch.StringSetAsync(
-                (RedisKey)AnnouncementCardKey(dto.Id),
-                (RedisValue)JsonSerializer.Serialize(dto, _jsonOptions),
-                TimeSpan.FromDays(AnnouncementCardTtlDays),
-                flags: CommandFlags.FireAndForget);
-
+            valuesToCache.Add(AnnouncementCardKey(dto.Id), dto);
             cards.Add(dto);
         }
 
-        writeBatch.Execute();
+        if (valuesToCache.Any())
+        {
+            await _cache.SetBatchAsync(valuesToCache, TimeSpan.FromDays(AnnouncementCardTtlDays), fireAndForget: true);
+        }
+
         return cards;
     }
 

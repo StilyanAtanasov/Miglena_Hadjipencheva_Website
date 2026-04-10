@@ -1,5 +1,3 @@
-﻿using MHAuthorWebsite.Core.Admin;
-using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
@@ -9,15 +7,18 @@ using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ProductCommentImages;
 
-namespace MHAuthorWebsite.Core;
+namespace MHAuthorWebsite.Infrastructure.Cloudinary;
 
 public class CloudinaryCommentImageService : CloudinaryImageService, ICommentImageService
 {
     private readonly IImageService _imageService;
     private readonly ILogger<CloudinaryCommentImageService> _logger;
 
-    public CloudinaryCommentImageService(IImageService imageService,
-        ICloudinaryService cloudinaryService, ILogger<CloudinaryCommentImageService> logger, ILogger<CloudinaryImageService> baseLogger)
+    public CloudinaryCommentImageService(
+        IImageService imageService,
+        ICloudinaryService cloudinaryService, 
+        ILogger<CloudinaryCommentImageService> logger, 
+        ILogger<CloudinaryImageService> baseLogger)
         : base(cloudinaryService, baseLogger)
     {
         _imageService = imageService;

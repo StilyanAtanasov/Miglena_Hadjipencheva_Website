@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Configuration.EcontApi;
 using MHAuthorWebsite.Core.Contracts;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Econt;
 
-namespace MHAuthorWebsite.Core;
+namespace MHAuthorWebsite.Infrastructure.Econt;
 
 public class EcontService : IEcontService
 {
@@ -36,7 +36,6 @@ public class EcontService : IEcontService
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
         })!;
 
-
         _logger.LogInformation("Successfully updated Econt order. Status: {Status}", responseDto.Status);
         return ServiceResult<EcontOrderDto>.Ok(responseDto);
     }
@@ -52,7 +51,6 @@ public class EcontService : IEcontService
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
         })!;
-
 
         _logger.LogInformation("Successfully retrieved tracking info for order.");
         return ServiceResult<EcontShipmentStatusDto>.Ok(responseDto);

@@ -6,7 +6,6 @@ using MHAuthorWebsite.Web.Utils.Extensions;
 using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 using static MHAuthorWebsite.Web.Utils.Mappers.ImageMapper;
 

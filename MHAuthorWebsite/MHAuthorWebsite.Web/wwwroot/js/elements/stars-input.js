@@ -9,7 +9,7 @@ document.addEventListener(`DOMContentLoaded`, () => {
       icon.addEventListener(`mouseover`, () => {
         icons.forEach((ic, j) => {
           ic.classList.toggle(`fa-solid`, j <= i);
-          ic.classList.toggle(`fa-regular`, j > i);
+          ic.classList.toggle(`fa-solid`, j > i);
         });
       });
 
@@ -17,7 +17,7 @@ document.addEventListener(`DOMContentLoaded`, () => {
         input.value = icon.dataset.index;
         icons.forEach((ic, j) => {
           ic.classList.toggle(`fa-solid`, j <= i);
-          ic.classList.toggle(`fa-regular`, j > i);
+          ic.classList.toggle(`fa-solid`, j > i);
         });
       });
 
@@ -25,7 +25,7 @@ document.addEventListener(`DOMContentLoaded`, () => {
         const val = parseInt(input.value) || 0;
         icons.forEach((ic, j) => {
           ic.classList.toggle(`fa-solid`, j < val);
-          ic.classList.toggle(`fa-regular`, j >= val);
+          ic.classList.toggle(`fa-solid`, j >= val);
         });
       });
     });

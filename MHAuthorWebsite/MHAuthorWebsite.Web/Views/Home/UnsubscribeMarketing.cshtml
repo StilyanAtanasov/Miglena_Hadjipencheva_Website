@@ -11,12 +11,12 @@
 <section class="page-wrapper unsubscribe-page flex-column center">
 	<article class="unsubscribe-card flex-column">
 		<div class="unsubscribe-icon @(Model.IsSuccess ? "success" : "error")">
-			<i class="fa-regular @(Model.IsSuccess ? "fa-circle-check" : "fa-circle-xmark")"></i>
+			<i class="fa-solid @(Model.IsSuccess ? "fa-circle-check" : "fa-circle-xmark")"></i>
 		</div>
 		<h1 class="title-small">@Model.Title</h1>
 		<p>@Model.Message</p>
 		<a class="btn submit-btn link flex-row" asp-controller="Home" asp-action="Index">
-			<i class="fa-regular fa-house"></i>
+			<i class="fa-solid fa-house"></i>
 			Към начална страница
 		</a>
 	</article>

@@ -1,5 +1,4 @@
 using MHAuthorWebsite.Data.Shared;
-using NUnit.Framework;
 
 namespace MHAuthorWebsite.Tests.Services;
 

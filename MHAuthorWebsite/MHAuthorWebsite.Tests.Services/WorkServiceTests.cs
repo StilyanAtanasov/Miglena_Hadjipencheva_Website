@@ -3,13 +3,11 @@ using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Work;
 using MHAuthorWebsite.Core.Models;
-using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Data;
 using MHAuthorWebsite.Data.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using StackExchange.Redis;
 
 namespace MHAuthorWebsite.Tests.Services;
 
@@ -34,16 +32,13 @@ public class WorkServiceTests
 
         _cacheServiceMock = new Mock<IFastCacheService>();
 
-        // Set up CreateBatch so GetWorkCardsBatchAsync doesn't NullRef
-        var batchMock = new Mock<IBatch>();
-        batchMock
-            .Setup(b => b.StringGetAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
-            .ReturnsAsync(RedisValue.Null); // Nothing cached — forces DB lookup
-        batchMock.Setup(b => b.Execute());
-        batchMock
-            .Setup(b => b.StringSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<TimeSpan?>(), It.IsAny<bool>(), It.IsAny<When>(), It.IsAny<CommandFlags>()))
-            .ReturnsAsync(true);
-        _cacheServiceMock.Setup(c => c.CreateBatch()).Returns(batchMock.Object);
+        _cacheServiceMock
+            .Setup(c => c.GetBatchAsync<WorkCardDto>(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync((IEnumerable<string> keys) => keys.Select(_ => (WorkCardDto?)null).ToList());
+
+        _cacheServiceMock
+            .Setup(c => c.SetBatchAsync<WorkCardDto>(It.IsAny<IDictionary<string, WorkCardDto>>(), It.IsAny<TimeSpan>(), It.IsAny<bool>()))
+            .Returns(Task.CompletedTask);
 
         _workService = new WorkService(new ApplicationRepository(_dbContext), _cacheServiceMock.Object, _loggerMock.Object);
 

@@ -100,7 +100,7 @@
 				</section>
 			}
 
-			<p id="no-products-message" class="flex-row @(Model.Items.Any(i => i.IsAvailable) ? "hidden" : "")"> <i class="fa-regular fa-box-open"></i> Нямате добавени продукти в количката.</p>
+			<p id="no-products-message" class="flex-row @(Model.Items.Any(i => i.IsAvailable) ? "hidden" : "")"> <i class="fa-solid fa-box-open"></i> Нямате добавени продукти в количката.</p>
 
 			@if (Model.Items.Any(i => i is { IsAvailable: false, IsDiscontinued: false }))
 			{
