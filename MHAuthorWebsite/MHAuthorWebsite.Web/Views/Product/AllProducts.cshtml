@@ -20,6 +20,7 @@
 @{
 	ViewData["Title"] = "Магазин";
 	ViewData["MetaDescription"] = "Разгледайте наличните книги на Миглена Хаджипенчева и поръчайте онлайн!";
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Store;
 
 	int productsCount = ViewBag.ProductsCount ?? Model.Count;
 

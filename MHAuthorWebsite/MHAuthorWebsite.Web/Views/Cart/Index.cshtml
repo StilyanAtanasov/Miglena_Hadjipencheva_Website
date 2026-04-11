@@ -1,11 +1,14 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Cart
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
+@using MHAuthorWebsite.GCommon
 @model CartViewModel
 
 @{
 	ViewData["Title"] = "Моята количка";
 	ViewData["MetaDescription"] = "Прегледай всички книги във вашата количка";
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Cart;
 
 	decimal eurLeftUntilFreeDelivery = FreeDeliveryThresholdEur - Model.Total;
 }
@@ -173,7 +176,7 @@
 					</div>
 				</div>
 				<a type="submit" class="btn btn-order link order flex-row" asp-controller="Order" asp-action="Index">
-					<i class="fa-solid fa-box-taped"></i> Завърши поръчка
+					<i class="fa-solid fa-truck-fast"></i> Завърши поръчка
 				</a>
 			</aside>
 		}

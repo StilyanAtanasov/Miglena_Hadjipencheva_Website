@@ -1,11 +1,14 @@
 ﻿@using MHAuthorWebsite.Core.Dtos.Work
+@using MHAuthorWebsite.GCommon
 @using MHAuthorWebsite.Web.ViewModels.Shared
 @using MHAuthorWebsite.Web.ViewModels.Shared.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject Microsoft.Extensions.Options.IOptions<MHAuthorWebsite.Core.Configuration.Security.RecaptchaSettings> RecaptchaOptions
 @model ICollection<WorkCardDto>
 
 @{
     ViewData["Title"] = "Творчество";
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Works;
     bool isAdmin = User.IsInRole("Admin");
     
     int worksCount = ViewBag.WorksCount ?? Model.Count;

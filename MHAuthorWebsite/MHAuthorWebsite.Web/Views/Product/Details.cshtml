@@ -5,6 +5,7 @@
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Order
 @using MHAuthorWebsite.Core.Models.Enums
+@using MHAuthorWebsite.GCommon
 
 @model ProductDetailsViewModel
 
@@ -13,6 +14,7 @@
 	string metaBookDescription = Model.Description.Length > 70 ? $"{Model.Description.Substring(0, 70)}..." : Model.Description;
 	ViewData["MetaDescription"] = $"Книга {Model.Name}. {metaBookDescription}";
 	ViewData["RequireTimeZoneManager"] = true;
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Store;
 
 	bool isQuantityLimited = Model.Quantity < MaxItemQuantityPerOrder;
 }
@@ -132,7 +134,7 @@
 					</span>
 					</button>
 					<button data-role="add-to-cart" data-item-id="@Model.Id" type="button" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled") aria-label="Добави в количката">
-						<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
+						<i class="fa-solid fa-cart-plus"></i> Поръчай
 					</button>
 				</div>
 		</section>

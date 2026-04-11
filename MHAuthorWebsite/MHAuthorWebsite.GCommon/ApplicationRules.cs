@@ -122,6 +122,16 @@ public static class ApplicationRules
             public const string ManageUsers = nameof(ManageUsers);
             public const string LegalDocuments = nameof(LegalDocuments);
         }
+
+        public static class MainNavigation
+        {
+            public const string Home = nameof(Home);
+            public const string Store = nameof(Store);
+            public const string Works = nameof(Works);
+            public const string Contacts = nameof(Contacts);
+            public const string Liked = nameof(Liked);
+            public const string Cart = nameof(Cart);
+        }
     }
 
     public static class Pagination

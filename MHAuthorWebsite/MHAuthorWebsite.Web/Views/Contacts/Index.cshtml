@@ -1,10 +1,13 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Contacts;
+@using MHAuthorWebsite.GCommon
 @inject Microsoft.Extensions.Options.IOptions<MHAuthorWebsite.Core.Configuration.Security.RecaptchaSettings> RecaptchaOptions
 @model ContactFormViewModel
 
 @{
 	ViewData["Title"] = "Контакти";
 	ViewData["MetaDescription"] = "Свържете се с Миглена Хаджипенчева и екипа на поддръжката!";
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Contacts;
+
 	string recaptchaV3SiteKey = RecaptchaOptions.Value.V3SiteKey;
 	string recaptchaV2SiteKey = RecaptchaOptions.Value.V2SiteKey;
 }

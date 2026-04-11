@@ -7,7 +7,7 @@ export function calcFreeDelivery(orderTotalEur, freeDeliveryTresholdEur) {
   const isEligible = fillPercent >= 100;
 
   if (isEligible) message.innerHTML = `<i class="fa-solid fa-clipboard-check heading"></i> БЕЗПЛАТНА ДОСТАВКА`;
-  else message.innerHTML = `<i class="fa-solid fa-clipboard-list-check heading"></i> Още ${(freeDeliveryTresholdEur - orderTotalEur).toFixed(2)} евро до безплатна доставка`;
+  else message.innerHTML = `<i class="fa-solid fa-clipboard-list heading"></i> Още ${(freeDeliveryTresholdEur - orderTotalEur).toFixed(2)} евро до безплатна доставка`;
 
   message.classList.toggle(`success`, isEligible);
   freeDeliveryBarFill.style.width = `${Math.min(fillPercent, 100)}%`;
