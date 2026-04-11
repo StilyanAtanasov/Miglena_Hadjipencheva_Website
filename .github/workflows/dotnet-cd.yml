@@ -34,3 +34,6 @@ jobs:
         password: ${{ secrets.PROD_FTP_PASSWORD }}
         local-dir: ./publish/
         server-dir: /
+        dangerous-clean-slate: false
+        exclude: |
+          **/app_offline.htm
