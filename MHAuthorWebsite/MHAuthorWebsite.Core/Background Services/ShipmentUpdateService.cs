@@ -31,6 +31,8 @@ public class ShipmentUpdateService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        await Task.Delay(TimeSpan.FromSeconds(new Random().Next(1, 15)), cancellationToken);
+
         while (!cancellationToken.IsCancellationRequested)
         {
             try
@@ -138,9 +140,9 @@ public class ShipmentUpdateService : BackgroundService
 
                         await repository.AddAsync(notification);
                     }
-
-                    await repository.SaveChangesAsync();
                 }
+
+                await repository.SaveChangesAsync();
 
                 _logger.LogInformation("Shipment status was updated successfully to all orders!");
             }

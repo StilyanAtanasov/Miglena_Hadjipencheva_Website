@@ -25,6 +25,8 @@ public class ScheduledEmailNotificationSenderService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        await Task.Delay(TimeSpan.FromSeconds(new Random().Next(20, 30)), cancellationToken);
+
         while (!cancellationToken.IsCancellationRequested)
         {
             try
