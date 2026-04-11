@@ -31,4 +31,4 @@ jobs:
         username: ${{ secrets.STAGING_FTP_USERNAME }}
         password: ${{ secrets.STAGING_FTP_PASSWORD }}
         local-dir: ./publish/
-        server-dir: /site/wwwroot/
+        server-dir: /
