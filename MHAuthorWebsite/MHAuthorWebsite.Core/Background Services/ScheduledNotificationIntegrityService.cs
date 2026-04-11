@@ -23,6 +23,8 @@ public class ScheduledNotificationIntegrityService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        await Task.Delay(TimeSpan.FromSeconds(new Random().Next(35, 45)), cancellationToken);
+
         while (!cancellationToken.IsCancellationRequested)
         {
             try
