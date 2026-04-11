@@ -36,11 +36,12 @@ jobs:
         password: ${{ secrets.STAGING_FTP_PASSWORD }}
         local-dir: ./publish/
         server-dir: /
-        only: |
-          app_offline.htm
+        exclude: |
+          **
+          !app_offline.htm
 
     - name: Wait for process to exit
-      run: sleep 5
+      run: sleep 10
 
     - name: Deploy via FTP (Staging)
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
