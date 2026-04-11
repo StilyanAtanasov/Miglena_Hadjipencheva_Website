@@ -100,6 +100,12 @@ nav a:hover {
   opacity: 1;
 }
 
+.icon-link-active:hover i,
+.icon-link-active.current-page i {
+  color: var(--color-secondary);
+  -webkit-text-stroke: transparent;
+}
+
 .link.active.current-page::before,
 nav.active.current-page::before,
 a.active.current-page::before,

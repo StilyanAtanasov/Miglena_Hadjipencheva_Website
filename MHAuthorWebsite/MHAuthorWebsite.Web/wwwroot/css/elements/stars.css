@@ -10,6 +10,11 @@
   flex-shrink: 0;
 }
 
+.fa-star.regular {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--color-orange);
+}
+
 .stars .stars-row {
   position: absolute;
   inset: 0;
