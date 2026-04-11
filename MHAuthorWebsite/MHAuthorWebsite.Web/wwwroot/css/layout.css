@@ -74,25 +74,38 @@ nav a:hover {
   position: relative;
 }
 
-/* Иконата */
 .icon-link-active i {
   width: 2rem;
   margin: 0 1.5rem 0 0.5rem;
 }
 
-/* Текстът */
 .icon-link-active .link-text {
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
-/* Ефектът при Hover */
-.icon-link-active:hover {
+.icon-link-active:hover,
+.icon-link-active.current-page {
   width: 13rem;
+  color: var(--color-secondary);
 }
 
-.icon-link-active:hover .link-text {
+.icon-link-active.long:hover,
+.icon-link-active.long.current-page {
+  width: 16rem;
+}
+
+.icon-link-active:hover .link-text,
+.icon-link-active.current-page .link-text {
   opacity: 1;
+}
+
+.link.active.current-page::before,
+nav.active.current-page::before,
+a.active.current-page::before,
+button.active.current-page::before {
+  visibility: visible;
+  transform: scaleX(1);
 }
 
 .icon-link-container {

@@ -1,7 +1,10 @@
+@using MHAuthorWebsite.GCommon
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MHAuthorWebsite.Core.Dtos.Work.WorkDetailsDto
 
 @{
     ViewData["Title"] = Model.Title;
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Works;
 }
 
 @section Styles {

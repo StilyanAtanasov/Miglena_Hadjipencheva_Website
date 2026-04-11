@@ -1,9 +1,11 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
+@using MHAuthorWebsite.GCommon
 @model ICollection<LikedProductViewModel>
 
 @{
 	ViewBag.Title = "Любими продукти";
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Liked;
 }
 
 @section Styles {
@@ -39,7 +41,7 @@
 				<input type="hidden" name="productId" value="@product.Id" />
 				<input type="hidden" name="quantity" value="1" />
 				<button data-role="add-to-cart" data-item-id="@product.Id" type="button" class="btn order flex-row" @(product.IsInStock ? "" : "disabled")>
-					<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
+					<i class="fa-solid fa-cart-plus"></i> Поръчай
 				</button>
 				<button data-role="remove-item" data-item-id="@product.Id" class="btn remove btn-none">
 					<i class="fa-solid fa-heart-circle-minus"></i>
