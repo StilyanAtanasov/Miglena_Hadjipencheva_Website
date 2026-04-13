@@ -235,6 +235,10 @@ img.icon.small {
   margin: 0;
 }
 
+.text-success {
+  color: var(--color-dark-green);
+}
+
 .text-error {
   color: var(--color-error);
 }

@@ -9,11 +9,15 @@
 	<div class="flex-column page-content">
 		<partial name="~/Areas/Identity/Pages/Account/Manage/_ManageNav.cshtml" />
 
-		@await RenderSectionAsync("Heading", required: false)
-		@if (!IsSectionDefined("Heading"))
+		@if (IsSectionDefined("Heading"))
+		{
+			@await RenderSectionAsync("Heading")
+		}
+		else
 		{
 			<h3 class="title-small">@ViewData["Heading"]</h3>
 		}
+
 		@RenderBody()
 	</div>
 </div>

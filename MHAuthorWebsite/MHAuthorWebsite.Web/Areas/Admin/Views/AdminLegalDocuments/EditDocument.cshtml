@@ -15,7 +15,7 @@
 }
 
 <section class="page-wrapper legal-document-editor-page flex-column">
-	<a asp-action="Documents" asp-controller="AdminLegalDocuments" class="link active flex-row back-btn">
+	<a asp-action="Documents" asp-controller="AdminLegalDocuments" class="link flex-row back-btn">
 		<i class="fa-solid fa-arrow-left"></i>
 		Назад
 	</a>
@@ -44,12 +44,10 @@
 								<span class="node-order-number">@Model.Nodes.ElementAt(i).Number</span>
 							</div>
 							<div class="form-input-box flex-column node-title-wrap">
-								<label class="form-label">Заглавие на раздел</label>
 								<input class="form-input node-title-input" asp-for="@Model.Nodes.ElementAt(i).Title" />
 							</div>
-							<button type="button" class="btn btn-danger link flex-row remove-node-btn">
+							<button type="button" class="btn btn-none link flex-row remove-node-btn">
 								<i class="fa-solid fa-trash"></i>
-								Изтрий
 							</button>
 						</div>
 

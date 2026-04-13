@@ -12,8 +12,16 @@
 	<link rel="stylesheet" href="~/css/profile/2fa.css" asp-append-version="true" />
 }
 
+@section Heading {
+	<a class="back-btn" asp-page="./TwoFactorAuthentication">
+		<i class="fa-solid fa-arrow-left"></i> Назад
+	</a>
+	<h3 class="title-small">@ViewData["Heading"]</h3>
+}
+
 <section class="content-body">
 	<p>За да настроите автентикатора, следвайте стъпките:</p>
+
 	<ol class="flex-column">
 		<li>
 			<p>
@@ -54,7 +62,7 @@
 	}
 	else
 	{
-		<i class="fa-solid fa-shield-plus background-icon"></i>
+		<i class="fa-solid fa-square-plus background-icon"></i>
 	}
 </section>
 

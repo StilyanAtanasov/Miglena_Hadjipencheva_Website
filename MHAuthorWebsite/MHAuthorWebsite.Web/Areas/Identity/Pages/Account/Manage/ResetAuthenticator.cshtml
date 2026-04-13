@@ -9,6 +9,13 @@
 	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
 }
 
+@section Heading {
+	<a class="back-btn" asp-page="./TwoFactorAuthentication">
+		<i class="fa-solid fa-arrow-left"></i> Назад
+	</a>
+	<h3 class="title-small">@ViewData["Heading"]</h3>
+}
+
 <section class="content-body flex-column">
 	<article>
 		<p>

@@ -17,17 +17,19 @@
 <section class="content-body flex-column">
 	<input type="hidden" id="show-legal-prompt" value="@(Model.ShowPrompt ? "1" : "0")" />
 	<section class="email-preferences-box flex-column">
-		<h3 class="subheading">Необходимо е потвърждение</h3>
-		<p class="email-preferences-text">
-			За да продължите да използвате сайта, трябва да приемете последните версии на правните документи.
-		</p>
-
 		@if (!Model.PendingDocuments.Any())
 		{
-			<p class="email-preferences-text">Нямате чакащи правни документи за приемане.</p>
+			<h3 class="subheading flex-row text-success">
+				<i class="fa-solid fa-file-circle-check"></i> 
+				Нямате чакащи правни документи за приемане.
+			</h3>
 		}
 		else
 		{
+			<h3 class="subheading">Необходимо е потвърждение</h3>
+			<p class="email-preferences-text">
+				За да продължите да използвате сайта, трябва да приемете последните версии на правните документи.
+			</p>
 			<ul class="flex-column" style="margin-bottom: 2rem;">
 				@foreach (var doc in Model.PendingDocuments.OrderBy(d => (int)d.DocumentType))
 				{
@@ -59,6 +61,8 @@
 				</button>
 			</form>
 		}
+		
+		<i class="fa-solid fa-file-signature background-icon"></i>
 	</section>
 </section>
 

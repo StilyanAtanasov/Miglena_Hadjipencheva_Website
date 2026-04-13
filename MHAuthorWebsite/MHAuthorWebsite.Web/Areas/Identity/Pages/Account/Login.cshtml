@@ -1,6 +1,8 @@
 ﻿@page
 @using MHAuthorWebsite.Web.Utils.Mappers
 @using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model LoginModel
 
 @{
@@ -14,11 +16,11 @@
 }
 
 <div class="page-wrapper flex-column">
-	<section class="modal flex-column">
+	<section class="modal large flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 		<form id="account" method="post" class="input-form flex-column">
 			<div class="form-error" role="alert">
-				@foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+				@foreach (ModelError error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
 				{
 					@Html.Raw(error.ErrorMessage)
 				}
@@ -68,7 +70,7 @@
 							? path
 							: "";
 
-							<button type="submit" class="btn submit-btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Влез в системата с @provider.DisplayName акаунт">
+							<button type="submit" class="btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Влез в системата с @provider.DisplayName акаунт">
 								@if (!string.IsNullOrEmpty(iconPath))
 								{
 									<img src="@Url.Content(iconPath)" alt="" class="icon" />
