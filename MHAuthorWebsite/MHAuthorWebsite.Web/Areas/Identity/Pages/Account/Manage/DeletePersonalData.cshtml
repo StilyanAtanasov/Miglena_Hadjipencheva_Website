@@ -13,6 +13,13 @@
 	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
 }
 
+@section Heading {
+	<a class="back-btn" asp-page="./PersonalData">
+		<i class="fa-solid fa-arrow-left"></i> Назад
+	</a>
+	<h3 class="title-small">@ViewData["Heading"]</h3>
+}
+
 <section class="content-body flex-column">
 	<p>
 		Вашият акаунт съдържа лични данни, които сте ни предоставили!
@@ -42,12 +49,12 @@
 			}
 
 			<button class="btn flex-row" type="submit">
-				<i class="fa-solid fa-circle-user-circle-minus"></i>
+				<i class="fa-solid fa-user-xmark"></i>
 				Изтрий данните и затвори акаунта ми
 			</button>
 		</form>
 
-		<i class="fa-solid fa-circle-user-circle-minus background-icon"></i>
+		<i class="fa-solid fa-user-xmark background-icon"></i>
 	</div>
 </section>
 

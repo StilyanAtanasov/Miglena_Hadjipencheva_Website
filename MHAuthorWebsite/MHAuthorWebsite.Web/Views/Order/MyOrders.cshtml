@@ -15,10 +15,6 @@
 }
 
 <section class="content-body flex-column">
-	<a class="back-btn" asp-area="Identity" asp-page="/Account/Manage/Index">
-		<i class="fa-solid fa-arrow-left"></i> Назад към профила
-	</a>
-
 	@if (Model.Any())
 	{
 		@await Html.PartialAsync("_MyOrdersCards", Model)

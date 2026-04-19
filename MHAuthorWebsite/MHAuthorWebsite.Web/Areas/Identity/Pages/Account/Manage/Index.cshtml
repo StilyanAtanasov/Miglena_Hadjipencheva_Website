@@ -17,8 +17,8 @@
 		
 		<div class="form-input-box flex-column">
 			<label class="form-label" asp-for="Input.Email">Имейл</label>
-			<div class="flex-row" style="width: 100%;">
-				<input class="form-input" asp-for="Input.Email" id="email-field" placeholder="Напишете вашият имейл..." disabled />
+			<div class="flex-row">
+				<input class="form-input" asp-for="Input.Email" id="email-field" placeholder="Напишете вашият имейл..." readonly />
 				<button type="button" class="btn btn-secondary" id="edit-email-btn" title="Редактирай">
 					<i class="fa-solid fa-pen-to-square"></i>
 				</button>
@@ -28,7 +28,7 @@
 
 		<div class="form-input-box flex-column">
 			<label class="form-label" asp-for="Input.PhoneNumber">Телефонен номер</label>
-			<input class="form-input" asp-for="Input.PhoneNumber" placeholder="Напишете вашият телефонен номер..." />
+			<input class="form-input short" asp-for="Input.PhoneNumber" placeholder="Напишете вашият телефонен номер..." />
 			<span class="input-error" asp-validation-for="Input.PhoneNumber"></span>
 		</div>
 		<button id="update-profile-button" type="submit" class="btn submit-btn flex-row">
@@ -41,13 +41,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        document.getElementById('edit-email-btn').addEventListener('click', function() {
-            const emailField = document.getElementById('email-field');
-            emailField.disabled = !emailField.disabled;
-            if (!emailField.disabled) {
-                emailField.focus();
-            }
-        });
-    </script>
+	<script src="~/js/profile/my-profile.js" asp-append-version="true"></script>
 }

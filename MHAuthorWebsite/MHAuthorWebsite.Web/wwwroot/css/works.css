@@ -11,10 +11,6 @@
   margin: 0 auto;
 }
 
-.works-hero-content .works-back-btn {
-  margin-bottom: 1.5rem;
-}
-
 .works-hero h1 {
   margin-bottom: 1.25rem;
 }
@@ -69,7 +65,7 @@
   background: #fff;
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0.625rem 1.875rem var(--color-secondary-faded);
   transition:
     transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
     box-shadow 0.4s ease;
@@ -82,7 +78,7 @@
 
 .work-card:hover {
   transform: translateY(-0.5rem);
-  box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1.25rem 2.5rem var(--color-secondary-slightly-faded);
   border-color: var(--color-secondary-light);
 }
 

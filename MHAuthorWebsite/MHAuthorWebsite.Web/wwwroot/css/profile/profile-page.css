@@ -138,6 +138,11 @@
   letter-spacing: 0.2rem;
 }
 
+.form-label,
+.input-form .btn {
+  font-size: 2rem;
+}
+
 @media (max-width: 600px) {
   html {
     padding-top: 32rem;

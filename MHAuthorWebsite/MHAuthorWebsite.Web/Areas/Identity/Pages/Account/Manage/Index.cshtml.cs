@@ -68,6 +68,8 @@ public class IndexModel : PageModel
 
         [Phone]
         [Display(Name = "Телефонен номер")]
+        // This Regex covers international formats (e.g., +359 888 123 456 or 0888123456)
+        [RegularExpression(@"^(\+?\d{1,3}[- ]?)?\d{10}$", ErrorMessage = "Невалиден телефонен номер!")]
         public string PhoneNumber { get; set; }
     }
 
@@ -88,11 +90,8 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnGetAsync()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-        }
+        ApplicationUser user = await _userManager.GetUserAsync(User);
+        if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
         await LoadAsync(user);
         return Page();
@@ -100,11 +99,8 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-        }
+        ApplicationUser user = await _userManager.GetUserAsync(User);
+        if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
         if (!ModelState.IsValid)
         {
@@ -112,27 +108,27 @@ public class IndexModel : PageModel
             return Page();
         }
 
-        var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+        string phoneNumber = await _userManager.GetPhoneNumberAsync(user);
         if (Input.PhoneNumber != phoneNumber)
         {
-            var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+            IdentityResult setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
             if (!setPhoneResult.Succeeded)
             {
-                StatusMessage = "Unexpected error when trying to set phone number.";
+                StatusMessage = "Грешка при задаване на телефонен номер.";
                 return RedirectToPage();
             }
         }
 
-        var email = await _userManager.GetEmailAsync(user);
-        if (Input.Email != email)
+        string email = await _userManager.GetEmailAsync(user);
+        if (Input.Email != email && email is not null)
         {
-            var userId = await _userManager.GetUserIdAsync(user);
-            var code = await _userManager.GenerateChangeEmailTokenAsync(user, Input.Email);
+            string userId = await _userManager.GetUserIdAsync(user);
+            string code = await _userManager.GenerateChangeEmailTokenAsync(user, Input.Email);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            var callbackUrl = Url.Page(
+            string callbackUrl = Url.Page(
                 "/Account/ConfirmEmailChange",
                 pageHandler: null,
-                values: new { area = "Identity", userId = userId, email = Input.Email, code = code },
+                values: new { area = "Identity", userId, email = Input.Email, code },
                 protocol: Request.Scheme);
 
             user.PendingEmail = Input.Email;
@@ -150,7 +146,7 @@ public class IndexModel : PageModel
                 _emailSettings.NotificationsEmailUser,
                 Input.Email,
                 "Потвърдете вашия нов имейл адрес",
-                $"Моля потвърдете вашия нов имейл адрес като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>кликнете тук</a>.",
+                $"Моля потвърдете вашия нов имейл адрес като <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>кликнете тук</a>.",
                 true);
 
             StatusMessage = "На стария и на новия ви имейл адрес са изпратени съобщения. Моля, потвърдете промяната чрез линка в новия ви имейл.";

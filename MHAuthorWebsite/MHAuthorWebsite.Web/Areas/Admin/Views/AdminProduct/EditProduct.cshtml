@@ -1,4 +1,4 @@
-﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Product
+@using MHAuthorWebsite.Web.ViewModels.Admin.Product
 @using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Product
@@ -15,13 +15,15 @@
 	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/image-preview.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
-	<section class="modal-invisible large flex-column">
+	<section class="modal-invisible larger flex-column">
 		<a class="back-btn" asp-area="Admin" asp-controller="AdminProduct" asp-action="ProductsList">
 			<i class="fa-solid fa-arrow-left"></i> Назад към продуктите
 		</a>
@@ -70,8 +72,8 @@
 				{
 					<div class="image-container @(image.IsTitle ? "title-img-container" : "")">
 						<img src="@image.Url" alt="Product Image" class="@(image.IsTitle ? "title-img" : "")" data-id="@image.Id" data-is-title="@image.IsTitle" />
-						<button type="button" class="removeBtn"><i class="fa-solid fa-image-circle-xmark"></i></button>
-						<button type="button" class="makeTitleBtn"><i class="fa-solid fa-star-sharp"></i></button>
+						<button type="button" class="removeBtn"><i class="fa-solid fa-circle-xmark"></i></button>
+						<button type="button" class="makeTitleBtn"><i class="fa-solid fa-flag"></i></button>
 					</div>
 				}
 			</div>
@@ -93,7 +95,10 @@
 				<partial name="_DynamicAttributesPartial" model="Model.Attributes" />
 			</div>
 
-			<button data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">Запази</button>
+			<button data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">
+				<i class="fa-solid fa-floppy-disk"></i>
+				Запази
+			</button>
 		</form>
 	</section>
 </div>
@@ -103,6 +108,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+	<script type="module" src="~/js/elements/select.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/editor.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/admin/update-product.js" asp-append-version="true"></script>
 }

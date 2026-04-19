@@ -44,12 +44,12 @@
 					if (Model.IsMachineRemembered)
 					{
 						<form method="post">
-							<button type="submit" class="btn link flex-row"><i class="fa-solid fa-broom-wide"></i> Забрави този браузър</button>
+							<button type="submit" class="btn link flex-row"><i class="fa-solid fa-broom"></i> Забрави този браузър</button>
 						</form>
 					}
 
 					<div class="flex-row">
-						<a asp-page="./Disable2fa" class="btn link flex-row"><i class="fa-solid fa-shield-minus"></i> Деактивирай</a>
+						<a asp-page="./Disable2fa" class="btn link flex-row"><i class="fa-solid fa-square-minus"></i> Деактивирай</a>
 						<a asp-page="./GenerateRecoveryCodes" class="btn link flex-row"><i class="fa-solid fa-rotate-right"></i> Нулирай кодовете за възстановяване</a>
 					</div>
 				}
@@ -60,7 +60,7 @@
 				<div class="flex-row">
 					@if (!Model.HasAuthenticator)
 					{
-						<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn link flex-row"> <i class="fa-solid fa-shield-plus"></i> Добави автентикатор</a>
+						<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn link flex-row"> <i class="fa-solid fa-square-plus"></i> Добави автентикатор</a>
 					}
 					else
 					{
@@ -80,5 +80,5 @@
 		}
 	}
 
-	<i class="fa-solid fa-lock-keyhole background-icon"></i>
+	<i class="fa-solid fa-user-shield background-icon"></i>
 </section>

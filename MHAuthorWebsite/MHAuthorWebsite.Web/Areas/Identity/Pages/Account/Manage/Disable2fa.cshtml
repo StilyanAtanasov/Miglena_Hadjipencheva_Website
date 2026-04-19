@@ -9,6 +9,13 @@
 	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
 }
 
+@section Heading {
+	<a class="back-btn" asp-page="./TwoFactorAuthentication">
+		<i class="fa-solid fa-arrow-left"></i> Назад
+	</a>
+	<h3 class="title-small">@ViewData["Heading"]</h3>
+}
+
 <section class="content-body flex-column">
 	<div>
 		<p>
@@ -20,9 +27,9 @@
 		</p>
 	</div>
 	<form method="post">
-		<button class="btn flex-row" type="submit"><i class="fa-solid fa-shield-minus"></i> Деактивирай</button>
+		<button class="btn flex-row" type="submit"><i class="fa-solid fa-square-minus"></i> Деактивирай</button>
 	</form>
 
-	<i class="fa-solid fa-shield-minus background-icon"></i>
+	<i class="fa-solid fa-square-minus background-icon"></i>
 </section>
 

@@ -46,7 +46,7 @@
 
 .faq-item summary::after {
   content: "\f107";
-  font-family: "Font Awesome 7 Pro";
+  font-family: "Font Awesome 7 Free";
   font-weight: 900;
   font-size: 2rem;
   transform: rotate(0deg);

@@ -128,6 +128,8 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
 
             }
             if (result.IsLockedOut) return RedirectToPage("./Lockout");
+            if (result.RequiresTwoFactor)
+                return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = false });
             if (result.IsNotAllowed && appUser is { EmailConfirmed: false })
             {
                 string resendUrl = Url.Page(

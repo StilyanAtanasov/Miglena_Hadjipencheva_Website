@@ -57,11 +57,11 @@
 							<form asp-area="Admin" asp-controller="AdminProduct" asp-action="TogglePublicity" asp-route-productId="@product.Id" method="post">
 								@if (product.IsPublic)
 								{
-									<button data-trigger="load-unlimited" type="submit" class="btn btn-blue flex-row"> <i class="fa-solid fa-lock-keyhole"></i> Скрий</button>
+									<button data-trigger="load-unlimited" type="submit" class="btn btn-blue flex-row"> <i class="fa-solid fa-eye-low-vision"></i> Скрий</button>
 								}
 								else
 								{
-									<button data-trigger="load-unlimited" type="submit" class="btn btn-blue flex-row"> <i class="fa-solid fa-lock-keyhole-open"></i> Публикувай</button>
+									<button data-trigger="load-unlimited" type="submit" class="btn btn-blue flex-row"> <i class="fa-solid fa-eye"></i> Публикувай</button>
 								}
 							</form>
 
@@ -71,7 +71,7 @@
 								<form asp-area="Admin" asp-controller="AdminProduct" asp-action="EndDiscount" method="post">
 									<input type="hidden" name="productId" value="@product.Id" />
 									<button type="submit" class="btn link btn-purple flex-row">
-										<i class="fa-solid fa-calendar-circle-minus"></i>
+										<i class="fa-solid fa-calendar-minus"></i>
 										Премахни промоция
 									</button>
 								</form>
@@ -79,7 +79,7 @@
 							else
 							{
 								<a data-trigger="load-unlimited" asp-area="Admin" asp-controller="AdminProduct" asp-action="AddDiscount" asp-route-productId="@product.Id" class="btn link btn-purple flex-row">
-									<i class="fa-solid fa-badge-percent"></i>
+									<i class="fa-solid fa-percent"></i>
 									Нова промоция
 								</a>
 							}

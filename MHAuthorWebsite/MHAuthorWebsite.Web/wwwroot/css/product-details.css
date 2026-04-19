@@ -4,6 +4,7 @@
 
 .page-wrapper > .back-btn {
   margin-bottom: 2rem;
+  margin-left: -2rem;
 }
 
 .hero-info {
@@ -66,6 +67,7 @@
   border: none;
   background-color: var(--color-secondary-lighter);
   gap: 2rem;
+  box-shadow: 0.7rem 0.7rem 2.5rem var(--color-secondary-faded);
 }
 
 .order-info .price {

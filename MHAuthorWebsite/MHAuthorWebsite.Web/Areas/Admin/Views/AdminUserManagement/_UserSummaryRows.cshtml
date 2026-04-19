@@ -18,7 +18,7 @@
 			}
 			@if (u.IsActive)
 			{
-				<span class="badge active-badge flex-row" title="Активен потребител през последните @UsersActivityForPeriod дни!"><i class="fa-solid fa-person-running-fast"></i> Активен</span>
+				<span class="badge active-badge flex-row" title="Активен потребител през последните @UsersActivityForPeriod дни!"><i class="fa-solid fa-person-running"></i> Активен</span>
 			}
 			@if (u.IsBanned)
 			{
@@ -41,12 +41,15 @@
 					}
 					else
 					{
-						<i class="fa-solid fa-user-unlock"></i>
+						<i class="fa-solid fa-unlock"></i>
 					}
 					@(!u.IsBanned ? "Блокирай" : "Деблокирай")
 				</button>
 			}
-			<button class="btn btn-blue flex-row" data-action="details" data-user-id="@u.Id">Детайли</button>
+			<button class="btn btn-blue flex-row" data-action="details" data-user-id="@u.Id">
+				<i class="fa-solid fa-file-lines"></i>
+				Детайли
+			</button>
 		</td>
 	</tr>
 }

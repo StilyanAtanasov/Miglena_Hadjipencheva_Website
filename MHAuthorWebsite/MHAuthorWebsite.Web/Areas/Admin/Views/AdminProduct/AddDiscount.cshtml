@@ -12,10 +12,11 @@
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 }
 
+<!-- TODO Open this for hidden products as well and open product details page on preview -->
 <div class="page-wrapper flex-column">
 	<section class="modal-invisible large flex-column">
-		<a class="back-btn" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="@Model.ProductId">
-			<i class="fa-solid fa-arrow-left"></i> Назад към продукта
+		<a class="back-btn" asp-area="Admin" asp-controller="AdminProduct" asp-action="ProductsList" asp-route-productId="@Model.ProductId">
+			<i class="fa-solid fa-arrow-left"></i> Назад
 		</a>
 		<h1 class="title">@ViewData["Title"]</h1>
 
@@ -48,7 +49,10 @@
 				<span class="input-error" asp-validation-for="EndDate"></span>
 			</div>
 
-			<button data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">Запази</button>
+			<button data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">
+				<i class="fa-solid fa-floppy-disk"></i>
+				Запази
+			</button>
 		</form>
 	</section>
 </div>

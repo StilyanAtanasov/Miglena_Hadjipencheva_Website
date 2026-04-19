@@ -15,7 +15,7 @@
 }
 
 <div class="page-wrapper flex-column">
-	<section class="modal flex-column">
+	<section class="modal large flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 		<form class="input-form flex-column" id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
 			<div asp-validation-summary="ModelOnly" role="alert" class="form-error"></div>
@@ -62,7 +62,7 @@
 						и
 						<a class="link active" asp-controller="Home" asp-action="TermsOfService" target="_blank" rel="noopener noreferrer">Общите условия</a>.
 					</label>
-					<span class="input-error" asp-validation-for="Input.HasAcceptedLegalDocuments" style="display: block;"></span>
+					<span class="input-error block" asp-validation-for="Input.HasAcceptedLegalDocuments"></span>
 				</div>
 			</div>
 
@@ -91,7 +91,7 @@
 								? path
 								: "";
 
-							<button type="submit" class="btn submit-btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Регистрирай се в системата с @provider.DisplayName акаунт">
+							<button type="submit" class="btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Регистрирай се в системата с @provider.DisplayName акаунт">
 								@if (!string.IsNullOrEmpty(iconPath))
 								{
 									<img src="@Url.Content(iconPath)" alt="" class="icon" />

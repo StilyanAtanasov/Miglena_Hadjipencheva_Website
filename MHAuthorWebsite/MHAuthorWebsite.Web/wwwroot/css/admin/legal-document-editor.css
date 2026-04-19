@@ -1,6 +1,6 @@
 .back-btn {
   align-self: baseline;
-  margin-left: 5rem;
+  margin-left: 1.5rem;
   font-size: 2rem;
   font-weight: 700;
 }
@@ -79,6 +79,11 @@
 
 .node-title-wrap {
   flex: 1;
+  margin: 0;
+}
+
+.node-title-wrap .node-title-input {
+  padding: 0.6rem 2rem;
 }
 
 .legal-node-editor .ql-editor {
@@ -89,6 +94,11 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 0.6rem;
+}
+
+.remove-node-btn {
+  font-size: 2rem;
+  margin: 0 0.5rem 0.5rem 0;
 }
 
 @media (max-width: 800px) {
