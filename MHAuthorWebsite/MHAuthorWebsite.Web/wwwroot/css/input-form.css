@@ -32,6 +32,12 @@
   max-width: 95%;
 }
 
+.modal.large,
+.modal-invisible.larger {
+  width: 100rem;
+  max-width: 95%;
+}
+
 .modal > .back-btn,
 .modal-invisible > .back-btn {
   align-self: flex-start;

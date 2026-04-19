@@ -6,9 +6,9 @@ using MHAuthorWebsite.Core.Dtos.Images;
 using MHAuthorWebsite.Core.Dtos.Product;
 using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Web.Dto.Product;
-using MHAuthorWebsite.Web.Utils.Extensions;
 using MHAuthorWebsite.Web.Utils.Attributes;
 using MHAuthorWebsite.Web.Utils.Enums;
+using MHAuthorWebsite.Web.Utils.Extensions;
 using MHAuthorWebsite.Web.ViewModels.Admin.Product;
 using MHAuthorWebsite.Web.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +38,7 @@ public class AdminProductController : AdminBaseController
     }
 
     [HttpGet]
-    [SecurityHeaders(CspFeature.Editor | CspFeature.Notifications)]
+    [SecurityHeaders(CspFeature.Editor | CspFeature.Notifications | CspFeature.TomSelect)]
     public async Task<IActionResult> AddProduct()
     {
         await PrepareViewBagForAddProduct();
@@ -46,7 +46,7 @@ public class AdminProductController : AdminBaseController
     }
 
     [HttpPost]
-    [SecurityHeaders(CspFeature.Editor | CspFeature.Notifications)]
+    [SecurityHeaders(CspFeature.Editor | CspFeature.Notifications | CspFeature.TomSelect)]
     public async Task<IActionResult> AddProduct(AddProductForm model)
     {
         if (!ModelState.IsValid)
@@ -225,7 +225,7 @@ public class AdminProductController : AdminBaseController
         return PartialView("_DynamicAttributesPartial", attributes);
     }
 
-    [SecurityHeaders(CspFeature.Editor)]
+    [SecurityHeaders(CspFeature.Editor | CspFeature.TomSelect)]
     [HttpGet("/Admin/AdminProduct/EditProduct/{productId}")]
     public async Task<IActionResult> EditProduct([FromRoute] Guid productId)
     {
@@ -277,7 +277,7 @@ public class AdminProductController : AdminBaseController
         return View(viewModel);
     }
 
-    [SecurityHeaders(CspFeature.Editor)]
+    [SecurityHeaders(CspFeature.Editor | CspFeature.TomSelect)]
     [HttpPost("/Admin/AdminProduct/EditProduct/{productId}")]
     public async Task<IActionResult> EditProduct([FromRoute] Guid productId, [FromForm] EditProductFormViewModel model)
     {

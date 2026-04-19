@@ -1,4 +1,4 @@
-﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Product
+@using MHAuthorWebsite.Web.ViewModels.Admin.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Product
 @using static MHAuthorWebsite.GCommon.EntityConstraints.Product
@@ -13,13 +13,16 @@
 	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/image-preview.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
-	<section class="modal-invisible large flex-column">
+	<section class="modal-invisible larger flex-column">
 		<a class="back-btn" asp-area="Admin" asp-controller="AdminProduct" asp-action="ProductsList">
 			<i class="fa-solid fa-arrow-left"></i> Назад към продуктите
 		</a>
@@ -65,7 +68,7 @@
 
 			<div class="form-input-box flex-column select-list">
 				<label class="form-label" asp-for="ProductTypeId">Категория:</label>
-				<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" id="selectProductType" class="form-select"></select>
+				<select asp-for="ProductTypeId" asp-items="ViewBag.ProductTypes" id="selectProductType" class="select-main" autocomplete="off"></select>
 				<span class="input-error" asp-validation-for="ProductTypeId"></span>
 			</div>
 
@@ -84,6 +87,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
 	<script type="module" src="~/js/editor.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/admin/add-product.js" asp-append-version="true"></script>
 }

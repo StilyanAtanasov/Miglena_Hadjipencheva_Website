@@ -23,6 +23,7 @@
   margin-top: 0.25rem;
   font-size: 2rem;
   overflow: hidden;
+  width: max-content;
 
   .dropdown-input-wrap {
     display: none;
