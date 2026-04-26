@@ -82,10 +82,28 @@ public class AdminProductService : ProductService, IAdminProductService
 
             product.Thumbnail = thumbnail;
 
-            if (model.Attributes.Count > 0) // TODO Check if category has attributes
-            {
-                int[] definitionIds = model.Attributes.Select(a => a.AttributeDefinitionId).Distinct().ToArray();
 
+            int[] definitionIds = model.Attributes.Select(a => a.AttributeDefinitionId).Distinct().ToArray();
+
+            ProductAttributeDefinitionDto[] productTypeDefinitions = await Repository
+                .WhereReadonly<ProductAttributeDefinition>(pad => pad.ProductTypeId == model.ProductTypeId)
+                .Select(pad => new ProductAttributeDefinitionDto
+                {
+                    Id = pad.Id,
+                    Label = pad.Label,
+                    IsRequired = pad.IsRequired
+                })
+                .ToArrayAsync();
+
+            foreach (var definition in productTypeDefinitions)
+                if (!definitionIds.Contains(definition.Id) && definition.IsRequired)
+                    return ServiceResult.Failure(new Dictionary<string, string>
+                    {
+                        { "Attributes", $"Липсва задължителен атрибут: {definition.Label}!" }
+                    });
+
+            if (model.Attributes.Count > 0)
+            {
                 ProductAttributeOption[] attributeOptionsForProduct = await Repository
                     .WhereReadonly<ProductAttributeOption>(pao => definitionIds.Contains(pao.AttributeDefinitionId))
                     .ToArrayAsync();
@@ -133,7 +151,7 @@ public class AdminProductService : ProductService, IAdminProductService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding product: {ProductName}", model.Name);
-            return ServiceResult.Failure(new Dictionary<string, string>() { { "DBError", "Грешка при добавяне на продукта в базата!" } });
+            return ServiceResult.Failure(new Dictionary<string, string> { { "DBError", "Грешка при добавяне на продукта в базата!" } });
         }
     }
 
@@ -282,6 +300,8 @@ public class AdminProductService : ProductService, IAdminProductService
             product.UpdatedOn = DateTime.UtcNow;
             await Repository.SaveChangesAsync();
 
+            await Cache.RemoveAsync(ProductDetailsKey(productId));
+
             _logger.LogInformation("Admin toggled publicity for product {ProductId}.", productId);
 
             return ServiceResult.Ok();
@@ -297,9 +317,8 @@ public class AdminProductService : ProductService, IAdminProductService
 
     public async Task<ServiceResult<decimal>> GetProductPriceReadonlyAsync(Guid productId)
     {
-        decimal? price = await Repository.WhereReadonly<Product>(p => p.Id == productId)
-            .Select(p => (decimal?)p.Price)
-            .FirstOrDefaultAsync();
+        decimal? price = await _adminProductDataService.GetProductPriceReadonlyAsync(productId, true);
+
         if (price is null)
             return ServiceResult<decimal>.NotFound(new Dictionary<string, string>
             {
@@ -312,13 +331,13 @@ public class AdminProductService : ProductService, IAdminProductService
 
     public async Task<ServiceResult> AddDiscountAsync(AddProductDiscountDto model)
     {
-        if (!await Repository.AnyAsync<Product>(p => p.Id == model.ProductId))
+        if (!await _adminProductDataService.IsProductExistingAsync(model.ProductId))
             return ServiceResult.NotFound(new Dictionary<string, string>
             {
                 { "ProductId", "Продуктът не беше намерен!" }
             });
 
-        if (await Repository.AnyAsync<ProductDiscount>(pd => pd.ProductId == model.ProductId && pd.EndDate > DateTime.UtcNow))
+        if (await _adminProductDataService.DoesProductHaveActiveDiscountAsync(model.ProductId))
             return ServiceResult.Forbidden(new Dictionary<string, string>
             {
                 { "ProductDiscount", "Вече има зададена промоция за този продукт!" }
@@ -346,9 +365,7 @@ public class AdminProductService : ProductService, IAdminProductService
 
     public async Task<ServiceResult> EndDiscountAsync(Guid productId)
     {
-        ProductDiscount? discount = await Repository
-            .Where<ProductDiscount>(pd => pd.ProductId == productId && pd.EndDate > DateTime.UtcNow)
-            .FirstOrDefaultAsync();
+        ProductDiscount? discount = await _adminProductDataService.GetActiveProductDiscountAsync(productId);
 
         if (discount is null) return ServiceResult.NotFound();
 

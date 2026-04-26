@@ -1,4 +1,5 @@
 ﻿@using MHAuthorWebsite.GCommon
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @inject IWebHostEnvironment Env
 
 @{
@@ -20,7 +21,7 @@
 		<meta name="description" content="Добре дошли в официалния сайт на Миглена Хаджипенчева. Разгледайте най-новите творби и книги и поръчайте онлайн." />
 	}
 
-	<title>@ViewData["Title"] - Миглена Хаджипенчева</title>
+	<title>@ViewData["Title"] - @WebsiteName</title>
 	<link rel="stylesheet" href="~/css/reset.css" asp-append-version="true" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
 	<link rel="stylesheet" href="~/css/common.css" asp-append-version="true" />

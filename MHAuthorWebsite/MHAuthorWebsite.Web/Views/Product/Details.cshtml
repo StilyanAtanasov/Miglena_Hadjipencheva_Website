@@ -6,6 +6,7 @@
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Order
 @using MHAuthorWebsite.Core.Models.Enums
 @using MHAuthorWebsite.GCommon
+@using MHAuthorWebsite.Web.ViewModels.Shared
 
 @model ProductDetailsViewModel
 
@@ -63,7 +64,20 @@
 	</div>
 }
 
-	<section class="main flex-row">
+@if (!Model.IsPublic)
+{
+	WarningViewModel warningModel = new WarningViewModel
+	{
+		Title = "Внимание!",
+		Message = "Този продукт е скрит от продажба и е достъпен само за администратори!"
+	};
+
+		<div class="discount-clock flex-row">
+			<partial name="_WarningMessage" model="warningModel"/>
+		</div>
+}
+
+<section class="main flex-row">
 		<section class="hero-info flex-row">
 			<section id="slider" class="slider flex-row" data-slides-count="@Model.Images.Count">
 				@if (Model.Images.Count > 1)

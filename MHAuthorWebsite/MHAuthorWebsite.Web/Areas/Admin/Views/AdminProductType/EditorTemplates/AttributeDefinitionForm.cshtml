@@ -1,8 +1,13 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Admin.ProductType
 @model AttributeDefinitionForm?
 
+@{
+	string attributeIndex = ViewData.TemplateInfo.HtmlFieldPrefix.Replace("Attributes[", "").Replace("]", "");
+	string[] predefinedValues = Model?.PredefinedValues.ToArray() ?? Array.Empty<string>();
+}
+
 <div class="form-input-box flex-column isolate attribute-definition">
-	<input type="hidden" name="Attributes.Index" value="@ViewData.TemplateInfo.HtmlFieldPrefix.Replace("Attributes[", "").Replace("]", "")" />
+	<input type="hidden" name="Attributes.Index" value="@attributeIndex" />
 
 	<button type="button" class="btn btn-none button-remove remove-attribute" aria-label="Close"><i class="fa-solid fa-xmark remove-attribute"></i></button>
 	<div class ="form-input-box flex-column">
@@ -19,22 +24,30 @@
 
 	<div class="form-input-box flex-column select-list">
 		<label class="form-label" asp-for="DataType">Тип данни:</label>
-		<select class="form-select data-type-select" asp-for="DataType" asp-items="ViewBag.AttributeDataTypes"></select>
+		<select class="data-type-select" asp-for="DataType" asp-items="ViewBag.AttributeDataTypes"></select>
 		<span class="input-error" asp-validation-for="DataType"></span>
 	</div>
 	
-	<div class="form-input-box flex-column predefined-values-section">
+	<div class="form-input-box flex-column predefined-values-section" style="display: @(Model?.DataType == 4 ? "flex" : "none")">
 		<label class="form-label">Опции за избор:</label>
-    
+     
 		<div class="tags-container flex-row">
+			@foreach (string val in predefinedValues)
+			{
+				<span class="tag-badge">@val <span class="remove-tag" data-val="@val"><i class="fa-solid fa-xmark"></i></span></span>
+			}
 		</div>
 
 		<input class="form-input values-visual-input" placeholder="Изброй опции със запетая..." />
 
-		<div class="values-hidden-container"></div>
+		<div class="values-hidden-container">
+			@for (int i = 0; i < predefinedValues.Length; i++)
+			{
+				<input type="hidden" name="Attributes[@attributeIndex].PredefinedValues[@i]" value="@predefinedValues[i]" />
+			}
+		</div>
 	</div>
-	
-	<!-- TODO FIX this toggle -->
+
 	<div class="toggle-row">
 		<label class="switch">
 			<input asp-for="IsRequired" type="checkbox" />

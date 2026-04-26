@@ -3,6 +3,7 @@ using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Contracts.DataServices;
 using MHAuthorWebsite.Core.Dtos.Product;
+using MHAuthorWebsite.Core.Dtos.ProductComment;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Data;
@@ -51,7 +52,7 @@ public class ProductServiceTests
             .ReturnsAsync((IEnumerable<string> keys) => keys.Select(_ => (ProductCardGeneralInfoDto?)null).ToList());
 
         _cacheMock
-            .Setup(c => c.SetBatchAsync<ProductCardGeneralInfoDto>(It.IsAny<IDictionary<string, ProductCardGeneralInfoDto>>(), It.IsAny<TimeSpan>(), It.IsAny<bool>()))
+            .Setup(c => c.SetBatchAsync(It.IsAny<IDictionary<string, ProductCardGeneralInfoDto>>(), It.IsAny<TimeSpan>(), It.IsAny<bool>()))
             .Returns(Task.CompletedTask);
 
 
@@ -243,6 +244,51 @@ public class ProductServiceTests
     [Test]
     public async Task GetProductDetailsReadonlyAsync_ReturnsOk_WhenProductIsFound()
     {
+        // Arrange
+        _productDataServiceMock.Setup(ds => ds.GetProductDetailsGeneralInfoByIdAsync(_defaultProduct.Id, false))
+            .ReturnsAsync(new ProductDetailsGeneralInfoDto
+            {
+                Id = _defaultProduct.Id,
+                Name = _defaultProduct.Name,
+                Description = _defaultProduct.Description,
+                Price = _defaultProduct.Price,
+                IsInStock = _defaultProduct.StockQuantity > 0,
+                IsPublic = _defaultProduct.IsPublic,
+                Quantity = _defaultProduct.StockQuantity,
+                ProductTypeName = _defaultProduct.ProductType.Name,
+                Images = _defaultProduct.Images
+                    .Where(i => i.Id != _defaultProduct.Thumbnail.ImageId)
+                    .OrderByDescending(i => i.Id == _defaultProduct.Thumbnail.ImageOriginalId)
+                    .Select(i => new ProductDetailsImageDto
+                    {
+                        ImageUrl = i.ImageUrl,
+                        AltText = i.AltText
+                    })
+                    .ToHashSet(),
+                Attributes = _defaultProduct.Attributes
+                    .Select(a => new ProductAttributeDetailsDto
+                    {
+                        Label = a.AttributeDefinition.Label,
+                        Value = a.Value
+                    })
+                    .ToHashSet()
+            });
+
+        Guid commitId = Guid.NewGuid();
+
+        _productDataServiceMock.Setup(ds => ds.GetProductDetailsCommentsInfoByIdAsync(_defaultProduct.Id, false, new HashSet<string>()))
+            .ReturnsAsync(new ProductDetailsCommentsInfoDto
+            {
+                Comments = new List<ProductBaseCommentGeneralInfoDto>(),
+                CommitId = commitId,
+            });
+
+        _productDataServiceMock.Setup(ds => ds.GetProductDetailsUserInfoByIdAsync(_defaultProduct.Id, false, DefaultUserId, commitId))
+            .ReturnsAsync(new ProductDetailsUserInfoDto
+            {
+                IsLiked = false
+            });
+
         // Act
         ServiceResult<ProductDetailsDto> sr = await _productService
             .GetProductDetailsReadonlyAsync(_defaultProduct.Id, DefaultUserId);

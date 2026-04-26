@@ -1,4 +1,4 @@
-﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Product
+@using MHAuthorWebsite.Web.ViewModels.Admin.Product
 @model ICollection<ProductListItemViewModel>
 
 @{
@@ -8,6 +8,8 @@
 
 @section Styles
 {
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css">
+	<link rel="stylesheet" href="~/css/elements/notification.css" />
 	<link rel="stylesheet" href="~/css/admin/admin-table.css" />
 }
 
@@ -40,16 +42,7 @@
 				foreach (ProductListItemViewModel product in Model)
 				{
 					<tr>
-
-						@if (product.IsPublic)
-						{
-							<td><a class="link active" data-trigger="load-unlimited" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></td>
-						}
-						else
-						{
-							<td>@product.Name</td>
-						}
-
+						<td><a class="link active" data-trigger="load-unlimited" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></td>
 						<td class="align-center">@product.ProductTypeName</td>
 						<td class="align-center">@product.Price.ToString("F2") €</td>
 						<td class="align-center">@product.StockQuantity</td>
@@ -67,10 +60,9 @@
 
 							@if (product.HasActiveDiscount)
 							{
-								<!-- TODO add confirm modal-->
 								<form asp-area="Admin" asp-controller="AdminProduct" asp-action="EndDiscount" method="post">
 									<input type="hidden" name="productId" value="@product.Id" />
-									<button type="submit" class="btn link btn-purple flex-row">
+									<button type="button" class="btn link btn-purple flex-row" data-action="end-discount">
 										<i class="fa-solid fa-calendar-minus"></i>
 										Премахни промоция
 									</button>
@@ -89,9 +81,8 @@
 								Редактирай
 							</a>
 
-							<!-- TODO add confirm modal-->
 							<form asp-area="Admin" asp-controller="AdminProduct" asp-action="DeleteProduct" asp-route-productId="@product.Id" method="post">
-								<button data-trigger="load-unlimited" type="submit" class="btn btn-red flex-row" onclick="return confirm('Сигурни ли сте, че искате да изтриете продукта?')">
+								<button type="button" class="btn btn-red flex-row" data-action="delete-product">
 									<i class="fa-solid fa-trash-can"></i>
 									Изтрий
 								</button>
@@ -106,5 +97,6 @@
 
 @section Scripts
 {
-	<script src="~/js/loader.js"></script>
+	<script type="module" src="~/js/elements/loader.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/admin/product-list.js" asp-append-version="true"></script>
 }

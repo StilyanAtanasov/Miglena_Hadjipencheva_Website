@@ -7,7 +7,7 @@ public static class ApplicationRules
     public static class Application
     {
         public const string ProjectName = "MHAuthorWebsite";
-        public const string WebsiteName = "Миглена Хаджипенчева"; // TODO Use this for Layout and branding
+        public const string WebsiteName = "Миглена Хаджипенчева";
 
         public const string Currency = "EUR";
 

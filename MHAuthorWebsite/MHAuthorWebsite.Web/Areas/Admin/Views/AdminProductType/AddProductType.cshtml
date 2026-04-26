@@ -7,6 +7,8 @@
 }
 
 @section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/admin/add-product-type.css" asp-append-version="true" />
@@ -58,5 +60,6 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
-	<script src="~/js/add-product-type.js" asp-append-version="true"></script>
+	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+	<script type="module" src="~/js/admin/add-product-type.js" asp-append-version="true"></script>
 }

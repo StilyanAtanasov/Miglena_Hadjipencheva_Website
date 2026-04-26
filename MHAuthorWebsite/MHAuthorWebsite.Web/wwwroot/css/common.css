@@ -315,6 +315,18 @@ hr.vertical {
   transform: scale(0);
 }
 
+.warning {
+  color: var(--color-error);
+  gap: 0;
+}
+
+.warning-uppercase {
+  text-transform: uppercase;
+  text-decoration: underline double;
+  font-weight: 800;
+  font-size: 2.2rem;
+}
+
 /* --- Keyframes --- */
 
 @keyframes fadeIn {

@@ -16,3 +16,6 @@ App_Data/
 
 # Exclude System Logs
 SystemLogs/
+
+# Exclude Secrets
+Secrets/

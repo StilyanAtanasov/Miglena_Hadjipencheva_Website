@@ -251,7 +251,7 @@ public class EnableAuthenticatorModel : PageModel
         return string.Format(
             CultureInfo.InvariantCulture,
             AuthenticatorUriFormat,
-            _urlEncoder.Encode("Миглена Хаджипенчева"),
+            _urlEncoder.Encode(WebsiteName),
             _urlEncoder.Encode(email),
             unformattedKey);
     }
