@@ -82,10 +82,28 @@ public class AdminProductService : ProductService, IAdminProductService
 
             product.Thumbnail = thumbnail;
 
-            if (model.Attributes.Count > 0) // TODO Check if category has attributes
-            {
-                int[] definitionIds = model.Attributes.Select(a => a.AttributeDefinitionId).Distinct().ToArray();
 
+            int[] definitionIds = model.Attributes.Select(a => a.AttributeDefinitionId).Distinct().ToArray();
+
+            var productTypeDefinitions = await Repository
+                .WhereReadonly<ProductAttributeDefinition>(pad => pad.ProductTypeId == model.ProductTypeId)
+                .Select(pad => new
+                {
+                    pad.Id,
+                    pad.Label,
+                    pad.IsRequired
+                })
+                .ToArrayAsync();
+
+            foreach (var definition in productTypeDefinitions)
+                if (!definitionIds.Contains(definition.Id) && definition.IsRequired)
+                    return ServiceResult.Failure(new Dictionary<string, string>
+                    {
+                        { "Attributes", $"Липсва задължителен атрибут: {definition.Label}!" }
+                    });
+
+            if (model.Attributes.Count > 0)
+            {
                 ProductAttributeOption[] attributeOptionsForProduct = await Repository
                     .WhereReadonly<ProductAttributeOption>(pao => definitionIds.Contains(pao.AttributeDefinitionId))
                     .ToArrayAsync();
