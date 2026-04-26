@@ -85,13 +85,13 @@ public class AdminProductService : ProductService, IAdminProductService
 
             int[] definitionIds = model.Attributes.Select(a => a.AttributeDefinitionId).Distinct().ToArray();
 
-            var productTypeDefinitions = await Repository
+            ProductAttributeDefinitionDto[] productTypeDefinitions = await Repository
                 .WhereReadonly<ProductAttributeDefinition>(pad => pad.ProductTypeId == model.ProductTypeId)
-                .Select(pad => new
+                .Select(pad => new ProductAttributeDefinitionDto
                 {
-                    pad.Id,
-                    pad.Label,
-                    pad.IsRequired
+                    Id = pad.Id,
+                    Label = pad.Label,
+                    IsRequired = pad.IsRequired
                 })
                 .ToArrayAsync();
 
