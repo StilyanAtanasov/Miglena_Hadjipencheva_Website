@@ -13,5 +13,5 @@ public class AddProductTypeForm
     [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public bool HasAdditionalProperties { get; set; }
 
-    public List<AttributeDefinitionForm> Attributes { get; set; } = new List<AttributeDefinitionForm>();
+    public List<AttributeDefinitionForm> Attributes { get; set; } = new();
 }

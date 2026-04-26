@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Product;
 using MHAuthorWebsite.Core.Models;
@@ -55,6 +55,7 @@ public class ProductController : BaseController
                 NewPrice = dto.Discount.NewPrice
             } : null,
             IsInStock = dto.IsInStock,
+            IsPublic = dto.IsPublic,
             Quantity = dto.Quantity,
             ProductTypeName = dto.ProductTypeName,
             TotalBaseComments = dto.TotalBaseComments,

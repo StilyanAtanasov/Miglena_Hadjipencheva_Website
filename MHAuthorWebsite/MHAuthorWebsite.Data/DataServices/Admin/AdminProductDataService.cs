@@ -68,4 +68,34 @@ public class AdminProductDataService : IAdminProductDataService
             HasActiveDiscount = p.Discounts.Any(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow)
         })
         .ToArrayAsync();
+
+    public async Task<decimal?> GetProductPriceReadonlyAsync(Guid productId, bool includeNonPublicProducts)
+    {
+        IQueryable<Product> query = _repository.AllReadonly<Product>();
+
+        if (includeNonPublicProducts) query = query.IgnoreQueryFilters();
+
+        return await query
+            .Where(p => p.Id == productId)
+            .Select(p => (decimal?)p.Price)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> IsProductExistingAsync(Guid productId)
+     => await _repository
+         .AllReadonly<Product>()
+         .IgnoreQueryFilters()
+         .AnyAsync(p => p.Id == productId);
+
+    public async Task<bool> DoesProductHaveActiveDiscountAsync(Guid productId)
+     => await _repository
+            .AllReadonly<ProductDiscount>()
+            .IgnoreQueryFilters()
+            .AnyAsync(pd => pd.ProductId == productId && pd.EndDate > DateTime.UtcNow);
+
+    public async Task<ProductDiscount?> GetActiveProductDiscountAsync(Guid productId)
+     => await _repository
+         .Where<ProductDiscount>(pd => pd.ProductId == productId && pd.EndDate > DateTime.UtcNow)
+         .IgnoreQueryFilters()
+         .FirstOrDefaultAsync();
 }

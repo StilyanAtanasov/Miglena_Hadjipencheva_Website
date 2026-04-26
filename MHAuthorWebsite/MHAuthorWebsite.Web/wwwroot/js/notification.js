@@ -60,7 +60,7 @@ export async function showPopupAsync(args) {
   });
 
   if (result.isConfirmed) {
-    onConfirm?.(...onConfirmArgs);
+    onConfirm?.(...(onConfirmArgs ?? []));
   } else if (result.isDismissed) {
     switch (result.dismiss) {
       case Swal.DismissReason.cancel:

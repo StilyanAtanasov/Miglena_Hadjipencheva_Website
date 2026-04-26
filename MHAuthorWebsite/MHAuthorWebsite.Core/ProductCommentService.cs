@@ -102,7 +102,7 @@ public class ProductCommentService : IProductCommentService
             ParentCommentId = model.ParentCommentId,
             Rating = model.Rating,
             Text = Regex.Replace(model.Text.Trim(), @"(\r?\n\s*){2,}", "\n"),
-            VerifiedPurchase = product.Orders.Any(o => o.Order.UserId == userId), // TODO confirm order is received
+            VerifiedPurchase = product.Orders.Any(o => o.Order.UserId == userId && o.Order.Status == OrderStatus.Delivered),
             Date = DateTime.UtcNow,
             Images = images is not null ? images.Select(i => new ProductCommentImage
             {

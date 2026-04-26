@@ -1,5 +1,7 @@
 "use strict";
 
+import { initTomSelect } from "../elements/select.js";
+
 document.addEventListener(`DOMContentLoaded`, function () {
   const hasPropsCheckbox = document.getElementById(`HasAdditionalProperties`);
   const attributeSection = document.getElementById(`attributeSection`);
@@ -19,6 +21,8 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
   const addButton = document.getElementById(`addAttribute`);
   if (addButton) addButton.addEventListener(`click`, addDefinitionField);
+
+  initializeExistingAttributes();
 
   document.addEventListener(`click`, function (e) {
     if (e.target && e.target.classList.contains(`remove-attribute`)) {
@@ -52,18 +56,69 @@ document.addEventListener(`DOMContentLoaded`, function () {
     container.insertAdjacentHTML(`beforeend`, templateHtml);
 
     rebindValidators();
+    initTomSelect(container.querySelector(`.attribute-definition:nth-child(${index + 1}) .data-type-select`));
+    initializeExistingAttributes();
 
     index++;
     activeAttributes++;
   }
 
-  // --- Data Type List ---
-  container.addEventListener(`input`, function (e) {
-    if (e.target && e.target.classList.contains(`data-type-select`)) {
-      const section = e.target.closest(`.attribute-definition`).querySelector(`.predefined-values-section`);
-      section.style.display = e.target.value === `4` ? `flex` : `none`;
-    }
+  function initializeExistingAttributes() {
+    if (!container) return;
 
+    container.querySelectorAll(`.attribute-definition`).forEach(def => {
+      initTomSelect(def.querySelector(`.data-type-select`));
+      syncPredefinedSection(def);
+      hydrateTagsFromHiddenInputs(def);
+    });
+  }
+
+  function syncPredefinedSection(def) {
+    const select = def.querySelector(`.data-type-select`);
+    const section = def.querySelector(`.predefined-values-section`);
+    if (!select || !section) return;
+
+    section.style.display = select.value === `4` ? `flex` : `none`;
+  }
+
+  function appendTag(tagsContainer, value) {
+    const badge = document.createElement(`span`);
+    badge.classList.add(`tag-badge`);
+    badge.append(document.createTextNode(`${value} `));
+
+    const remove = document.createElement(`span`);
+    remove.classList.add(`remove-tag`);
+    remove.dataset.val = value;
+    remove.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+
+    badge.appendChild(remove);
+    tagsContainer.appendChild(badge);
+  }
+
+  function hydrateTagsFromHiddenInputs(def) {
+    const tagsContainer = def.querySelector(`.tags-container`);
+    const hiddenContainer = def.querySelector(`.values-hidden-container`);
+    const prefixInput = def.querySelector(`input[name="Attributes.Index"]`);
+
+    if (!tagsContainer || !hiddenContainer || !prefixInput) return;
+    if (tagsContainer.querySelector(`.tag-badge`)) return;
+
+    const hiddenInputs = Array.from(hiddenContainer.querySelectorAll(`input[type="hidden"]`));
+    if (hiddenInputs.length === 0) return;
+
+    hiddenInputs.forEach(i => appendTag(tagsContainer, i.value));
+    updateHiddenInputs(prefixInput.value, tagsContainer, hiddenContainer);
+  }
+
+  // --- Data Type List ---
+  container.addEventListener(`change`, function (e) {
+    if (e.target && e.target.classList.contains(`data-type-select`)) {
+      const def = e.target.closest(`.attribute-definition`);
+      syncPredefinedSection(def);
+    }
+  });
+
+  container.addEventListener(`input`, function (e) {
     if (e.target && e.target.classList.contains(`values-visual-input`)) {
       const input = e.target;
       if (input.value.includes(`,`)) processTags(input);
@@ -83,18 +138,26 @@ document.addEventListener(`DOMContentLoaded`, function () {
     input.value = ``;
 
     parts.forEach(tagText => {
-  const tagHtml = `<span class="tag-badge">${tagText} <span class="remove-tag" data-val="${tagText}"><i class="fa-solid fa-xmark"></i></span></span>`;
-      tagsContainer.insertAdjacentHTML(`beforeend`, tagHtml);
+      appendTag(tagsContainer, tagText);
     });
 
     updateHiddenInputs(prefix, tagsContainer, hiddenContainer);
   }
 
   function updateHiddenInputs(prefix, tagsContainer, hiddenContainer) {
-    const allTags = Array.from(tagsContainer.querySelectorAll(`.tag-badge`)).map(t => t.innerText.replace(` ×`, ``).trim());
-
+    const allTags = Array.from(tagsContainer.querySelectorAll(`.remove-tag`))
+      .map(t => t.dataset.val)
+      .filter(v => !!v);
     const baseName = `Attributes[${prefix}].PredefinedValues`;
-    hiddenContainer.innerHTML = allTags.map((val, i) => `<input type="hidden" name="${baseName}[${i}]" value="${val}" />`).join(``);
+
+    hiddenContainer.innerHTML = ``;
+    allTags.forEach((val, i) => {
+      const input = document.createElement(`input`);
+      input.type = `hidden`;
+      input.name = `${baseName}[${i}]`;
+      input.value = val;
+      hiddenContainer.appendChild(input);
+    });
   }
 
   container.addEventListener(`click`, function (e) {
@@ -103,7 +166,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
       const prefix = parent.querySelector(`input[name="Attributes.Index"]`).value;
 
       e.target.closest(`.remove-tag`).parentElement.remove();
-      updateHiddenInputs(parent, prefix, parent.querySelector(`.tags-container`), parent.querySelector(`.values-hidden-container`));
+      updateHiddenInputs(prefix, parent.querySelector(`.tags-container`), parent.querySelector(`.values-hidden-container`));
     }
   });
 });

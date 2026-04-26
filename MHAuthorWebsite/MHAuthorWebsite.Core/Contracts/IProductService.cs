@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Dtos.Product;
 using MHAuthorWebsite.Core.Models;
 using System.Linq.Expressions;

@@ -14,4 +14,12 @@ public interface IAdminProductDataService
     Task<Product?> GetProductForEditByIdReadonlyAsync(Guid productId);
 
     Task<ICollection<ProductListItemDto>> GetProductsListReadonlyAsync();
+
+    Task<decimal?> GetProductPriceReadonlyAsync(Guid productId, bool includeNonPublicProducts);
+
+    Task<bool> IsProductExistingAsync(Guid productId);
+
+    Task<bool> DoesProductHaveActiveDiscountAsync(Guid productId);
+
+    Task<ProductDiscount?> GetActiveProductDiscountAsync(Guid productId);
 }

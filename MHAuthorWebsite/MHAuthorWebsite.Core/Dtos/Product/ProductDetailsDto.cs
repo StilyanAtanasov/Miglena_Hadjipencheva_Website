@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Dtos.ProductComment;
+using MHAuthorWebsite.Core.Dtos.ProductComment;
 
 namespace MHAuthorWebsite.Core.Dtos.Product;
 
@@ -15,6 +15,8 @@ public class ProductDetailsDto
     public decimal Price { get; set; }
 
     public bool IsInStock { get; set; }
+
+    public bool IsPublic { get; set; }
 
     public int Quantity { get; set; }
 

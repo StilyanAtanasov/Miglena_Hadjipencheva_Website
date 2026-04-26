@@ -3,6 +3,7 @@ using MHAuthorWebsite.Core.Dtos.Admin.Dashboard;
 using MHAuthorWebsite.Core.Extensions;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using static MHAuthorWebsite.GCommon.ApplicationRules.DataCollection;
@@ -41,7 +42,9 @@ public class AdminDashboardService : IAdminDashboardService
                     Id = pr.Id,
                     Name = pr.Name,
                     LikesCount = pr.Likes.Count,
-                    SoldCount = pr.Orders.Sum(op => op.Quantity) // TODO SELECT accepted orders only
+                    SoldCount = pr.Orders
+                        .Where(op => op.Order.Status == OrderStatus.Delivered)
+                        .Sum(op => op.Quantity)
                 })
                 .OrderByDescending(pr => pr.SoldCount)
                 .ThenByDescending(pr => pr.LikesCount)

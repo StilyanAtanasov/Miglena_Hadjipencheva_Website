@@ -178,6 +178,7 @@ public class AdminProductController : AdminBaseController
 
     [HttpGet]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [SecurityHeaders(CspFeature.Notifications)]
     public async Task<IActionResult> ProductsList()
     {
         ICollection<ProductListItemDto> products = await _productService.GetProductsListReadonlyAsync();

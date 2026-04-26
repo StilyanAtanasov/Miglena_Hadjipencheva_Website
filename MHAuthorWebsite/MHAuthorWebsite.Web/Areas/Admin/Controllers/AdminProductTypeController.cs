@@ -3,6 +3,8 @@ using MHAuthorWebsite.Core.Common.Extensions;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Dtos.Admin.ProductType;
 using MHAuthorWebsite.Core.Models.Enums;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.ViewModels.Admin.ProductType;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,6 +18,7 @@ public class AdminProductTypeController : AdminBaseController
     public AdminProductTypeController(IAdminProductTypeService productTypeService) => _productTypeService = productTypeService;
 
     [HttpGet]
+    [SecurityHeaders(CspFeature.TomSelect)]
     public IActionResult AddProductType()
     {
         AddProductTypeForm f = new();
@@ -33,6 +36,7 @@ public class AdminProductTypeController : AdminBaseController
     }
 
     [HttpPost]
+    [SecurityHeaders(CspFeature.TomSelect)]
     public async Task<IActionResult> AddProductType([FromForm] AddProductTypeForm form)
     {
         if (!ModelState.IsValid)
