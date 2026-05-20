@@ -53,3 +53,33 @@
   opacity: 0.4;
   filter: blur(0.3rem);
 }
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .order-card {
+    padding: 1.5rem 1.5rem;
+  }
+
+  .order-info {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .order-summary {
+    justify-content: flex-start;
+  }
+
+  .product-list {
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .product-image-box {
+    height: 10rem;
+  }
+
+  .background-icon {
+    display: none;
+  }
+}

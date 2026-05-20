@@ -1,18 +1,22 @@
 .page-wrapper {
-  padding: 4rem 30rem 8rem 30rem;
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 4rem 2rem 8rem 2rem;
+  width: 100%;
 }
 
 .page-wrapper > .back-btn {
   margin-bottom: 2rem;
-  margin-left: -2rem;
+  margin-left: 0;
 }
 
 .hero-info {
   justify-content: start;
-  height: calc(100vh - 10rem);
+  min-height: 45rem;
+  height: auto;
   align-items: flex-start;
   gap: 5rem;
-  width: 70%;
+  width: 65%;
 }
 
 .hero-info section {
@@ -34,10 +38,9 @@
 .main {
   align-items: flex-start;
   justify-content: space-between;
-  padding: 2rem 5rem;
+  padding: 2rem 0;
   gap: 5rem;
-  width: 110%;
-  transform: translateX(-5%);
+  width: 100%;
 }
 
 #slider {
@@ -491,21 +494,17 @@ table tr:last-child td:last-child {
   .title {
     font-size: 3rem;
   }
-
-  .page-wrapper {
-    padding: 8rem;
-  }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 960px) {
   .page-wrapper {
-    padding: 5rem 2rem;
+    padding: 3rem 2rem;
   }
 
   .details-info,
   .additional-info,
   .comments-info {
-    padding: 1.5rem 3rem;
+    padding: 1.5rem 1rem;
   }
 
   .main,
@@ -515,48 +514,45 @@ table tr:last-child td:last-child {
     width: 100%;
     margin: 0;
     height: auto;
-    transform: translateX(0);
+    transform: none;
   }
 
   .title {
-    font-size: 3.5rem;
+    font-size: 3.2rem;
+    text-align: center;
   }
 
   .main {
-    gap: 15rem;
-    margin-bottom: 10rem;
+    gap: 4rem;
+    margin-bottom: 5rem;
     padding: 0;
   }
 
   .product-main-info,
   .order-info,
   .slider {
-    width: 90%;
+    width: 100%;
+    max-width: 55rem;
+  }
+
+  .product-main-info {
+    align-items: center;
+    text-align: center;
   }
 
   .order-btns {
-    justify-content: flex-end;
+    justify-content: center;
   }
 
-  .product-main-info p {
-    font-size: 2.2rem;
-  }
-
-  .order-info {
-    font-size: 2.1rem;
-  }
-
-  .price-text {
-    font-size: 2.3rem;
-  }
-
-  .btn.like {
-    font-size: 1.6rem;
+  .table,
+  table {
+    width: 100%;
   }
 
   .comments-info .comments-overview {
     flex-direction: column;
     gap: 4rem;
+    align-items: center;
   }
 
   .comments-info .comments .comment {

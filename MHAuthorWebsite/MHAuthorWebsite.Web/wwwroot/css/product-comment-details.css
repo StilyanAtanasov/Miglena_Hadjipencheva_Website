@@ -118,3 +118,36 @@
 .comment-details-section .comment-info .verified-badge i {
   color: var(--color-success);
 }
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .comment-details-section .comment-gallery {
+    flex-direction: column-reverse;
+    height: auto;
+    align-items: center;
+  }
+
+  .comment-details-section .comment-gallery hr {
+    display: none;
+  }
+
+  .comment-details-section .image-previews {
+    flex-direction: row;
+    flex: 0 0 auto;
+    gap: 0.8rem;
+    overflow-x: auto;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .comment-details-section .image-previews .preview-thumb {
+    height: 6rem;
+    width: 6rem;
+  }
+
+  .comment-details-section .main-image img {
+    height: auto;
+    max-height: 30rem;
+    width: 100%;
+  }
+}

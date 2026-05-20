@@ -109,24 +109,55 @@
   animation-iteration-count: infinite;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .liked-products {
-    width: 95%;
-    font-size: 2.4rem;
+    width: 100%;
+    padding: 2rem 1.5rem;
   }
 
-  .product-image-container {
-    justify-content: center;
+  .liked-products .product-card {
+    flex-direction: column;
     align-items: center;
-    width: 15rem;
-    height: 15rem;
+    gap: 1.5rem;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .product-info {
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 2.5rem;
+  }
+
+  .product-info .product-details-container {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .product-name {
+    white-space: normal;
+    font-size: 2.2rem;
+  }
+
+  .liked-products .product-card .btn.order {
+    align-self: center;
+    width: 100%;
+    justify-content: center;
   }
 
   .liked-products .product-card .remove {
-    font-size: 2.5rem;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 2.2rem;
+  }
+
+  .product-image-container {
+    width: 15rem;
+    height: 15rem;
+    max-width: 100%;
   }
 
   .zero-liked {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
   }
 }

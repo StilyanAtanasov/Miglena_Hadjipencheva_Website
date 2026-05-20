@@ -17,8 +17,13 @@
   visibility: hidden;
   pointer-events: none;
   transform: translateY(0.8rem) scale(0.95);
-  transition: opacity 260ms ease, transform 260ms ease, visibility 0ms linear 260ms,
-    background-color 300ms ease, color 300ms ease, border-color 300ms ease;
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease,
+    visibility 0ms linear 260ms,
+    background-color 300ms ease,
+    color 300ms ease,
+    border-color 300ms ease;
 }
 
 .scroll-to-top-btn.is-visible {
@@ -26,8 +31,13 @@
   visibility: visible;
   pointer-events: auto;
   transform: translateY(0) scale(1);
-  transition: opacity 260ms ease, transform 260ms ease, visibility 0ms linear 0ms,
-    background-color 300ms ease, color 300ms ease, border-color 300ms ease;
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease,
+    visibility 0ms linear 0ms,
+    background-color 300ms ease,
+    color 300ms ease,
+    border-color 300ms ease;
 }
 
 .scroll-to-top-btn i {
@@ -39,6 +49,7 @@
   transform: translateY(-0.2rem) scale(1.05);
   background-color: var(--color-secondary);
   color: var(--color-primary);
+  border: 0.16rem solid var(--color-secondary-light);
 }
 
 @media (max-width: 600px) {

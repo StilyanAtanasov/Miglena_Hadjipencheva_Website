@@ -163,7 +163,8 @@
   filter: blur(0.5rem);
 }
 
-@media (max-width: 600px) {
+/* --- Responsive --- */
+@media (max-width: 768px) {
   .section-heading,
   .info-section {
     flex-direction: column;
@@ -171,5 +172,24 @@
 
   .info-section article {
     width: 100%;
+  }
+
+  .order-summary,
+  .courier-info,
+  .tracking-events,
+  .ordered-products {
+    padding: 1.5rem 2rem;
+  }
+
+  .product-item {
+    width: 14rem;
+  }
+
+  .product-image-box {
+    height: 14rem;
+  }
+
+  .background-icon {
+    display: none;
   }
 }
