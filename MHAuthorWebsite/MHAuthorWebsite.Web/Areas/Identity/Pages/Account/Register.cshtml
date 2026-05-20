@@ -1,4 +1,4 @@
-﻿@page
+@page
 @using MHAuthorWebsite.Web.Utils.Mappers
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -31,12 +31,22 @@
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.Password">Парола</label>
-				<input class="form-input" asp-for="Input.Password" autocomplete="new-password" aria-required="true" placeholder="password" />
+				<div class="password-input-wrapper">
+					<input class="form-input" asp-for="Input.Password" autocomplete="new-password" aria-required="true" placeholder="Парола..." />
+					<button type="button" class="password-toggle-btn" aria-label="Покажи/скрий парола">
+						<i class="fa-regular fa-eye"></i>
+					</button>
+				</div>
 				<span class="input-error" asp-validation-for="Input.Password"></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.ConfirmPassword">Потвърди парола</label>
-				<input class="form-input" asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="password" />
+				<div class="password-input-wrapper">
+					<input class="form-input" asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="Парола..." />
+					<button type="button" class="password-toggle-btn" aria-label="Покажи/скрий парола">
+						<i class="fa-regular fa-eye"></i>
+					</button>
+				</div>
 				<span class="input-error" asp-validation-for="Input.ConfirmPassword"></span>
 			</div>
 
@@ -113,4 +123,5 @@
 	<partial name="_ValidationScriptsPartial" />
 	<script src="~/js/validation/must-be-true.js" asp-append-version="true"></script>
 	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	<script src="~/js/account/password-toggle.js" asp-append-version="true"></script>
 }

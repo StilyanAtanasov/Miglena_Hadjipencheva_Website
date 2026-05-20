@@ -1,4 +1,4 @@
-﻿@page
+@page
 @using MHAuthorWebsite.Web.Utils.Mappers
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Mvc.ModelBinding
@@ -32,7 +32,12 @@
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.Password">Парола</label>
-				<input class="form-input" asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="password" />
+				<div class="password-input-wrapper">
+					<input class="form-input" asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="Парола..." />
+					<button type="button" class="password-toggle-btn" aria-label="Покажи/скрий парола">
+						<i class="fa-regular fa-eye"></i>
+					</button>
+				</div>
 				<span class="input-error" asp-validation-for="Input.Password"></span>
 			</div>
 			
@@ -90,4 +95,5 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script src="~/js/account/password-toggle.js" asp-append-version="true"></script>
 }
