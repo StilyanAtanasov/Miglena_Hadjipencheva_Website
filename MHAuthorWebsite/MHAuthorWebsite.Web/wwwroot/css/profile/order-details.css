@@ -48,6 +48,7 @@
 .order-summary p,
 .courier-info p {
   font-size: 2.1rem;
+  align-items: flex-start;
 }
 
 .shipment-tracker-link {
@@ -140,6 +141,7 @@
   position: relative;
   width: 2rem;
   height: 2rem;
+  flex-shrink: 0;
 }
 
 .tracking-events .tracking-row .tracking-dot::before {
@@ -181,8 +183,13 @@
     padding: 1.5rem 2rem;
   }
 
+  .ordered-products {
+    overflow-x: auto;
+  }
+
   .product-item {
     width: 14rem;
+    flex-shrink: 0;
   }
 
   .product-image-box {
@@ -191,5 +198,9 @@
 
   .background-icon {
     display: none;
+  }
+
+  .tracking-list {
+    padding-left: 1rem;
   }
 }

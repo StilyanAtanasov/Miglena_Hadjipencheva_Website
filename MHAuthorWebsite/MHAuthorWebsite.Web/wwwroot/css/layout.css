@@ -321,6 +321,7 @@ button.active.current-page::before {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  display: none;
 }
 
 .popup-btn-box .popup-btn {

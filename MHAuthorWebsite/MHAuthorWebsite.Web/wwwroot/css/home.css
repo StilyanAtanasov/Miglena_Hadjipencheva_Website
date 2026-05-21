@@ -15,10 +15,9 @@
 .splash-text {
   position: absolute;
   top: 55%;
-  right: clamp(2rem, 5vw, 6rem);
+  left: 68vw;
   transform: translateY(-50%);
-  width: min(60rem, 92vw);
-  text-align: right;
+  width: max-content;
   animation: splash-text ease-in-out 1s;
   animation-fill-mode: forwards;
 }

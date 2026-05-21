@@ -18,7 +18,7 @@
 
 <div class="page-wrapper flex-column">
 	<div class="form-container">
-		<h2 class="title-small" style="text-align: center; margin-bottom: 3rem;">Редактиране на творба</h2>
+		<h2 class="title text-centered">Редактиране на творба</h2>
 
 		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminWork" asp-action="Edit" method="post" enctype="multipart/form-data">
 			<input type="hidden" asp-for="Id" />
@@ -35,7 +35,7 @@
 				<label class="form-label" asp-for="NewCoverImage">Корица (оставете празно ако не променяте)</label>
 				<div class="image-upload-wrapper">
 					<div class="image-preview-box" id="coverPreview">
-						 <img src="@Model.CurrentCoverImageUrl" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+						 <img src="@Model.CurrentCoverImageUrl" alt="Preview">
 					</div>
 					<input asp-for="NewCoverImage" type="file" id="coverUpload" accept="image/*" class="file-input" />
 					<button id ="coverUploadBtn" type="button" class="btn btn-secondary">Промени изображение</button>
@@ -60,9 +60,9 @@
 				<label class="toggle-label" asp-for="IsPublic">Публична</label>
 			</div>
 
-			<div class="flex-row" style="justify-content: flex-end; gap: 2rem; margin-top: 2rem;">
-				<a asp-controller="Work" asp-action="Index" asp-area="" class="btn btn-outline" style="border: 0.125rem solid var(--color-secondary); color: var(--color-secondary); background: transparent;">Отказ</a>
-				<button type="submit" class="btn submit-btn" style="margin-top: 0;">Запази промените</button>
+			<div class="flex-row">
+				<a asp-controller="Work" asp-action="Index" asp-area="" class="btn cancel-btn">Отказ</a>
+				<button type="submit" class="btn submit-btn">Запази промените</button>
 			</div>
 		</form>
 	</div>

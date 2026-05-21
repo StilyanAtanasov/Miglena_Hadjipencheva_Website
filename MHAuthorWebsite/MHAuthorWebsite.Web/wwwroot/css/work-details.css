@@ -112,7 +112,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 53.125rem) {
+@media (max-width: 850px) {
   .work-details-container {
     margin: 1rem 5vw;
     padding: 2rem 1rem;
@@ -144,9 +144,14 @@
     width: 100%;
     align-items: stretch;
   }
+
+  .ql-editor {
+    width: fit-content;
+    margin: 0 auto;
+  }
 }
 
-@media (max-width: 37.5rem) {
+@media (max-width: 400px) {
   .work-details-container {
     margin: 1rem 3vw;
     padding-top: 2rem;
