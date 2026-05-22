@@ -40,7 +40,8 @@
   justify-content: space-between;
   padding: 2rem 0;
   gap: 5rem;
-  width: 100%;
+  width: 80vw;
+  margin-left: calc(50% - 40vw);
 }
 
 #slider {
@@ -63,7 +64,7 @@
 }
 
 .order-info {
-  width: 30%;
+  width: 35%;
   font-size: 1.8rem;
   padding: 3rem 4rem;
   border-radius: 1.5rem;
@@ -355,6 +356,7 @@ table tr:last-child td:last-child {
   object-fit: contain;
   height: 10rem;
   margin: 1rem 0;
+  overflow-x: auto;
 }
 
 .comments-info .comments .comment .images .comment-image {
@@ -364,6 +366,7 @@ table tr:last-child td:last-child {
 
 .comments-info .comments .comment .text {
   white-space: pre-line;
+  line-break: anywhere;
 }
 
 .comments-info .comments .comment .comment-divider {
@@ -490,6 +493,23 @@ table tr:last-child td:last-child {
 }
 
 /* --- Responsive design --- */
+@media (max-width: 1400px) {
+  .main {
+    flex-direction: column;
+  }
+
+  .main .hero-info {
+    width: 100%;
+  }
+
+  .main .order-info {
+    max-width: 100%;
+    margin: 0 auto;
+    width: 50%;
+    padding: 3rem 8rem;
+  }
+}
+
 @media (max-width: 1200px) {
   .title {
     font-size: 3rem;
@@ -528,9 +548,9 @@ table tr:last-child td:last-child {
     padding: 0;
   }
 
-  .product-main-info,
-  .order-info,
-  .slider {
+  .main .product-main-info,
+  .main .order-info,
+  .main .slider {
     width: 100%;
     max-width: 55rem;
   }
@@ -561,5 +581,81 @@ table tr:last-child td:last-child {
 
   .comments-info .comments .comment.reply {
     margin-left: 5rem;
+  }
+
+  .comments-info .comments .comment {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  .comments-info .comments .comment .comment-divider {
+    display: none;
+  }
+
+  .comments-info .comments .comment .comment-info {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .comments-info .comments .comment .comment-info .dates {
+    margin-top: 0;
+  }
+
+  .comments-info .comments .comment .rating-box {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .comments-info .comments .comment .images {
+    height: auto;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 1rem;
+  }
+
+  .comments-info .comments .comment .images .comment-image {
+    height: 7.5rem;
+    flex-shrink: 0;
+  }
+
+  .comment .comment-main .comment-actions {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: space-between;
+  }
+
+  .comments-info .comments .comment.reply {
+    margin-left: 0;
+    border-left: 0.15rem solid var(--color-secondary);
+    padding: 0 2rem;
+  }
+
+  .comments-info .comments .comment.reply .role-badge {
+    flex-basis: 100%;
+    width: fit-content;
+    margin-right: 100%;
+  }
+
+  .comments .load-replies-btn {
+    margin: 1.2rem 0 0 0;
+    align-self: flex-start;
+  }
+
+  .comments-info .comments .comment.reply .reply-person hr {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .discount-clock {
+    width: 100%;
+    flex-direction: column;
+    gap: 1rem;
   }
 }

@@ -83,6 +83,7 @@
   color: var(--color-grey);
   margin: 0.5rem;
   white-space: pre-line;
+  line-break: anywhere;
 }
 
 .comment-details-section .comment-reactions {
@@ -96,7 +97,6 @@
 }
 
 .comment-details-section .comment-reactions .react-btn i {
-  color: var(--color-secondary);
   font-size: 1.8rem;
 }
 
@@ -120,7 +120,17 @@
 }
 
 /* --- Responsive --- */
-@media (max-width: 768px) {
+@media (max-width: 960px) {
+  #modal .modal-content {
+    max-width: 90%;
+    width: 90%;
+    padding: 2rem 1rem;
+  }
+
+  #modal #modal-body {
+    padding: 2rem 3rem;
+  }
+
   .comment-details-section .comment-gallery {
     flex-direction: column-reverse;
     height: auto;
@@ -135,7 +145,6 @@
     flex-direction: row;
     flex: 0 0 auto;
     gap: 0.8rem;
-    overflow-x: auto;
     width: 100%;
     justify-content: center;
   }
@@ -149,5 +158,31 @@
     height: auto;
     max-height: 30rem;
     width: 100%;
+  }
+
+  .comment-details-section .comment-info .comment-rating {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .comment-details-section .comment-info .comment-rating > .flex-row {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .comment-details-section .comment-user {
+    font-size: 2.2rem;
+  }
+
+  .comment-details-section .comment-text {
+    margin: 0.75rem 0 0;
+    font-size: 1.9rem;
+  }
+
+  .comment-details-section .comment-reactions {
+    flex-wrap: wrap;
+    margin-top: 4rem;
   }
 }
