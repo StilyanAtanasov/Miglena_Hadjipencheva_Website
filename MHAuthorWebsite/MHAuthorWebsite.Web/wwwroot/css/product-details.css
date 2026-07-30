@@ -8,6 +8,7 @@
 .page-wrapper > .back-btn {
   margin-bottom: 2rem;
   margin-left: 0;
+  margin-left: calc(50% - 40vw);
 }
 
 .hero-info {
@@ -119,6 +120,7 @@
   gap: 5rem;
   width: fit-content;
   margin: 0 auto 2rem auto;
+  box-shadow: -0.1rem -0.1rem 0.15rem var(--color-secondary);
 }
 
 .discount-clock .subheading {
@@ -527,6 +529,10 @@ table tr:last-child td:last-child {
     padding: 1.5rem 1rem;
   }
 
+  .page-wrapper > .back-btn {
+    margin-left: 20vw;
+  }
+
   .main,
   .hero-info {
     flex-direction: column;
@@ -657,5 +663,24 @@ table tr:last-child td:last-child {
     width: 100%;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .page-wrapper > .back-btn {
+    margin-left: 2rem;
+  }
+
+  #slider,
+  #slider .slide {
+    padding: 1rem;
+  }
+
+  #slider {
+    gap: 0.5rem;
+  }
+
+  #slider .slider__btn {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.5rem;
   }
 }

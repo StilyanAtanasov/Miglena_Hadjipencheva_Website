@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -55,17 +55,17 @@ public class LoginWith2faModel : PageModel
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        [Required]
-        [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [Required(ErrorMessage = "Кодът за автентификация е задължителен.")]
+        [StringLength(7, ErrorMessage = "Кодът трябва да бъде между {2} и {1} символа.", MinimumLength = 6)]
         [DataType(DataType.Text)]
-        [Display(Name = "Authenticator code")]
+        [Display(Name = "Код за автентификация")]
         public string TwoFactorCode { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        [Display(Name = "Remember this machine")]
+        [Display(Name = "Запомни това устройство")]
         public bool RememberMachine { get; set; }
     }
 
@@ -116,7 +116,7 @@ public class LoginWith2faModel : PageModel
         else
         {
             _logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", user.Id);
-            ModelState.AddModelError(string.Empty, "Invalid authenticator code.");
+            ModelState.AddModelError(string.Empty, "Невалиден код за автентификация.");
             return Page();
         }
     }

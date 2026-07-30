@@ -1,9 +1,13 @@
 ﻿@page
+
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
 @model PersonalDataModel
+
 @{
 	ViewData["Heading"] = "Лични данни";
-	ViewData["ActivePage"] = ManageNavPages.PersonalData;
+	ViewData["ActivePage"] = PrivatePersonalInfo;
 }
 
 @section Styles

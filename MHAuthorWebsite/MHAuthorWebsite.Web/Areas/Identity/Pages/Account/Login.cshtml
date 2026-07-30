@@ -22,7 +22,11 @@
 			<div class="form-error" role="alert">
 				@foreach (ModelError error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
 				{
-					@Html.Raw(error.ErrorMessage)
+					<p>@error.ErrorMessage</p>
+				}
+				@if (!string.IsNullOrEmpty(Model.ResendConfirmationEmailUrl))
+				{
+					<p><a class="link active italic" href="@Model.ResendConfirmationEmailUrl">Потвърдете имейла си тук</a>.</p>
 				}
 			</div>
 			<div class="form-input-box flex-column">

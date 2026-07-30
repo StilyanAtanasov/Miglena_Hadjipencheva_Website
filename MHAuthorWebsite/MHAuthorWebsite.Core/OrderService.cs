@@ -96,7 +96,7 @@ public class OrderService : IOrderService
         {
             Status = OrderStatus.InReview.GetDisplayName(),
             OrderTime = DateTime.UtcNow.Ticks,
-            OrderSum = cartItems.Sum(ci => ci.Product.Price * ci.Quantity),
+            OrderSum = cartItems.Sum(ci => productPricesWithDiscounts[ci.ProductId] * ci.Quantity),
             Cod = true,
             PartialDelivery = false,
             Currency = Currency,
@@ -204,7 +204,7 @@ public class OrderService : IOrderService
                     Quantity = op.Quantity,
                 })
                 .ToArray()
-        })
+            })
         .ToArrayAsync();
 
         _logger.LogInformation("Successfully retrieved orders for User {UserId}, Page {Page}. Count: {Count}", userId, page, result.Length);

@@ -174,7 +174,9 @@ function makeTitle(newImage, newImageElement, oldImageRemoved = false) {
     currentTitleImageElement.classList.add(titleImgClassName);
     currentTitleImageElement.closest(`.${imgContainerClassName}`).classList.add(titleImgContainerClassName);
   } catch (error) {
-    return console.error(`error`, error); // TODO return a message
+    imageErrorField.textContent = `Възникна грешка при маркиране на заглавното изображение. Моля опитайте отново.`;
+    imageErrorField.scrollIntoView({ behavior: `smooth`, block: `center` });
+    return;
   }
 }
 

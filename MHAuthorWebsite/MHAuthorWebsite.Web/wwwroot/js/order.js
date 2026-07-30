@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 import { pushNotification } from "./notification.js";
 import { formatBgNumber, parseBgNumber } from "./common.js";
@@ -62,13 +62,13 @@ function updateTotals() {
 
   const orderSubtotalEur = parseBgNumber(grandEl.textContent);
   if (econtDeliveryDetails && orderSubtotalEur >= freeShippingThresholdEur && econtDeliveryDetails.shippingPrice != 0) {
-    pushNotification(`Р“СЂРµС€РєР° РїСЂРё РёР·С‡РёСЃР»СЏРІР°РЅРµС‚Рѕ РЅР° С†РµРЅР°С‚Р°! РњРѕР»СЏ, РѕРїРёС‚Р°Р№С‚Рµ РїРѕ-РєСЉСЃРЅРѕ!`, `error`);
+    pushNotification(`Грешка при изчисляването на цената! Моля, опитайте по-късно!`, `error`);
     return;
   }
 
   if (orderSubtotalEur >= freeShippingThresholdEur && econtDeliveryDetails.shippingPrice == 0) {
     shippingPricesEl.style.color = "var(--color-success)";
-    shippingPricesEl.innerHTML = `Р‘Р•Р—РџР›РђРўРќРћ`;
+    shippingPricesEl.innerHTML = `БЕЗПЛАТНО`;
   } else {
     shippingPricesEl.innerHTML = `
     <span id="shipping">${shippingEur.toFixed(2)}</span>
@@ -88,7 +88,7 @@ window.addEventListener(
     if (!data) return;
 
     if (data.shipment_error && data.shipment_error !== ``) {
-      pushNotification(`Р“СЂРµС€РєР° РїСЂРё РёР·С‡РёСЃР»СЏРІР°РЅРµС‚Рѕ РЅР° С†РµРЅР°С‚Р° Р·Р° РґРѕСЃС‚Р°РІРєР°. РњРѕР»СЏ РѕРїРёС‚Р°Р№С‚Рµ РїРѕ-РєСЉСЃРЅРѕ!`, `error`);
+      pushNotification(`Грешка при изчисляването на цената за доставка. Моля опитайте по-късно!`, `error`);
       return;
     }
 
@@ -102,7 +102,7 @@ form.addEventListener(`submit`, async function (e) {
   e.preventDefault();
 
   if (!econtDeliveryDetails) {
-    pushNotification(`РњРѕР»СЏ РїРѕРїСЉР»РЅРµС‚Рµ С„РѕСЂРјР°С‚Р° Р·Р° РґРѕСЃС‚Р°РІРєР°.`, `warning`);
+    pushNotification(`Моля попълнете формата за доставка.`, `warning`);
     return;
   }
 
@@ -121,7 +121,7 @@ form.addEventListener(`submit`, async function (e) {
     const orderId = await response.json();
     window.location = `/Order/OrderAccepted?orderId=${orderId}`;
   } else {
-    pushNotification(`Р“СЂРµС€РєР° РїСЂРё СЃСЉР·РґР°РІР°РЅРµС‚Рѕ РЅР° РїРѕСЂСЉС‡РєР°!`, `error`);
+    pushNotification(`Грешка при създаването на поръчка!`, `error`);
   }
 });
 

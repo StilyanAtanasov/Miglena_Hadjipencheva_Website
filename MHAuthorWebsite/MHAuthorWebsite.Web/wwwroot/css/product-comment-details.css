@@ -146,12 +146,15 @@
     flex: 0 0 auto;
     gap: 0.8rem;
     width: 100%;
-    justify-content: center;
+    overflow-y: scroll;
+    height: 9rem;
+    align-items: center;
   }
 
   .comment-details-section .image-previews .preview-thumb {
-    height: 6rem;
-    width: 6rem;
+    height: 8rem;
+    width: 8rem;
+    margin: 0 0.3rem;
   }
 
   .comment-details-section .main-image img {

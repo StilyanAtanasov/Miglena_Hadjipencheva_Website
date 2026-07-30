@@ -1,11 +1,14 @@
 ﻿@page
+
 @using MHAuthorWebsite.Web.Utils.Mappers
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
 @model ExternalLoginsModel
 @{
 	ViewData["Heading"] = "Външни акаунти";
-	ViewData["ActivePage"] = ManageNavPages.ExternalLogins;
+	ViewData["ActivePage"] = ExternalAccounts;
 }
 
 @section Styles

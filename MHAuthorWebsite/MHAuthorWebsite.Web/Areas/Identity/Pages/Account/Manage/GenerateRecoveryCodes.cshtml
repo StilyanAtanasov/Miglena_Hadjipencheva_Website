@@ -1,8 +1,11 @@
 ﻿@page
+
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
 @model GenerateRecoveryCodesModel
 @{
 	ViewData["Heading"] = "Генерирай кодове за възстановяване на двуфакторната автентикация";
-	ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+	ViewData["ActivePage"] = TFA;
 }
 
 @section Styles {

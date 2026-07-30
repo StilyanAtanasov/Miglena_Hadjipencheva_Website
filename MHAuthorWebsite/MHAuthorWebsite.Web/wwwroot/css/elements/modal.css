@@ -17,6 +17,8 @@
   z-index: 2001;
   font-size: 1.5rem;
   box-shadow: 0.1rem 0.1rem 2rem var(--color-grey);
+  max-height: 90vh;
+  overflow-y: scroll;
 }
 
 #modal .modal-content .modal-close {

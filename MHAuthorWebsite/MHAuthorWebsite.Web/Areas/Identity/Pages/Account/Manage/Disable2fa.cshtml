@@ -1,8 +1,12 @@
 ﻿@page
+
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
 @model Disable2faModel
+
 @{
 	ViewData["Heading"] = "Деактивиране на двуфакторна автентикация";
-	ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+	ViewData["ActivePage"] = TFA;
 }
 
 @section Styles {

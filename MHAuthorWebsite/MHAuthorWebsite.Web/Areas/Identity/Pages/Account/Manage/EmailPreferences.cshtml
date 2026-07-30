@@ -1,9 +1,12 @@
 @page
+
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
 @model EmailPreferencesModel
 
 @{
 	ViewData["Heading"] = "Имейл предпочитания";
-	ViewData["ActivePage"] = ManageNavPages.EmailPreferences;
+	ViewData["ActivePage"] = EmailPreferences;
 }
 
 @section Styles {

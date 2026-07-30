@@ -173,7 +173,9 @@ function remove(file, imgWrapper) {
       nextIndex = selectedFiles.length;
     }
   } catch {
-    return console.log(`error`); // TODO
+    imageErrorField.textContent = `Възникна грешка при премахване на изображението. Моля опитайте отново.`;
+    imageErrorField.scrollIntoView({ behavior: `smooth`, block: `center` });
+    return;
   }
 }
 
@@ -193,6 +195,8 @@ function makeTitle(newImage) {
     currentTitleImage.classList.add(titleImgClassName);
     currentTitleImage.closest(`.${imgContainerClassName}`).classList.add(titleImgContainerClassName);
   } catch {
-    return console.log(`error`); // TODO return a message
+    imageErrorField.textContent = `Възникна грешка при маркиране на заглавното изображение. Моля опитайте отново.`;
+    imageErrorField.scrollIntoView({ behavior: `smooth`, block: `center` });
+    return;
   }
 }

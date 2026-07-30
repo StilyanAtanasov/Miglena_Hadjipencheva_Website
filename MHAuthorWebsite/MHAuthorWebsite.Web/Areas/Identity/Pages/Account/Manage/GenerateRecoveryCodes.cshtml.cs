@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -72,7 +72,7 @@ public class GenerateRecoveryCodesModel : PageModel
         RecoveryCodes = recoveryCodes.ToArray();
 
         _logger.LogInformation("User with ID '{UserId}' has generated new 2FA recovery codes.", userId);
-        StatusMessage = "You have generated new recovery codes.";
+        StatusMessage = "Генерирахте нови кодове за възстановяване.";
         return RedirectToPage("./ShowRecoveryCodes");
     }
 }

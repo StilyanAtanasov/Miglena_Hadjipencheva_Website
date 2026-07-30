@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
 
 namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account;
 
@@ -50,6 +49,8 @@ public class LoginModel : PageModel
     /// </summary>
     [TempData]
     public string ErrorMessage { get; set; }
+
+    public string ResendConfirmationEmailUrl { get; set; }
 
     /// <summary>
     ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -130,15 +131,13 @@ public class LoginModel : PageModel
 
             if (!user.EmailConfirmed)
             {
-                string resendUrl = Url.Page(
+                ResendConfirmationEmailUrl = Url.Page(
                     "/Account/ResendEmailConfirmation",
                     null,
                     new { area = "Identity", email = Input.Email },
                     Request.Scheme);
 
-                string message = $"Моля потвърдете Вашия имейл адрес <a href='{HtmlEncoder.Default.Encode(resendUrl!)}'>тук</a>!";
-
-                ModelState.AddModelError(string.Empty, message);
+                ModelState.AddModelError(string.Empty, "Моля потвърдете Вашия имейл адрес.");
                 return Page();
 
             }

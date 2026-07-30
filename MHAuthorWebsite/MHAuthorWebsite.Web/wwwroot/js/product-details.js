@@ -118,7 +118,6 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
       if (response.ok) {
         if (!commentElement.classList.contains(`reply`)) {
-          debugger;
           const nextElement = commentElement.nextElementSibling;
           if (nextElement && nextElement.tagName === `HR`) nextElement.remove();
 

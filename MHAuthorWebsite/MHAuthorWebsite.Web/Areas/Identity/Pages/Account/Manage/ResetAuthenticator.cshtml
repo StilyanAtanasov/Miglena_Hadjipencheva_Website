@@ -1,8 +1,12 @@
 ﻿@page
+
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
 @model ResetAuthenticatorModel
+
 @{
 	ViewData["Heading"] = "Нулиране на ключа за автентикация";
-	ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+	ViewData["ActivePage"] = TFA;
 }
 
 @section Styles {

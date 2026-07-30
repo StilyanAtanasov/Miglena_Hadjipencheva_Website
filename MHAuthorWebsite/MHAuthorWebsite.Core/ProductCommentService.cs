@@ -89,7 +89,7 @@ public class ProductCommentService : IProductCommentService
         if (product.Comments
                 .Count(c => c.UserId == userId && c.ParentCommentId != null
                                                && c.Date > DateTime.UtcNow
-                                                   .AddHours(-MaxRepliesTimeFrameHours)) > MaxRepliesForTimeFrame
+                                                   .AddHours(-MaxRepliesTimeFrameHours)) >= MaxRepliesForTimeFrame
              && model.ParentCommentId != null)
             return ServiceResult.Failure(new()
             {
@@ -118,7 +118,6 @@ public class ProductCommentService : IProductCommentService
 
         await _repository.SaveChangesAsync();
 
-        await _cache.RemoveAsync(ProductCommentsKey(model.ProductId));
         await _cache.RemoveAsync(ProductCommentsKey(model.ProductId));
         _logger.LogInformation("User {UserId} added a comment for Product {ProductId}.", userId, model.ProductId);
         return ServiceResult.Ok();

@@ -1,8 +1,8 @@
-﻿<ul class="header-nav flex-row">
+<ul class="header-nav flex-row">
 	@if (User.Identity?.IsAuthenticated ?? false)
 	{
 		<li>
-			<a class="active flex-row" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+			<a class="active flex-row" asp-area="Identity" asp-page="/Account/Manage/Index" title="Управление на профила">
 				<i class="fa-solid regular fa-user-gear"></i> Профил
 			</a>
 		</li>
