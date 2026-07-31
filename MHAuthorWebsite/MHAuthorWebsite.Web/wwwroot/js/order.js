@@ -18,7 +18,7 @@ const eurToLevRate = parseBgNumber(document.querySelector(`.page-wrapper`).datas
 const freeShippingThresholdEur = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.freeShippingThresholdEur);
 const shippingPricesEl = document.getElementById(`shipping-prices`);
 
-window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(+grandEl.textContent, freeShippingThresholdEur), 700));
+window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(parseBgNumber(grandEl.textContent), freeShippingThresholdEur), 700));
 
 class EcontDeliveryDetails {
   constructor(data = {}) {
@@ -35,7 +35,7 @@ class EcontDeliveryDetails {
     this.address = data.address || null;
     this.priorityFrom = data.priority_from || null;
     this.priorityTo = data.priority_to || null;
-    this.shippingPrice = Number(data.shipping_price_cod || 0);
+    this.shippingPrice = parseBgNumber(data.shipping_price_cod || 0);
   }
 }
 
@@ -57,7 +57,7 @@ function setIframeSrc() {
 }
 
 function updateTotals() {
-  const shippingEur = Number(econtDeliveryDetails?.shippingPrice || 0);
+  const shippingEur = parseBgNumber(econtDeliveryDetails?.shippingPrice || 0);
   const shippingBgn = shippingEur * eurToLevRate;
 
   const orderSubtotalEur = parseBgNumber(grandEl.textContent);
@@ -71,14 +71,14 @@ function updateTotals() {
     shippingPricesEl.innerHTML = `БЕЗПЛАТНО`;
   } else {
     shippingPricesEl.innerHTML = `
-    <span id="shipping">${shippingEur.toFixed(2)}</span>
+    <span id="shipping">${formatBgNumber(shippingEur)}</span>
     <span>€ / </span>
-    <span id="shipping-bgn">${shippingBgn.toFixed(2)}</span>
+    <span id="shipping-bgn">${formatBgNumber(shippingBgn)}</span>
     <span> лв.</span>`;
   }
 
-  grandEl.textContent = (subtotal - discount + shippingEur).toFixed(2);
-  grandBgnEl.textContent = (subtotalBgn - discountBgn + shippingBgn).toFixed(2);
+  grandEl.textContent = formatBgNumber(subtotal - discount + shippingEur);
+  grandBgnEl.textContent = formatBgNumber(subtotalBgn - discountBgn + shippingBgn);
 }
 
 window.addEventListener(

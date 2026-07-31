@@ -36,6 +36,7 @@ using MHAuthorWebsite.Web.Utils.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RazorLight;
@@ -53,6 +54,18 @@ try
     Log.Information("Starting web host...");
 
     WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+    CultureInfo applicationCulture = new("bg-BG", useUserOverride: false)
+    {
+        NumberFormat =
+        {
+            NumberDecimalSeparator = ",",
+            NumberGroupSeparator = " "
+        }
+    };
+
+    CultureInfo.DefaultThreadCurrentCulture = applicationCulture;
+    CultureInfo.DefaultThreadCurrentUICulture = applicationCulture;
 
     if (builder.Environment.IsDevelopment()) builder.Configuration.AddUserSecrets<Program>(optional: true);
     if (builder.Environment.IsStaging()) builder.Configuration.AddEnvironmentVariables(prefix: "Staging__");
@@ -339,6 +352,15 @@ try
     app.UseStaticFiles();
     app.UseMiddleware<SeoEnvironmentMiddleware>();
 
+    RequestLocalizationOptions localizationOptions = new RequestLocalizationOptions
+    {
+        DefaultRequestCulture = new RequestCulture(applicationCulture),
+        SupportedCultures = new[] { applicationCulture },
+        SupportedUICultures = new[] { applicationCulture }
+    };
+
+    app.UseRequestLocalization(localizationOptions);
+
     app.UseRouting();
 
     app.UseCors("DefaultPolicy");
@@ -347,14 +369,6 @@ try
     app.UseAuthentication();
     app.UseMiddleware<LegalDocumentsAccessMiddleware>();
     app.UseAuthorization();
-
-    string[] supportedCultures = { "bg-BG" };
-    RequestLocalizationOptions localizationOptions = new RequestLocalizationOptions()
-        .SetDefaultCulture("bg-BG")
-        .AddSupportedCultures(supportedCultures)
-        .AddSupportedUICultures(supportedCultures);
-
-    app.UseRequestLocalization(localizationOptions);
 
     app.MapControllerRoute(
         name: "default",
