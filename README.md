@@ -1,33 +1,65 @@
-# MHAuthorWebsite
+# 📚 MHAuthorWebsite
+
+<p align="center">
+  <img src="https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 8.0" />
+  <img src="https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt="ASP.NET Core MVC" />
+  <img src="https://img.shields.io/badge/EF%20Core-8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt="Entity Framework Core 8" />
+  <img src="https://img.shields.io/badge/ASP.NET%20Identity-Authentication-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt="ASP.NET Identity" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Database-SQL%20Server-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white" alt="SQL Server" />
+  <img src="https://img.shields.io/badge/Tests-NUnit-25A162?style=for-the-badge&logo=nunit&logoColor=white" alt="NUnit tests" />
+  <img src="https://img.shields.io/badge/Cloudinary-Media%20Storage-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white" alt="Cloudinary" />
+  <img src="https://img.shields.io/badge/Redis-Caching-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis caching" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Econt-Shipping-0B7A75?style=for-the-badge" alt="Econt shipping integration" />
+  <img src="https://img.shields.io/badge/reCAPTCHA-Spam%20Protection-4353FF?style=for-the-badge&logo=google&logoColor=white" alt="reCAPTCHA" />
+  <img src="https://img.shields.io/badge/jQuery-Frontend-0769AD?style=for-the-badge&logo=jquery&logoColor=white" alt="jQuery" />
+  <img src="https://img.shields.io/badge/Quill-Rich%20Text%20Editor-1A1A1A?style=for-the-badge" alt="Quill rich text editor" />
+</p>
+
+<p align="center">
+  <strong>Author website · Online book and product platform · Content management · Reader accounts</strong>
+</p>
+
+<p align="center">
+  <a href="#local-setup">🚀 Setup</a> ·
+  <a href="#architecture">🏗️ Architecture</a> ·
+  <a href="#testing">🧪 Testing</a> ·
+  <a href="#security-and-privacy">🔒 Security</a>
+</p>
 
 MHAuthorWebsite is a Bulgarian author website and online book/product platform for Miglena Hadjipencheva. It combines a public catalogue of literary works with authenticated reader features, shopping and order management, content publishing, media management, and an administration area.
 
 This README documents the implementation currently present in the repository. It is intentionally detailed because the solution has grown into a multi-project ASP.NET Core application rather than a single-page website.
 
-## Contents
+## 📃 Contents
 
-- [Purpose and product idea](#purpose-and-product-idea)
-- [Implemented capabilities](#implemented-capabilities)
-- [Technology stack](#technology-stack)
-- [Architecture](#architecture)
-- [Repository layout](#repository-layout)
-- [Runtime request flow](#runtime-request-flow)
-- [Domain model](#domain-model)
-- [Public user experience](#public-user-experience)
-- [Identity and account management](#identity-and-account-management)
-- [Administration](#administration)
-- [Background processing and integrations](#background-processing-and-integrations)
-- [Frontend implementation](#frontend-implementation)
-- [Security and privacy](#security-and-privacy)
-- [Configuration](#configuration)
-- [Local setup](#local-setup)
-- [Database and migrations](#database-and-migrations)
-- [Testing](#testing)
-- [Build, run, and publish](#build-run-and-publish)
-- [Operational notes and current caveats](#operational-notes-and-current-caveats)
-- [Development conventions](#development-conventions)
+- 🧭 [Purpose and product idea](#purpose-and-product-idea)
+- ✨ [Implemented capabilities](#implemented-capabilities)
+- 🧰 [Technology stack](#technology-stack)
+- 🏗️ [Architecture](#architecture)
+- 🗂️ [Repository layout](#repository-layout)
+- 🔄 [Runtime request flow](#runtime-request-flow)
+- 🧩 [Domain model](#domain-model)
+- 🌐 [Public user experience](#public-user-experience)
+- 👤 [Identity and account management](#identity-and-account-management)
+- 🛠️ [Administration](#administration)
+- ⚙️ [Background processing and integrations](#background-processing-and-integrations)
+- 🎨 [Frontend implementation](#frontend-implementation)
+- 🔒 [Security and privacy](#security-and-privacy)
+- 🔧 [Configuration](#configuration)
+- 🚀 [Local setup](#local-setup)
+- 🗃️ [Database and migrations](#database-and-migrations)
+- 🧪 [Testing](#testing)
+- 📦 [Build, run, and publish](#build-run-and-publish)
+- ⚠️ [Operational notes and current caveats](#operational-notes-and-current-caveats)
+- 📐 [Development conventions](#development-conventions)
 
-## Purpose and product idea
+## 🧭 Purpose and product idea
 
 The application is designed around two connected ideas:
 
@@ -38,7 +70,7 @@ The author or an administrator can maintain the catalogue, works, images, announ
 
 The solution is a server-rendered, modular monolith. All modules are deployed as one ASP.NET Core web application, but responsibilities are separated across projects and interfaces.
 
-## Implemented capabilities
+## ✨ Implemented capabilities
 
 ### Public website
 
@@ -92,7 +124,15 @@ The admin area is implemented as the `Admin` MVC area and has dedicated controll
 - Administrator notification preferences.
 - Quill-based rich-text editing support in admin views.
 
-## Technology stack
+## 🧰 Technology stack
+
+| Area            | Main technologies                                          |
+| --------------- | ---------------------------------------------------------- |
+| 🖥️ Platform     | .NET 8 / C#, ASP.NET Core MVC, Razor views and Razor Pages |
+| 🗄️ Persistence  | Entity Framework Core 8, SQL Server, ASP.NET Identity      |
+| ☁️ Integrations | Cloudinary, Redis, Econt, email, reCAPTCHA                 |
+| 🎨 Frontend     | Razor-rendered HTML, JavaScript, CSS, jQuery, Quill        |
+| 🧪 Testing      | NUnit, Moq, EF Core InMemory, Coverlet                     |
 
 ### Platform and application framework
 
@@ -156,7 +196,7 @@ The admin area is implemented as the `Admin` MVC area and has dedicated controll
 - `Microsoft.VisualStudio.Web.CodeGeneration.Design` for web scaffolding support.
 - LibMan configuration exists, but its current library list is empty; the checked-in frontend libraries are already present under `wwwroot`.
 
-## Architecture
+## 🏗️ Architecture
 
 The architecture is a layered modular monolith with dependency inversion at the service boundaries:
 
@@ -192,7 +232,7 @@ Supporting projects provide shared concerns:
 
 The core services depend on contracts instead of directly embedding infrastructure details. The web composition root in `Program.cs` maps those contracts to data and infrastructure implementations using ASP.NET Core dependency injection.
 
-## Repository layout
+## 🗂️ Repository layout
 
 The solution is `MHAuthorWebsite/MHAuthorWebsite.sln` and contains 11 projects:
 
@@ -220,7 +260,7 @@ MHAuthorWebsite/
 
 Generated `bin` and `obj` directories are present in the working tree in some environments, but they are build output and are excluded by `.gitignore`. They should not be treated as source architecture.
 
-## Runtime request flow
+## 🔄 Runtime request flow
 
 The application starts in `MHAuthorWebsite.Web/Program.cs`:
 
@@ -239,7 +279,7 @@ The application starts in `MHAuthorWebsite.Web/Program.cs`:
 
 The request pipeline includes forwarded headers, HTTPS redirection, static files, SEO environment middleware, routing, CORS, output caching, authentication, legal-document access middleware, authorization, Bulgarian request localization, and endpoint mapping.
 
-## Domain model
+## 🧩 Domain model
 
 The main EF Core entities are:
 
@@ -275,7 +315,7 @@ The main EF Core entities are:
 
 `ApplicationDbContext` derives from `IdentityDbContext<ApplicationUser>`, exposes all of these sets, applies entity configurations from the data assembly, and applies a DateTime value converter that reads persisted dates as UTC.
 
-## Public user experience
+## 🌐 Public user experience
 
 Public controllers include:
 
@@ -290,7 +330,7 @@ Public controllers include:
 
 The UI is primarily server-rendered through Razor. JavaScript progressively enhances forms and page interactions with AJAX-style requests, loaders, modals, pagination, search/filter controls, image previews, notifications, cart operations, comment reactions, and profile settings.
 
-## Identity and account management
+## 👤 Identity and account management
 
 Identity pages are customized under `Areas/Identity/Pages/Account`. The implementation covers the standard account lifecycle plus the site's business rules:
 
@@ -304,7 +344,7 @@ Identity pages are customized under `Areas/Identity/Pages/Account`. The implemen
 
 This means an authenticated user may still be redirected or denied from protected functionality until the latest applicable legal documents have been accepted.
 
-## Administration
+## 🛠️ Administration
 
 Admin controllers inherit from `AdminBaseController` and are grouped in the `Admin` area. The application separates admin orchestration into dedicated core services and data services rather than placing EF queries in controllers.
 
@@ -312,7 +352,7 @@ The admin product workflow supports dynamic product-type attributes, Cloudinary 
 
 Announcements can be persisted and delivered through scheduled notification records. Delivery tracking and administrator preferences are modeled explicitly so notification behavior can be controlled without changing the core announcement entity.
 
-## Background processing and integrations
+## ⚙️ Background processing and integrations
 
 Three hosted services are registered by the web application:
 
@@ -343,7 +383,7 @@ Email settings are bound to `EmailSettings`. Email rendering uses RazorLight and
 
 Both the normal cache contract and the fast-cache contract are mapped to `RedisCacheService`. Cache-key management is handled by `GlobalCacheKeysManagementService`. The repository contains the Redis package reference and service mapping; a Redis connection setting must be supplied by the deployment configuration used by the selected implementation.
 
-## Frontend implementation
+## 🎨 Frontend implementation
 
 Static assets are under `MHAuthorWebsite.Web/wwwroot`.
 
@@ -365,7 +405,7 @@ Static assets are under `MHAuthorWebsite.Web/wwwroot`.
 
 The project also contains local jQuery, jQuery Validation, and unobtrusive validation assets. This reduces dependence on a runtime CDN for those libraries.
 
-## Security and privacy
+## 🔒 Security and privacy
 
 The application has security controls at several layers:
 
@@ -385,7 +425,7 @@ The application has security controls at several layers:
 
 The repository ignores `Secrets`, `App_Data`, publish profiles, and system logs. Credentials, provider secrets, database passwords, and private deployment settings must remain outside committed source.
 
-## Configuration
+## 🔧 Configuration
 
 Configuration is assembled from `appsettings.json`, an environment-specific appsettings file, environment variables, and development user secrets. The web project has a user-secrets ID in its project file.
 
@@ -424,7 +464,7 @@ The application fails fast when Cloudinary account details are missing. It also 
 
 `AllowedHosts` is currently set to `*` in the base and production configuration files. Review this value for a production deployment with a known host set.
 
-## Local setup
+## 🚀 Local setup
 
 ### Prerequisites
 
@@ -489,7 +529,7 @@ The development launch profiles expose HTTP at `http://localhost:5186` and HTTPS
 
 At startup, the application seeds the administrator account/role through `AdminSeeder` and generates missing comment-image previews. Ensure the database and Cloudinary configuration are available before starting the web project.
 
-## Database and migrations
+## 🗃️ Database and migrations
 
 The data project contains:
 
@@ -509,7 +549,7 @@ dotnet ef database update --project .\MHAuthorWebsite.Data --startup-project .\M
 
 Use a separate development database when experimenting with migrations. Production database changes should be reviewed, backed up, and applied through the deployment process.
 
-## Testing
+## 🧪 Testing
 
 The test project is `MHAuthorWebsite.Tests.Services`. It focuses on core service behavior and uses NUnit, Moq, and EF Core InMemory where appropriate.
 
@@ -537,7 +577,7 @@ dotnet test .\MHAuthorWebsite\MHAuthorWebsite.Tests.Services\MHAuthorWebsite.Tes
 
 The current automated coverage is service-focused. Controller behavior, full Razor rendering, external OAuth providers, real Cloudinary calls, Redis, Econt, SMTP delivery, hosted-service scheduling, and browser workflows require integration or end-to-end testing beyond these unit suites.
 
-## Build, run, and publish
+## 📦 Build, run, and publish
 
 Common commands from `MHAuthorWebsite/`:
 
@@ -552,7 +592,7 @@ The web project uses `Microsoft.NET.Sdk.Web`. The Core project copies the Razor 
 
 The repository also contains deployment-related files under `Properties`, including launch settings and service-dependency metadata. Publish profiles are intentionally ignored and must be supplied by the deployment environment.
 
-## Operational notes and current caveats
+## ⚠️ Operational notes and current caveats
 
 The following points are important when maintaining or deploying the project:
 
@@ -566,7 +606,7 @@ The following points are important when maintaining or deploying the project:
 - The changelog describes a stable 1.0 release and subsequent comment/order/account improvements, while also noting that minor bugs or unimplemented functionality may remain. Treat it as release history rather than a complete feature specification.
 - Service unit tests are valuable but do not prove that all external integrations or browser workflows work in a deployed environment.
 
-## Development conventions
+## 📐 Development conventions
 
 - Keep controllers thin: validate/authorize requests, call a core service, and translate the result to a view or HTTP response.
 - Put business rules in core services and expose them through interfaces.
@@ -578,6 +618,6 @@ The following points are important when maintaining or deploying the project:
 - Keep credentials and generated output outside source control.
 - Maintain Bulgarian localization resources when changing Identity validation or user-facing validation messages.
 
-## License
+## 📄 License
 
 See [LICENSE](LICENSE) for the repository's license terms.
