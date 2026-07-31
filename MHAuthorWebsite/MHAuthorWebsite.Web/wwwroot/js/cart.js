@@ -16,7 +16,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
   const discountElement = document.querySelector(`#discount-global`);
   const discountBgnElement = document.querySelector(`#discount-global-bgn`);
 
-  window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(+grandTotalPriceElement.textContent, freeShippingThresholdEur), 350));
+  window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(parseBgNumber(grandTotalPriceElement.textContent), freeShippingThresholdEur), 350));
 
   const quantityInputs = document.querySelectorAll(`[data-role="quantity-input"]`);
   productsCount = quantityInputs.length;
@@ -102,12 +102,12 @@ document.addEventListener(`DOMContentLoaded`, function () {
   function updateCartSummary(cartTotal) {
     const selectedItems = [...document.querySelectorAll(`tbody tr`)].filter(i => i.querySelector(`[data-role="is-selected-input"]`).checked === true);
 
-    const newPriceEur = cartTotal ?? selectedItems.reduce((partialSum, i) => partialSum + parseFloat(i.querySelector(`.sum-price`).textContent), 0);
+    const newPriceEur = cartTotal == null ? selectedItems.reduce((partialSum, i) => partialSum + parseBgNumber(i.querySelector(`.sum-price`).textContent), 0) : parseBgNumber(cartTotal);
     grandTotalPriceElement.textContent = formatBgNumber(newPriceEur);
     grandTotalPriceBgnElement.textContent = `${formatBgNumber(newPriceEur * eurToLevRate)}`;
 
     const oldPriceEur = selectedItems.reduce(
-      (partialSum, i) => partialSum + parseFloat(i.querySelector(`.unit-price:not(.discounted-price) .unit-price-value`).textContent) * i.querySelector(`.quantity-input .input`).value,
+      (partialSum, i) => partialSum + parseBgNumber(i.querySelector(`.unit-price:not(.discounted-price) .unit-price-value`).textContent) * i.querySelector(`.quantity-input .input`).value,
       0,
     );
 
