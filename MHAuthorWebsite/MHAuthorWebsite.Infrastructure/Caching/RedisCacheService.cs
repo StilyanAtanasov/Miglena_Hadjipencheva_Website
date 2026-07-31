@@ -20,9 +20,9 @@ public class RedisCacheService : IFastCacheService
     public RedisCacheService(HttpClient httpClient, IConfiguration config)
     {
         _httpClient = httpClient;
-        _baseUrl = config["Redis:Upstash:RestUrl"]!.TrimEnd('/');
+        _baseUrl = config["Redis:RestUrl"]!.TrimEnd('/');
 
-        string? token = config["Redis:Upstash:RestToken"];
+        string? token = config["Redis:RestToken"];
 
         if (string.IsNullOrEmpty(_baseUrl)) throw new InvalidOperationException("Redis RestUrl is not configured.");
         if (string.IsNullOrEmpty(token)) throw new InvalidOperationException("Redis token is not configured.");

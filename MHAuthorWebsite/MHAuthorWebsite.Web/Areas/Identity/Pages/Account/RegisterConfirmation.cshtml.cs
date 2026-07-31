@@ -5,7 +5,6 @@
 using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
@@ -17,13 +16,9 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
     public class RegisterConfirmationModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailSender _sender;
 
-        public RegisterConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender sender)
-        {
+        public RegisterConfirmationModel(UserManager<ApplicationUser> userManager) =>
             _userManager = userManager;
-            _sender = sender;
-        }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -68,7 +63,7 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                 EmailConfirmationUrl = Url.Page(
                     "/Account/ConfirmEmail",
                     pageHandler: null,
-                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                    values: new { area = "Identity", userId, code, returnUrl },
                     protocol: Request.Scheme);
             }
 

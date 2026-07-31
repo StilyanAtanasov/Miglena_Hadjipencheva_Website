@@ -10,19 +10,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account;
 
-public class LoginWith2faModel : PageModel
+public class LoginWith2FaModel : PageModel
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly ILogger<LoginWith2faModel> _logger;
+    private readonly ILogger<LoginWith2FaModel> _logger;
 
-    public LoginWith2faModel(
+    public LoginWith2FaModel(
         SignInManager<ApplicationUser> signInManager,
-        UserManager<ApplicationUser> userManager,
-        ILogger<LoginWith2faModel> logger)
+        ILogger<LoginWith2FaModel> logger)
     {
         _signInManager = signInManager;
-        _userManager = userManager;
         _logger = logger;
     }
 
@@ -100,8 +97,6 @@ public class LoginWith2faModel : PageModel
         var authenticatorCode = Input.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
 
         var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, rememberMe, Input.RememberMachine);
-
-        var userId = await _userManager.GetUserIdAsync(user);
 
         if (result.Succeeded)
         {
