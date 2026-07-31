@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Contracts.DataServices;
 using MHAuthorWebsite.Core.Dtos.Cart;
@@ -93,8 +93,6 @@ public class CartService : ICartService
 
             await InvalidateCacheAsync(userId);
 
-            await InvalidateCacheAsync(userId);
-
             _logger.LogInformation("User {UserId} added {Quantity} items of Product {ProductId} to cart.", userId, quantity, productId);
 
             return ServiceResult.Ok();
@@ -165,12 +163,12 @@ public class CartService : ICartService
     {
         Cart? cart = await _repository.FindByExpressionAsync<Cart>(c => c.UserId == userId, true, c => c.CartItems);
 
-        if (cart == null) return ServiceResult.BadRequest(new() { ["cart"] = "User has nothing in cart!" });
+        if (cart == null) return ServiceResult.BadRequest(new() { ["cart"] = "Потребителят няма нищо в количката!" });
 
         CartItem? cartItem = cart.CartItems
             .FirstOrDefault(c => c.Id == itemId);
 
-        if (cartItem == null) return ServiceResult.BadRequest(new() { ["product"] = "User does not have the specified product in their cart!" });
+        if (cartItem == null) return ServiceResult.BadRequest(new() { ["product"] = "Продуктът не е намерен в количката!" });
 
         _repository.Delete(cartItem);
         if (cart.CartItems.Count == 1) _repository.Delete(cart);

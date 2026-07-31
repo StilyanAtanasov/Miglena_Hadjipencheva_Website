@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Core.Models.Enums;
+using MHAuthorWebsite.Core.Models.Enums;
+using MHAuthorWebsite.Web.Common.Localization;
 using System.ComponentModel.DataAnnotations;
 
 namespace MHAuthorWebsite.Web.ViewModels.Admin.Product;
@@ -11,7 +12,7 @@ public class AttributeValueForm : IValidatableObject
 
     public string Label { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public ProductAttributeDisplayPosition DisplayPosition { get; set; }
 
     public AttributeDataType DataType { get; set; }

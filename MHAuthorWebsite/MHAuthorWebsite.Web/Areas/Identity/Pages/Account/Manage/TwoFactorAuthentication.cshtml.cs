@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -80,7 +80,7 @@ public class TwoFactorAuthenticationModel : PageModel
         }
 
         await _signInManager.ForgetTwoFactorClientAsync();
-        StatusMessage = "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.";
+        StatusMessage = "Текущият браузър беше премахнат от доверените. При следващ вход ще трябва да въведете код за двуфакторна автентификация.";
         return RedirectToPage();
     }
 }

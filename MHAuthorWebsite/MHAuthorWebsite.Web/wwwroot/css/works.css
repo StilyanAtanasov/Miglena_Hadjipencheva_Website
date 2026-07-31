@@ -38,7 +38,7 @@
 
 /* Works Grid */
 .works-container {
-  max-width: 75vw;
+  max-width: 120rem;
   margin: 0 auto;
   padding: 0 1.5rem 5rem 1.5rem;
 }
@@ -55,7 +55,7 @@
   flex-wrap: wrap;
   gap: 2.5rem;
   margin-bottom: 5rem;
-  max-width: 75vw;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
   justify-content: center;
@@ -221,9 +221,10 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 800px) {
-  .works-hero h1 {
-    font-size: 3rem;
+@media (max-width: 960px) {
+  .works-hero p {
+    width: 80%;
+    font-size: 1.7rem;
   }
 }
 
@@ -233,22 +234,21 @@
     border-radius: 0 0 1.25rem 1.25rem / 2rem;
   }
 
-  .works-hero h1 {
-    font-size: 2.5rem;
-  }
-
   .works-hero p {
-    font-size: 1.25rem;
+    font-size: 1.6rem;
+    width: 95%;
   }
 
   .works-grid {
-    grid-template-columns: 1fr;
-    max-width: 90vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90vw;
     margin: 0 auto;
   }
 
   .work-card {
-    width: 100%;
+    width: 70%;
   }
 
   .work-admin-overlay {
@@ -262,10 +262,10 @@
   }
 
   .work-title {
-    font-size: 3rem;
+    font-size: 2.2rem;
   }
 
   .work-link {
-    font-size: 2.5rem;
+    font-size: 1.6rem;
   }
 }

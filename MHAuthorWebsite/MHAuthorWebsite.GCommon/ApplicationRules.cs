@@ -132,6 +132,27 @@ public static class ApplicationRules
             public const string Liked = nameof(Liked);
             public const string Cart = nameof(Cart);
         }
+
+        public static class Account
+        {
+            public const string PersonalInfo = nameof(PersonalInfo);
+            public const string MyOrders = nameof(MyOrders);
+
+            public static class Settings
+            {
+                public const string Password = nameof(Password);
+                public const string ExternalAccounts = nameof(ExternalAccounts);
+                // ReSharper disable once InconsistentNaming
+                public const string TFA = nameof(TFA);
+                public const string PrivatePersonalInfo = nameof(PrivatePersonalInfo);
+                public const string EmailPreferences = nameof(EmailPreferences);
+                public const string LegalBinding = nameof(LegalBinding);
+                public static IEnumerable<string> All => new[]
+                {
+                    Password, ExternalAccounts, TFA, PrivatePersonalInfo, EmailPreferences, LegalBinding
+                };
+            }
+        }
     }
 
     public static class Pagination

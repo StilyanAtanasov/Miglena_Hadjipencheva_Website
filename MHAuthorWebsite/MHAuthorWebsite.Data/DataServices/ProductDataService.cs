@@ -87,12 +87,12 @@ public class ProductDataService : IProductDataService
                 HasMoreComments = product.Comments.Count(c => c.ParentCommentId == null) > CommentPageCount,
                 AverageRating = product.Comments.Any(c => c.ParentCommentId == null && c.Rating.HasValue)
                     ? (decimal)Math.Round(product.Comments
-                        .Where(c => c.ParentCommentId == null && c.Rating.HasValue)
+                        .Where(c => c.ParentCommentId == null && c.Rating.HasValue && !c.IsDeleted && !c.User.IsDeleted)
                         .Average(c => c.Rating!.Value), 2)
                     : 0m,
-                TotalBaseComments = product.Comments.Count(c => c.ParentCommentId == null),
+                TotalBaseComments = product.Comments.Count(c => c.ParentCommentId == null && !c.IsDeleted && !c.User.IsDeleted),
                 CommentsCountByStarsRating = product.Comments
-                    .Where(c => c.Rating.HasValue && c.ParentCommentId == null)
+                    .Where(c => c.Rating.HasValue && c.ParentCommentId == null && !c.IsDeleted && !c.User.IsDeleted)
                     .GroupBy(c => c.Rating!.Value)
                     .Select(g => new StarCountDto
                     {
@@ -101,7 +101,7 @@ public class ProductDataService : IProductDataService
                     })
                     .ToArray(),
                 Comments = product.Comments
-                .Where(c => c.ParentCommentId == null)
+                .Where(c => c.ParentCommentId == null && !c.IsDeleted && !c.User.IsDeleted)
                 .OrderByDescending(c => c.Reactions.Count(r => r.Reaction == CommentReaction.Like))
                 .ThenByDescending(c => c.Rating)
                 .ThenByDescending(c => c.Date)

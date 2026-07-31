@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -99,14 +99,14 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
 
             if (remoteError != null)
             {
-                ErrorMessage = $"Error from external provider: {remoteError}";
+                ErrorMessage = $"Грешка от външния доставчик: {remoteError}";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
             ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Error loading external login information.";
+                ErrorMessage = "Грешка при зареждането на информацията за вход от външния доставчик.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
@@ -137,8 +137,8 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                     null,
                     new { area = "Identity", email = appUser.Email },
                     Request.Scheme);
-                string message = $"Моля потвърдете Вашия имейл адрес <a href='{HtmlEncoder.Default.Encode(resendUrl!)}'>тук</a>!";
-                TempData["ErrorMessage"] = message;
+                TempData["ErrorMessage"] = "Моля потвърдете Вашия имейл адрес.";
+                TempData["ResendConfirmationEmailUrl"] = resendUrl;
 
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
@@ -197,8 +197,8 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                     null,
                     new { area = "Identity", email = user!.Email },
                     Request.Scheme);
-                string message2 = $"Моля потвърдете Вашия имейл адрес <a href='{HtmlEncoder.Default.Encode(resendUrl2!)}'>тук</a>!";
-                TempData["ErrorMessage"] = message2;
+                TempData["ErrorMessage"] = "Моля потвърдете Вашия имейл адрес.";
+                TempData["ResendConfirmationEmailUrl"] = resendUrl2;
 
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
@@ -214,7 +214,7 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Error loading external login information during confirmation.";
+                ErrorMessage = "Грешка при зареждането на информацията за вход от външния доставчик по време на потвърждението.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 

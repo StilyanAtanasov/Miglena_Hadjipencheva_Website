@@ -1,4 +1,4 @@
-﻿@page
+@page
 @using MHAuthorWebsite.Web.Utils.Mappers
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Mvc.ModelBinding
@@ -22,7 +22,11 @@
 			<div class="form-error" role="alert">
 				@foreach (ModelError error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
 				{
-					@Html.Raw(error.ErrorMessage)
+					<p>@error.ErrorMessage</p>
+				}
+				@if (!string.IsNullOrEmpty(Model.ResendConfirmationEmailUrl))
+				{
+					<p><a class="link active italic" href="@Model.ResendConfirmationEmailUrl">Потвърдете имейла си тук</a>.</p>
 				}
 			</div>
 			<div class="form-input-box flex-column">
@@ -32,7 +36,12 @@
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.Password">Парола</label>
-				<input class="form-input" asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="password" />
+				<div class="password-input-wrapper">
+					<input class="form-input" asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="Парола..." />
+					<button type="button" class="password-toggle-btn" aria-label="Покажи/скрий парола">
+						<i class="fa-regular fa-eye"></i>
+					</button>
+				</div>
 				<span class="input-error" asp-validation-for="Input.Password"></span>
 			</div>
 			
@@ -90,4 +99,5 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script src="~/js/account/password-toggle.js" asp-append-version="true"></script>
 }

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -50,9 +50,9 @@ public class LoginWithRecoveryCodeModel : PageModel
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [BindProperty]
-        [Required]
+        [Required(ErrorMessage = "Кодът за възстановяване е задължителен.")]
         [DataType(DataType.Text)]
-        [Display(Name = "Recovery Code")]
+        [Display(Name = "Код за възстановяване")]
         public string RecoveryCode { get; set; }
     }
 
@@ -87,8 +87,6 @@ public class LoginWithRecoveryCodeModel : PageModel
 
         var result = await _signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
 
-        var userId = await _userManager.GetUserIdAsync(user);
-
         if (result.Succeeded)
         {
             _logger.LogInformation("User with ID '{UserId}' logged in with a recovery code.", user.Id);
@@ -102,7 +100,7 @@ public class LoginWithRecoveryCodeModel : PageModel
         else
         {
             _logger.LogWarning("Invalid recovery code entered for user with ID '{UserId}' ", user.Id);
-            ModelState.AddModelError(string.Empty, "Invalid recovery code entered.");
+            ModelState.AddModelError(string.Empty, "Въведеният код за възстановяване е невалиден.");
             return Page();
         }
     }

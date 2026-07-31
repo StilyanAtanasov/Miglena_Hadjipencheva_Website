@@ -1,5 +1,6 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Order
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account
 @model ICollection<MyOrderViewModel>
 
 @{
@@ -7,6 +8,7 @@
 	ViewData["MetaDescription"] = "Пълен списък с вашите поръчки!";
 	Layout = "/Areas/Identity/Pages/Account/Manage/_Layout.cshtml";
 	ViewData["RequireTimeZoneManager"] = true;
+	ViewData["ActivePage"] = MyOrders;
 }
 
 @section Styles {

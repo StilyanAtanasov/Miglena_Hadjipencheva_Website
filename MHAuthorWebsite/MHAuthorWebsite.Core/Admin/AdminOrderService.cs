@@ -440,8 +440,6 @@ public class AdminOrderService : OrderService, IAdminOrderService
                     TotalPrice = i.UnitPrice * i.Quantity,
                     TotalWeight = i.Product.Weight * i.Quantity
                 }).ToArray()
-            // NOTE: The API requires Items to update the order info.
-            // TODO make the logic around this cleaner
         };
 
         return (order, orderDto);

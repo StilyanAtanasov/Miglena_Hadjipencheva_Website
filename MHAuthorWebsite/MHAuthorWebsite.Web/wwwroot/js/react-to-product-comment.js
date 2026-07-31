@@ -25,13 +25,14 @@ export async function reactToComment(reactionBtn) {
       reactionsBox.querySelector(`[data-reaction-type="${r.reaction}"] .reaction-count`).textContent = r.count;
     });
 
-    reactionBtn.querySelector(`i`).classList.toggle(`fa-solid`);
-    reactionBtn.querySelector(`i`).classList.toggle(`fa-solid`);
+    const icon = reactionBtn.querySelector(`i`);
+    const wasActive = !icon.classList.contains(`regular`);
+
     reactionsBox.querySelectorAll(`button i`).forEach(i => {
-      if (!reactionBtn.contains(i)) {
-        i.classList.replace(`fa-solid`, `fa-solid`);
-      }
+      i.classList.add(`regular`);
     });
+
+    icon.classList.toggle(`regular`, wasActive);
   } else if (response.status === 403) {
     pushNotification(`Не може да реагирате на свой коментар!`, `warning`);
   } else pushNotification(`Възникна неочаквана грешка!`, `error`);

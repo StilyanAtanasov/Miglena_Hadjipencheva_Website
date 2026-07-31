@@ -1,22 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+using MHAuthorWebsite.Web.Common.Localization;
+using System.ComponentModel.DataAnnotations;
 using static MHAuthorWebsite.GCommon.EntityConstraints.ProductDiscount;
 
 namespace MHAuthorWebsite.Web.ViewModels.Admin.Product;
 
 public class AddProductDiscountFormViewModel : IValidatableObject
 {
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public Guid ProductId { get; set; }
 
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public decimal NewPrice { get; set; }
 
     public decimal CurrentPrice { get; set; }
 
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public DateTime StartDate { get; set; }
 
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
     public DateTime EndDate { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

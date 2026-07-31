@@ -1,21 +1,22 @@
 /* ----- Splash ----- */
 .splash {
   align-items: center;
-  width: 100vw;
+  width: 100%;
   min-height: calc(100vh - 10rem);
   color: #fff;
   text-align: center;
-  padding: 10rem 4rem;
+  padding: clamp(7rem, 10vw, 10rem) clamp(2rem, 5vw, 4rem);
   background-image: url(../img/splash.webp);
   background-repeat: no-repeat;
   background-size: cover;
+  position: relative;
 }
 
 .splash-text {
   position: absolute;
-  top: 51vh;
+  top: 55%;
   left: 68vw;
-  transform: translate(-50%, -50%);
+  transform: translateY(-50%);
   width: max-content;
   animation: splash-text ease-in-out 1s;
   animation-fill-mode: forwards;
@@ -23,14 +24,14 @@
 
 .splash-text .title {
   letter-spacing: 0.3rem;
-  font-size: 7rem;
+  font-size: clamp(4rem, 5.5vw, 7rem);
   text-shadow: 0.1rem 0.2rem 0.5rem var(--color-secondary-lighter);
   animation: splash-text-title linear 3s;
   animation-fill-mode: forwards;
 }
 
 .splash-text .subtitle {
-  font-size: 3.8rem;
+  font-size: clamp(2.4rem, 2.8vw, 3.8rem);
   letter-spacing: 0.4rem;
   position: relative;
 }
@@ -47,7 +48,7 @@
 }
 
 .section {
-  padding: 10rem 5rem;
+  padding: clamp(6rem, 9vw, 10rem) clamp(2rem, 5vw, 5rem);
 }
 
 /* ----- About ----- */
@@ -114,21 +115,21 @@
 .quotes {
   font-size: 2.8rem;
   position: relative;
-  padding: 20rem 35rem;
-  gap: 25rem;
+  padding: clamp(15rem, 17rem, 18rem) clamp(2rem, 6vw, 25rem);
+  gap: clamp(10rem, 15rem, 18rem);
   background-color: var(--color-secondary);
 }
 
 .quotes .quote {
   position: relative;
-  width: 45vw;
+  width: min(70rem, 90vw);
   line-break: loose;
   align-items: center;
   gap: 3.5rem;
   text-align: center;
   font-style: italic;
   color: var(--color-primary);
-  padding: 3rem 10rem;
+  padding: clamp(2.4rem, 4vw, 3rem) clamp(2rem, 5vw, 10rem);
 }
 
 .quotes .quote.animate-on-scroll .line {
@@ -161,7 +162,7 @@
 
 .quote-icon {
   position: absolute;
-  font-size: 25rem;
+  font-size: clamp(12rem, 16vw, 25rem);
   opacity: 0.2;
   left: 0;
   top: -50%;
@@ -181,7 +182,7 @@
 }
 
 .cites .cite .cite-text {
-  font-size: 2.5rem;
+  font-size: 2.3rem;
   text-align: justify;
   text-indent: 2rem;
 }
@@ -195,7 +196,6 @@
 .author-image-box {
   border-radius: 50%;
   overflow: hidden;
-  height: 8rem;
   width: 8rem;
 }
 
@@ -208,15 +208,15 @@
 .contacts {
   background-color: var(--color-secondary);
   color: var(--color-primary);
-  padding: 10rem 35rem 10rem 60rem;
+  padding: clamp(4rem, 8vw, 10rem) clamp(3rem, 6vw, 35rem) clamp(4rem, 8vw, 10rem) clamp(4rem, 35vw, 60rem);
   position: relative;
-  margin: 0 7rem 7rem 7rem;
+  margin: 0 clamp(1rem, 5vw, 7rem) clamp(1rem, 5vw, 7rem) clamp(1rem, 5vw, 7rem);
   border-radius: 1.5rem;
   overflow: hidden;
 }
 
 .contacts .contacts-title {
-  font-size: 6.5rem;
+  font-size: clamp(4rem, 6vw, 6.5rem);
   font-weight: 800;
 }
 
@@ -229,7 +229,7 @@
 .contacts .background-icon {
   position: absolute;
   bottom: -0.5rem;
-  left: 13rem;
+  left: 10rem;
   font-size: 30rem;
   color: var(--color-secondary-light);
   opacity: 0.5;
@@ -272,11 +272,7 @@
   }
 
   .splash-text {
-    left: 72vw;
-  }
-
-  .about-text p {
-    font-size: 2.5rem;
+    right: clamp(2rem, 4vw, 4rem);
   }
 
   .about::after {
@@ -290,16 +286,23 @@
   .about-image-wrapper {
     width: 40%;
   }
+
+  .contacts {
+    padding: 8rem 8rem 8rem 40rem;
+    margin: 0 4rem 4rem 4rem;
+  }
 }
 
 @media (max-width: 920px) {
   .splash-text {
-    left: 50vw;
-    top: 85vh;
+    left: 50%;
+    right: auto;
+    top: 82%;
+    transform: translate(-50%, -50%);
+    text-align: center;
   }
 
   .splash-text .title {
-    font-size: 8rem;
     text-shadow: 0.2rem 0.4rem 0.7rem var(--color-secondary-lighter);
   }
 
@@ -311,16 +314,22 @@
     width: 40%;
   }
 
-  .quotes {
-    padding: 30rem 15rem;
-  }
-
   .quotes .quote {
-    width: 55vw;
+    width: min(70rem, 92vw);
   }
 
   .slider {
     width: 80%;
+  }
+
+  .contacts {
+    padding: 6rem 4rem 6rem 30rem;
+    margin: 0 3rem 3rem 3rem;
+  }
+
+  .contacts .background-icon {
+    left: 2rem;
+    opacity: 0.3;
   }
 }
 
@@ -347,10 +356,6 @@
   .about-text {
     width: 80%;
   }
-
-  .about-text p {
-    font-size: 2.8rem;
-  }
 }
 
 @media (max-width: 600px) {
@@ -358,24 +363,38 @@
     background-position: 20%;
   }
 
-  .splash-text .title {
-    font-size: 6.2rem;
+  .cites {
+    height: fit-content;
+    padding: 5rem 1rem;
+  }
+
+  .cites .slider {
+    padding: 0;
+  }
+
+  .cites .slider .slide {
+    padding: 1rem;
+  }
+
+  .cites .slider .slide-content {
+    padding: 3rem;
   }
 
   .quotes .quote {
     align-self: center;
-    width: 85vw;
-    font-size: 3rem;
+    width: 92vw;
+    font-size: 2.6rem;
   }
 
   .slider {
     width: 100%;
-    gap: 3rem;
+    gap: 1rem;
+    height: fit-content;
   }
 
   .contacts {
-    padding: 10rem 5rem;
-    margin: 0 3.5rem 3.5rem 3.5rem;
+    padding: 6rem 3rem;
+    margin: 0 2rem 2rem 2rem;
   }
 
   .contacts .contacts-subtitle {
@@ -384,8 +403,11 @@
 
   .contacts .background-icon {
     left: auto;
-    right: 3rem;
-    opacity: 0.3;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20rem;
+    opacity: 0.15;
   }
 
   .contacts .contact-btn {

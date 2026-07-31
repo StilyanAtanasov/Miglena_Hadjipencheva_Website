@@ -83,7 +83,7 @@
 										       data-item-id="@item.ItemId" name="Quantities[@item.ItemId]" 
 										       value="@item.Quantity" min="1" max="@item.MaxOrderQuantityForProduct" />
 									</td>
-									<td id="line-total-@item.ItemId">
+									<td id="line-total-@item.ItemId" class="line-total">
 										<p>
 											<span class="sum-price">@item.LineTotal.ToString("F2")</span>
 											<span> € / </span>

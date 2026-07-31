@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Admin.UserManagement;
@@ -110,11 +110,11 @@ public class AdminUserManagementService : IAdminUserManagementService
     public async Task<ServiceResult> AssignRoleToUserAsync(string userId, string roleName)
     {
         bool roleExists = _roleManager.Roles.Any(r => r.Name == roleName);
-        if (!roleExists) return ServiceResult.Failure(new() { ["Role"] = $"Role with name '{roleName}' does not exist." });
+        if (!roleExists) return ServiceResult.Failure(new() { ["Role"] = $"Роля с името '{roleName}' не съществува." });
 
         ApplicationUser? user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return ServiceResult.Failure(new() { ["User"] = $"User with ID '{userId}' does not exist." });
-        if (user.IsDeleted) return ServiceResult.Failure(new() { ["AlreadyDeleted"] = "Cannot assign role to a deleted user." });
+        if (user == null) return ServiceResult.Failure(new() { ["User"] = $"Потребител с ID '{userId}' не съществува." });
+        if (user.IsDeleted) return ServiceResult.Failure(new() { ["AlreadyDeleted"] = "Не може да се присвои роля на изтрит потребител." });
 
         user.IsBanned = false; // Unban user when assigning any role
         await _userManager.UpdateAsync(user);
@@ -123,7 +123,7 @@ public class AdminUserManagementService : IAdminUserManagementService
         if (!result.Succeeded) return ServiceResult.Failure(new()
         {
             ["RoleAssignment"] =
-            $"Failed to assign role '{roleName}' to user '{userId}': {string.Join(", ", result.Errors.Select(e => e.Description))}"
+            $"Неуспешно присвояване на роля '{roleName}' на потребител '{userId}': {string.Join(", ", result.Errors.Select(e => e.Description))}"
         });
 
         if (roleName == AdminRoleName) await _cache.RemoveAsync(AdminIdsKey());
@@ -136,8 +136,8 @@ public class AdminUserManagementService : IAdminUserManagementService
     {
         ApplicationUser? user = _userManager.Users.FirstOrDefault(u => u.Id == userId);
         if (user == null) return ServiceResult<bool>.NotFound();
-        if (user.IsDeleted) return ServiceResult<bool>.Failure(new() { ["AlreadyDeleted"] = "Cannot change banned status of a deleted user." });
-        if (await _userManager.IsInRoleAsync(user, AdminRoleName)) return ServiceResult<bool>.Failure(new() { ["IsAdmin"] = "Cannot change banned status of an admin user." });
+        if (user.IsDeleted) return ServiceResult<bool>.Failure(new() { ["AlreadyDeleted"] = "Не може да се промени статусът на блокиране на изтрит потребител." });
+        if (await _userManager.IsInRoleAsync(user, AdminRoleName)) return ServiceResult<bool>.Failure(new() { ["IsAdmin"] = "Не може да се промени статусът на блокиране на администратор." });
 
         user.IsBanned = !user.IsBanned;
         await _userManager.UpdateAsync(user);

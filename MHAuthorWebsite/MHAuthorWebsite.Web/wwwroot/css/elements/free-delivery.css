@@ -33,3 +33,23 @@
 .free-delivery .message.success {
   color: var(--color-dark-green);
 }
+
+@media (max-width: 600px) {
+  .free-delivery {
+    padding: 2rem;
+  }
+
+  .free-delivery .message {
+    font-size: 2.1rem;
+  }
+}
+
+@media (max-width: 450px) {
+  .free-delivery {
+    padding: 2rem;
+  }
+
+  .free-delivery .message {
+    font-size: 1.95rem;
+  }
+}

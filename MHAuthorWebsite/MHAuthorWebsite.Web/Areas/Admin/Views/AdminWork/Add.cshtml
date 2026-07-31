@@ -18,7 +18,7 @@
 
 <div class="page-wrapper flex-column">
 	<div class="form-container">
-		<h2 class="title-small" style="text-align: center; margin-bottom: 3rem;">Добавяне на творба</h2>
+		<h2 class="title text-centered">Добавяне на творба</h2>
 
 		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminWork" asp-action="Add" method="post" enctype="multipart/form-data">
 			<div asp-validation-summary="ModelOnly" class="input-error"></div>
@@ -59,9 +59,9 @@
 				<label class="toggle-label" asp-for="IsPublic">Публична</label>
 			</div>
 
-			<div class="flex-row" style="justify-content: flex-end; gap: 2rem; margin-top: 2rem;">
-				<a asp-controller="Work" asp-action="Index" asp-area="" class="btn btn-outline" style="border: 0.125rem solid var(--color-secondary); color: var(--color-secondary); background: transparent;">Отказ</a>
-				<button type="submit" class="btn submit-btn" style="margin-top: 0;">Добави</button>
+			<div class="flex-row">
+				<a asp-controller="Work" asp-action="Index" asp-area="" class="btn cancel-btn">Отказ</a>
+				<button type="submit" class="btn submit-btn">Добави</button>
 			</div>
 		</form>
 	</div>

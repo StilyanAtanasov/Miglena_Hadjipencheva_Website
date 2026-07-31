@@ -32,6 +32,11 @@ public class EmailService : IEmailService
             IsBodyHtml = isBodyHtml
         };
 
+        message.Headers.Add(
+            "Message-ID",
+            $"<{Guid.NewGuid()}@miglena-hadjipencheva.com>"
+        );
+
         await client.SendMailAsync(message);
     }
 
