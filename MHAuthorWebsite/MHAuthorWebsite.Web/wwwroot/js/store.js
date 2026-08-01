@@ -6,9 +6,10 @@ import { PaginationHandler } from "./elements/pagination-handler.js";
 
 document.addEventListener(`DOMContentLoaded`, function () {
   const searchForm = document.querySelector("#product-search-form");
+  let searchHandler = null;
 
   if (searchForm) {
-    new SearchBarHandler({
+    searchHandler = new SearchBarHandler({
       inputSelector: "#product-search-input",
       formSelector: "#product-search-form",
       targetSelector: "#products-page",
@@ -24,6 +25,7 @@ document.addEventListener(`DOMContentLoaded`, function () {
     new PaginationHandler({
       containerSelector: "#products-page",
       url: "/Product/AllProducts",
+      recaptchaHandler: searchHandler,
     });
   }
 
