@@ -1,5 +1,5 @@
 import { pushNotification } from "../notification.js";
-import { executeRecaptchaV3Async, getRecaptchaV2Response, renderRecaptchaV2Async } from "../recaptcha-v3.js";
+import { executeRecaptchaV3Async, getRecaptchaV2Response, renderRecaptchaV2Async, resetRecaptchaV2 } from "../recaptcha-v3.js";
 import { injectLoader } from "./loader.js";
 
 const AUTOMATION_BLOCK_MESSAGE = "Вашата активност наподобява автоматизирано поведение. Моля, опитайте отново.";
@@ -71,6 +71,42 @@ export class SearchBarHandler {
     return this.manualCaptchaWidgetId !== null;
   }
 
+  async getRecaptchaHeadersAsync(query) {
+    const headers = {};
+
+    if (this.recaptchaV3Enabled && query.trim() !== "") {
+      const recaptchaV3Token = await executeRecaptchaV3Async(this.recaptchaV3SiteKey, this.recaptchaV3Action);
+      if (!recaptchaV3Token) {
+        pushNotification(AUTOMATION_BLOCK_MESSAGE, "error");
+        return null;
+      }
+
+      headers["X-Recaptcha-Token"] = recaptchaV3Token;
+    }
+
+    if (this.requiresManualCaptcha) {
+      const recaptchaV2Token = getRecaptchaV2Response(this.manualCaptchaWidgetId);
+      if (!recaptchaV2Token) {
+        pushNotification(MANUAL_CAPTCHA_MESSAGE, "warning");
+        return null;
+      }
+
+      headers["X-Recaptcha-V2-Token"] = recaptchaV2Token;
+    }
+
+    return headers;
+  }
+
+  async handleManualCaptchaRequiredAsync(payload) {
+    const didRender = await this.ensureManualCaptchaAsync();
+    pushNotification(payload?.message || (didRender ? MANUAL_CAPTCHA_MESSAGE : AUTOMATION_BLOCK_MESSAGE), "warning");
+  }
+
+  resetManualCaptcha() {
+    resetRecaptchaV2(this.manualCaptchaWidgetId);
+    if (this.recaptchaV2TokenInput) this.recaptchaV2TokenInput.value = "";
+  }
+
   async performSearch(query) {
     if (this.abortController) this.abortController.abort();
     this.abortController = new AbortController();
@@ -88,53 +124,37 @@ export class SearchBarHandler {
     try {
       const currentUrlParams = new URLSearchParams(window.location.search);
 
-      let recaptchaV3Token = null;
-      if (this.recaptchaV3Enabled && query.trim() !== "") {
-        recaptchaV3Token = await executeRecaptchaV3Async(this.recaptchaV3SiteKey, this.recaptchaV3Action);
-        if (!recaptchaV3Token) {
-          pushNotification(AUTOMATION_BLOCK_MESSAGE, "error");
-          return;
-        }
-      }
-
-      let recaptchaV2Token = "";
-      if (this.requiresManualCaptcha) {
-        recaptchaV2Token = getRecaptchaV2Response(this.manualCaptchaWidgetId);
-        if (!recaptchaV2Token) {
-          pushNotification(MANUAL_CAPTCHA_MESSAGE, "warning");
-          return;
-        }
-      }
+      const recaptchaHeaders = await this.getRecaptchaHeadersAsync(query);
+      if (recaptchaHeaders === null) return;
 
       query.trim() === "" ? currentUrlParams.delete(this.param) : currentUrlParams.set(this.param, query);
-      recaptchaV3Token ? currentUrlParams.set("recaptchaToken", recaptchaV3Token) : currentUrlParams.delete("recaptchaToken");
-      recaptchaV2Token ? currentUrlParams.set("recaptchaV2Token", recaptchaV2Token) : currentUrlParams.delete("recaptchaV2Token");
-
       this.resetParams.forEach(param => currentUrlParams.delete(param));
 
       const queryString = currentUrlParams.toString();
       const requestUrl = queryString ? `${this.url}?${queryString}` : this.url;
 
+      const headers = { "X-Requested-With": "XMLHttpRequest", ...recaptchaHeaders };
+
       const response = await fetch(requestUrl, {
-        headers: { "X-Requested-With": "XMLHttpRequest" },
+        headers,
         signal: this.abortController.signal,
       });
 
       if (response.status === 428) {
         const payload = await response.json().catch(() => null);
-        const didRender = await this.ensureManualCaptchaAsync();
-        pushNotification(payload?.message || (didRender ? MANUAL_CAPTCHA_MESSAGE : AUTOMATION_BLOCK_MESSAGE), "warning");
+        await this.handleManualCaptchaRequiredAsync(payload);
         return;
       }
 
       if (!response.ok) {
         const payload = await response.json().catch(() => null);
-        pushNotification(payload?.message || AUTOMATION_BLOCK_MESSAGE, "error");
+        pushNotification(payload?.message || "Възникна грешка при търсенето!", "error");
         return;
       }
 
       const html = await response.text();
       this.target.innerHTML = html;
+      if (this.requiresManualCaptcha) this.resetManualCaptcha();
       window.history.pushState(null, "", requestUrl);
     } catch (error) {
       if (error.name !== "AbortError") {

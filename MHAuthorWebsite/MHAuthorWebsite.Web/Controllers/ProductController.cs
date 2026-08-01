@@ -134,6 +134,9 @@ public class ProductController : BaseController
         [FromQuery] string? recaptchaV2Token = null,
         CancellationToken cancellationToken = default)
     {
+        recaptchaToken ??= Request.Headers["X-Recaptcha-Token"].FirstOrDefault();
+        recaptchaV2Token ??= Request.Headers["X-Recaptcha-V2-Token"].FirstOrDefault();
+
         if (page < 1) page = 1;
         if (orderType is null) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
 
