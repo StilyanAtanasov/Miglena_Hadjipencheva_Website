@@ -1,13 +1,17 @@
-﻿using MHAuthorWebsite.Core;
+using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Product;
+using MHAuthorWebsite.Core.Dtos.ProductComment;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
 using MHAuthorWebsite.Data;
-using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.Utils;
-using MHAuthorWebsite.Web.ViewModels.Product;
+using MHAuthorWebsite.Web.Utils.Mappers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Linq.Expressions;
 
@@ -20,6 +24,10 @@ public class ProductServiceTests
     private ApplicationDbContext _dbContext = null!;
 
     private Mock<UserManager<ApplicationUser>> _userManagerMock = null!;
+    private Mock<IFastCacheService> _cacheMock = null!;
+    private Mock<IProductDataService> _productDataServiceMock = null!;
+    private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
+    private readonly Mock<ILogger<ProductService>> _loggerMock = new();
 
     private Product _defaultProduct = null!;
     private const string DefaultUserId = "test-user";
@@ -36,11 +44,38 @@ public class ProductServiceTests
             null!, null!, null!, null!, null!, null!, null!, null!
         );
 
+        _cacheMock = new Mock<IFastCacheService>();
+        _productDataServiceMock = new Mock<IProductDataService>();
+
+        _cacheMock
+            .Setup(c => c.GetBatchAsync<ProductCardGeneralInfoDto>(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync((IEnumerable<string> keys) => keys.Select(_ => (ProductCardGeneralInfoDto?)null).ToList());
+
+        _cacheMock
+            .Setup(c => c.SetBatchAsync(It.IsAny<IDictionary<string, ProductCardGeneralInfoDto>>(), It.IsAny<TimeSpan>(), It.IsAny<bool>()))
+            .Returns(Task.CompletedTask);
+
+
+        // GlobalCacheKeysManagementService default: return empty admin set
+        _globalCacheKeysManagementServiceMock
+            .Setup(g => g.GetAllAdminIdsAsync())
+            .ReturnsAsync(Array.Empty<string>());
+
         _dbContext = new ApplicationDbContext(options);
-        _productService = new ProductService(new ApplicationRepository(_dbContext), _userManagerMock.Object);
+        _productService = new ProductService(_cacheMock.Object, _productDataServiceMock.Object, _globalCacheKeysManagementServiceMock.Object,
+            new ApplicationRepository(_dbContext), _userManagerMock.Object, _loggerMock.Object);
 
         // Arrange
         _defaultProduct = await SeedProductAsync();
+
+        // Wire up ProductDataService mock to delegate to in-memory DB
+        _productDataServiceMock
+            .Setup(ds => ds.GetProductWithLikesForEditByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync((Guid id) =>
+                _dbContext.Products
+                    .IgnoreQueryFilters()
+                    .Include(p => p.Likes)
+                    .FirstOrDefault(p => p.Id == id));
     }
 
     [TearDown]
@@ -63,8 +98,8 @@ public class ProductServiceTests
         (bool descending, Expression<Func<Product, object>>? expression) sort = SortValueMapper.SortMap["recommended"];
 
         // Act
-        ICollection<ProductCardViewModel> products = await _productService
-            .GetAllProductCardsReadonlyAsync(DefaultUserId, 1, sort);
+        ICollection<ProductCardDto> products = await _productService
+            .GetAllProductCardsReadonlyAsync(DefaultUserId, 1, sort, null);
 
         // Assert
         Assert.That(products.Count == 1);
@@ -74,7 +109,7 @@ public class ProductServiceTests
     public async Task GetLikedProductsReadonlyAsync_ReturnsArray_WhenUserHasNone()
     {
         // Act
-        ICollection<LikedProductViewModel> products = await _productService
+        ICollection<LikedProductDto> products = await _productService
             .GetLikedProductsReadonlyAsync(DefaultUserId);
 
         // Assert
@@ -100,7 +135,7 @@ public class ProductServiceTests
         await _dbContext.SaveChangesAsync();
 
         // Act
-        ICollection<LikedProductViewModel> products = await _productService
+        ICollection<LikedProductDto> products = await _productService
             .GetLikedProductsReadonlyAsync(user.Id);
 
         // Assert
@@ -179,6 +214,11 @@ public class ProductServiceTests
     [Test]
     public async Task ToggleLikeProduct_Returns403_WhenUserNotFound()
     {
+        // Arrange — ProductDataService returns the product; UserManager.FindByIdAsync returns null
+        _userManagerMock
+            .Setup(um => um.FindByIdAsync("invalid-user-id"))
+            .ReturnsAsync((ApplicationUser?)null);
+
         // Act
         ServiceResult sr = await _productService
             .ToggleLikeProduct("invalid-user-id", _defaultProduct.Id);
@@ -193,7 +233,7 @@ public class ProductServiceTests
     public async Task GetProductDetailsReadonlyAsync_Returns404_WhenProductNotFound()
     {
         // Act
-        ServiceResult<ProductDetailsViewModel> sr = await _productService
+        ServiceResult<ProductDetailsDto> sr = await _productService
             .GetProductDetailsReadonlyAsync(new Guid(), DefaultUserId);
 
         // Assert
@@ -204,12 +244,61 @@ public class ProductServiceTests
     [Test]
     public async Task GetProductDetailsReadonlyAsync_ReturnsOk_WhenProductIsFound()
     {
+        // Arrange
+        _productDataServiceMock.Setup(ds => ds.GetProductDetailsGeneralInfoByIdAsync(_defaultProduct.Id, false))
+            .ReturnsAsync(new ProductDetailsGeneralInfoDto
+            {
+                Id = _defaultProduct.Id,
+                Name = _defaultProduct.Name,
+                Description = _defaultProduct.Description,
+                Price = _defaultProduct.Price,
+                IsInStock = _defaultProduct.StockQuantity > 0,
+                IsPublic = _defaultProduct.IsPublic,
+                Quantity = _defaultProduct.StockQuantity,
+                ProductTypeName = _defaultProduct.ProductType.Name,
+                Images = _defaultProduct.Images
+                    .Where(i => i.Id != _defaultProduct.Thumbnail.ImageId)
+                    .OrderByDescending(i => i.Id == _defaultProduct.Thumbnail.ImageOriginalId)
+                    .Select(i => new ProductDetailsImageDto
+                    {
+                        ImageUrl = i.ImageUrl,
+                        AltText = i.AltText
+                    })
+                    .ToHashSet(),
+                Attributes = _defaultProduct.Attributes
+                    .Select(a => new ProductAttributeDetailsDto
+                    {
+                        Label = a.AttributeDefinition.Label,
+                        Value = a.Value
+                    })
+                    .ToHashSet()
+            });
+
+        Guid commitId = Guid.NewGuid();
+
+        _productDataServiceMock.Setup(ds => ds.GetProductDetailsCommentsInfoByIdAsync(_defaultProduct.Id, false, new HashSet<string>()))
+            .ReturnsAsync(new ProductDetailsCommentsInfoDto
+            {
+                Comments = new List<ProductBaseCommentGeneralInfoDto>(),
+                CommitId = commitId,
+            });
+
+        _productDataServiceMock.Setup(ds => ds.GetProductDetailsUserInfoByIdAsync(_defaultProduct.Id, false, DefaultUserId, commitId))
+            .ReturnsAsync(new ProductDetailsUserInfoDto
+            {
+                IsLiked = false
+            });
+
         // Act
-        ServiceResult<ProductDetailsViewModel> sr = await _productService
+        ServiceResult<ProductDetailsDto> sr = await _productService
             .GetProductDetailsReadonlyAsync(_defaultProduct.Id, DefaultUserId);
 
         // Assert
         Assert.IsTrue(sr.Success);
+        Assert.IsTrue(sr.HasResult());
+        Assert.That(sr.Result!.Id == _defaultProduct.Id);
+        Assert.That(sr.Result.Images.Count == 1);
+        Assert.That(sr.Result.Attributes.Count == 1);
         Assert.IsTrue(sr.HasResult());
         Assert.That(sr.Result!.Id == _defaultProduct.Id);
         Assert.That(sr.Result.Images.Count == 1);
@@ -226,10 +315,11 @@ public class ProductServiceTests
             .Setup(r => r.AllReadonly<Product>())
             .Throws(new Exception("Simulated failure"));
 
-        ProductService service = new ProductService(repoMock.Object, _userManagerMock.Object);
+        ProductService service = new ProductService(_cacheMock.Object, _productDataServiceMock.Object, _globalCacheKeysManagementServiceMock.Object,
+            repoMock.Object, _userManagerMock.Object, _loggerMock.Object);
 
         // Act
-        ServiceResult<ProductDetailsViewModel> result = await service
+        ServiceResult<ProductDetailsDto> result = await service
             .GetProductDetailsReadonlyAsync(Guid.NewGuid(), "user-id");
 
         // Assert
@@ -240,7 +330,7 @@ public class ProductServiceTests
     public async Task GetAllProductsCountAsync_ReturnsCorrectAnswer()
     {
         // Act
-        int count = await _productService.GetAllProductsCountAsync();
+        int count = await _productService.GetAllProductsCountAsync(null);
 
         // Assert
         Assert.That(count == _dbContext.Products.Count());
@@ -257,6 +347,14 @@ public class ProductServiceTests
 
         Guid originalImageId = Guid.NewGuid();
 
+        ApplicationUser user = new()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = "Commenter",
+            UserName = "commenter@test.com"
+        };
+        _dbContext.Users.Add(user);
+
         Product product = new()
         {
             Id = Guid.NewGuid(),
@@ -267,6 +365,8 @@ public class ProductServiceTests
             IsPublic = true,
             ProductType = productType,
             Price = 10.99m,
+            Currency = "EUR",
+            Weight = 0.5m,
             Thumbnail = new ProductThumbnail
             {
                 ImageOriginalId = originalImageId,
@@ -293,10 +393,29 @@ public class ProductServiceTests
                 new ()
                 {
                     Id = 1,
-                    Key = "Author",
-                    Value = "John Doe"
+                    Value = "John Doe",
+                    AttributeDefinition = new ProductAttributeDefinition
+                    {
+                        Id = 1,
+                        DataType = Core.Models.Enums.AttributeDataType.Text,
+                        Label = "test",
+                        Key = "test",
+                        IsRequired = false,
+                        ProductTypeId = 1
+                    }
                 }
             },
+            Comments = new List<ProductComment>
+            {
+                new ()
+                {
+                    Id = Guid.NewGuid(),
+                    Text = "Great product!",
+                    Rating = 5,
+                    Date = DateTime.UtcNow,
+                    User = user
+                }
+            }
         };
 
         _dbContext.ProductTypes.Add(productType);

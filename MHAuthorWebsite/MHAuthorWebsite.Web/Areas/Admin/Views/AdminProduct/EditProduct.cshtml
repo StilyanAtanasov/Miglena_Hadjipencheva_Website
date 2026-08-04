@@ -1,8 +1,8 @@
-﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@using MHAuthorWebsite.Web.ViewModels.Admin.Product
+@using MHAuthorWebsite.Web.ViewModels.Product
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using MHAuthorWebsite.Web.Utils
-@using static MHAuthorWebsite.GCommon.EntityConstraints.Product
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Product
+@using static MHAuthorWebsite.GCommon.EntityConstraints.Product
 @model EditProductFormViewModel
 
 
@@ -13,39 +13,49 @@
 
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/image-preview.css" asp-append-version="true"/>
+	<link rel="stylesheet" href="~/css/image-preview.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
-	<section class="modal-invisible large flex-column">
+	<section class="modal-invisible larger flex-column">
+		<a class="back-btn" asp-area="Admin" asp-controller="AdminProduct" asp-action="ProductsList">
+			<i class="fa-solid fa-arrow-left"></i> Назад към продуктите
+		</a>
 		<h1 class="title">@ViewData["Title"]</h1>
 
 		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminProduct" asp-action="EditProduct" asp-route-productId="@Model.Id" id="updateProductForm" method="post" enctype="multipart/form-data">
 			<input type="hidden" asp-for="Id" />
+
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Name">Име:</label>
 				<input class="form-input" asp-for="Name" />
-				<span class="input-error" asp-validation-for="Name" ></span>
+				<span class="input-error" asp-validation-for="Name"></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Description">Описание:</label>
 				<partial name="_QuillToolbar" />
-				<input type="hidden" asp-for="Description" id="descriptionInput" data-text-max-length="@DescriptionTextMaxLength" />
-				<span id="description-input-error" class="input-error" asp-validation-for="Description"></span>
+				<input type="hidden" asp-for="Description" id="descriptionInput"
+				       data-text-max-length="@DescriptionTextMaxLength" data-text-min-length="@DescriptionTextMinLength" />
+
+				<span id="description-input-error" class="input-error">
+					@ViewData.ModelState["Description"]?.Errors.FirstOrDefault()?.ErrorMessage
+				</span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Price">Цена:</label>
 				<input class="form-input" asp-for="Price" type="number" />
-				<span class="input-error" asp-validation-for="Price" ></span>
+				<span class="input-error" asp-validation-for="Price"></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="StockQuantity">Количество:</label>
 				<input class="form-input" asp-for="StockQuantity" type="number" />
-				<span class="input-error" asp-validation-for="StockQuantity" ></span>
+				<span class="input-error" asp-validation-for="StockQuantity"></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Weight">Тегло (в кг.):</label>
@@ -61,25 +71,34 @@
 				@foreach (ProductImageViewModel image in Model.Images)
 				{
 					<div class="image-container @(image.IsTitle ? "title-img-container" : "")">
-						<img src="@image.Url" alt="Product Image" class="@(image.IsTitle ? "title-img" : "")" data-id="@image.Id" data-is-title="@image.IsTitle"/>
-						<button type="button" class="removeBtn"><i class="fa-solid fa-file-slash"></i></button>
-						<button type="button" class="makeTitleBtn"><i class="fa-solid fa-star-sharp"></i></button>
+						<img src="@image.Url" alt="Product Image" class="@(image.IsTitle ? "title-img" : "")" data-id="@image.Id" data-is-title="@image.IsTitle" />
+						<button type="button" class="removeBtn"><i class="fa-solid fa-circle-xmark"></i></button>
+						<button type="button" class="makeTitleBtn"><i class="fa-solid fa-flag"></i></button>
 					</div>
 				}
 			</div>
+
+			<span class="input-error">
+				@Html.ValidationMessageFor(m => m.Images)
+			</span>
+			<span class="input-error">@Html.ValidationMessage("AddedImages")</span>
+
 			<input id="images-json" type="hidden" asp-for="ImagesJson" />
 
 			<div class="form-input-box flex-column select-list">
 				<label class="form-label">Категория:</label>
 				<p>@Model.ProductTypeName</p>
-				<input type="hidden" asp-for="ProductTypeName" value="@Model.ProductTypeName"/>
+				<input type="hidden" asp-for="ProductTypeName" value="@Model.ProductTypeName" />
 			</div>
 
 			<div id="productTypeAttributesContainer" class="form-input-box flex-column">
 				<partial name="_DynamicAttributesPartial" model="Model.Attributes" />
 			</div>
 
-			<button data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">Запази</button>
+			<button data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">
+				<i class="fa-solid fa-floppy-disk"></i>
+				Запази
+			</button>
 		</form>
 	</section>
 </div>
@@ -89,7 +108,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+	<script type="module" src="~/js/elements/select.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/editor.js" asp-append-version="true"></script>
-	<script type="module" src="~/js/update-product.js" asp-append-version="true"></script>
-	<script src="~/js/loader.js"></script>
+	<script type="module" src="~/js/admin/update-product.js" asp-append-version="true"></script>
 }

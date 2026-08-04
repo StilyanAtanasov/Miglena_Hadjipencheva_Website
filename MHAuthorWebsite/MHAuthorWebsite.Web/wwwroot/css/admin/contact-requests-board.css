@@ -1,0 +1,53 @@
+.page-wrapper > article {
+  width: 90%;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 30rem);
+  gap: 2rem;
+}
+
+.heading {
+  align-self: flex-start;
+}
+
+.request-card {
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 1rem;
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.answered {
+  margin-top: 3.5rem;
+}
+
+.answered .request-card {
+  opacity: 0.9;
+  background-color: var(--color-secondary-lighter);
+}
+
+.request-card .date {
+  color: var(--color-grey);
+}
+
+.request-card .message {
+  font-size: 1.75rem;
+  font-weight: 500;
+}
+
+.request-card .btn {
+  margin: 1rem 0 0 auto;
+}
+
+.no-requests,
+.no-requests-sub {
+  margin: 2rem 0;
+}
+
+.no-requests {
+  text-align: center;
+  margin-top: 6rem;
+}

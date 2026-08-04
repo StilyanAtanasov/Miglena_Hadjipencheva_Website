@@ -20,16 +20,18 @@ public class ServiceResult
         Errors = errors ?? new()
     };
 
-    public static ServiceResult NotFound() => new()
+    public static ServiceResult NotFound(Dictionary<string, string>? errors = null) => new()
     {
         Success = false,
-        Found = false
+        Found = false,
+        Errors = errors ?? new()
     };
 
-    public static ServiceResult Forbidden() => new()
+    public static ServiceResult Forbidden(Dictionary<string, string>? errors = null) => new()
     {
         Success = false,
-        HasPermission = false
+        HasPermission = false,
+        Errors = errors ?? new()
     };
 
     public static ServiceResult BadRequest(Dictionary<string, string>? errors = null) => new()
@@ -58,16 +60,18 @@ public class ServiceResult<TResult> : ServiceResult
         Errors = errors ?? new()
     };
 
-    public new static ServiceResult<TResult> NotFound() => new()
+    public new static ServiceResult<TResult> NotFound(Dictionary<string, string>? errors = null) => new()
     {
         Success = false,
-        Found = false
+        Found = false,
+        Errors = errors ?? new()
     };
 
-    public new static ServiceResult<TResult> Forbidden() => new()
+    public new static ServiceResult<TResult> Forbidden(Dictionary<string, string>? errors = null) => new()
     {
         Success = false,
-        HasPermission = false
+        HasPermission = false,
+        Errors = errors ?? new()
     };
 
     public new static ServiceResult<TResult> BadRequest(Dictionary<string, string>? errors = null) => new()

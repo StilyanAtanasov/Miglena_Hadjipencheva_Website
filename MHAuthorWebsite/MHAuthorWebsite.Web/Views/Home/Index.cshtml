@@ -1,5 +1,8 @@
-﻿@{
+﻿@using MHAuthorWebsite.GCommon
+
+@{
 	ViewData["Title"] = "Начало";
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Home;
 }
 
 @section Styles {
@@ -15,8 +18,8 @@
 	</div>
 </section>
 
-<section class="section about flex-row">
-	<div class="about-content flex-row animate-on-scroll">
+<section id="about-me" class="section about flex-row">
+	<div  class="about-content flex-row animate-on-scroll">
 		<div class="about-image-wrapper animate-on-scroll fade-in" >
 			<img src="~/img/author.webp" alt="Миглена Хаджипенчева" loading="lazy" />
 		</div>
@@ -89,18 +92,19 @@
 			<div class="slide flex-column">
 				<article class="slide-content cite">
 					<blockquote class="cite-text">
-						"Ако искате да се почувствате свободни,влюбени, одухотворени...
-						ако искате да почувствате как бие нечие сърце,
-						докоснете се до творчеството на една нежна и красива жена...
-						Ще усетите топлина и любов. Ще се докоснете до нещо истинско и докосващо!
-						Това е Миглена! Огън! Любов! Истина!"
+						"Светът често е твърде шумен и студен и в него думите на Миглена са 
+						като пристан. Нейните романтични истории ти напомнят, че 
+						красотата все още съществува, а детските ѝ приказки връщат 
+						онази чистота, която всички носим в себе си. Тя притежава 
+						рядката дарба да пише за любовта по начин, който те кара 
+						да се усмихнеш и да повярваш в доброто."
 					</blockquote>
 					<div class="author-box flex-row">
 						<div class="author-image-box">
-							<img src="~/img/teodora-hadjipencheva.webp" loading="lazy" />
+							<img src="~/img/stilyan-atanasov.webp" loading="lazy" />
 						</div>
 
-						<p class="cite-author">Теодора Хаджипенчева</p>
+						<p class="cite-author">Стилян Атанасов</p>
 					</div>
 				</article>
 			</div>
@@ -110,6 +114,17 @@
 
 		<div id="dots-box" class="dots flex-row"></div>
 	</div>
+</section>
+
+<section class="contacts animate-on-scroll fade-in appear-bottom">
+	<h3 class="contacts-title">Имаш въпрос?</h3>
+	<p class="contacts-subtitle">Ако имаш нужда от помощ или желаеш да работим заедно, не се колебай да се свържеш с мен!</p>
+	
+	<a class="btn link flex-row contact-btn" asp-controller="Contacts" asp-action="Index">
+		 <i class="fa-solid fa-comments"></i> Свържи се с мен
+	</a>
+	
+	<i class="fa-solid fa-circle-question background-icon"></i>
 </section>
 
 @section Scripts {

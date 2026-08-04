@@ -2,7 +2,10 @@
 
 public class CartViewModel
 {
+
     public ICollection<CartItemViewModel> Items { get; set; } = new HashSet<CartItemViewModel>();
+
+    public decimal SubTotal => Items.Where(i => i is { IsAvailable: true, IsDiscontinued: false, IsSelected: true }).Sum(i => i.UnitPrice * i.Quantity);
 
     public decimal Total => Items.Where(i => i is { IsAvailable: true, IsDiscontinued: false, IsSelected: true }).Sum(i => i.LineTotal);
 }

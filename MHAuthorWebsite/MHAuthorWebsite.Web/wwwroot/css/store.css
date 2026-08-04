@@ -1,10 +1,16 @@
 .shop-action-btns {
-  width: 80%;
-  justify-content: flex-end;
+  width: 100%;
+  justify-content: space-between;
   font-size: 1.8rem;
+  padding: 0 7rem;
 
   .shop-action-btn {
     gap: 1.2rem;
+  }
+
+  .search-bar-wrapper {
+    width: 40%;
+    justify-self: center;
   }
 }
 
@@ -14,6 +20,7 @@
   gap: 1rem;
   margin-bottom: 5rem;
   position: relative;
+  min-height: 10rem;
 }
 
 .product {
@@ -59,6 +66,35 @@
   border-radius: 1rem;
 }
 
+.product {
+  position: relative;
+}
+
+.product .product-badge {
+  position: absolute;
+  top: -3rem;
+  right: -3rem;
+  width: 12rem;
+  height: 10rem;
+}
+
+.product .product-badge i {
+  font-size: 10rem;
+  color: var(--color-secondary);
+}
+
+.product .product-badge .badge-text {
+  font-size: 2.5rem;
+  color: var(--color-primary);
+  width: 100%;
+  text-align: center;
+  font-weight: 600;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
 .product .name {
   font-size: 2.2rem;
   text-decoration: none;
@@ -79,6 +115,16 @@
 .product .price-box .price {
   font-size: 2rem;
   font-weight: 600;
+}
+
+.product .price-box .price.old-price {
+  font-size: 1.3rem;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
+.product .price-box .price.discounted-price {
+  color: var(--color-orange-dark);
 }
 
 .product .price-box .price-text {
@@ -102,36 +148,6 @@
   font-size: 1.12rem;
 }
 
-.pagination-box {
-  width: 100%;
-  justify-content: center;
-  margin-top: auto;
-  font-size: 1.7rem;
-}
-
-.pagination-box .pagination-btns {
-  gap: 0.5rem;
-}
-
-.pagination-box .pagination-btns .pagination-btn {
-  cursor: pointer;
-}
-
-.pagination-box .pagination-btns .pagination-btn .link {
-  padding: 0.6rem 1.2rem;
-  border: 0.16rem solid transparent;
-  border-radius: 0.8rem;
-}
-
-.pagination-box .pagination-btns .pagination-btn:hover .link {
-  border-color: var(--color-secondary);
-}
-
-.pagination-box .pagination-btns .pagination-btn .link.current {
-  background-color: var(--color-secondary);
-  color: var(--color-secondary-light);
-}
-
 .no-products-message {
   font-size: 2.3rem;
   top: 5rem;
@@ -139,6 +155,7 @@
   left: 50%;
   transform: translateX(-50%);
   gap: 3rem;
+  z-index: 5;
 }
 
 .no-products-message i {
@@ -147,16 +164,28 @@
 }
 
 /* --- Responsive ---  */
-@media (max-width: 800px) {
+@media (max-width: 1500px) {
   .products {
     grid-template-columns: repeat(4, 22vw);
+    margin-top: 2.5rem;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 1200px) {
+  .products {
+    grid-template-columns: repeat(3, 30vw);
+    margin-top: 2.5rem;
+  }
+}
+
+@media (max-width: 850px) {
   .products {
     grid-template-columns: repeat(2, 45vw);
     font-size: 2rem;
+  }
+
+  .product {
+    padding: 2.5rem 3rem;
   }
 
   .product-image-container {
@@ -171,20 +200,32 @@
     font-size: 2.3rem;
   }
 
+  .product .price-box .price.old-price {
+    font-size: 1.7rem;
+  }
+
   .product .price-box .price-text {
     font-size: 2rem;
   }
 
   .product .action-btns {
-    font-size: 2.3rem;
+    font-size: 1.9rem;
   }
 
   .btn.like {
-    font-size: 1.65rem;
+    font-size: 1.4rem;
   }
 
   .shop-action-btns {
     font-size: 2rem;
+    padding: 0 2rem;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+  }
+
+  .shop-action-btns .search-bar-wrapper {
+    width: 80%;
   }
 
   .pagination-box {
@@ -201,22 +242,43 @@
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) {
+  .shop-action-btns {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 1rem;
+    gap: 1.5rem;
+  }
+
+  .shop-action-btns .search-bar-wrapper {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
   .products {
     grid-template-columns: repeat(1, 80vw);
-    font-size: 1.8rem;
+    font-size: 2rem;
+  }
+
+  .product {
+    padding: 3rem 5rem;
   }
 
   .product .name {
-    font-size: 2.5rem;
+    font-size: 3.1rem;
   }
 
   .product .price-box .price {
-    font-size: 2.1rem;
+    font-size: 2.5rem;
+  }
+
+  .product .price-box .price.old-price {
+    font-size: 2rem;
   }
 
   .product .price-box .price-text {
-    font-size: 1.8rem;
+    font-size: 2.1rem;
   }
 
   .product-image-container {

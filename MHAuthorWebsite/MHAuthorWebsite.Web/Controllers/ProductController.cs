@@ -1,8 +1,13 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Web.Utils;
+using MHAuthorWebsite.Core.Dtos.Product;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Contracts;
+using MHAuthorWebsite.Web.Utils.Enums;
+using MHAuthorWebsite.Web.Utils.Mappers;
 using MHAuthorWebsite.Web.ViewModels.Product;
+using MHAuthorWebsite.Web.ViewModels.ProductComment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
@@ -12,49 +17,212 @@ namespace MHAuthorWebsite.Web.Controllers;
 
 public class ProductController : BaseController
 {
+    private const string AutomationBlockMessage = "Вашата активност наподобява автоматизирано поведение. Моля, опитайте отново.";
+    private const string ManualCaptchaMessage = "Моля, потвърдете ръчно, че не сте робот.";
+
     private readonly IProductService _productService;
+    private readonly IRecaptchaValidationService _recaptchaValidationService;
 
-    public ProductController(IProductService productService) => _productService = productService;
-
-    [AllowAnonymous]
-    [HttpGet("Product/Details/{productId}")]
-    public async Task<IActionResult> Details(Guid productId)
+    public ProductController(
+        IProductService productService,
+        IRecaptchaValidationService recaptchaValidationService)
     {
-        ServiceResult<ProductDetailsViewModel> result = await _productService.GetProductDetailsReadonlyAsync(productId, GetUserId());
-        if (!result.Found) return NotFound();
-        if (!result.Success) return StatusCode(500);
-
-        return View(result.Result);
+        _productService = productService;
+        _recaptchaValidationService = recaptchaValidationService;
     }
 
     [AllowAnonymous]
-    [HttpGet]
-    public async Task<IActionResult> AllProducts([FromQuery] int page = 1, [FromQuery] string? orderType = null)
+    [HttpGet("Product/Details/{productId}")]
+    [SecurityHeaders(CspFeature.Notifications | CspFeature.Editor)]
+    public async Task<IActionResult> Details(Guid productId)
     {
+        ServiceResult<ProductDetailsDto> result = await _productService.GetProductDetailsReadonlyAsync(productId, GetUserId());
+        if (!result.Found) return NotFound();
+        if (!result.Success) return StatusCode(500);
+
+        ProductDetailsDto dto = result.Result!;
+
+        ProductDetailsViewModel viewModel = new ProductDetailsViewModel
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            Description = dto.Description,
+            IsLiked = dto.IsLiked,
+            Price = dto.Price,
+            Discount = dto.Discount != null ? new ProductDetailsDiscountViewModel
+            {
+                EndDate = dto.Discount.EndDate,
+                NewPrice = dto.Discount.NewPrice
+            } : null,
+            IsInStock = dto.IsInStock,
+            IsPublic = dto.IsPublic,
+            Quantity = dto.Quantity,
+            ProductTypeName = dto.ProductTypeName,
+            TotalBaseComments = dto.TotalBaseComments,
+            AverageRating = dto.AverageRating,
+            CommentsCountByStarsRating = dto.CommentsCountByStarsRating,
+            HasMoreComments = dto.HasMoreComments,
+            CanWriteMoreComments = dto.CanWriteMoreComments,
+            IsRateLimitedForReplies = dto.IsRateLimitedForReplies,
+            Images = dto.Images
+                .Select(i => new ProductDetailsImageViewModel
+                {
+                    ImageUrl = i.ImageUrl,
+                    AltText = i.AltText,
+                })
+                .ToArray(),
+            Attributes = dto.Attributes
+                .Select(a => new ProductAttributeDetailsViewModel
+                {
+                    Label = a.Label,
+                    Value = a.Value,
+                    AttributeType = a.AttributeType,
+                    DisplayPosition = a.DisplayPosition
+                })
+                .ToArray(),
+            Comments = dto.Comments
+                .Select(c => new ProductBaseCommentViewModel
+                {
+                    Id = c.Id,
+                    UserName = c.UserName,
+                    VerifiedPurchase = c.VerifiedPurchase,
+                    Text = c.Text,
+                    Rating = c.Rating,
+                    Date = c.Date,
+                    Likes = c.Likes,
+                    Dislikes = c.Dislikes,
+                    UserReaction = c.UserReaction,
+                    HasMoreReplies = c.HasMoreReplies,
+                    TotalRepliesCount = c.TotalRepliesCount,
+                    IsUserAuthor = c.IsUserAuthor,
+                    LastEdited = c.LastEdited,
+                    ProductId = c.ProductId,
+                    ImageUrls = c.ImageUrls,
+                    Replies = c.Replies
+                        .Select(r => new ProductCommentReplyViewModel
+                        {
+                            Id = r.Id,
+                            UserName = r.UserName,
+                            Text = r.Text,
+                            Date = r.Date,
+                            Likes = r.Likes,
+                            Dislikes = r.Dislikes,
+                            IsUserAuthor = r.IsUserAuthor,
+                            LastEdited = r.LastEdited,
+                            ProductId = r.ProductId,
+                            IsWriterAdmin = r.IsWriterAdmin,
+                            ParentCommentId = r.ParentCommentId,
+                            UserReaction = r.UserReaction,
+                            ReplyCommentWriterName = r.ReplyCommentWriterName,
+                            VerifiedPurchase = r.VerifiedPurchase
+                        })
+                        .ToArray(),
+                })
+                .ToArray()
+        };
+
+        return View(viewModel);
+    }
+
+    [SecurityHeaders(CspFeature.TomSelect | CspFeature.Notifications | CspFeature.Recaptcha)]
+    [AllowAnonymous]
+    [HttpGet]
+    public async Task<IActionResult> AllProducts([FromQuery] int page = 1,
+        [FromQuery] string? orderType = null,
+        [FromQuery] string? search = null,
+        [FromQuery] string? recaptchaToken = null,
+        [FromQuery] string? recaptchaV2Token = null,
+        CancellationToken cancellationToken = default)
+    {
+        recaptchaToken ??= Request.Headers["X-Recaptcha-Token"].FirstOrDefault();
+        recaptchaV2Token ??= Request.Headers["X-Recaptcha-V2-Token"].FirstOrDefault();
+
         if (page < 1) page = 1;
         if (orderType is null) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
+
+        bool isAjaxRequest = HttpContext.Request.Headers.Any(h => h.Key == "X-Requested-With" && h.Value == "XMLHttpRequest");
+        if (isAjaxRequest && !(User.Identity?.IsAuthenticated ?? false) && !string.IsNullOrWhiteSpace(search))
+        {
+            RecaptchaValidationResult v3VerificationResult = await _recaptchaValidationService.VerifyV3Async(
+                recaptchaToken,
+                "product_search",
+                cancellationToken: cancellationToken);
+
+            if (!v3VerificationResult.IsSuccess)
+            {
+                if (v3VerificationResult.RequiresManualChallenge)
+                {
+                    bool hasManualToken = !string.IsNullOrWhiteSpace(recaptchaV2Token);
+                    RecaptchaValidationResult v2VerificationResult = await _recaptchaValidationService.VerifyV2Async(
+                        recaptchaV2Token,
+                        cancellationToken);
+
+                    if (!v2VerificationResult.IsSuccess)
+                    {
+                        if (hasManualToken) return BadRequest(new { message = AutomationBlockMessage });
+                        return StatusCode(StatusCodes.Status428PreconditionRequired, new { message = ManualCaptchaMessage });
+                    }
+                }
+                else return BadRequest(new { message = AutomationBlockMessage });
+            }
+        }
 
         bool result = SortValueMapper.SortMap.TryGetValue(orderType, out var sortValue);
         if (!result) return RedirectToAction(nameof(AllProducts), new { page, orderType = "recommended" });
 
-        int productsCount = await _productService.GetAllProductsCountAsync();
-        if (productsCount > 0 && Math.Ceiling((double)productsCount / PageSize) < page) return NotFound();
+        int productsCount = await _productService.GetAllProductsCountAsync(search);
+        if (productsCount > 0 && Math.Ceiling((double)productsCount / StorePageSize) < page) return NotFound();
 
         (bool descending, Expression<Func<Product, object>>? expression) sortType = (sortValue.descending, sortValue.expression);
-        ICollection<ProductCardViewModel> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page, sortType);
+        ICollection<ProductCardDto> products = await _productService.GetAllProductCardsReadonlyAsync(GetUserId(), page, sortType, search);
 
         ViewBag.ProductsCount = productsCount;
-        return View(products);
+
+        ICollection<ProductCardViewModel> productsViewModel = products
+            .Select(p => new ProductCardViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                ImageUrl = p.ImageUrl,
+                ImageAlt = p.ImageAlt,
+                Price = p.Price,
+                DiscountPrice = p.DiscountPrice,
+                IsAvailable = p.IsAvailable,
+                IsLiked = p.IsLiked,
+                ProductType = p.ProductType
+            })
+            .ToArray();
+
+        if (isAjaxRequest)
+            return PartialView("_ProductCardsPartial", productsViewModel);
+
+        return View(productsViewModel);
     }
 
     [HttpGet]
+    [SecurityHeaders(CspFeature.Notifications)]
     public async Task<IActionResult> LikedProducts()
     {
         string? userId = GetUserId();
         if (userId is null) return Unauthorized();
 
-        ICollection<LikedProductViewModel> products = await _productService.GetLikedProductsReadonlyAsync(userId);
-        return View(products);
+        ICollection<LikedProductDto> productsDto = await _productService.GetLikedProductsReadonlyAsync(userId);
+
+        ICollection<LikedProductViewModel> viewModel = productsDto
+            .Select(p => new LikedProductViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                ThumbnailUrl = p.ThumbnailUrl,
+                ThumbnailAlt = p.ThumbnailAlt,
+                Price = p.Price,
+                CategoryName = p.CategoryName,
+                IsInStock = p.IsInStock,
+                DiscountedPrice = p.DiscountedPrice
+            })
+            .ToArray();
+
+        return View(viewModel);
     }
 
     [AllowAnonymous]

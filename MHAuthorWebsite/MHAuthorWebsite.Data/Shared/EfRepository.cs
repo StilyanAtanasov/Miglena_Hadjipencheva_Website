@@ -1,5 +1,6 @@
-﻿using MHAuthorWebsite.Data.Shared.Filters.Contracts;
+﻿using MHAuthorWebsite.Core.Models.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq.Expressions;
 
@@ -104,8 +105,26 @@ public abstract class EfRepository : IRepository
         _context.Entry(entity).State = EntityState.Detached;
 
     // PERSISTENCE
-    public async Task<int> SaveChangesAsync() =>
-        await _context.SaveChangesAsync();
+    public async Task<int> SaveChangesAsync()
+    {
+        ValidateUtcDates();
+        return await _context.SaveChangesAsync();
+    }
+
+    private void ValidateUtcDates()
+    {
+        IEnumerable<EntityEntry> entries = _context.ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+        foreach (EntityEntry entry in entries)
+            foreach (PropertyEntry prop in entry.Properties)
+                if (prop.CurrentValue is DateTime dt)
+                    if (dt != DateTime.MinValue && dt.Kind != DateTimeKind.Utc)
+                        throw new InvalidOperationException(
+                            $"Грешка при запис на {entry.Entity.GetType().Name}: " +
+                            $"Свойството '{prop.Metadata.Name}' трябва да бъде в UTC формат (DateTimeKind.Utc). " +
+                            $"В момента е: {dt.Kind}");
+    }
 
     // PAGINATION
     public IQueryable<T> GetPagedAsync<T>(

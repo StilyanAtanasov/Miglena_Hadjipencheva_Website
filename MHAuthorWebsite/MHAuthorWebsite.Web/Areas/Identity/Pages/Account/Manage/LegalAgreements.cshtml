@@ -1,0 +1,75 @@
+@page
+
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
+@model LegalAgreementsModel
+
+@{
+	ViewData["Heading"] = "Правни съгласия";
+	ViewData["ActivePage"] = LegalBinding;
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/profile/email-preferences.css" asp-append-version="true" />
+}
+
+<section class="content-body flex-column">
+	<input type="hidden" id="show-legal-prompt" value="@(Model.ShowPrompt ? "1" : "0")" />
+	<section class="email-preferences-box flex-column">
+		@if (!Model.PendingDocuments.Any())
+		{
+			<h3 class="subheading flex-row text-success">
+				<i class="fa-solid fa-file-circle-check"></i> 
+				Нямате чакащи правни документи за приемане.
+			</h3>
+		}
+		else
+		{
+			<h3 class="subheading">Необходимо е потвърждение</h3>
+			<p class="email-preferences-text">
+				За да продължите да използвате сайта, трябва да приемете последните версии на правните документи.
+			</p>
+			<ul class="flex-column" style="margin-bottom: 2rem;">
+				@foreach (var doc in Model.PendingDocuments.OrderBy(d => (int)d.DocumentType))
+				{
+					<li>
+						<strong style="font-size: 1.6rem;">@doc.Title</strong> <span style="font-size: 1.4rem;">(версия @doc.Version)</span> -
+						<a class="link active" asp-controller="Home" asp-action="@(doc.DocumentType == MHAuthorWebsite.Core.Models.Enums.LegalDocumentType.PrivacyPolicy ? "PrivacyPolicy" : "TermsOfService")" target="_blank" rel="noopener noreferrer">
+							Преглед
+						</a>
+					</li>
+				}
+			</ul>
+			<form method="post" class="input-form flex-column">
+				<input type="hidden" asp-for="ReturnUrl" />
+				
+				<div class="toggle-row" style="margin-bottom: 2rem; align-items: flex-start;">
+					<label class="switch" style="margin-top: 0.5rem;">
+						<input asp-for="AcceptLatestDocuments" type="checkbox" />
+						<span class="toggle-slider round"></span>
+					</label>
+					<label class="toggle-label" asp-for="AcceptLatestDocuments" style="font-size: 1.6rem; font-weight: normal;">
+						Приемам последната версия на Политиката за поверителност и Общите условия.
+					</label>
+				</div>
+
+				<span class="input-error" asp-validation-for="AcceptLatestDocuments"></span>
+				<button type="submit" class="btn submit-btn flex-row">
+					<i class="fa-solid fa-check"></i>
+					Потвърди
+				</button>
+			</form>
+		}
+		
+		<i class="fa-solid fa-file-signature background-icon"></i>
+	</section>
+</section>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script type="module" src="~/js/profile/legal-agreements.js" asp-append-version="true"></script>
+}

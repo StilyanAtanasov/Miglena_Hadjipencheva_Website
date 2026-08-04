@@ -1,14 +1,11 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account.Manage;
 
@@ -56,11 +53,10 @@ public class ResetAuthenticatorModel : PageModel
 
         await _userManager.SetTwoFactorEnabledAsync(user, false);
         await _userManager.ResetAuthenticatorKeyAsync(user);
-        var userId = await _userManager.GetUserIdAsync(user);
         _logger.LogInformation("User with ID '{UserId}' has reset their authentication app key.", user.Id);
 
         await _signInManager.RefreshSignInAsync(user);
-        StatusMessage = "Your authenticator app key has been reset, you will need to configure your authenticator app using the new key.";
+        StatusMessage = "Ключът за приложението за автентификация беше нулиран. Трябва да го конфигурирате с новия ключ.";
 
         return RedirectToPage("./EnableAuthenticator");
     }

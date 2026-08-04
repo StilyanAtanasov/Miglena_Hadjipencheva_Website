@@ -1,57 +1,71 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.ProductType;
-using Microsoft.EntityFrameworkCore;
+using MHAuthorWebsite.Core.Dtos.Admin.ProductType;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace MHAuthorWebsite.Core.Admin;
 
 public class AdminProductTypeService : IAdminProductTypeService
 {
     private readonly IApplicationRepository _repository;
+    private readonly ILogger<AdminProductTypeService> _logger;
 
-    public AdminProductTypeService(IApplicationRepository repository) => _repository = repository;
+    public AdminProductTypeService(IApplicationRepository repository, ILogger<AdminProductTypeService> logger)
+    {
+        _repository = repository;
+        _logger = logger;
+    }
 
-    public async Task<ServiceResult> AddProductTypeAsync(AddProductTypeForm model)
+    public async Task<ServiceResult> AddProductTypeAsync(AddProductTypeDto model)
     {
         try
         {
             ProductType pt = new() { Name = model.Name };
 
-            await _repository.AddAsync(pt);
-            await _repository.SaveChangesAsync();
-
-            if (model.HasAdditionalProperties)
+            if (model is { HasAdditionalProperties: true, Attributes.Count: > 0 })
             {
-                foreach (AttributeDefinitionForm attribute in model.Attributes)
+                foreach (AttributeDefinitionDto attribute in model.Attributes)
                 {
-                    await _repository.AddAsync<ProductAttributeDefinition>(new()
+                    ProductAttributeDefinition attrDefinition = new()
                     {
                         Key = attribute.Key,
                         Label = attribute.Label,
                         DataType = (AttributeDataType)attribute.DataType,
-                        HasPredefinedValue = attribute.HasPredefinedValue,
-                        IsRequired = attribute.IsRequired,
-                        ProductTypeId = pt.Id
-                    });
-                }
+                        IsRequired = attribute.IsRequired
+                    };
 
-                await _repository.SaveChangesAsync();
+                    if (attribute is { DataType: (int)AttributeDataType.Dropdown, PredefinedValues.Count: > 0 })
+                        foreach (string value in attribute.PredefinedValues)
+                            attrDefinition.ProductAttributeOptions.Add(new()
+                            {
+                                Value = value,
+                                AttributeDefinitionId = attrDefinition.Id
+                            });
+
+                    pt.AttributeDefinitions.Add(attrDefinition);
+                }
             }
+
+            await _repository.AddAsync(pt);
+            await _repository.SaveChangesAsync();
         }
         catch (Exception)
         {
             return ServiceResult.Failure();
         }
 
+        _logger.LogInformation("Admin added new product type: {Name}", model.Name);
         return ServiceResult.Ok();
     }
 
-    public async Task<ICollection<ProductTypeDto>> GetAllReadonlyAsync() =>
-        await _repository
+    public async Task<ICollection<ProductTypeDto>> GetAllReadonlyAsync()
+    {
+        var result = await _repository
             .AllReadonly<ProductType>()
             .Select(pt => new ProductTypeDto
             {
@@ -59,4 +73,9 @@ public class AdminProductTypeService : IAdminProductTypeService
                 Name = pt.Name
             })
             .ToArrayAsync();
+
+        _logger.LogInformation("Admin retrieved all product types.");
+
+        return result;
+    }
 }

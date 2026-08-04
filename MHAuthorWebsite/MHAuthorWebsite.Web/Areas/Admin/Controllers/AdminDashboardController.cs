@@ -1,4 +1,5 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Dtos.Admin.Dashboard;
 using MHAuthorWebsite.Web.ViewModels.Admin.Dashboard;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +13,24 @@ public class AdminDashboardController : AdminBaseController
 
     public async Task<IActionResult> Dashboard()
     {
-        AdminDashboardViewModel model = await _adminDashboardService.GetDashboardStatisticsAsync();
-        return View(model);
+        AdminDashboardDto model = await _adminDashboardService.GetDashboardStatisticsAsync();
+
+        AdminDashboardViewModel viewModel = new()
+        {
+            ActiveUsersCount = model.ActiveUsersCount,
+            NewUsersCount = model.NewUsersCount,
+            UsersCount = model.UsersCount,
+            ProductsList = model.ProductsList
+                .Select(p => new AdminDashboardProductsViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    SoldCount = p.SoldCount,
+                    LikesCount = p.LikesCount,
+                })
+                .ToList(),
+        };
+
+        return View(viewModel);
     }
 }

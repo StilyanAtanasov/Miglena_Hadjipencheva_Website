@@ -1,0 +1,62 @@
+.scroll-to-top-btn {
+  position: fixed;
+  right: 3.2rem;
+  bottom: 3.6rem;
+  z-index: 1200;
+  width: 5.2rem;
+  height: 5.2rem;
+  border-radius: 50%;
+  border: 0.16rem solid var(--color-secondary);
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0.4rem 1.2rem rgba(24, 23, 23, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(0.8rem) scale(0.95);
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease,
+    visibility 0ms linear 260ms,
+    background-color 300ms ease,
+    color 300ms ease,
+    border-color 300ms ease;
+}
+
+.scroll-to-top-btn.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease,
+    visibility 0ms linear 0ms,
+    background-color 300ms ease,
+    color 300ms ease,
+    border-color 300ms ease;
+}
+
+.scroll-to-top-btn i {
+  pointer-events: none;
+  font-size: 2.1rem;
+}
+
+.scroll-to-top-btn.is-visible:hover {
+  transform: translateY(-0.2rem) scale(1.05);
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+  border: 0.16rem solid var(--color-secondary-light);
+}
+
+@media (max-width: 600px) {
+  .scroll-to-top-btn {
+    right: 2rem;
+    bottom: 2.4rem;
+    width: 4.6rem;
+    height: 4.6rem;
+  }
+}

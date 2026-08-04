@@ -1,0 +1,59 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.UserManagement
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using MHAuthorWebsite.Web.ViewModels.Shared.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model ICollection<UserSummaryRowViewModel>
+
+@{
+	ViewData["Title"] = "Управление на потребителите";
+	ViewData["CurrentPage"] = Pages.Admin.ManageUsers;
+	ViewData["RequireTimeZoneManager"] = true;
+
+	string? currentSearch = Context.Request.Query["search"];
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/modal.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/search-bar.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/loader.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/admin-table.css" />
+	<link rel="stylesheet" href="~/css/admin/user-management.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+	<h1 class="title">@ViewData["Title"]</h1>
+
+	@await Html.PartialAsync("_SearchBar", new SearchBarViewModel
+	       {
+		       FormCustomId = "user-search-form",
+		       InputCustomId = "user-search-input",
+		       PlaceholderText = "Търсете потребители по имейл или име...",
+		       DefaultValue = currentSearch,
+		       Align = SearchBarAlignOptions.Left
+	       })
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Име</th>
+				<th class="align-center">Имейл</th>
+				<th class="align-end">Действия</th>
+			</tr>
+		</thead>
+		<tbody id="users-body">
+			@await Html.PartialAsync("_UserSummaryRows", Model)
+		</tbody>
+	</table>
+
+	@Html.AntiForgeryToken()
+
+	<partial name="_Modal" />
+</section>
+
+@section Scripts {
+	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/elements/modal.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/admin/user-management.js" asp-append-version="true"></script>
+}

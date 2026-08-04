@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Data.Models;
+﻿using MHAuthorWebsite.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +8,10 @@ public class ProductCommentConfiguration : IEntityTypeConfiguration<ProductComme
 {
     public void Configure(EntityTypeBuilder<ProductComment> builder)
     {
+        builder
+            .Property(pc => pc.Rating)
+            .HasComment("User rating, but null since replies do not share rating!");
+
         builder
             .HasQueryFilter(c => !c.IsDeleted && !c.Product.IsDeleted && c.Product.IsPublic && !c.User.IsDeleted);
 

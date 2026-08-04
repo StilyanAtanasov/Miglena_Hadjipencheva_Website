@@ -1,0 +1,21 @@
+﻿@model (decimal eurLeftUntilFreeDelivery, decimal FreeDeliveryThresholdEur)
+
+<section id="free-delivery-section" class="free-delivery">
+	<div class="flex-column">
+		@if (Model.eurLeftUntilFreeDelivery > 0)
+		{
+			<h2 class="message flex-row">
+				<i class="fa-solid fa-clipboard-list heading"></i> Още @Model.eurLeftUntilFreeDelivery.ToString("F2") евро до безплатна доставка
+			</h2>
+		}
+		else
+		{
+			<h2 class="message success flex-row">
+				<i class="fa-solid fa-clipboard-check heading"></i> БЕЗПЛАТНА ДОСТАВКА
+			</h2>
+		}
+		<div class="bar">
+			<span id="free-delivery-bar-fill" class="bar-fill"></span>
+		</div>
+	</div>
+</section>

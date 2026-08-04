@@ -1,8 +1,11 @@
 ﻿using MHAuthorWebsite.Core.Admin.Contracts;
+using MHAuthorWebsite.Core.Common.Extensions;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Data.Common.Extensions;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Web.ViewModels.ProductType;
+using MHAuthorWebsite.Core.Dtos.Admin.ProductType;
+using MHAuthorWebsite.Core.Models.Enums;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
+using MHAuthorWebsite.Web.ViewModels.Admin.ProductType;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -15,6 +18,7 @@ public class AdminProductTypeController : AdminBaseController
     public AdminProductTypeController(IAdminProductTypeService productTypeService) => _productTypeService = productTypeService;
 
     [HttpGet]
+    [SecurityHeaders(CspFeature.TomSelect)]
     public IActionResult AddProductType()
     {
         AddProductTypeForm f = new();
@@ -32,6 +36,7 @@ public class AdminProductTypeController : AdminBaseController
     }
 
     [HttpPost]
+    [SecurityHeaders(CspFeature.TomSelect)]
     public async Task<IActionResult> AddProductType([FromForm] AddProductTypeForm form)
     {
         if (!ModelState.IsValid)
@@ -48,7 +53,24 @@ public class AdminProductTypeController : AdminBaseController
             return View(form);
         }
 
-        ServiceResult result = await _productTypeService.AddProductTypeAsync(form);
+        AddProductTypeDto dto = new()
+        {
+
+            Name = form.Name,
+            Attributes = form.Attributes
+                .Select(a => new AttributeDefinitionDto
+                {
+                    Key = a.Key,
+                    Label = a.Label,
+                    DataType = a.DataType,
+                    IsRequired = a.IsRequired,
+                    PredefinedValues = a.PredefinedValues
+                })
+                .ToArray(),
+            HasAdditionalProperties = form.HasAdditionalProperties,
+        };
+
+        ServiceResult result = await _productTypeService.AddProductTypeAsync(dto);
         if (!result.Success) return StatusCode(500);
 
         return RedirectToAction("Dashboard", "AdminDashboard");

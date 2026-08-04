@@ -1,0 +1,174 @@
+/* Work Details Page Styling */
+.work-details-container {
+  margin: 1rem 18vw;
+  padding: 3rem 1.5rem 5rem 1.5rem;
+}
+
+.work-details-header {
+  margin-bottom: 2.5rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-grey);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-size: 1.5rem;
+}
+
+.back-link i {
+  transition: transform 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--color-secondary);
+}
+
+.back-link:hover i {
+  transform: translateX(-0.3125rem);
+}
+
+.work-details-content-wrapper {
+  display: flex;
+  gap: 3rem;
+}
+
+.work-details-cover {
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: 0 0.9375rem 2.8125rem rgba(0, 0, 0, 0.12);
+  position: sticky;
+  top: 15rem;
+  border: 0.0625rem solid var(--color-light-grey);
+  width: 32rem;
+  flex-shrink: 0;
+  height: fit-content;
+}
+
+.work-details-cover img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.work-details-cover:hover img {
+  transform: scale(1.02);
+}
+
+.work-details-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.work-details-title {
+  font-family: var(--font-primary);
+  font-size: 3.5rem;
+  color: var(--color-secondary);
+  margin-bottom: 1.25rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.work-meta {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  color: var(--color-grey);
+  font-size: 1.6rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 0.0625rem solid var(--color-light-grey);
+}
+
+.work-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.work-content {
+  line-height: 1.8;
+  color: var(--color-dark);
+  font-size: 2rem;
+}
+
+/* Quill Editor Styles override for read-only view */
+#description-editor {
+  border: none !important;
+  padding: 0 !important;
+}
+
+#description-editor .ql-editor {
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+/* Responsive adjustments */
+@media (max-width: 850px) {
+  .work-details-container {
+    margin: 1rem 5vw;
+    padding: 2rem 1rem;
+  }
+
+  .work-details-content-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .work-details-cover {
+    max-width: 28.125rem;
+    margin: 0 auto;
+    position: static;
+    width: 100%;
+  }
+
+  .work-details-title {
+    font-size: 3rem;
+    text-align: center;
+  }
+
+  .work-meta {
+    justify-content: center;
+  }
+
+  .work-details-info {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .ql-editor {
+    width: fit-content;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 400px) {
+  .work-details-container {
+    margin: 1rem 3vw;
+    padding-top: 2rem;
+  }
+
+  .work-details-title {
+    font-size: 2.5rem;
+  }
+
+  .work-meta {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+    font-size: 1.5rem;
+  }
+
+  .work-content {
+    font-size: 1.8rem;
+  }
+}

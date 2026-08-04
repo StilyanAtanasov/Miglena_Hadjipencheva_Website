@@ -1,8 +1,12 @@
 ﻿@page
+
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
 @model ShowRecoveryCodesModel
+
 @{
 	ViewData["Heading"] = "Кодове за възстановяване";
-	ViewData["ActivePage"] = "TwoFactorAuthentication";
+	ViewData["ActivePage"] = TFA;
 }
 
 @section Styles {
@@ -32,6 +36,6 @@
 		}
 	</div>
 	
-	<i class="fa-solid fa-circle-exclamation-check background-icon"></i>
+	<i class="fa-solid fa-circle-exclamation background-icon"></i>
 </section>
 

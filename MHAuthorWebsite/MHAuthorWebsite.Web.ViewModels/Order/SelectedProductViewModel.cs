@@ -6,6 +6,8 @@ public class SelectedProductViewModel
 
     public decimal TotalPrice { get; set; }
 
+    public decimal? TotalPriceWithDiscount { get; set; }
+
     public int Quantity { get; set; }
 
     public string ImageUrl { get; set; } = null!;

@@ -1,5 +1,5 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Web.ViewModels.Cart;
+using MHAuthorWebsite.Core.Dtos.Cart;
 
 namespace MHAuthorWebsite.Core.Contracts;
 
@@ -19,9 +19,9 @@ public interface ICartService
     /// </summary>
     /// <param name="userId">The unique identifier of the user whose cart is to be retrieved. Cannot be null or empty.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a collection of  <see
-    /// cref="CartViewModel"/> objects representing the items in the user's cart. Returns an empty collection if the
+    /// cref="CartDto"/> objects representing the items in the user's cart. Returns an empty collection if the
     /// cart is empty.</returns>
-    Task<CartViewModel> GetCartReadonlyAsync(string userId);
+    Task<CartDto> GetCartReadonlyAsync(string userId);
 
     /// <summary>
     /// Removes a specified CartItem from the user's shopping cart.
@@ -41,9 +41,9 @@ public interface ICartService
     /// <param name="itemId">The unique identifier of the item to update. Must be a valid <see cref="Guid"/>.</param>
     /// <param name="quantity">The new quantity to set for the specified item. Must be a non-negative integer.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResult{T}"/> 
-    /// with an <see cref="UpdatedItemQuantityViewModel"/> indicating the updated item details if the operation
+    /// with an <see cref="UpdatedItemQuantityDto"/> indicating the updated item details if the operation
     /// succeeds.</returns>
-    Task<ServiceResult<UpdatedItemQuantityViewModel>> UpdateItemQuantityAsync(string userId, Guid itemId, int quantity);
+    Task<ServiceResult<UpdatedItemQuantityDto>> UpdateItemQuantityAsync(string userId, Guid itemId, int quantity);
 
     Task<ServiceResult> UpdateIsSelectedAsync(string userId, Guid itemId, bool isSelected);
 }

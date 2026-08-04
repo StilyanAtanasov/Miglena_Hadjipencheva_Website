@@ -1,0 +1,109 @@
+@page
+
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
+@model EmailPreferencesModel
+
+@{
+	ViewData["Heading"] = "Имейл предпочитания";
+	ViewData["ActivePage"] = EmailPreferences;
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/profile/email-preferences.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
+}
+
+<section class="content-body flex-column">
+	<form id="email-preferences-form" method="post">
+		@Html.AntiForgeryToken()
+
+		<section class="email-preferences-box flex-column">
+			<h4 class="subheading">Маркетинг имейли</h4>
+			<p class="email-preferences-text">
+				Когато е включено, ще получавате бюлетин и промоционални съобщения.
+			</p>
+
+			<div class="email-preference-row toggle-row">
+				<label class="switch" for="marketing-toggle">
+					<input id="marketing-toggle"
+					       class="js-preference-toggle"
+					       data-handler="ToggleMarketing"
+					       type="checkbox"
+					       @(Model.IsMarketingSubscribed ? "checked" : string.Empty) />
+					<span class="toggle-slider round"></span>
+				</label>
+				<span class="toggle-state-label js-preference-label">@(Model.IsMarketingSubscribed ? "Активиран" : "Спрян")</span>
+			</div>
+		</section>
+
+		@if (Model.IsAdmin)
+		{
+			<section class="email-preferences-box flex-column">
+				<h4 class="subheading">Администраторски известия</h4>
+				<p class="email-preferences-text">
+					Контролирайте кои системни имейли да получавате като администратор.
+				</p>
+
+				<div class="email-preference-row toggle-row">
+					<div class="email-preference-meta flex-column">
+						<p class="email-preference-title">Нови поръчки</p>
+						<p class="email-preference-description">Известие при създадена нова поръчка.</p>
+					</div>
+					<label class="switch" for="admin-new-order-toggle">
+						<input id="admin-new-order-toggle"
+						       class="js-preference-toggle"
+						       data-handler="ToggleAdminNotification"
+						       data-notification-type="NewOrder"
+						       type="checkbox"
+						       @(Model.ReceiveNewOrderEmails ? "checked" : string.Empty) />
+						<span class="toggle-slider round"></span>
+					</label>
+					<span class="toggle-state-label js-preference-label">@(Model.ReceiveNewOrderEmails ? "Активиран" : "Спрян")</span>
+				</div>
+
+				<div class="email-preference-row toggle-row">
+					<div class="email-preference-meta flex-column">
+						<p class="email-preference-title">Контактни запитвания</p>
+						<p class="email-preference-description">Известие при ново съобщение от контактната форма.</p>
+					</div>
+					<label class="switch" for="admin-contact-request-toggle">
+						<input id="admin-contact-request-toggle"
+						       class="js-preference-toggle"
+						       data-handler="ToggleAdminNotification"
+						       data-notification-type="ContactRequest"
+						       type="checkbox"
+						       @(Model.ReceiveContactRequestEmails ? "checked" : string.Empty) />
+						<span class="toggle-slider round"></span>
+					</label>
+					<span class="toggle-state-label js-preference-label">@(Model.ReceiveContactRequestEmails ? "Активиран" : "Спрян")</span>
+				</div>
+
+				<div class="email-preference-row toggle-row">
+					<div class="email-preference-meta flex-column">
+						<p class="email-preference-title">Сървърни грешки</p>
+						<p class="email-preference-description">Известие при критична грешка в приложението.</p>
+					</div>
+					<label class="switch" for="admin-server-error-toggle">
+						<input id="admin-server-error-toggle"
+						       class="js-preference-toggle"
+						       data-handler="ToggleAdminNotification"
+						       data-notification-type="ServerError"
+						       type="checkbox"
+						       @(Model.ReceiveServerErrorEmails ? "checked" : string.Empty) />
+						<span class="toggle-slider round"></span>
+					</label>
+					<span class="toggle-state-label js-preference-label">@(Model.ReceiveServerErrorEmails ? "Активиран" : "Спрян")</span>
+				</div>
+			</section>
+		}
+	</form>
+
+	<i class="fa-solid fa-envelope-open-text background-icon"></i>
+</section>
+
+@section Scripts {
+	<script type="module" src="~/js/profile/email-preferences.js" asp-append-version="true"></script>
+}

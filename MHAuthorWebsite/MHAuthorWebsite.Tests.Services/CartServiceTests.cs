@@ -1,11 +1,14 @@
 using MHAuthorWebsite.Core;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Cart;
+using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Data;
-using MHAuthorWebsite.Data.Models;
 using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Cart;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace MHAuthorWebsite.Tests.Services;
 
@@ -15,6 +18,11 @@ public class CartServiceTests
     private ICartService _cartService = null!;
     private ApplicationDbContext _dbContext = null!;
 
+    private Mock<IFastCacheService> _cacheMock = null!;
+    private Mock<ICartDataService> _cartDataServiceMock = null!;
+    private readonly Mock<IGlobalCacheKeysManagementService> _globalCacheKeysManagementServiceMock = new();
+    private readonly Mock<ILogger<CartService>> _loggerMock = new();
+
     private Cart _cart = null!;
     private CartItem _item = null!;
 
@@ -23,15 +31,52 @@ public class CartServiceTests
     [SetUp]
     public async Task Setup()
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+        _cacheMock = new Mock<IFastCacheService>();
+        _cartDataServiceMock = new Mock<ICartDataService>();
+
+        DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase("CartTestDb")
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
-        _cartService = new CartService(new ApplicationRepository(_dbContext));
+        _cartService = new CartService(_cartDataServiceMock.Object, _cacheMock.Object, new ApplicationRepository(_dbContext),
+            _globalCacheKeysManagementServiceMock.Object, _loggerMock.Object);
 
         // Arrange
         (_cart, _item) = await SeedCartAsync(DefaultUserId);
+
+        // Wire up CartDataService mocks to delegate to the in-memory DB
+        _cartDataServiceMock
+            .Setup(ds => ds.GetCartByUserIdReadonlyAsync(It.IsAny<string>()))
+            .ReturnsAsync((string userId) =>
+                _dbContext.Carts
+                    .Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                            .ThenInclude(p => p.Thumbnail)
+                                .ThenInclude(t => t.Image)
+                    .Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                            .ThenInclude(p => p.ProductType)
+                    .Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                            .ThenInclude(p => p.Discounts)
+                    .FirstOrDefault(c => c.UserId == userId));
+
+        _cartDataServiceMock
+            .Setup(ds => ds.GetCartForItemQuantityUpdateAsync(It.IsAny<string>()))
+            .ReturnsAsync((string userId) =>
+                _dbContext.Carts
+                    .Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                            .ThenInclude(p => p.Discounts)
+                    .FirstOrDefault(c => c.UserId == userId));
+
+        _cartDataServiceMock
+            .Setup(ds => ds.GetCartForSelectionUpdateAsync(It.IsAny<string>()))
+            .ReturnsAsync((string userId) =>
+                _dbContext.Carts
+                    .Include(c => c.CartItems)
+                    .FirstOrDefault(c => c.UserId == userId));
     }
 
     [TearDown]
@@ -109,9 +154,12 @@ public class CartServiceTests
             Id = Guid.NewGuid(),
             Name = "Test Product 2",
             Description = "Test Description",
+            Price = 12.50m,
+            Currency = "EUR",
             StockQuantity = 10,
             IsDeleted = false,
             IsPublic = true,
+            Weight = 0.5m,
             ProductTypeId = 1,
             Images = new List<ProductImage>
             {
@@ -146,7 +194,7 @@ public class CartServiceTests
     [Test]
     public async Task GetCartReadonlyAsync_ReturnsNull_WhenCartNotFound()
     {
-        CartViewModel result = await _cartService.GetCartReadonlyAsync("test-user-id");
+        CartDto result = await _cartService.GetCartReadonlyAsync("test-user-id");
 
         Assert.IsEmpty(result.Items);
     }
@@ -155,7 +203,7 @@ public class CartServiceTests
     public async Task GetCartReadonlyAsync_ReturnsViewModel_WhenCartExists()
     {
         // Act
-        CartViewModel result = await _cartService.GetCartReadonlyAsync(DefaultUserId);
+        CartDto result = await _cartService.GetCartReadonlyAsync(DefaultUserId);
 
         // Assert
         Assert.IsNotNull(result);
@@ -201,7 +249,7 @@ public class CartServiceTests
     public async Task UpdateItemQuantityAsync_UpdatesQuantity_AndReturnsCorrectTotals()
     {
         // Act
-        ServiceResult<UpdatedItemQuantityViewModel> result = await _cartService
+        ServiceResult<UpdatedItemQuantityDto> result = await _cartService
             .UpdateItemQuantityAsync(_cart.UserId, _item.Id, 5);
 
         // Assert
@@ -215,7 +263,7 @@ public class CartServiceTests
     public async Task UpdateItemQuantityAsync_ReturnsBadRequest_WhenCartNotFound()
     {
         // Act
-        ServiceResult<UpdatedItemQuantityViewModel> result = await _cartService
+        ServiceResult<UpdatedItemQuantityDto> result = await _cartService
             .UpdateItemQuantityAsync("unknown-user", Guid.NewGuid(), 2);
 
         // Assert
@@ -227,7 +275,7 @@ public class CartServiceTests
     public async Task UpdateItemQuantityAsync_ReturnsBadRequest_WhenItemNotFound()
     {
         // Act
-        ServiceResult<UpdatedItemQuantityViewModel> result = await _cartService
+        ServiceResult<UpdatedItemQuantityDto> result = await _cartService
             .UpdateItemQuantityAsync(_cart.UserId, Guid.NewGuid(), 2);
 
         // Assert
@@ -244,9 +292,12 @@ public class CartServiceTests
             Id = Guid.NewGuid(),
             Name = "Test Product",
             Description = "Test Description",
+            Price = 20.00m,
+            Currency = "EUR",
             StockQuantity = 10,
             IsDeleted = false,
             IsPublic = true,
+            Weight = 0.5m,
             ProductType = new ProductType { Id = 1, Name = "Books" },
             Thumbnail = new ProductThumbnail
             {
@@ -275,8 +326,10 @@ public class CartServiceTests
         {
             Id = Guid.NewGuid(),
             Price = 20,
+            Currency = "EUR",
             Quantity = quantity,
-            Product = product
+            Product = product,
+            IsSelected = true
         };
 
         Cart cart = new()

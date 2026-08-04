@@ -1,6 +1,7 @@
 "use strict";
 
 import { pushNotification } from "./notification.js";
+import { validateImageSizes, MAX_IMAGE_SIZE_BYTES } from "./utils/image-size-validation.js";
 
 const imageInput = document.getElementById(`imageInput`);
 const previewContainer = document.getElementById(`previewContainer`);
@@ -14,12 +15,22 @@ let selectedFiles = [];
 imageInput.addEventListener(`change`, function () {
   const files = Array.from(this.files);
 
+  // Count check
   if (selectedFiles.length + files.length > maxImages) {
     imageErrorField.innerText = `Можете да качите максимум ${maxImages} снимки!`;
-    this.value = ``; // Allow re-selecting same files
+    this.value = ``;
     updateFileInput();
     return;
   }
+
+  // Size check
+  if (!validateImageSizes(files, imageErrorField)) {
+    this.value = ``;
+    updateFileInput();
+    return;
+  }
+
+  imageErrorField.textContent = ``;
 
   files.forEach(file => {
     if (!file.type.startsWith(`image/`)) return;
@@ -47,9 +58,21 @@ imageInput.addEventListener(`change`, function () {
     reader.readAsDataURL(file);
   });
 
-  this.value = ``; // Allow re-selecting same files
+  this.value = ``;
   updateFileInput();
 });
+
+// --- Submit guard ---
+const form = imageInput.closest(`form`);
+if (form) {
+  form.addEventListener(`submit`, function (e) {
+    if (selectedFiles.some(f => f.size > MAX_IMAGE_SIZE_BYTES)) {
+      e.preventDefault();
+      imageErrorField.textContent = `Всяко изображение трябва да е до 10 MB.`;
+      imageErrorField.scrollIntoView({ behavior: `smooth`, block: `center` });
+    }
+  });
+}
 
 function updateFileInput() {
   const dataTransfer = new DataTransfer();

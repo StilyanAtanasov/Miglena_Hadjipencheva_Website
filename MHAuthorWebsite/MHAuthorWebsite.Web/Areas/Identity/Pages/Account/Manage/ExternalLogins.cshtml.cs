@@ -1,17 +1,12 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account.Manage;
 
@@ -90,12 +85,12 @@ public class ExternalLoginsModel : PageModel
         var result = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
         if (!result.Succeeded)
         {
-            StatusMessage = "The external login was not removed.";
+            StatusMessage = "Външният вход не беше премахнат.";
             return RedirectToPage();
         }
 
         await _signInManager.RefreshSignInAsync(user);
-        StatusMessage = "The external login was removed.";
+        StatusMessage = "Външният вход беше премахнат.";
         return RedirectToPage();
     }
 
@@ -128,14 +123,14 @@ public class ExternalLoginsModel : PageModel
         var result = await _userManager.AddLoginAsync(user, info);
         if (!result.Succeeded)
         {
-            StatusMessage = "The external login was not added. External logins can only be associated with one account.";
+            StatusMessage = "Външният вход не беше добавен. Външният вход може да бъде свързан само с един акаунт.";
             return RedirectToPage();
         }
 
         // Clear the existing external cookie to ensure a clean login process
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-        StatusMessage = "The external login was added.";
+        StatusMessage = "Външният вход беше добавен.";
         return RedirectToPage();
     }
 }

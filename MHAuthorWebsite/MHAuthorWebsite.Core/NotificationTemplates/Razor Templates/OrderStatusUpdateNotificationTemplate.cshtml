@@ -1,0 +1,141 @@
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@* ReSharper disable once RedundantUsingDirective *@
+@using MHAuthorWebsite.Core.NotificationTemplates.PayloadModels
+@model OrderStatusUpdatePayloadModel
+
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            background-color: #FBF3FB;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #F8DFF8;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #3A053A;
+            padding: 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+            .header h1 {
+                margin: 0;
+                font-size: 26px;
+                letter-spacing: 1px;
+            }
+
+        .content {
+            padding: 40px;
+            color: #181717;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background-color: #22C922;
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .details-table {
+            width: 100%;
+            background-color: #FBF3FB;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-spacing: 0;
+        }
+
+        .label {
+            color: #616161;
+            font-size: 14px;
+            padding: 5px 0;
+        }
+
+        .value {
+            font-weight: bold;
+            text-align: right;
+            font-size: 14px;
+            padding: 5px 0;
+        }
+
+        .btn-primary {
+            display: block;
+            background-color: #3A053A;
+            color: #ffffff !important;
+            text-align: center;
+            padding: 16px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .btn-secondary {
+            display: block;
+            background-color: #FFBF00;
+            color: #181717 !important;
+            text-align: center;
+            padding: 12px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #616161;
+            background: #F0F0F0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>Актуализация на поръчка</h1>
+        </div>
+        <div class="content">
+            <div class="status-badge">@Model.StatusUpdate</div>
+            <p>Здравейте, <strong>@Model.CustomerName</strong>,</p>
+            <p>Имаме нова информация за вашата поръчка <strong>#@Model.OrderNumber</strong>.</p>
+
+            <table class="details-table">
+                <tr><td class="label">Локация:</td><td class="value">@Model.Location</td></tr>
+                @if (!string.IsNullOrEmpty(Model.LocationDetails))
+                {
+                    <tr><td class="label">Детайли:</td><td class="value">@Model.LocationDetails</td></tr>
+                }
+                <tr><td class="label">Време:</td><td class="value">@Model.EventTime</td></tr>
+            </table>
+
+            <a href="https://miglena-hadjipencheva.com/Order/OrderDetails?orderId=@Model.OrderId" class="btn-primary">Преглед в сайта</a>
+
+            @if (!string.IsNullOrEmpty(Model.TrackingUrl))
+            {
+                <a href="@Model.TrackingUrl" class="btn-secondary">Проследяване в Еконт</a>
+            }
+        </div>
+        <div class="footer">
+            &copy; @DateTime.UtcNow.Year @WebsiteName Всички права запазени.
+        </div>
+    </div>
+</body>
+</html>

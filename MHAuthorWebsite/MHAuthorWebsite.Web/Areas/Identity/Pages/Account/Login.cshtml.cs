@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -49,6 +49,8 @@ public class LoginModel : PageModel
     /// </summary>
     [TempData]
     public string ErrorMessage { get; set; }
+
+    public string ResendConfirmationEmailUrl { get; set; }
 
     /// <summary>
     ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -113,17 +115,40 @@ public class LoginModel : PageModel
 
         if (ModelState.IsValid)
         {
+            ApplicationUser user = await _userManager.FindByEmailAsync(Input.Email);
+
+            if (user == null || !await _userManager.CheckPasswordAsync(user, Input.Password))
+            {
+                ModelState.AddModelError(string.Empty, "Невалиден опит за вход.");
+                return Page();
+            }
+
+            if (user.IsBanned)
+            {
+                ModelState.AddModelError(string.Empty, "Вашият акаунт е блокиран. Свържете се с администратора за повече информация.");
+                return Page();
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                ResendConfirmationEmailUrl = Url.Page(
+                    "/Account/ResendEmailConfirmation",
+                    null,
+                    new { area = "Identity", email = Input.Email },
+                    Request.Scheme);
+
+                ModelState.AddModelError(string.Empty, "Моля потвърдете Вашия имейл адрес.");
+                return Page();
+
+            }
+
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, set lockoutOnFailure: true
             var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                ApplicationUser user = await _userManager.FindByEmailAsync(Input.Email);
-                if (user != null)
-                {
-                    user.LastActive = DateTime.UtcNow;
-                    await _userManager.UpdateAsync(user);
-                }
+                user.LastActive = DateTime.UtcNow;
+                await _userManager.UpdateAsync(user);
 
                 _logger.LogInformation("User logged in.");
                 return LocalRedirect(returnUrl);

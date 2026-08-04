@@ -1,14 +1,45 @@
 "use strict";
 
 import { pushNotification } from "./notification.js";
+import { SearchBarHandler } from "./elements/search-bar.js";
+import { PaginationHandler } from "./elements/pagination-handler.js";
 
 document.addEventListener(`DOMContentLoaded`, function () {
-  document.getElementById(`order-by-select`).addEventListener(`change`, async function () {
+  const searchForm = document.querySelector("#product-search-form");
+  let searchHandler = null;
+
+  if (searchForm) {
+    searchHandler = new SearchBarHandler({
+      inputSelector: "#product-search-input",
+      formSelector: "#product-search-form",
+      targetSelector: "#products-page",
+      url: "/Product/AllProducts",
+      param: "search",
+      debounceTimeoutMilliseconds: 500,
+      resetParams: [`page`],
+    });
+  }
+
+  const paginationContainer = document.querySelector("#products-page");
+  if (paginationContainer) {
+    new PaginationHandler({
+      containerSelector: "#products-page",
+      url: "/Product/AllProducts",
+      recaptchaHandler: searchHandler,
+    });
+  }
+
+  document.getElementById(`order-by-select`)?.addEventListener(`change`, async function () {
     const orderType = this.value;
-    window.location.href = `/Product/AllProducts?orderType=${orderType}`;
+
+    const currentUrlParams = new URLSearchParams(window.location.search);
+    currentUrlParams.set(`orderType`, orderType);
+    currentUrlParams.set(`page`, 1);
+
+    window.location.href = `/Product/AllProducts?${currentUrlParams}`;
   });
 
-  document.querySelectorAll(`[data-role="remove-item"]`).forEach(b =>
+  document.querySelectorAll(`[data-role="like-item"]`).forEach(b =>
     b.addEventListener(`click`, async function () {
       const itemId = b.dataset.itemId;
 
@@ -18,13 +49,13 @@ document.addEventListener(`DOMContentLoaded`, function () {
           RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
         },
       });
-      console.log(response);
+
       if (response.ok) {
         const isAdded = b.classList.toggle(`liked`);
 
         pushNotification(isAdded ? `Продуктът е харесан успешно!` : `Продуктът е премахнат от харесани!`, `success`);
       } else if (response.status === 401) pushNotification(`Влезте в системата, за да харесате продукт!`, `warning`);
       else pushNotification(`Възникна неочаквана грешка!`, `error`);
-    })
+    }),
   );
 });

@@ -1,14 +1,17 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+﻿using MHAuthorWebsite.Core.Common.Extensions;
+using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Configuration.EcontApi;
+using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
-using MHAuthorWebsite.Data.Common.Extensions;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.Order;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.Order;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Order;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
@@ -18,40 +21,54 @@ namespace MHAuthorWebsite.Core;
 public class OrderService : IOrderService
 {
     protected readonly IApplicationRepository Repository;
+    protected readonly IOrderDataService OrderDataService;
     protected readonly UserManager<ApplicationUser> UserManager;
     protected readonly IEcontService EcontService;
-    protected readonly IConfiguration Config;
+    protected readonly EcontApiSettings EcontApiSettings;
+    protected readonly IEmailService EmailService;
+    protected readonly IEmailUserProvider EmailUserProvider;
+    protected readonly IAdminNotificationPreferencesService AdminNotificationPreferencesService;
+    protected readonly IUrlProvider UrlProvider;
+    private readonly ILogger<OrderService> _logger;
 
-    public OrderService(IApplicationRepository repository, UserManager<ApplicationUser> userManager,
-        IEcontService econtService, IConfiguration config)
+    public OrderService(IApplicationRepository repository, IOrderDataService orderDataService, UserManager<ApplicationUser> userManager,
+        IEcontService econtService, IOptions<EcontApiSettings> econtApiSettings,
+        IEmailService emailService, IEmailUserProvider emailUserProvider,
+        IAdminNotificationPreferencesService adminNotificationPreferencesService, IUrlProvider urlProvider,
+        ILogger<OrderService> logger)
     {
         Repository = repository;
         UserManager = userManager;
         EcontService = econtService;
-        Config = config;
+        EcontApiSettings = econtApiSettings.Value;
+        OrderDataService = orderDataService;
+        EmailService = emailService;
+        EmailUserProvider = emailUserProvider;
+        AdminNotificationPreferencesService = adminNotificationPreferencesService;
+        UrlProvider = urlProvider;
+        _logger = logger;
     }
 
-    public async Task<OrderSummaryViewModel> GetOrderSummary(string userId)
+    public async Task<OrderSummaryDto> GetOrderSummary(string userId)
     {
         ApplicationUser user = (await UserManager.FindByIdAsync(userId))!;
 
-        ICollection<SelectedProductViewModel> selectedProducts = await Repository
+        ICollection<SelectedProductDto> selectedProducts = await Repository
             .WhereReadonly<CartItem>(ci => ci.Cart.UserId == userId && ci.IsSelected && ci.Product.IsPublic && ci.Product.StockQuantity >= ci.Quantity)
-            .Include(ci => ci.Cart)
-            .Include(ci => ci.Product)
-                .ThenInclude(p => p.Thumbnail)
-                    .ThenInclude(t => t.Image)
-            .Select(ci => new SelectedProductViewModel
+            .Select(ci => new SelectedProductDto
             {
                 ImageUrl = ci.Product.Thumbnail.Image.ImageUrl,
                 Name = ci.Product.Name,
                 TotalPrice = ci.Product.Price * ci.Quantity,
+                TotalPriceWithDiscount = ci.Product.Discounts.FirstOrDefault(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow) != null
+                    ? ci.Product.Discounts.First(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow).NewPrice * ci.Quantity
+                    : null,
                 Quantity = ci.Quantity,
                 TotalWeight = ci.Product.Weight * ci.Quantity
             })
             .ToListAsync();
 
-        return new OrderSummaryViewModel
+        OrderSummaryDto result = new()
         {
             UserData = new()
             {
@@ -60,23 +77,26 @@ public class OrderService : IOrderService
                 PhoneNumber = user.PhoneNumber
             },
             SelectedProducts = selectedProducts,
-            EcontShopId = Config.GetValue<int>("EcontApiShopId")
+            EcontShopId = EcontApiSettings.EcontApiShopId
         };
+        _logger.LogInformation("Successfully retrieved order summary for User {UserId}.", userId);
+
+        return result;
     }
 
-    public async Task<ServiceResult<Guid>> Order(string userId, EcontDeliveryDetailsViewModel model)
+    public async Task<ServiceResult<Guid>> Order(string userId, EcontDeliveryDetailsDto model)
     {
-        CartItem[] cartItems = await Repository
-            .Where<CartItem>(ci => ci.Cart.UserId == userId && ci.IsSelected && ci.Product.IsPublic && ci.Product.StockQuantity >= ci.Quantity)
-            .Include(ci => ci.Cart)
-            .Include(ci => ci.Product)
-            .ToArrayAsync();
+        CartItem[] cartItems = await OrderDataService.GetOrderCartItemsByUserId(userId);
+
+        Dictionary<Guid, decimal> productPricesWithDiscounts = cartItems.ToDictionary(
+            ci => ci.ProductId,
+            ci => ci.Product.Discounts.FirstOrDefault(d => d.StartDate <= DateTime.UtcNow && d.EndDate >= DateTime.UtcNow)?.NewPrice ?? ci.Product.Price);
 
         EcontOrderDto orderDto = new()
         {
             Status = OrderStatus.InReview.GetDisplayName(),
             OrderTime = DateTime.UtcNow.Ticks,
-            OrderSum = cartItems.Sum(ci => ci.Product.Price * ci.Quantity),
+            OrderSum = cartItems.Sum(ci => productPricesWithDiscounts[ci.ProductId] * ci.Quantity),
             Cod = true,
             PartialDelivery = false,
             Currency = Currency,
@@ -101,7 +121,7 @@ public class OrderService : IOrderService
                 {
                     Count = i.Quantity,
                     Name = i.Product.Name,
-                    TotalPrice = i.Product.Price * i.Quantity,
+                    TotalPrice = productPricesWithDiscounts[i.ProductId] * i.Quantity,
                     TotalWeight = i.Product.Weight * i.Quantity
                 }).ToArray()
         };
@@ -120,7 +140,8 @@ public class OrderService : IOrderService
                {
                    ProductId = ci.ProductId,
                    Quantity = ci.Quantity,
-                   UnitPrice = ci.Product.Price,
+                   UnitPrice = productPricesWithDiscounts[ci.ProductId],
+                   Currency = ci.Product.Currency
                })
                .ToArray(),
             Shipment = new Shipment
@@ -147,7 +168,7 @@ public class OrderService : IOrderService
                         DestinationDetails = AwaitingApproval
                     }
                 }
-            },
+            }
         };
 
         await Repository.AddAsync(order);
@@ -156,56 +177,55 @@ public class OrderService : IOrderService
 
         Repository.DeleteRange(cartItems);
         await Repository.SaveChangesAsync();
+        await NotifyAdminsForNewOrderAsync(order);
 
+        _logger.LogInformation("Successfully created Order {OrderId} for User {UserId}.", order.Id, userId);
         return ServiceResult<Guid>.Ok(order.Id);
     }
 
-    public async Task<ICollection<MyOrdersViewModel>> GetUserOrders(string userId) =>
-    await Repository
+    public async Task<ICollection<MyOrderDto>> GetUserOrders(string userId, int page)
+    {
+        var result = await Repository
         .WhereReadonly<Order>(o => o.UserId == userId)
-        .Include(o => o.OrderedProducts)
-            .ThenInclude(op => op.Product)
-                .ThenInclude(p => p.Thumbnail)
-                    .ThenInclude(t => t.Image)
         .OrderByDescending(o => o.Date)
-        .Select(o => new MyOrdersViewModel
-        {
-            OrderId = o.Id,
-            CreatedAt = o.Date,
-            Total = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity) + o.Shipment.ShippingPrice,
-            Status = o.Status.GetDisplayName(),
-            Products = o.OrderedProducts
-                .Select(op => new MyOrdersOrderProductViewModel
+        .Skip((page - 1) * MyOrdersPageSize)
+        .Take(MyOrdersPageSize)
+            .Select(o => new MyOrderDto
+            {
+                OrderId = o.Id,
+                CreatedAt = o.Date,
+                Total = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity) + o.Shipment.ShippingPrice,
+                Currency = o.Shipment.Currency,
+                Status = o.Status.GetDisplayName(),
+                Products = o.OrderedProducts
+                .Select(op => new MyOrdersOrderProductDto
                 {
                     ImageUrl = op.Product.Thumbnail.Image.ImageUrl,
                     Quantity = op.Quantity,
                 })
                 .ToArray()
-        })
+            })
         .ToArrayAsync();
 
-    public async Task<ServiceResult<OrderDetailsViewModel>> GetOrderDetails(string userId, Guid orderId)
+        _logger.LogInformation("Successfully retrieved orders for User {UserId}, Page {Page}. Count: {Count}", userId, page, result.Length);
+
+        return result;
+    }
+
+    public async Task<ServiceResult<OrderDetailsDto>> GetOrderDetails(string userId, Guid orderId)
     {
-        Order? order = await Repository
-            .WhereReadonly<Order>(o => o.Id == orderId)
-            .Include(o => o.OrderedProducts)
-                .ThenInclude(op => op.Product)
-                    .ThenInclude(p => p.Thumbnail)
-                        .ThenInclude(t => t.Image)
-            .Include(o => o.Shipment)
-                .ThenInclude(s => s.Events)
-            .FirstOrDefaultAsync();
+        Order? order = await OrderDataService.GetOrderByIdForOrderDetails(orderId);
 
-        if (order == null) return ServiceResult<OrderDetailsViewModel>.NotFound();
-        if (order.UserId != userId) return ServiceResult<OrderDetailsViewModel>.Forbidden();
+        if (order == null) return ServiceResult<OrderDetailsDto>.NotFound();
+        if (order.UserId != userId) return ServiceResult<OrderDetailsDto>.Forbidden();
 
-        OrderDetailsViewModel model = new()
+        OrderDetailsDto model = new()
         {
             OrderId = order.Id,
             OrderDate = order.Date,
             Status = order.Status.GetDisplayName(),
             Products = order.OrderedProducts
-                 .Select(op => new OrderProductDetailsViewModel
+                 .Select(op => new OrderProductDetailsDto
                  {
                      ImageUrl = op.Product.Thumbnail.Image.ImageUrl,
                      ProductName = op.Product.Name,
@@ -213,7 +233,7 @@ public class OrderService : IOrderService
                      Quantity = op.Quantity,
                  })
                  .ToArray(),
-            Shipment = new OrderShipmentDetailsViewModel
+            Shipment = new OrderShipmentDetailsDto
             {
                 CourierName = order.Shipment.Courier.GetDisplayName(),
                 ShipmentNumber = order.Shipment.ShipmentNumber,
@@ -228,7 +248,7 @@ public class OrderService : IOrderService
                 PriorityTo = order.Shipment.PriorityTo,
                 TrackingEvents = order.Shipment.Events
                      .OrderBy(e => e.Time)
-                     .Select(e => new OrderShipmentEventViewModel
+                     .Select(e => new OrderShipmentEventDto
                      {
                          CityName = e.CityName,
                          DestinationDetails = e.DestinationDetails!,
@@ -241,11 +261,72 @@ public class OrderService : IOrderService
             }
         };
 
-        return ServiceResult<OrderDetailsViewModel>.Ok(model);
+        _logger.LogInformation("Successfully retrieved details for Order {OrderId}, User {UserId}.", orderId, userId);
+        return ServiceResult<OrderDetailsDto>.Ok(model);
     }
 
     public async Task<bool> CanAccessSuccessPage(string userId, Guid orderId)
         => await Repository
-            .AllReadonly<Order>()
-            .AnyAsync(o => o.Id == orderId && o.UserId == userId && o.Date > DateTime.UtcNow.AddSeconds(-SuccessPageMaxViewDelaySeconds));
+            .WhereReadonly<Order>(o => o.Id == orderId && o.UserId == userId && o.Date > DateTime.UtcNow.AddSeconds(-SuccessPageMaxViewDelaySeconds))
+            .AnyAsync();
+
+    private async Task NotifyAdminsForNewOrderAsync(Order order)
+    {
+        try
+        {
+            ICollection<string> adminEmails = await AdminNotificationPreferencesService
+                .GetAdminEmailsForNotificationAsync(AdminNotificationType.NewOrder);
+
+            if (!adminEmails.Any())
+                return;
+
+            string orderDetailsUrl = UrlProvider.GetAdminOrderDetailsPageUrl(order.Id);
+            string subject = $"Нова поръчка {order.Shipment.OrderNumber}";
+            string body = $@"
+                <!DOCTYPE html>
+                <html lang=""bg"">
+                <head>
+                    <meta charset=""UTF-8"">
+                </head>
+                <body style=""margin:0;padding:0;background:#f0f0f0;font-family:'Segoe UI',Arial,sans-serif;color:#181717;"">
+                    <table role=""presentation"" width=""100%"" cellspacing=""0"" cellpadding=""0"" style=""padding:20px;"">
+                        <tr>
+                            <td align=""center"">
+                                <table role=""presentation"" width=""100%"" style=""max-width:600px;background:#ffffff;border:1px solid #e8d7e8;border-radius:10px;overflow:hidden;"">
+                                    <tr>
+                                        <td style=""background:#3a053a;padding:16px;text-align:center;"">
+                                            <h2 style=""margin:0;color:#fcfcfc;font-size:18px;"">Нова поръчка в системата</h2>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style=""padding:24px;"">
+                                            <p style=""margin:0 0 8px 0;""><strong>Номер:</strong> {order.Shipment.OrderNumber}</p>
+                                            <p style=""margin:0 0 8px 0;""><strong>Клиент:</strong> {order.Shipment.Face}</p>
+                                            <p style=""margin:0 0 8px 0;""><strong>Имейл:</strong> {order.Shipment.Email}</p>
+                                            <p style=""margin:0 0 16px 0;""><strong>Телефон:</strong> {order.Shipment.Phone}</p>
+                                            <p style=""margin:0 0 18px 0;""><strong>Създадена на:</strong> {order.Date:dd.MM.yyyy HH:mm} UTC</p>
+                                            <a href=""{orderDetailsUrl}"" style=""background:#3a053a;color:#fcfcfc;padding:11px 20px;border-radius:8px;text-decoration:none;font-weight:700;display:inline-block;"">
+                                                Отвори поръчката в админ панела
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>";
+
+            await EmailService.SendEmailsBulkAsync(
+                EmailUserProvider.GetNotificationsUser(),
+                adminEmails,
+                subject,
+                body,
+                true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send admin new-order notifications for order {OrderId}.", order.Id);
+        }
+    }
 }

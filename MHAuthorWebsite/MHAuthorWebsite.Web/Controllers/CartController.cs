@@ -1,8 +1,12 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Dtos.Cart;
+using MHAuthorWebsite.Web.Utils.Attributes;
+using MHAuthorWebsite.Web.Utils.Enums;
 using MHAuthorWebsite.Web.ViewModels.Cart;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace MHAuthorWebsite.Web.Controllers;
 
@@ -11,12 +15,34 @@ public class CartController : BaseController
     private readonly ICartService _cartService;
     public CartController(ICartService cartService) => _cartService = cartService;
 
+    [SecurityHeaders(CspFeature.Notifications)]
     [HttpGet]
     public async Task<IActionResult> Index()
     {
         if (!IsUserAuthenticated()) return Unauthorized();
 
-        CartViewModel cart = await _cartService.GetCartReadonlyAsync(GetUserId()!);
+        CartDto cartDto = await _cartService.GetCartReadonlyAsync(GetUserId()!);
+        CartViewModel cart = new CartViewModel
+        {
+            Items = cartDto.Items
+                .Select(i => new CartItemViewModel
+                {
+                    ItemId = i.ItemId,
+                    ProductId = i.ProductId,
+                    UnitPrice = i.UnitPrice,
+                    Quantity = i.Quantity,
+                    MaxOrderQuantityForProduct = i.MaxOrderQuantityForProduct,
+                    IsSelected = i.IsSelected,
+                    Category = i.Category,
+                    IsAvailable = i.IsAvailable,
+                    IsDiscontinued = i.IsDiscontinued,
+                    Name = i.Name,
+                    ThumbnailAlt = i.ThumbnailAlt,
+                    ThumbnailUrl = i.ThumbnailUrl,
+                    UnitDiscountedPrice = i.UnitDiscountedPrice,
+                }).ToList()
+        };
+
         return View(cart);
     }
 
@@ -25,10 +51,11 @@ public class CartController : BaseController
     public async Task<IActionResult> Add([FromBody] AddCartItemViewModel model)
     {
         if (!IsUserAuthenticated()) return StatusCode(401);
-        if (model.ProductId == Guid.Empty || model.Quantity <= 0) return BadRequest("Invalid cart item data.");
+        if (model.ProductId == Guid.Empty || model.Quantity <= 0)
+            return BadRequest(new Dictionary<string, string> { ["error"] = "Невалидни данни за продукта." });
 
         ServiceResult result = await _cartService.AddItemToCartAsync(GetUserId()!, model.ProductId, model.Quantity);
-        if (result.IsBadRequest) return BadRequest(result.Errors); // TODO: Add error modal window
+        if (result.IsBadRequest) return BadRequest(result.Errors);
         if (!result.Success) return StatusCode(500);
 
         return StatusCode(200);
@@ -50,9 +77,10 @@ public class CartController : BaseController
     {
         if (!IsUserAuthenticated()) return Unauthorized();
 
-        ServiceResult<UpdatedItemQuantityViewModel> sr = await _cartService
+        ServiceResult<UpdatedItemQuantityDto> sr = await _cartService
             .UpdateItemQuantityAsync(GetUserId()!, model.ItemId, model.Quantity);
         if (sr.IsBadRequest) return BadRequest(sr.Errors);
+        if (!sr.Success) return StatusCode(500);
 
         return Json(new
         {

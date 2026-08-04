@@ -1,14 +1,14 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Data.Shared.Filters.Criteria;
-using MHAuthorWebsite.Web.ViewModels.Admin.Order;
+using MHAuthorWebsite.Core.Dtos.Admin.Order;
+using MHAuthorWebsite.Core.Filters.Criteria;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 
 public interface IAdminOrderService
 {
-    Task<ICollection<AllOrdersListItemViewModel>> GetAllOrders(AllOrdersFilterCriteria filter);
+    Task<ICollection<AllOrdersListItemDto>> GetAllOrders(AllOrdersFilterCriteria filter);
 
-    Task<ServiceResult<AdminOrderDetailsViewModel>> GetOrderDetailsAsync(Guid orderId);
+    Task<ServiceResult<AdminOrderDetailsDto>> GetOrderDetailsAsync(Guid orderId);
 
     Task<ServiceResult> AcceptOrderAsync(Guid orderId);
 

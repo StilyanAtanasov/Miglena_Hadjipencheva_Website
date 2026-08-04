@@ -1,0 +1,39 @@
+﻿@page
+@model RegisterConfirmationModel
+@{
+	ViewData["Title"] = "Потвърждение на регистрацията";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+}
+
+<div class="page-wrapper flex-column">
+	<section class="modal flex-column">
+		<h1 class="title">@ViewData["Title"]</h1>
+
+		<p class="info-message">
+			<i class="fa-solid fa-envelope-open-text"></i>
+			Благодарим Ви за регистрацията! Изпратихме имейл за потвърждение на адрес:
+			<strong>@Model.Email</strong>
+		</p>
+
+		<br/>
+
+		<h3 class="heading">Следващи стъпки:</h3>
+
+		<p class="info-message">
+			<i class="fa-solid fa-circle-exclamation"></i>
+			Моля, проверете пощата си и последвайте линка за активация.
+			Ако не виждате имейла, проверете папка "Спам".
+		</p>
+
+		<a href="/" class="btn link submit-btn flex-row">
+			<i class="fa-solid fa-house"></i> Към началната страница
+		</a>
+	</section>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

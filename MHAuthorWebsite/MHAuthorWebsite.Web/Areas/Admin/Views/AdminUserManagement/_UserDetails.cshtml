@@ -1,0 +1,129 @@
+@using MHAuthorWebsite.Web.ViewModels.Admin.UserManagement
+@using static MHAuthorWebsite.GCommon.ApplicationRules.DataCollection
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@model UserDetailsViewModel
+
+@{
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+}
+
+<article id="user-details-container">
+	<h3 class="heading">Детайли за потребителя</h3>
+
+	@if (Model.IsDeleted)
+	{
+		<p class="deleted-message"><em>Този потребител е изтрит и детайлите му са анонимизирани и изтрити.</em></p>
+	}
+
+	<div class="user-badges flex-row">
+		@if (Model.IsAdmin)
+		{
+			<span class="badge admin-badge flex-row" title="Администратор"><i class="fa-solid fa-user-shield"></i> Админ</span>
+		}
+		@if (Model.IsDeleted)
+		{
+			<span class="badge deleted-badge flex-row" title="Изтрит потребител"><i class="fa-solid fa-user-xmark"></i> Изтрит</span>
+		}
+		@if (Model.IsActive)
+		{
+			<span class="badge active-badge flex-row" title="Активен потребител през последните @UsersActivityForPeriod дни"><i class="fa-solid fa-person-running"></i> Активен</span>
+		}
+		@if (Model.IsBanned)
+		{
+			<span class="badge banned-badge flex-row" title="Блокиран потребител"><i class="fa-solid fa-user-lock"></i> Блокиран</span>
+		}
+	</div>
+
+	@if (!Model.IsDeleted)
+	{
+		<p><strong>Име:</strong> @Model.Name</p>
+		<p><strong>Имейл:</strong> @Model.Email</p>
+		@if (!string.IsNullOrWhiteSpace(Model.Phone))
+		{
+			<p><strong>Телефон:</strong> @Model.Phone</p>
+		}
+	}
+
+	<br />
+
+	<h4 class="subheading">Профил</h4>
+	<p><strong>Идентификатор:</strong> @Model.Id</p>
+	<p>
+		<strong>Дата на създаване:</strong>
+		<time to-local no-seconds month-long datetime="@Model.DateJoined.ToString("O")">
+			@TimeZoneInfo.ConvertTimeFromUtc(Model.DateJoined, defaultZone).ToString("dd MMM yyyy, HH:mm")
+		</time>
+	</p>
+	<p>
+		<strong>Последна активност:</strong>
+		<time to-local no-seconds month-long datetime="@Model.LastActive.ToString("O")">
+			@TimeZoneInfo.ConvertTimeFromUtc(Model.LastActive, defaultZone).ToString("dd MMM yyyy, HH:mm")
+		</time>
+	</p>
+
+	<br />
+
+	<h4 class="subheading">Поверителност и маркетинг</h4>
+	<p><strong>Приета политика за поверителност:</strong> @(Model.HasAcceptedPrivacyPolicy ? "Да" : "Не")</p>
+	@if (Model.PrivacyPolicyAcceptedOn.HasValue)
+	{
+		<p>
+			<strong>Дата на приемане:</strong>
+			<time to-local no-seconds month-long datetime="@Model.PrivacyPolicyAcceptedOn.Value.ToString("O")">
+				@TimeZoneInfo.ConvertTimeFromUtc(Model.PrivacyPolicyAcceptedOn.Value, defaultZone).ToString("dd MMM yyyy, HH:mm")
+			</time>
+		</p>
+	}
+	@if (!string.IsNullOrWhiteSpace(Model.PrivacyPolicyVersion))
+	{
+		<p><strong>Версия на политиката:</strong> @Model.PrivacyPolicyVersion</p>
+	}
+
+	<p><strong>Абониран за маркетинг:</strong> @(Model.IsMarketingSubscribed ? "Да" : "Не")</p>
+	@if (Model.MarketingSubscribedOn.HasValue)
+	{
+		<p>
+			<strong>Абониран на:</strong>
+			<time to-local no-seconds month-long datetime="@Model.MarketingSubscribedOn.Value.ToString("O")">
+				@TimeZoneInfo.ConvertTimeFromUtc(Model.MarketingSubscribedOn.Value, defaultZone).ToString("dd MMM yyyy, HH:mm")
+			</time>
+		</p>
+	}
+	@if (Model.MarketingUnsubscribedOn.HasValue)
+	{
+		<p>
+			<strong>Отписан на:</strong>
+			<time to-local no-seconds month-long datetime="@Model.MarketingUnsubscribedOn.Value.ToString("O")">
+				@TimeZoneInfo.ConvertTimeFromUtc(Model.MarketingUnsubscribedOn.Value, defaultZone).ToString("dd MMM yyyy, HH:mm")
+			</time>
+		</p>
+	}
+	<p><strong>Наличен токен за отписване:</strong> @(Model.HasMarketingUnsubscribeToken ? "Да" : "Не")</p>
+	@if (Model.MarketingUnsubscribeTokenCreatedOn.HasValue)
+	{
+		<p>
+			<strong>Токен създаден на:</strong>
+			<time to-local no-seconds month-long datetime="@Model.MarketingUnsubscribeTokenCreatedOn.Value.ToString("O")">
+				@TimeZoneInfo.ConvertTimeFromUtc(Model.MarketingUnsubscribeTokenCreatedOn.Value, defaultZone).ToString("dd MMM yyyy, HH:mm")
+			</time>
+		</p>
+	}
+
+	@if (Model.IsAdmin)
+	{
+		<br />
+		<h4 class="subheading">Админ имейл предпочитания</h4>
+		<p><strong>Нови поръчки:</strong> @(Model.ReceiveNewOrderEmails == true ? "Включено" : "Изключено")</p>
+		<p><strong>Контактни запитвания:</strong> @(Model.ReceiveContactRequestEmails == true ? "Включено" : "Изключено")</p>
+		<p><strong>Сървърни грешки:</strong> @(Model.ReceiveServerErrorEmails == true ? "Включено" : "Изключено")</p>
+		@if (Model.AdminNotificationPreferencesUpdatedOn.HasValue)
+		{
+			<p>
+				<strong>Обновени на:</strong>
+				<time to-local no-seconds month-long datetime="@Model.AdminNotificationPreferencesUpdatedOn.Value.ToString("O")">
+					@TimeZoneInfo.ConvertTimeFromUtc(Model.AdminNotificationPreferencesUpdatedOn.Value, defaultZone).ToString("dd MMM yyyy, HH:mm")
+				</time>
+			</p>
+		}
+	}
+</article>

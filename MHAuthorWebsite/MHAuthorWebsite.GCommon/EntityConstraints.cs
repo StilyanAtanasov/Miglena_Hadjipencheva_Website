@@ -9,6 +9,9 @@ public static class EntityConstraints
 
         public const byte PasswordMinLength = 6;
         public const byte PasswordMaxLength = 100;
+
+        public const byte MarketingUnsubscribeTokenMaxLength = 128;
+        public const byte PrivacyPolicyVersionMaxLength = 30;
     }
 
     public static class Product
@@ -35,6 +38,13 @@ public static class EntityConstraints
 
         public const bool IsPublicDefaultValue = false;
         public const bool IsDeletedDefaultValue = false;
+    }
+
+    public static class ProductDiscount
+    {
+        public const string NewPriceSqlType = "decimal(18, 3)";
+
+        public const decimal NewPriceMinValue = 0.01m;
     }
 
     public static class OrderProduct
@@ -151,5 +161,73 @@ public static class EntityConstraints
     public static class CartItem
     {
         public const bool IsSelectedDefaultValue = true;
+    }
+
+    public static class ContactRequest
+    {
+        public const byte NameMinLength = 2;
+        public const byte NameMaxLength = 120;
+
+        public const byte EmailMinLength = 5;
+        public const byte EmailMaxLength = 100;
+
+        public const byte SubjectMinLength = 5;
+        public const byte SubjectMaxLength = 150;
+
+        public const byte MessageMinLength = 10;
+        public const ushort MessageMaxLength = 4000;
+
+        public const byte ReplyMessageMinLength = 10;
+        public const ushort ReplyMessageMaxLength = 4000;
+    }
+
+    public static class Announcement
+    {
+        public const byte SubjectMinLength = 5;
+        public const byte SubjectMaxLength = 150;
+
+        public const int MessageTextMinLength = 10;
+        public const int MessageTextMaxLength = 20000;
+        public const int MessageDeltaMaxLength = 100000;
+        public const int MessageHtmlMaxLength = 200000;
+
+        public const ushort AdditionalRecipientsMaxLength = 4000;
+    }
+
+    public static class AnnouncementEmailDelivery
+    {
+        public const ushort EmailMaxLength = 256;
+        public const ushort ErrorMessageMaxLength = 1000;
+    }
+
+    public static class ScheduledNotification
+    {
+        public const byte SubjectMinLength = 5;
+        public const byte SubjectMaxLength = 150;
+
+        public const byte TargetDeliveryDetailsMaxLength = 100;
+    }
+
+    public static class LegalDocument
+    {
+        public const byte TitleMinLength = 3;
+        public const byte TitleMaxLength = 200;
+        public const int NodesJsonMaxLength = 500000;
+    }
+
+    public static class LegalDocumentNode
+    {
+        public const byte TitleMinLength = 3;
+        public const byte TitleMaxLength = 250;
+        public const int ContentDeltaMaxLength = 100000;
+    }
+
+    public static class Work
+    {
+        public const int TitleMaxLength = 200;
+
+        public const int ContentTextMinLength = 10;
+        public const int ContentTextMaxLength = 20000;
+        public const int ContentDeltaMaxLength = 100000;
     }
 }

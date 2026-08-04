@@ -1,0 +1,76 @@
+@using MHAuthorWebsite.Web.ViewModels.Admin.Work
+@using static MHAuthorWebsite.GCommon.EntityConstraints.Work
+@model AddWorkForm
+
+@{
+    ViewData["Title"] = "Добавяне на творба";
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/image-preview.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
+}
+
+<div class="page-wrapper flex-column">
+	<div class="form-container">
+		<h2 class="title text-centered">Добавяне на творба</h2>
+
+		<form class="input-form flex-column" asp-area="Admin" asp-controller="AdminWork" asp-action="Add" method="post" enctype="multipart/form-data">
+			<div asp-validation-summary="ModelOnly" class="input-error"></div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Title">Заглавие</label>
+				<input asp-for="Title" class="form-input" placeholder="Въведете заглавие..." />
+				<span asp-validation-for="Title" class="input-error"></span>
+			</div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="CoverImage">Корица</label>
+				<div class="image-upload-wrapper">
+					<div class="image-preview-box" id="coverPreview">
+						<i class="fa-solid fa-image"></i>
+						<span>Няма избрано изображение</span>
+					</div>
+					<input asp-for="CoverImage" type="file" id="coverUpload" accept="image/*" class="file-input" />
+					<button id="coverUploadBtn" type="button" class="btn btn-secondary">Избери изображение</button>
+				</div>
+				<span asp-validation-for="CoverImage" id="coverUploadError" class="input-error"></span>
+			</div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label">Съдържание</label>
+				<partial name="_QuillToolbar" />
+				<div id="description-editor"></div>
+				<input type="hidden" asp-for="Content" id="descriptionInput" 
+				       data-text-min-length="@ContentTextMinLength" data-text-max-length="@ContentTextMaxLength" />
+				<span asp-validation-for="Content" id="description-input-error" class="input-error"></span>
+			</div>
+
+			<div class="toggle-row">
+				<label class="switch">
+					<input asp-for="IsPublic" type="checkbox" checked />
+					<span class="toggle-slider round"></span>
+				</label>
+				<label class="toggle-label" asp-for="IsPublic">Публична</label>
+			</div>
+
+			<div class="flex-row">
+				<a asp-controller="Work" asp-action="Index" asp-area="" class="btn cancel-btn">Отказ</a>
+				<button type="submit" class="btn submit-btn">Добави</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script type="module" src="~/js/admin/manage-work.js" asp-append-version="true"></script>
+}

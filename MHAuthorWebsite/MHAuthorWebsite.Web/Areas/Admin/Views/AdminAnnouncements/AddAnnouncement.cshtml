@@ -1,0 +1,77 @@
+@using MHAuthorWebsite.Web.ViewModels.Admin.Announcements
+@using static MHAuthorWebsite.GCommon.EntityConstraints.Announcement
+@model AddAnnouncementFormViewModel
+
+@{
+	ViewData["Title"] = "Ново съобщение";
+	ViewData["CurrentPage"] = Pages.Admin.AnnouncementsBoardPage;
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+	<link rel="stylesheet" href="~/css/elements/editor.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/add-announcement.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+	<section class="modal-invisible large flex-column announcement-form-shell">
+		<h1 class="title">@ViewData["Title"]</h1>
+
+		<form id="addAnnouncementForm" class="input-form flex-column"
+		      asp-area="Admin" asp-controller="AdminAnnouncements" asp-action="AddAnnouncement" method="post">
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Subject">Тема</label>
+				<input id="subjectInput" class="form-input" asp-for="Subject" placeholder="Въведете тема..."
+				       data-min-length="@SubjectMinLength" data-max-length="@SubjectMaxLength" />
+				<span id="subject-error" class="input-error" asp-validation-for="Subject"></span>
+			</div>
+
+			<div class="form-input-box flex-column select-list">
+				<label class="form-label" asp-for="RecipientGroup">Аудитория</label>
+				<select id="recipientGroupSelect" class="form-select wide" asp-for="RecipientGroup" asp-items="ViewBag.RecipientGroups">
+					<option value="0">Изберете аудитория...</option>
+				</select>
+				<span id="recipient-group-error" class="input-error" asp-validation-for="RecipientGroup"></span>
+			</div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="AdditionalRecipients">Допълнителни имейли</label>
+				<textarea id="additionalRecipientsInput" class="form-input announcement-extra-emails" asp-for="AdditionalRecipients"
+				          placeholder="email@example.com; second@example.com"></textarea>
+				<span id="additional-recipients-error" class="input-error" asp-validation-for="AdditionalRecipients"></span>
+			</div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="MessageDelta">Съобщение</label>
+				<partial name="_QuillToolbar" />
+				<input type="hidden" asp-for="MessageDelta" id="descriptionInput"
+				       data-text-min-length="@MessageTextMinLength" data-text-max-length="@MessageTextMaxLength" />
+				<input type="hidden" asp-for="MessageHtml" id="messageHtmlInput" />
+				<span id="description-input-error" class="input-error" asp-validation-for="MessageDelta"></span>
+				<span class="input-error" asp-validation-for="MessageHtml"></span>
+			</div>
+
+			<div class="announcement-actions flex-row">
+				<a asp-controller="AdminAnnouncements" asp-action="AnnouncementsBoard" class="btn link flex-row cancel-btn">
+					<i class="fa-solid fa-arrow-left"></i>
+					Назад
+				</a>
+				<button type="submit" class="btn btn-purple flex-row">
+					<i class="fa-solid fa-paper-plane"></i>
+					Изпрати
+				</button>
+			</div>
+		</form>
+	</section>
+</section>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+	<script type="module" src="~/js/admin/add-announcement.js" asp-append-version="true"></script>
+}

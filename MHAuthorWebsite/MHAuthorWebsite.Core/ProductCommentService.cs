@@ -1,13 +1,15 @@
 ﻿using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.ProductComment;
+using MHAuthorWebsite.Core.Contracts.DataServices;
+using MHAuthorWebsite.Core.Dtos.ProductComment;
+using MHAuthorWebsite.Core.Extensions;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
+using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ProductComment;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
@@ -15,24 +17,27 @@ namespace MHAuthorWebsite.Core;
 
 public class ProductCommentService : IProductCommentService
 {
+    private readonly IFastCacheService _cache;
     private readonly IApplicationRepository _repository;
+    private readonly IProductCommentDataService _productCommentDataService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILogger<ProductCommentService> _logger;
 
-    public ProductCommentService(IApplicationRepository repository, UserManager<ApplicationUser> userManager)
+    public ProductCommentService(IFastCacheService cache, IApplicationRepository repository, IProductCommentDataService productCommentDataService, UserManager<ApplicationUser> userManager, ILogger<ProductCommentService> logger)
     {
+        _cache = cache;
         _repository = repository;
+        _productCommentDataService = productCommentDataService;
         _userManager = userManager;
+        _logger = logger;
     }
 
-    public async Task<ServiceResult<ProductCommentDetailsViewModel>> GetCommentDetailsReadonlyAsync(Guid commentId, string? userId)
+    public async Task<ServiceResult<ProductCommentDetailsDto>> GetCommentDetailsReadonlyAsync(Guid commentId, string? userId)
     {
-        ProductCommentDetailsViewModel? comment = await _repository
+        ProductCommentDetailsDto? comment = await _repository
             .AllReadonly<ProductComment>()
             .Where(c => c.Id == commentId)
-            .Include(c => c.User)
-            .Include(c => c.Reactions)
-            .Include(c => c.Images)
-            .Select(c => new ProductCommentDetailsViewModel
+            .Select(c => new ProductCommentDetailsDto
             {
                 Id = c.Id,
                 ProductId = c.ProductId,
@@ -44,7 +49,7 @@ public class ProductCommentService : IProductCommentService
                 Likes = c.Reactions.Count(r => r.Reaction == CommentReaction.Like),
                 Dislikes = c.Reactions.Count(r => r.Reaction == CommentReaction.Dislike),
                 Images = c.Images
-                    .Select(i => new ProductCommentImageViewModel
+                    .Select(i => new ProductCommentImageDto
                     {
                         ImageUrl = i.ImageUrl,
                         ImagePreviewUrl = i.PreviewUrl
@@ -58,37 +63,33 @@ public class ProductCommentService : IProductCommentService
             })
             .FirstOrDefaultAsync();
 
+        _logger.LogInformation("Successfully retrieved comment details for CommentId: {CommentId}", commentId);
         return comment is null
-            ? ServiceResult<ProductCommentDetailsViewModel>.NotFound()
-            : ServiceResult<ProductCommentDetailsViewModel>.Ok(comment);
+            ? ServiceResult<ProductCommentDetailsDto>.NotFound()
+            : ServiceResult<ProductCommentDetailsDto>.Ok(comment);
     }
 
-    public async Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentViewModel model, ICollection<ProductCommentImagesUploadDto>? images)
+    public async Task<ServiceResult> AddCommentAsync(string userId, AddProductCommentDto model, ICollection<ProductCommentImagesUploadDto>? images)
     {
-        Product? product = await _repository
-            .All<Product>()
-            .Include(p => p.Orders)
-                .ThenInclude(op => op.Order)
-            .Include(p => p.Comments)
-            .FirstOrDefaultAsync(p => p.Id == model.ProductId);
+        Product? product = await _productCommentDataService.GetProductWithOrdersAndCommentsAsync(model.ProductId);
         if (product is null) return ServiceResult.BadRequest();
 
         ApplicationUser? user = await _userManager.FindByIdAsync(userId);
         if (user is null || (await _userManager.IsInRoleAsync(user, AdminRoleName) && model.ParentCommentId is null)) return ServiceResult.Forbidden();
 
         ProductComment? parentComment = model.ParentCommentId != null
-            ? await _repository.All<ProductComment>().FirstOrDefaultAsync(c => c.Id == model.ParentCommentId)
+            ? await _repository.Where<ProductComment>(c => c.Id == model.ParentCommentId).FirstOrDefaultAsync()
             : null;
 
         if (model.ParentCommentId is not null && parentComment is null) return ServiceResult.BadRequest();
 
-        if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null) && model.ParentCommentId == null)
-            return ServiceResult.Failure(new() { ["Limit"] = "Всеки потребител има право на един базов коментар за продукт!" });
+        //if (product.Comments.Any(c => c.UserId == userId && c.ParentCommentId == null) && model.ParentCommentId == null)
+        //return ServiceResult.Failure(new() { ["Limit"] = "Всеки потребител има право на един базов коментар за продукт!" });
 
         if (product.Comments
                 .Count(c => c.UserId == userId && c.ParentCommentId != null
                                                && c.Date > DateTime.UtcNow
-                                                   .AddHours(-MaxRepliesTimeFrameHours)) > MaxRepliesForTimeFrame
+                                                   .AddHours(-MaxRepliesTimeFrameHours)) >= MaxRepliesForTimeFrame
              && model.ParentCommentId != null)
             return ServiceResult.Failure(new()
             {
@@ -101,7 +102,7 @@ public class ProductCommentService : IProductCommentService
             ParentCommentId = model.ParentCommentId,
             Rating = model.Rating,
             Text = Regex.Replace(model.Text.Trim(), @"(\r?\n\s*){2,}", "\n"),
-            VerifiedPurchase = product.Orders.Any(o => o.Order.UserId == userId), // TODO confirm order is received
+            VerifiedPurchase = product.Orders.Any(o => o.Order.UserId == userId && o.Order.Status == OrderStatus.Delivered),
             Date = DateTime.UtcNow,
             Images = images is not null ? images.Select(i => new ProductCommentImage
             {
@@ -116,20 +117,20 @@ public class ProductCommentService : IProductCommentService
         });
 
         await _repository.SaveChangesAsync();
+
+        await _cache.RemoveAsync(ProductCommentsKey(model.ProductId));
+        _logger.LogInformation("User {UserId} added a comment for Product {ProductId}.", userId, model.ProductId);
         return ServiceResult.Ok();
     }
 
-    public async Task<ServiceResult<EditProductCommentViewModel>> GetCommentForEditReadonlyAsync(string userId, Guid commentId)
+    public async Task<ServiceResult<EditProductCommentDto>> GetCommentForEditReadonlyAsync(string userId, Guid commentId)
     {
-        ProductComment? comment = await _repository
-            .All<ProductComment>()
-            .Include(c => c.Images)
-            .FirstOrDefaultAsync(c => c.Id == commentId && c.UserId == userId);
+        ProductComment? comment = await _productCommentDataService.GetCommentForEditReadonlyAsync(commentId, userId);
 
-        if (comment is null) return ServiceResult<EditProductCommentViewModel>.NotFound();
-        if (comment.UserId != userId) return ServiceResult<EditProductCommentViewModel>.BadRequest();
+        if (comment is null) return ServiceResult<EditProductCommentDto>.NotFound();
+        if (comment.UserId != userId) return ServiceResult<EditProductCommentDto>.BadRequest();
 
-        EditProductCommentViewModel model = new()
+        EditProductCommentDto model = new()
         {
             CommentId = comment.Id,
             ProductId = comment.ProductId,
@@ -137,29 +138,27 @@ public class ProductCommentService : IProductCommentService
             ReplyCommentId = comment.ParentReplyId,
             Rating = comment.Rating,
             Text = comment.Text,
-            ImagePreviewUrls = comment.Images.Select(i => new EditProductCommentImageViewModel()
+            ImagePreviewUrls = comment.Images.Select(i => new EditProductCommentImageDto
             {
                 ImageId = i.Id,
                 PreviewUrl = i.PreviewUrl,
             }).ToArray()
         };
 
-        return ServiceResult<EditProductCommentViewModel>.Ok(model);
+        _logger.LogInformation("Successfully retrieved comment {CommentId} for edit by User {UserId}.", commentId, userId);
+        return ServiceResult<EditProductCommentDto>.Ok(model);
     }
 
-    public async Task<ServiceResult<ICollection<string>>> EditCommentAsync(string userId, EditProductCommentViewModel model, ICollection<ProductCommentImagesUploadDto>? newImages, ICollection<Guid>? removedImagesUrls)
+    public async Task<ServiceResult<ICollection<string>>> EditCommentAsync(string userId, EditProductCommentDto model, ICollection<ProductCommentImagesUploadDto>? newImages, ICollection<Guid>? removedImagesUrls)
     {
-        ProductComment? comment = await _repository
-            .All<ProductComment>()
-            .Include(c => c.Images)
-            .FirstOrDefaultAsync(c => c.Id == model.CommentId && c.UserId == userId);
+        ProductComment? comment = await _productCommentDataService.GetCommentForEditAsync(model.CommentId, userId);
 
         if (comment is null) return ServiceResult<ICollection<string>>.BadRequest();
         if (comment.UserId != userId) return ServiceResult<ICollection<string>>.BadRequest();
 
         comment.Rating = model.Rating;
         comment.Text = model.Text;
-        comment.LastEdited = DateTime.Now;
+        comment.LastEdited = DateTime.UtcNow;
 
         if (newImages is not null && newImages.Count > 0)
         {
@@ -191,21 +190,21 @@ public class ProductCommentService : IProductCommentService
         }
 
         await _repository.SaveChangesAsync();
+        await _cache.RemoveAsync(ProductCommentsKey(model.ProductId));
+
+        _logger.LogInformation("User {UserId} successfully edited Comment {CommentId}.", userId, model.CommentId);
         return ServiceResult<ICollection<string>>.Ok(publicIdsToDelete);
     }
 
-    public async Task<ServiceResult<ICollection<ProductCommentReactionViewModel>>> ReactToComment(string userId, Guid commentId, CommentReaction reactionType)
+    public async Task<ServiceResult<ICollection<ProductCommentReactionDto>>> ReactToComment(string userId, Guid commentId, CommentReaction reactionType)
     {
-        ProductComment? comment = await _repository
-            .All<ProductComment>()
-            .Include(c => c.Reactions)
-            .FirstOrDefaultAsync(c => c.Id == commentId);
-        if (comment is null) return ServiceResult<ICollection<ProductCommentReactionViewModel>>.BadRequest();
+        ProductComment? comment = await _productCommentDataService.GetCommentForReactionAsync(commentId);
+        if (comment is null) return ServiceResult<ICollection<ProductCommentReactionDto>>.BadRequest();
 
         bool isValidReaction = Enum.IsDefined(typeof(CommentReaction), reactionType);
-        if (!isValidReaction) return ServiceResult<ICollection<ProductCommentReactionViewModel>>.BadRequest();
+        if (!isValidReaction) return ServiceResult<ICollection<ProductCommentReactionDto>>.BadRequest();
 
-        if (comment.UserId == userId) return ServiceResult<ICollection<ProductCommentReactionViewModel>>.Forbidden();
+        if (comment.UserId == userId) return ServiceResult<ICollection<ProductCommentReactionDto>>.Forbidden();
 
         if (comment.Reactions.All(r => r.UserId != userId))
         {
@@ -214,7 +213,7 @@ public class ProductCommentService : IProductCommentService
                 UserId = userId,
                 Reaction = reactionType,
                 CommentId = commentId,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             });
         }
         else
@@ -224,58 +223,46 @@ public class ProductCommentService : IProductCommentService
             else
             {
                 existingReaction.Reaction = reactionType;
-                existingReaction.CreatedAt = DateTime.Now;
+                existingReaction.CreatedAt = DateTime.UtcNow;
             }
         }
 
         await _repository.SaveChangesAsync();
+        await _cache.RemoveAsync(ProductDetailsUserDataKey(comment.ProductId, userId));
+        await _cache.RemoveAsync(ProductCommentsKey(comment.ProductId));
 
         IEnumerable<CommentReaction> allReactions = Enum.GetValues(typeof(CommentReaction))
             .Cast<CommentReaction>();
 
-        ICollection<ProductCommentReactionViewModel> reactions = allReactions
-            .Select(r => new ProductCommentReactionViewModel
+        ICollection<ProductCommentReactionDto> reactions = allReactions
+            .Select(r => new ProductCommentReactionDto
             {
                 Reaction = (int)r,
                 Count = comment.Reactions.Count(x => x.Reaction == r)
             })
             .ToArray();
 
-        return ServiceResult<ICollection<ProductCommentReactionViewModel>>.Ok(reactions);
+        _logger.LogInformation("User {UserId} reacted to Comment {CommentId} with {ReactionType}.", userId, commentId, reactionType);
+        return ServiceResult<ICollection<ProductCommentReactionDto>>.Ok(reactions);
     }
 
-    public async Task<ServiceResult<CommentPageViewModel>> LoadCommentsReadonlyAsync(Guid productId, int page, int? ratingFilter, string? userId)
+    public async Task<ServiceResult<CommentPageDto>> LoadCommentsReadonlyAsync(Guid productId, int page, int? ratingFilter, string? userId)
     {
-        Product? product = await _repository
-            .AllReadonly<Product>()
-            .Include(p => p.Comments)
-                .ThenInclude(c => c.User)
-            .Include(p => p.Comments)
-                .ThenInclude(c => c.Replies)
-                    .ThenInclude(c => c.User)
-            .Include(p => p.Comments)
-                .ThenInclude(c => c.Images)
-            .Include(p => p.Comments)
-                .ThenInclude(c => c.Reactions)
-            .Include(p => p.Comments)
-                .ThenInclude(c => c.Replies)
-                    .ThenInclude(c => c.ParentReply)
-                        .ThenInclude(r => r!.User)
-            .FirstOrDefaultAsync(p => p.Id == productId);
+        Product? product = await _productCommentDataService.GetProductForCommentsLoadAsync(productId);
 
-        if (product is null) return ServiceResult<CommentPageViewModel>.BadRequest();
-        CommentPageViewModel model = new()
+        if (product is null) return ServiceResult<CommentPageDto>.BadRequest();
+        CommentPageDto model = new()
         {
             HasMoreComments = product.Comments.Count(c => c.ParentCommentId == null && (!ratingFilter.HasValue || c.Rating == ratingFilter.Value)) > page * CommentPageCount,
             Comments = product.Comments
                 .Where(c => c.ParentCommentId == null && (!ratingFilter.HasValue || c.Rating == ratingFilter.Value))
-                .OrderBy(c => c.Reactions.Count(r => r.Reaction == CommentReaction.Like))
+                .OrderByDescending(c => c.Reactions.Count(r => r.Reaction == CommentReaction.Like))
                 .ThenByDescending(c => c.Rating)
                 .ThenByDescending(c => c.Date)
-                .ThenBy(c => c.Replies.Count)
+                .ThenByDescending(c => c.Replies.Count)
                 .Skip((page - 1) * CommentPageCount)
                 .Take(CommentPageCount)
-                .Select(c => new ProductBaseCommentViewModel
+                .Select(c => new ProductBaseCommentDto
                 {
                     Id = c.Id,
                     Rating = c.Rating!.Value,
@@ -298,9 +285,9 @@ public class ProductCommentService : IProductCommentService
                     TotalRepliesCount = c.Replies.Count,
                     IsUserAuthor = userId == c.UserId,
                     Replies = c.Replies
-                        .OrderBy(r => r.Reactions.Count(re => re.Reaction == CommentReaction.Like))
+                        .OrderBy(r => r.Date)
                         .Take(CommentRepliesPageCount)
-                        .Select(r => new ProductCommentReplyViewModel
+                        .Select(r => new ProductCommentReplyDto
                         {
                             Id = r.Id,
                             Text = r.Text,
@@ -324,31 +311,25 @@ public class ProductCommentService : IProductCommentService
                 }).ToArray()
         };
 
-        return ServiceResult<CommentPageViewModel>.Ok(model);
+        _logger.LogInformation("Successfully loaded comments for Product {ProductId}, Page {Page}.", productId, page);
+        return ServiceResult<CommentPageDto>.Ok(model);
     }
 
-    public async Task<ServiceResult<ReplyPageViewModel>> LoadRepliesReadonlyAsync(Guid productId, Guid commentId, int page, string? userId)
+    public async Task<ServiceResult<ReplyPageDto>> LoadRepliesReadonlyAsync(Guid productId, Guid commentId, int page, string? userId)
     {
-        ProductComment? comment = await _repository
-            .WhereReadonly<ProductComment>(pc => pc.ProductId == productId && pc.Id == commentId)
-            .Include(pc => pc.Replies)
-                .ThenInclude(r => r.Reactions)
-            .Include(pc => pc.Replies)
-                .ThenInclude(pc => pc.User)
-            .Include(pc => pc.Replies)
-                .ThenInclude(pc => pc.ParentReply)
-            .FirstOrDefaultAsync();
+        ProductComment? comment =
+            await _productCommentDataService.GetCommentForRepliesLoadReadonlyAsync(productId, commentId);
 
-        if (comment is null) return ServiceResult<ReplyPageViewModel>.BadRequest();
+        if (comment is null) return ServiceResult<ReplyPageDto>.BadRequest();
 
-        ReplyPageViewModel model = new()
+        ReplyPageDto model = new()
         {
             HasMoreReplies = comment.Replies.Count > page * CommentRepliesPageCount,
             Replies = comment.Replies
-                .OrderBy(r => r.Reactions.Count(re => re.Reaction == CommentReaction.Like))
+                .OrderBy(r => r.Date)
                 .Skip((page - 1) * CommentRepliesPageCount)
                 .Take(CommentRepliesPageCount)
-                .Select(r => new ProductCommentReplyViewModel
+                .Select(r => new ProductCommentReplyDto
                 {
                     Id = r.Id,
                     Text = r.Text,
@@ -371,15 +352,14 @@ public class ProductCommentService : IProductCommentService
                 }).ToArray()
         };
 
-        return ServiceResult<ReplyPageViewModel>.Ok(model);
+        _logger.LogInformation("Successfully loaded replies for Comment {CommentId}, Page {Page}.", commentId, page);
+        return ServiceResult<ReplyPageDto>.Ok(model);
     }
 
     public async Task<ServiceResult> DeleteCommentAsync(string userId, Guid commentId)
     {
-        ProductComment? comment = _repository
-            .All<ProductComment>()
-            .Include(c => c.Replies)
-            .FirstOrDefault(c => c.Id == commentId && c.UserId == userId);
+        ProductComment? comment = await _productCommentDataService
+            .GetCommentForDeletionAsync(commentId, userId);
 
         if (comment is null) return ServiceResult.BadRequest();
         if (comment.UserId != userId) return ServiceResult.Forbidden();
@@ -390,12 +370,13 @@ public class ProductCommentService : IProductCommentService
 
         await _repository.SaveChangesAsync();
 
+        await _cache.RemoveAsync(ProductDetailsUserDataKey(comment.ProductId, userId));
+        await _cache.RemoveAsync(ProductCommentsKey(comment.ProductId));
+
+        _logger.LogInformation("User {UserId} successfully deleted Comment {CommentId}.", userId, commentId);
         return ServiceResult.Ok();
     }
 
     public async Task<decimal> GetAverageRatingAsync(Guid productId)
-        => await _repository
-            .AllReadonly<ProductComment>()
-            .Where(c => c.ProductId == productId)
-            .AverageAsync(c => (decimal?)c.Rating) ?? 0m;
+        => await _productCommentDataService.GetAverageRatingAsync(productId);
 }

@@ -1,4 +1,5 @@
-﻿using MHAuthorWebsite.Data.Models;
+﻿using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +9,10 @@ public class ProductAttributeConfiguration : IEntityTypeConfiguration<ProductAtt
 {
     public void Configure(EntityTypeBuilder<ProductAttribute> builder)
     {
+        builder
+            .Property(pa => pa.DisplayPosition)
+            .HasDefaultValue(ProductAttributeDisplayPosition.AdditionalInfoTable);
+
         builder
             .HasOne(a => a.Product)
             .WithMany(p => p.Attributes)

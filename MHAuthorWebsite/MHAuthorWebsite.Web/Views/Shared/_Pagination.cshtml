@@ -1,0 +1,33 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Shared
+@model PaginationViewModel
+
+@if (Model.TotalPages > 1)
+{
+	<div class="pagination-box flex-row" id="product-pagination">
+		<ul role="list" class="pagination-btns flex-row">
+			@{
+				int firstPage = Math.Max(1, Model.CurrentPage - 1);
+				int lastPage = Math.Min(Model.TotalPages, firstPage + 2);
+				firstPage = Math.Max(1, lastPage - 2);
+			}
+			@if (Model.CurrentPage != firstPage)
+			{
+				<li title="Предишна страница" class="pagination-btn">
+					<a href="?page=@(Model.CurrentPage - 1)" class="link pagination-link"><i class="fa-solid fa-arrow-left"></i></a>
+				</li>
+			}
+			@for (int i = firstPage; i <= lastPage; i++)
+			{
+				<li class="pagination-btn">
+					<a href="?page=@i" class="link pagination-link @(i == Model.CurrentPage ? "current" : "")">@i</a>
+				</li>
+			}
+			@if (Model.CurrentPage != Model.TotalPages)
+			{
+				<li title="Следваща страница" class="pagination-btn">
+					<a href="?page=@(Model.CurrentPage + 1)" class="link pagination-link"><i class="fa-solid fa-arrow-right"></i></a>
+				</li>
+			}
+		</ul>
+	</div>
+}

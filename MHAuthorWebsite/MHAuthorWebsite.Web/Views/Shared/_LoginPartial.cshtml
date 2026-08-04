@@ -1,15 +1,15 @@
-﻿<ul class="header-nav flex-row">
+<ul class="header-nav flex-row">
 	@if (User.Identity?.IsAuthenticated ?? false)
 	{
 		<li>
-			<a class="active flex-row" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-				<i class="fa-regular fa-user-gear"></i> Профил
+			<a class="active flex-row" asp-area="Identity" asp-page="/Account/Manage/Index" title="Управление на профила">
+				<i class="fa-solid regular fa-user-gear"></i> Профил
 			</a>
 		</li>
 		<li>
 			<form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
 				<button class="btn btn-none active flex-row" type="submit">
-					<i class="fa-regular fa-arrow-left-from-bracket"></i> Изход
+					<i class="fa-solid regular fa-arrow-right-from-bracket"></i> Изход
 				</button>
 			</form>
 		</li>
@@ -18,12 +18,12 @@
 	{
 		<li>
 			<a class="active flex-row" asp-area="Identity" asp-page="/Account/Register">
-				<i class="fa-regular fa-handshake"></i> Регистрация
+				<i class="fa-solid regular fa-handshake"></i> Регистрация
 			</a>
 		</li>
 		<li>
 			<a class="active flex-row" asp-area="Identity" asp-page="/Account/Login">
-				<i class="fa-regular fa-arrow-right-from-bracket"></i> Вход
+				<i class="fa-solid regular fa-arrow-right-from-bracket"></i> Вход
 			</a>
 		</li>
 	}

@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Web.ViewModels.ProductComment;
+using MHAuthorWebsite.Web.ViewModels.ProductComment;
 
 namespace MHAuthorWebsite.Web.ViewModels.Product;
 
@@ -16,6 +16,10 @@ public class ProductDetailsViewModel
 
     public bool IsInStock { get; set; }
 
+    public bool IsPublic { get; set; }
+
+    public int Quantity { get; set; }
+
     public bool IsLiked { get; set; }
 
     public decimal AverageRating { get; set; }
@@ -29,6 +33,8 @@ public class ProductDetailsViewModel
     public bool CanWriteMoreComments { get; set; }
 
     public bool IsRateLimitedForReplies { get; set; }
+
+    public ProductDetailsDiscountViewModel? Discount { get; set; }
 
     public ICollection<ProductDetailsImageViewModel> Images { get; set; } = new HashSet<ProductDetailsImageViewModel>();
 

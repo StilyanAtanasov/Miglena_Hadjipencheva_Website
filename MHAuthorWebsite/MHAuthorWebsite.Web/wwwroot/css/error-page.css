@@ -2,6 +2,15 @@
   padding: 8rem 10rem;
   font-size: 2rem;
   gap: 5rem;
+  text-align: center;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .page-wrapper {
+    padding: 5rem 2rem;
+    gap: 3rem;
+  }
 }
 
 #error-title-container.spin {

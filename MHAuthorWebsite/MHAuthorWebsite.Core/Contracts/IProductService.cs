@@ -1,22 +1,20 @@
-﻿using CloudinaryDotNet.Actions;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Dto;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Web.ViewModels.Product;
+using MHAuthorWebsite.Core.Dtos.Product;
+using MHAuthorWebsite.Core.Models;
 using System.Linq.Expressions;
 
 namespace MHAuthorWebsite.Core.Contracts;
 
 public interface IProductService
 {
-    Task<ICollection<ProductCardViewModel>> GetAllProductCardsReadonlyAsync(string? userId, int page, (bool descending, Expression<Func<Product, object>>? expression) sortType);
+    Task<ICollection<ProductCardDto>> GetAllProductCardsReadonlyAsync(string? userId, int page,
+        (bool descending, Expression<Func<Product, object>>? expression) sortType, string? searchString);
 
-    Task<int> GetAllProductsCountAsync();
+    Task<int> GetAllProductsCountAsync(string? searchString);
 
-    Task<ServiceResult<ProductDetailsViewModel>> GetProductDetailsReadonlyAsync(Guid productId, string? userId);
+    Task<ServiceResult<ProductDetailsDto>> GetProductDetailsReadonlyAsync(Guid productId, string? userId);
 
-    Task<ICollection<LikedProductViewModel>> GetLikedProductsReadonlyAsync(string userId);
+    Task<ICollection<LikedProductDto>> GetLikedProductsReadonlyAsync(string userId);
 
     Task<ServiceResult> ToggleLikeProduct(string userId, Guid productId);
 }

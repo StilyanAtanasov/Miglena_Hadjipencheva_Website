@@ -1,8 +1,11 @@
 ﻿@page
+
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
 @model EnableAuthenticatorModel
 @{
 	ViewData["Heading"] = "Настройване на автентикатор";
-	ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+	ViewData["ActivePage"] = TFA;
 }
 
 
@@ -12,8 +15,16 @@
 	<link rel="stylesheet" href="~/css/profile/2fa.css" asp-append-version="true" />
 }
 
+@section Heading {
+	<a class="back-btn" asp-page="./TwoFactorAuthentication">
+		<i class="fa-solid fa-arrow-left"></i> Назад
+	</a>
+	<h3 class="title-small">@ViewData["Heading"]</h3>
+}
+
 <section class="content-body">
 	<p>За да настроите автентикатора, следвайте стъпките:</p>
+
 	<ol class="flex-column">
 		<li>
 			<p>
@@ -42,7 +53,7 @@
 					<span class="input-error" asp-validation-for="Input.Code"></span>
 				</div>
 
-				<button type="submit" class="btn flex-row"><i class="fa-regular fa-clipboard-check"></i> Потвърди</button>
+				<button type="submit" class="btn flex-row"><i class="fa-solid fa-clipboard-check"></i> Потвърди</button>
 				<div asp-validation-summary="ModelOnly" role="alert"></div>
 			</form>
 		</li>
@@ -54,7 +65,7 @@
 	}
 	else
 	{
-		<i class="fa-solid fa-shield-plus background-icon"></i>
+		<i class="fa-solid fa-square-plus background-icon"></i>
 	}
 </section>
 

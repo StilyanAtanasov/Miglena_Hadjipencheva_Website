@@ -7,16 +7,59 @@ public static class ApplicationRules
     public static class Application
     {
         public const string ProjectName = "MHAuthorWebsite";
-        public const string WebsiteName = "Миглена Хаджипенчева"; // TODO Use this for Layout and branding
+        public const string WebsiteName = "Миглена Хаджипенчева";
 
-        public const string Currency = "BGN";
+        public const string Currency = "EUR";
 
         public const string CurrentVersion = "1.0.1";
+
+        public const string DefaultTimeZoneId = "FLE Standard Time";
+
+        public const decimal FreeDeliveryThresholdEur = 50;
+
+        public const string PrivacyPolicyCurrentVersion = "2026-02-20";
+    }
+
+    public static class CacheKeys
+    {
+        public static string ProductDetailsKey(Guid id) => $"Product:{id}";
+        public static string ProductCommentsKey(Guid id) => $"Product:{id}:Comments";
+        public static string ProductDetailsUserDataKey(Guid id, string userId) => $"Product:{id}:User:{userId}";
+
+        public static string ProductCardKey(Guid productId) => $"Product:Card:{productId}";
+
+        public static string LikedProductsKey(string userId) => $"LikedProducts:{userId}";
+
+        public static string AdminIdsKey() => "AdminIds";
+        public static string GlobalDiscountsStateIdKey() => "GlobalDiscountsStateId";
+
+        public static string CartKey(string userId) => $"Cart:{userId}";
+
+        public static string WorkDetailsKey(Guid id) => $"Work:{id}";
+
+        public static string WorkCardKey(Guid workId) => $"Work:Card:{workId}";
+
+        public static string AnnouncementDetailsKey(Guid id) => $"Announcement:{id}";
+
+        public static string AnnouncementCardKey(Guid id) => $"Announcement:Card:{id}";
+    }
+
+    public static class CacheDefaultDurations
+    {
+        public const int ProductCardTtlDays = 5;
+        public const int ProductDetailsTtlDays = 5;
+        public const int LikedProductTtlDays = 1;
+        public const int CartTtlDays = 2;
+        public const int WorkCardTtlDays = 7;
+        public const int WorkDetailsTtlDays = 7;
+        public const int AnnouncementCardTtlDays = 7;
+        public const int AnnouncementDetailsTtlDays = 7;
     }
 
     public static class CurrencyRates
     {
-        public const decimal LevToEurRate = 0.511m;
+        public const decimal EurToLevRate = 1.95583m;
+        public const decimal LevToEurRate = 1m / EurToLevRate;
     }
 
     public static class ProductComment
@@ -49,6 +92,10 @@ public static class ApplicationRules
     public static class Order
     {
         public const byte SuccessPageMaxViewDelaySeconds = 20;
+
+        public const byte MyOrdersPageSize = 5;
+
+        public const byte MaxItemQuantityPerOrder = 20;
     }
 
     public static class OrderSystemEventsMessages
@@ -66,20 +113,70 @@ public static class ApplicationRules
             public const string Dashboard = nameof(Dashboard);
             public const string AllProducts = nameof(AllProducts);
             public const string AddProduct = nameof(AddProduct);
+            public const string AddDiscount = nameof(AddDiscount);
             public const string EditProduct = nameof(EditProduct);
             public const string AddProductType = nameof(AddProductType);
             public const string AllOrders = nameof(AllOrders);
+            public const string ContactRequestsBoardPage = nameof(ContactRequestsBoardPage);
+            public const string AnnouncementsBoardPage = nameof(AnnouncementsBoardPage);
+            public const string ManageUsers = nameof(ManageUsers);
+            public const string LegalDocuments = nameof(LegalDocuments);
+        }
+
+        public static class MainNavigation
+        {
+            public const string Home = nameof(Home);
+            public const string Store = nameof(Store);
+            public const string Works = nameof(Works);
+            public const string Contacts = nameof(Contacts);
+            public const string Liked = nameof(Liked);
+            public const string Cart = nameof(Cart);
+        }
+
+        public static class Account
+        {
+            public const string PersonalInfo = nameof(PersonalInfo);
+            public const string MyOrders = nameof(MyOrders);
+
+            public static class Settings
+            {
+                public const string Password = nameof(Password);
+                public const string ExternalAccounts = nameof(ExternalAccounts);
+                // ReSharper disable once InconsistentNaming
+                public const string TFA = nameof(TFA);
+                public const string PrivatePersonalInfo = nameof(PrivatePersonalInfo);
+                public const string EmailPreferences = nameof(EmailPreferences);
+                public const string LegalBinding = nameof(LegalBinding);
+                public static IEnumerable<string> All => new[]
+                {
+                    Password, ExternalAccounts, TFA, PrivatePersonalInfo, EmailPreferences, LegalBinding
+                };
+            }
         }
     }
 
     public static class Pagination
     {
-        public const byte PageSize = 10;
+        public const byte StorePageSize = 20;
+
+        public const byte WorksPageSize = 25;
     }
 
     public static class Product
     {
         public const byte MaxImages = 10;
+    }
+
+    public static class ContactRequestsBoard
+    {
+        public const byte RequestsPerPage = 10;
+        public const byte MaxMessageLength = 60;
+    }
+
+    public static class AnnouncementsBoard
+    {
+        public const byte AnnouncementsPerPage = 20;
+        public const byte MaxMessagePreviewLength = 140;
     }
 
     public static class SortTypes
@@ -100,6 +197,9 @@ public static class ApplicationRules
 
     public static class Cloudinary
     {
+        public const byte MaxImageSizeMb = 10;
+        public const int MaxImageSizeBytes = MaxImageSizeMb * 1024 * 1024;
+
         public static readonly string ImageFolder = $"{Application.ProjectName}/{EnvironmentName}/products/originals";
         public static readonly string ThumbnailFolder = $"{Application.ProjectName}/{EnvironmentName}/products/thumbnails";
 
@@ -116,5 +216,11 @@ public static class ApplicationRules
         public const string GetTraceEndpoint = "https://delivery.econt.com/services/OrdersService.getTrace.json";
 
         public const string EcontTrackerUrl = "https://www.econt.com/services/track-shipment";
+    }
+
+    public static class Emails
+    {
+        public const string ContactRequestReplyGreeting = "Здравейте,";
+        public const string ContactRequestReplyRegardsInnerHtml = $"Поздрави, <br /> Екипът на {Application.WebsiteName}";
     }
 }

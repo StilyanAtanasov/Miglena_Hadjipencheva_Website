@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Data.Models;
+﻿using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,14 +1,11 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account.Manage;
 
@@ -63,7 +60,7 @@ public class Disable2faModel : PageModel
         }
 
         _logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", _userManager.GetUserId(User));
-        StatusMessage = "2fa has been disabled. You can reenable 2fa when you setup an authenticator app";
+        StatusMessage = "Двуфакторната автентификация (2FA) беше деактивирана. Можете да я активирате отново при настройка на приложение за автентификация.";
         return RedirectToPage("./TwoFactorAuthentication");
     }
 }

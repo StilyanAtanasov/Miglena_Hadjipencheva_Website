@@ -72,26 +72,19 @@
 
 @media (max-width: 920px) {
   .dots__dot {
-    height: 2rem;
-    width: 2rem;
-  }
-}
-
-@media (max-width: 750px) {
-  .dots__dot {
-    height: 2.5rem;
-    width: 2.5rem;
+    height: 1.5rem;
+    width: 1.5rem;
   }
 }
 
 @media (max-width: 600px) {
   .slider {
-    height: 70rem;
+    height: 40rem;
   }
 
   .dots__dot {
     height: 0.8rem;
-    width: 3rem;
+    width: 2.5rem;
     border-radius: 3rem;
   }
 }

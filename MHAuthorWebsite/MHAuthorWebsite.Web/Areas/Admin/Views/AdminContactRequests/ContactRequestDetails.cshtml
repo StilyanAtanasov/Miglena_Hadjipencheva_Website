@@ -1,0 +1,80 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.ContactRequests
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Emails
+@model ContactRequestDetailsViewModel
+
+@{
+	ViewData["Title"] = "Детайли на запитване";
+	ViewData["CurrentPage"] = Pages.Admin.ContactRequestsBoardPage;
+	ViewData["RequireTimeZoneManager"] = true;
+
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" />
+	<link rel="stylesheet" href="~/css/admin/contact-request-details.css" />
+}
+
+<section class="page-wrapper flex-column">
+	<h1 class="title">@ViewData["Title"]</h1>
+
+	<a asp-controller="AdminContactRequests" asp-action="ContactRequestsBoard" class="btn link flex-row back-btn">
+		<i class="fa-solid fa-arrow-left"></i> Обратно към таблото
+	</a>
+
+	<section class="request flex-row">
+		<div class="request-details">
+			<h2 class="heading">@Model.Subject</h2>
+			<p class="meta"><span>@Model.Name</span> | <span>@Model.Email</span></p>
+			<p class="date">
+				<time to-local no-seconds datetime="@Model.CreatedOn.ToString("O")">
+					@TimeZoneInfo.ConvertTimeFromUtc(Model.CreatedOn, defaultZone)
+				</time>
+			</p>
+			<div class="message-box">@Model.Message	</div>
+		</div>
+
+		<hr class="vertical" />
+
+		@if (!Model.IsAnswered)
+		{
+			<section class="add-reply-section flex-column">
+				<h2 class="subheading">Отговорете на @Model.Name</h2>
+
+				<form asp-action="ReplyToRequest" method="post" class="input-form">
+					<input type="hidden" name="requestId" asp-for="Id" />
+
+					<div class="form-input-box flex-column">
+						<label class="form-label" asp-for="ReplyMessage">Съобщение</label>
+						<div class="form-input-box flex-column">
+							<p class="text-faded">@ContactRequestReplyGreeting</p>
+							<textarea class="form-input" asp-for="ReplyMessage" placeholder="Напишете отговор..."></textarea>
+							<p class="text-faded">@Html.Raw(ContactRequestReplyRegardsInnerHtml)</p>
+						</div>
+						<span class="input-error" asp-validation-for="ReplyMessage"></span>
+					</div>
+
+					<button type="submit" class="btn flex-row"><i class="fa-solid fa-reply"></i> Отговори</button>
+				</form>
+			</section>
+		}
+		else
+		{
+			<div class="reply-view">
+				<h2 class="subheading">Изпратен отговор</h2>
+				<p class="date">
+					<time to-local no-seconds datetime="@Model.RepliedOn!.Value.ToString("O")">
+						@TimeZoneInfo.ConvertTimeFromUtc(Model.RepliedOn.Value, defaultZone)
+					</time>
+				</p>
+				<div class="reply-box">@Model.ReplyMessage</div>
+			</div>
+		}
+	</section>
+</section>
+
+@section Scripts
+{
+	<partial name="_ValidationScriptsPartial" />
+}

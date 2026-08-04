@@ -1,0 +1,79 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Product
+@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model ICollection<ProductCardViewModel>
+
+@{
+	int currentPage = int.TryParse(Context.Request.Query["page"].ToString(), out int page) ? page : 1;
+	int productsCount = ViewBag.ProductsCount ?? Model.Count;
+	int totalPages = (int)Math.Ceiling((double)productsCount / StorePageSize);
+	string searchString = Context.Request.Query["search"].ToString();
+}
+
+<section id="products" class="products">
+	@if (productsCount > 0)
+	{
+		@foreach (ProductCardViewModel product in Model)
+		{
+			<div class="product flex-column clickable" data-details-url="@Url.Action("Details", "Product", new { productId = product.Id })">
+				@if (product.DiscountPrice.HasValue)
+				{
+					<div class="product-badge">
+						<i class="fa-solid fa-badge"></i>
+						<span class="badge-text">- @(Math.Ceiling((product.Price - product.DiscountPrice.Value) / product.Price * 100))%</span>
+					</div>
+				}
+
+				<div class="product-image-container flex-row">
+					<img class="product-image" src="@product.ImageUrl" alt="@(product.ImageAlt)" />
+				</div>
+				<div class="product-title-container">
+					<h4 class="product-title"><a data-trigger="load-unlimited" class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
+					<span class="text-faded">@product.ProductType</span>
+				</div>
+				<div class="price-box flex-column">
+					<p class="price @((product.DiscountPrice.HasValue) ? "old-price" : "")">@product.Price.ToString("F2") € / @((product.Price * EurToLevRate).ToString("F2")) лв.</p>
+					@if (product.DiscountPrice.HasValue)
+					{
+						<p class="price discounted-price">@product.DiscountPrice.Value.ToString("F2") € / @((product.DiscountPrice.Value * EurToLevRate).ToString("F2")) лв.</p>
+					}
+
+					<span class="price-text @(product.IsAvailable ? "available" : "unavailable")">@(product.IsAvailable ? "В наличност" : "Изчерпана наличност")</span>
+				</div>
+				<div class="action-btns flex-row">
+					<button data-role="like-item" data-item-id="@product.Id" class="btn like @(product.IsLiked ? "liked" : "")" aria-label="like">
+						<span class="fa-stack">
+							<i class="fa-solid fa-heart fa-stack-2x"></i>
+							<i class="fa-solid fa-heart fa-stack-2x"></i>
+						</span>
+					</button>
+					<input id="quantity" type="hidden" name="quantity" value="1" />
+					<button data-role="add-to-cart" data-item-id="@product.Id" class="btn order flex-row" @(product.IsAvailable ? "" : "disabled")>
+						<i class="fa-solid fa-cart-plus"></i> Поръчай
+					</button>
+				</div>
+			</div>
+		}
+	}
+	else
+	{
+		if (!string.IsNullOrEmpty(searchString))
+		{
+			<p class="no-products-message flex-row"> <i class="fa-solid fa-filter"></i> Няма намерени продукти за: @searchString</p>
+		}
+		else
+		{
+			<p class="no-products-message flex-row"> <i class="fa-solid fa-shop-slash"></i> В момента не се предлагат никакви продукти.</p>
+		}
+	}
+</section>
+
+@await Html.PartialAsync("_Pagination", new PaginationViewModel
+{
+	CurrentPage = currentPage,
+	       TotalPages = totalPages,
+	       PageSize = StorePageSize
+       })

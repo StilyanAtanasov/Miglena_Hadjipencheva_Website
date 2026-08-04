@@ -1,22 +1,5 @@
-#loading-screen.hide {
-  animation: fadeAway linear 200ms;
-  animation-fill-mode: forwards;
-}
-
-#loading-screen.show #loader {
-  animation: fadeIn linear 200ms, spin 1s linear infinite;
-  animation-fill-mode: forwards;
-}
-
-#loading-screen.hidden {
-  display: none;
-  visibility: hidden;
-  opacity: 0;
-  transform: scale(1);
-}
-
-#loading-screen {
-  position: fixed;
+.loading-screen {
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -26,44 +9,51 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-}
-
-#loading-screen #loader {
-  content: "";
-  border: 1.3rem solid var(--color-secondary);
-  border-top: 1.3rem solid var(--color-secondary-light);
-  border-radius: 50%;
-  width: 10rem;
-  height: 10rem;
   opacity: 0;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.loader {
+  content: "";
+  border-style: solid;
+  border-color: var(--color-secondary);
+  border-top-color: var(--color-secondary-light);
+  border-radius: 50%;
+  opacity: 0;
 }
 
-@keyframes fadeAway {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.loader.light {
+  border-color: var(--color-secondary-light);
+  border-top-color: var(--color-secondary);
 }
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.loader.small {
+  width: 2rem;
+  height: 2rem;
+  border-width: 0.3rem;
+}
+
+.loader.medium {
+  width: 5rem;
+  height: 5rem;
+  border-width: 0.8rem;
+}
+
+.loader.large {
+  width: 12rem;
+  height: 12rem;
+  border-width: 1.4rem;
+}
+
+.loading-screen.show {
+  opacity: 1;
+}
+
+.loading-screen.show .loader {
+  animation:
+    fadeIn linear 200ms forwards,
+    spin 1s linear infinite;
+}
+
+.loading-screen.hide {
+  animation: fadeAway linear 200ms forwards;
 }

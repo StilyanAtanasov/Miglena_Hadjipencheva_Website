@@ -1,22 +1,24 @@
-﻿@page
+@page
+@using MHAuthorWebsite.Web.Utils.Mappers
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using MHAuthorWebsite.Web.Utils
 @model RegisterModel
 
 @{
 	ViewData["Title"] = "Регистрация";
+	ViewData["MetaDescription"] = "Регистрирайте се, за да създадете своя профил!";
 }
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
-	<section class="modal flex-column">
+	<section class="modal large flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 		<form class="input-form flex-column" id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-			<div asp-validation-summary="ModelOnly" role="alert" class="input-error"></div>
+			<div asp-validation-summary="ModelOnly" role="alert" class="form-error"></div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.Name">Име и фамилия</label>
 				<input class="form-input" asp-for="Input.Name" autocomplete="name" aria-required="true" placeholder="Иван Иванов" />
@@ -29,14 +31,55 @@
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.Password">Парола</label>
-				<input class="form-input" asp-for="Input.Password" autocomplete="new-password" aria-required="true" placeholder="password" />
+				<div class="password-input-wrapper">
+					<input class="form-input" asp-for="Input.Password" autocomplete="new-password" aria-required="true" placeholder="Парола..." />
+					<button type="button" class="password-toggle-btn" aria-label="Покажи/скрий парола">
+						<i class="fa-regular fa-eye"></i>
+					</button>
+				</div>
 				<span class="input-error" asp-validation-for="Input.Password"></span>
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.ConfirmPassword">Потвърди парола</label>
-				<input class="form-input" asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="password" />
+				<div class="password-input-wrapper">
+					<input class="form-input" asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="Парола..." />
+					<button type="button" class="password-toggle-btn" aria-label="Покажи/скрий парола">
+						<i class="fa-regular fa-eye"></i>
+					</button>
+				</div>
 				<span class="input-error" asp-validation-for="Input.ConfirmPassword"></span>
 			</div>
+
+			<div class="toggle-row" style="margin-bottom: 2rem; align-items: flex-start;">
+				<label class="switch" style="margin-top: 0.5rem;">
+					<input asp-for="Input.IsMarketingSubscribed" type="checkbox" />
+					<span class="toggle-slider round"></span>
+				</label>
+				<label class="toggle-label" asp-for="Input.IsMarketingSubscribed" style="font-size: 1.6rem; font-weight: normal;">
+					Желая да получавам маркетинг съобщения и бюлетин по имейл.
+				</label>
+			</div>
+
+			<div class="toggle-row" style="margin-bottom: 2rem; align-items: flex-start;">
+				<label class="switch" style="margin-top: 0.5rem;">
+					<input asp-for="Input.HasAcceptedLegalDocuments" type="checkbox" />
+					<span class="toggle-slider round"></span>
+				</label>
+				<div>
+					<label class="toggle-label" asp-for="Input.HasAcceptedLegalDocuments" style="font-size: 1.6rem; font-weight: normal;">
+						Съгласен/на съм с
+						<a class="link active" asp-controller="Home" asp-action="PrivacyPolicy" target="_blank" rel="noopener noreferrer">Политиката за поверителност</a>
+						и
+						<a class="link active" asp-controller="Home" asp-action="TermsOfService" target="_blank" rel="noopener noreferrer">Общите условия</a>.
+					</label>
+					<span class="input-error block" asp-validation-for="Input.HasAcceptedLegalDocuments"></span>
+				</div>
+			</div>
+
+			<div class="form-input-box flex-column">
+				<div class="g-recaptcha" data-sitekey="@Model.RecaptchaV2SiteKey"></div>
+			</div>
+
 			<button data-trigger="load-unlimited" id="registerSubmit" type="submit" class="btn submit-btn flex-row"><i class="fa-solid fa-arrow-right-to-bracket"></i> Регистрирай се</button>
 
 			<div class="form-box flex-column actions">
@@ -58,7 +101,7 @@
 								? path
 								: "";
 
-							<button type="submit" class="btn submit-btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Регистрирай се в системата с @provider.DisplayName акаунт">
+							<button type="submit" class="btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Регистрирай се в системата с @provider.DisplayName акаунт">
 								@if (!string.IsNullOrEmpty(iconPath))
 								{
 									<img src="@Url.Content(iconPath)" alt="" class="icon" />
@@ -78,4 +121,7 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script src="~/js/validation/must-be-true.js" asp-append-version="true"></script>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	<script src="~/js/account/password-toggle.js" asp-append-version="true"></script>
 }

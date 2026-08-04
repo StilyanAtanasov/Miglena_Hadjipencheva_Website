@@ -1,0 +1,82 @@
+﻿@using MHAuthorWebsite.Core.Dtos.Work
+@using MHAuthorWebsite.GCommon
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using MHAuthorWebsite.Web.ViewModels.Shared.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.Extensions.Options.IOptions<MHAuthorWebsite.Core.Configuration.Security.RecaptchaSettings> RecaptchaOptions
+@model ICollection<WorkCardDto>
+
+@{
+    ViewData["Title"] = "Творчество";
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Works;
+    bool isAdmin = User.IsInRole("Admin");
+    
+    int worksCount = ViewBag.WorksCount ?? Model.Count;
+    string? currentSearch = ViewBag.CurrentSearch;
+    string recaptchaV3SiteKey = RecaptchaOptions.Value.V3SiteKey;
+    string recaptchaV2SiteKey = RecaptchaOptions.Value.V2SiteKey;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/elements/search-bar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/elements/pagination.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/works.css" asp-append-version="true" />
+}
+
+<section class="works-hero">
+    <div class="works-hero-content">
+	    <h1 class="title">Творчество</h1>
+        <p>Разглеждайте колекцията от творби и публикации на Миглена Хаджипенчева.</p>
+        
+        @if (isAdmin)
+        {
+            <a asp-area="Admin" asp-controller="AdminWork" asp-action="Add" class="btn link work-add-btn">
+                <i class="fa-solid fa-plus"></i> Добави творба
+            </a>
+        }
+    </div>
+</section>
+
+<section class="works-container" id="works-container">
+    @if (worksCount > 0 || !string.IsNullOrEmpty(currentSearch))
+    {
+        <div class="works-actions">
+            @await Html.PartialAsync("_SearchBar", new SearchBarViewModel
+            {
+                FormCustomId = "work-search-form",
+                InputCustomId = "work-search-input",
+                PlaceholderText = "Търсете творби по заглавие...",
+                DefaultValue = currentSearch,
+                Align = SearchBarAlignOptions.Center,
+                EnableRecaptchaV3 = true,
+                RecaptchaV3SiteKey = recaptchaV3SiteKey,
+                RecaptchaV3Action = "work_search",
+                RecaptchaV2SiteKey = recaptchaV2SiteKey
+            })
+        </div>
+    }
+
+    @if (Model.Any())
+    {
+        @await Html.PartialAsync("_WorkCardsPartial", Model)
+    }
+    else
+    {
+        <div class="no-works-message">
+            @if (!string.IsNullOrEmpty(currentSearch))
+            {
+                <i class="fa-solid fa-filter"></i>
+                <p>Няма намерени творби за: @currentSearch</p>
+            }
+            else
+            {
+                <i class="fa-solid fa-books"></i>
+                <p>Все още няма добавени творби.</p>
+            }
+        </div>
+    }
+</section>
+
+@section Scripts {
+    <script type="module" src="~/js/works.js" asp-append-version="true"></script>
+}

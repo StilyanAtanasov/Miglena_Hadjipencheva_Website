@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Data.Models;
+﻿using MHAuthorWebsite.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static MHAuthorWebsite.GCommon.EntityConstraints.Product;
@@ -51,5 +51,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasOne(p => p.Thumbnail)
             .WithOne(t => t.Product)
             .HasForeignKey<ProductThumbnail>(t => t.ProductId);
+
+        builder
+            .HasMany(p => p.Discounts)
+            .WithOne(d => d.Product)
+            .HasForeignKey(d => d.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

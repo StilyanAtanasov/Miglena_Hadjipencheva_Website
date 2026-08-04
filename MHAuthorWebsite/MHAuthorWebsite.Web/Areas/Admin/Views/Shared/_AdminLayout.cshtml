@@ -1,4 +1,6 @@
-﻿@{
+﻿@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+
+@{
 	string currentPage = ViewData["CurrentPage"]?.ToString() ?? "";
 }
 
@@ -7,14 +9,17 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - Миглена Хаджипенчева</title>
-	<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/all.css" />
+	<title>@ViewData["Title"] - @WebsiteName</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
 	<link rel="stylesheet" href="~/css/reset.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/common.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/admin/common.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/elements/loader.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/loadingScreen.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/admin/layout.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/scroll-to-top.css" asp-append-version="true" />
 	@await RenderSectionAsync("Styles", required: false)
+	
+	<link rel="icon" type="image/x-icon" href="~/img/icons/favicon.ico">
 </head>
 <body>
 	<div id="loading-screen" class="show">
@@ -25,26 +30,42 @@
 		<nav class="admin-nav flex-column">
 			<ul class="nav-elements flex-column">
 				<li data-url="@Url.Action("Index", "Home")" class="nav-element clickable flex-row">
-					<i class="fa-regular fa-house-chimney"></i>
+					<i class="fa-solid fa-house-chimney"></i>
 					<p class="flex-row">Към потребителския интерфейс</p>
 				</li>
 			</ul>
 			<ul class="nav-elements flex-column">
 				<li data-url="@Url.Action("Dashboard", "AdminDashboard")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.Dashboard ? "current" : "")">
-					<i class="fa-regular fa-chart-line"></i>
+					<i class="fa-solid fa-chart-line"></i>
 					<p class="flex-row">Табло</p>
 				</li>
 				<li data-url="@Url.Action("ProductsList", "AdminProduct")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AllProducts ? "current" : "")">
-					<i class="fa-regular fa-shelves"></i>
+					<i class="fa-solid fa-boxes-stacked"></i>
 					<p class="flex-row">Управление на продуктите</p>
 				</li>
 				<li data-url="@Url.Action("AddProductType", "AdminProductType")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AddProductType ? "current" : "")">
-					<i class="fa-regular fa-icons"></i>
+					<i class="fa-solid fa-icons"></i>
 					<p class="flex-row">Добавяне на категория</p>
 				</li>
 				<li data-url="@Url.Action("AllOrders", "AdminOrder")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AllOrders ? "current" : "")">
-					<i class="fa-regular fa-pallet-boxes"></i>
+					<i class="fa-solid fa-truck-ramp-box"></i>
 					<p class="flex-row">Управление на поръчките</p>
+				</li>
+				<li data-url="@Url.Action("ContactRequestsBoard", "AdminContactRequests")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.ContactRequestsBoardPage ? "current" : "")">
+					<i class="fa-solid fa-comments"></i>
+					<p class="flex-row">Табло на запитванията</p>
+				</li>
+				<li data-url="@Url.Action("AnnouncementsBoard", "AdminAnnouncements")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.AnnouncementsBoardPage ? "current" : "")">
+					<i class="fa-solid fa-bullhorn"></i>
+					<p class="flex-row">Съобщения</p>
+				</li>
+				<li data-url="@Url.Action("Documents", "AdminLegalDocuments")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.LegalDocuments ? "current" : "")">
+					<i class="fa-solid fa-file-contract"></i>
+					<p class="flex-row">Правни документи</p>
+				</li>
+				<li data-url="@Url.Action("ManageUsers", "AdminUserManagement")" class="nav-element clickable flex-row @(currentPage == Pages.Admin.ManageUsers ? "current" : "")">
+					<i class="fa-solid fa-users-gear"></i>
+					<p class="flex-row">Управление на потребителите</p>
 				</li>
 			</ul>
 			<ul class="nav-elements flex-column"></ul>
@@ -52,10 +73,16 @@
 		@RenderBody()
 	</main>
 
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script src="~/js/loader.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/js/loadingScreen.js" asp-append-version="true"></script>
 	<script src="~/js/click.js" asp-append-version="true"></script>
+	<script type="module"  src="~/js/elements/scroll-to-top.js" asp-append-version="true"></script>
 
-	@await RenderSectionAsync("Scripts", required: false)
+	@if (ViewData["RequireTimeZoneManager"] is not null && (bool)ViewData["RequireTimeZoneManager"]!)
+	{
+		<script type="module" src="~/js/time-zone-manager.js" asp-append-version="true"></script>
+	}
+
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

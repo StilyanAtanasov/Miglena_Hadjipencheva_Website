@@ -1,12 +1,23 @@
 ﻿@page
+
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pages.Account.Settings
+
 @model ResetAuthenticatorModel
+
 @{
 	ViewData["Heading"] = "Нулиране на ключа за автентикация";
-	ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+	ViewData["ActivePage"] = TFA;
 }
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/profile/profile-page.css" asp-append-version="true" />
+}
+
+@section Heading {
+	<a class="back-btn" asp-page="./TwoFactorAuthentication">
+		<i class="fa-solid fa-arrow-left"></i> Назад
+	</a>
+	<h3 class="title-small">@ViewData["Heading"]</h3>
 }
 
 <section class="content-body flex-column">
@@ -21,7 +32,7 @@
 	</article>
 	<div>
 		<form id="reset-authenticator-form" method="post">
-			<button id="reset-authenticator-button" class="btn flex-row" type="submit"><i class="fa-regular fa-arrow-rotate-left"></i> Нулирай ключа за автентикация</button>
+			<button id="reset-authenticator-button" class="btn flex-row" type="submit"><i class="fa-solid fa-arrow-rotate-left"></i> Нулирай ключа за автентикация</button>
 		</form>
 	</div>
 	

@@ -1,12 +1,12 @@
 ﻿using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Web.ViewModels.ProductType;
+using MHAuthorWebsite.Core.Dtos.Admin.ProductType;
 
 namespace MHAuthorWebsite.Core.Admin.Contracts;
 
 public interface IAdminProductTypeService
 {
-    Task<ServiceResult> AddProductTypeAsync(AddProductTypeForm model);
+    Task<ServiceResult> AddProductTypeAsync(AddProductTypeDto model);
 
     Task<ICollection<ProductTypeDto>> GetAllReadonlyAsync();
 }

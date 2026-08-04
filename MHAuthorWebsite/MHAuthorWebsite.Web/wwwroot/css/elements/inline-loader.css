@@ -1,0 +1,24 @@
+.inline-loader-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  /* This allows the wrapper to fill a button if needed */
+  height: 100%;
+  width: 100%;
+}
+
+.inline-loader-wrapper .loader-inner .spinner {
+  content: "";
+  /* Use the variable --loader-size, or fallback to 5rem */
+  width: var(--loader-size, 5rem);
+  height: var(--loader-size, 5rem);
+
+  /* Scale the border proportionally to the size */
+  border: calc(var(--loader-size, 5rem) / 6) solid var(--color-secondary);
+  border-top: calc(var(--loader-size, 5rem) / 6) solid var(--color-secondary-light);
+
+  border-radius: 50%;
+  animation: fadeIn linear 200ms, spin 1s linear infinite;
+  animation-fill-mode: forwards;
+}

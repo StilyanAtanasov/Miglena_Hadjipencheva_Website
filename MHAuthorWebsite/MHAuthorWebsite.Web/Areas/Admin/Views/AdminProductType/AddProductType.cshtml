@@ -1,4 +1,4 @@
-﻿@using MHAuthorWebsite.Web.ViewModels.ProductType
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.ProductType
 @model AddProductTypeForm
 
 @{
@@ -7,7 +7,11 @@
 }
 
 @section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/add-product-type.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
@@ -16,14 +20,19 @@
 
 		<form class="input-form flex-column" method="POST" asp-area="Admin" asp-controller="AdminProductType" asp-action="AddProductType" id="AddProductTypeForm">
 			<div class="form-input-box flex-column">
-				<label class="form-label" asp-for="Name">Име:</label><br>
-				<input class="form-input" asp-for="Name"/><br>
+				<label class="form-label" asp-for="Name">Име:</label>
+				<input class="form-input" asp-for="Name"/>
 				<span class="input-error" asp-validation-for="Name"></span>
 			</div>
+			
+			<br/>
 
-			<div class="form-input-box flex-column">
-				<label class="form-label" asp-for="HasAdditionalProperties">Допълнителни данни?</label><br>
-				<input class="form-input" asp-for="HasAdditionalProperties" type="checkbox" id="HasAdditionalProperties" />
+			<div class="toggle-row">
+				<label class="switch">
+					<input asp-for="HasAdditionalProperties" type="checkbox" id="HasAdditionalProperties" />
+					<span class="toggle-slider round"></span>
+				</label>
+				<label class="toggle-label" asp-for="HasAdditionalProperties">Допълнителни данни?</label>
 				<span class="input-error" asp-validation-for="HasAdditionalProperties"></span>
 			</div>
 
@@ -31,7 +40,7 @@
 				<div id="attributeTemplates" data-attribute-index="@Model.Attributes.Count">
 					@for (int i = 0; i < Model.Attributes.Count; i++)
 					{
-						var i1 = i;
+						int i1 = i;
 						@Html.EditorFor(x => x.Attributes[i1], "AttributeDefinitionForm")
 					}
 				</div>
@@ -51,5 +60,6 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
-	<script src="~/js/add-product-type.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+	<script type="module" src="~/js/admin/add-product-type.js" asp-append-version="true"></script>
 }

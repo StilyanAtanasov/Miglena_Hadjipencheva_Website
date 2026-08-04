@@ -1,11 +1,16 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Admin.Order
-@using MHAuthorWebsite.Data.Models.Enums
-@using MHAuthorWebsite.Data.Common.Extensions
+@using MHAuthorWebsite.Core.Models.Enums
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@using MHAuthorWebsite.Core.Common.Extensions
+
 @model ICollection<AllOrdersListItemViewModel>
 
 @{
 	ViewData["Title"] = "Управление на поръчките";
 	ViewData["CurrentPage"] = Pages.Admin.AllOrders;
+	ViewData["RequireTimeZoneManager"] = true;
+
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
 }
 
 @section Styles
@@ -43,14 +48,18 @@
 						<td>@order.Id</td>
 						<td class="align-center">@order.CustomerName</td>
 						<td class="align-center"><strong>@order.TotalAmount.ToString("F2") @order.Currency</strong></td>
-						<td class="align-center">@order.OrderDate</td>
+						<td class="align-center">
+							<time to-local datetime="@order.OrderDate.ToString("O")">
+								@TimeZoneInfo.ConvertTimeFromUtc(order.OrderDate, defaultZone)
+							</time>
+						</td>
 						<td class="align-center"><strong>@order.Status.GetDisplayName()</strong></td>
 						<td class="action-btns flex-row">
 							@if (order.Status == OrderStatus.InReview)
 							{
 								<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Accept" asp-route-orderId="@order.Id">
 									<button class="btn btn-orange flex-row" type="submit">
-										<i class="fa-solid fa-memo-circle-check"></i> Приеми
+										<i class="fa-solid fa-circle-check"></i> Приеми
 									</button>
 								</form>
 								<form method="post" asp-area="Admin" asp-controller="AdminOrder" asp-action="Reject" asp-route-orderId="@order.Id">
@@ -64,7 +73,7 @@
 								</form>
 							}
 							<a class="btn btn-blue link flex-row" asp-area="Admin" asp-controller="AdminOrder" asp-action="OrderDetails" asp-route-orderId="@order.Id">
-								<i class="fa-solid fa-memo-circle-info"></i> Детайли
+								<i class="fa-solid fa-file-lines"></i> Детайли
 							</a>
 						</td>
 					</tr>

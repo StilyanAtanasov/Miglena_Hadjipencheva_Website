@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Data.Models;
+﻿using MHAuthorWebsite.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +8,9 @@ public class OrderProductConfiguration : IEntityTypeConfiguration<OrderProduct>
 {
     public void Configure(EntityTypeBuilder<OrderProduct> builder)
     {
+        builder
+            .HasKey(op => new { op.ProductId, op.OrderId });
+
         builder
             .HasQueryFilter(op => !op.Product.IsDeleted);
     }

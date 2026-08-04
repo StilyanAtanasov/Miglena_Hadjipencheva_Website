@@ -1,0 +1,84 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Contacts;
+@using MHAuthorWebsite.GCommon
+@inject Microsoft.Extensions.Options.IOptions<MHAuthorWebsite.Core.Configuration.Security.RecaptchaSettings> RecaptchaOptions
+@model ContactFormViewModel
+
+@{
+	ViewData["Title"] = "Контакти";
+	ViewData["MetaDescription"] = "Свържете се с Миглена Хаджипенчева и екипа на поддръжката!";
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Contacts;
+
+	string recaptchaV3SiteKey = RecaptchaOptions.Value.V3SiteKey;
+	string recaptchaV2SiteKey = RecaptchaOptions.Value.V2SiteKey;
+}
+
+@section Styles {
+	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/contacts.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper flex-column">
+
+	<h1 class="title">@ViewData["Title"]</h1>
+
+	<div class="contact-info">
+		<p class="flex-column"><i class="fa-solid fa-phone"></i> +359 889 24 23 10</p>
+		<p class="flex-column"><i class="fa-solid fa-envelope"></i> contact@miglena-hadjipencheva.com</p>
+		<p class="flex-column"><i class="fa-solid fa-location-dot"></i> Велико Търново 5000, България</p>
+	</div>
+
+	<form id="contact-form"
+		  class="input-form"
+		  asp-controller="Contacts"
+		  asp-action="SendEmail"
+		  method="post"
+		  data-recaptcha-v3-site-key="@recaptchaV3SiteKey"
+		  data-recaptcha-v2-site-key="@recaptchaV2SiteKey">
+		<div class="form-input-row flex-row">
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Name">Име</label>
+				<input class="form-input" asp-for="Name" type="text" placeholder="Иван Иванов" />
+				<span class="input-error" asp-validation-for="Name"></span>
+			</div>
+
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Email">Имейл</label>
+				<input class="form-input" asp-for="Email" type="email" placeholder="Вашият имейл" />
+				<span class="input-error" asp-validation-for="Email"></span>
+			</div>
+		</div>
+
+		<div class="form-input-box flex-column">
+			<label class="form-label" asp-for="Subject">Тема</label>
+			<input class="form-input" asp-for="Subject" type="text" placeholder="Какво Ви интересува?" />
+			<span class="input-error" asp-validation-for="Subject"></span>
+		</div>
+
+		<div class="form-input-box flex-column">
+			<label class="form-label" asp-for="Message">Съобщение</label>
+			<textarea class="form-input" asp-for="Message" rows="4"></textarea>
+			<span class="input-error" asp-validation-for="Message"></span>
+		</div>
+		<input asp-for="RecaptchaV3Token" type="hidden" id="contact-recaptcha-v3-token" />
+		<input asp-for="RecaptchaV2Token" type="hidden" id="contact-recaptcha-v2-token" />
+
+		<div id="contact-manual-recaptcha-box" class="form-input-box flex-column hidden">
+			<div id="contact-recaptcha-v2-widget"></div>
+		</div>
+
+		<button id="sendBtn" data-trigger="load-unlimited" type="submit" class="btn submit-btn flex-row">
+			<i class="fa-solid fa-paper-plane"></i>
+			Изпрати
+		</button>
+	</form>
+
+</section>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
+	<script type="module" src="~/js/contacts.js" asp-append-version="true"></script>
+}
+

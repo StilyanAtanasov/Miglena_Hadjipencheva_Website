@@ -3,11 +3,21 @@
 @using static MHAuthorWebsite.GCommon.EntityConstraints.ProductComment
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Roles
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Order
+@using MHAuthorWebsite.Core.Models.Enums
+@using MHAuthorWebsite.GCommon
+@using MHAuthorWebsite.Web.ViewModels.Shared
 
 @model ProductDetailsViewModel
 
 @{
 	ViewData["Title"] = Model.Name;
+	string metaBookDescription = Model.Description.Length > 70 ? $"{Model.Description.Substring(0, 70)}..." : Model.Description;
+	ViewData["MetaDescription"] = $"Книга {Model.Name}. {metaBookDescription}";
+	ViewData["RequireTimeZoneManager"] = true;
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Store;
+
+	bool isQuantityLimited = Model.Quantity < MaxItemQuantityPerOrder;
 }
 
 @section Styles {
@@ -25,12 +35,54 @@
 }
 
 <div class="page-wrapper">
-	<section class="main flex-row">
+	<a class="back-btn" asp-controller="Product" asp-action="AllProducts">
+		<i class="fa-solid fa-arrow-left"></i> Назад към продуктите
+	</a>
+	
+@if (Model.Discount is not null)
+{
+	<div class="discount-clock flex-row">
+		<h4 class="subheading">Промоцията приключва след:</h4>
+		<div id="countdown-timer" class="countdown-timer" data-end-date="@Model.Discount.EndDate.ToString("o")">
+			<div class="time-box flex-column">
+				<span id="days" class="time-value">00</span>
+				<span class="time-label">Дни</span>
+			</div>
+			<div class="time-box flex-column">
+				<span id="hours" class="time-value">00</span>
+				<span class="time-label">Часа</span>
+			</div>
+			<div class="time-box flex-column">
+				<span id="minutes" class="time-value">00</span>
+				<span class="time-label">Мин.</span>
+			</div>
+			<div class="time-box flex-column">
+				<span id="seconds" class="time-value">00</span>
+				<span class="time-label">Сек.</span>
+			</div>
+		</div>
+	</div>
+}
+
+@if (!Model.IsPublic)
+{
+	WarningViewModel warningModel = new WarningViewModel
+	{
+		Title = "Внимание!",
+		Message = "Този продукт е скрит от продажба и е достъпен само за администратори!"
+	};
+
+		<div class="discount-clock flex-row">
+			<partial name="_WarningMessage" model="warningModel"/>
+		</div>
+}
+
+<section class="main flex-row">
 		<section class="hero-info flex-row">
 			<section id="slider" class="slider flex-row" data-slides-count="@Model.Images.Count">
 				@if (Model.Images.Count > 1)
 				{
-					<button id="slider__btn--left" class="slider__btn"><i class="fa-solid fa-arrow-left"></i></button>
+					<button id="slider__btn--left" class="slider__btn" aria-label="Предишна снимка"><i class="fa-solid fa-arrow-left"></i></button>
 				}
 
 				<div class="slides flex-row">
@@ -38,7 +90,7 @@
 					{
 						<div class="slide flex-row">
 							<div class="slide-content flex-row">
-								<img class="product-image" src="@image.ImageUrl" alt="@image.AltText" />
+								<img class="product-image" src="@image.ImageUrl" alt="@image.AltText"/>
 							</div>
 						</div>
 					}
@@ -46,43 +98,63 @@
 
 				@if (Model.Images.Count > 1)
 				{
-					<button id="slider__btn--right" class="slider__btn "><i class="fa-solid fa-arrow-right"></i></button>
+					<button id="slider__btn--right" class="slider__btn " aria-label="Следваща снимка"><i class="fa-solid fa-arrow-right"></i></button>
 
 					<div id="dots-box" class="dots flex-row"></div>
 				}
 			</section>
-			<section class="product-main-info flex-column">
+			<section class="product-main-info flex-column" id="product-main-info" data-product-id="@Model.Id">
 				<h1 class="title">@Model.Name</h1>
 				<p class="text-faded"><strong>Категория:</strong> @Model.ProductTypeName</p>
+				@foreach (ProductAttributeDetailsViewModel attr in Model.Attributes
+					.Where(a => a.DisplayPosition == ProductAttributeDisplayPosition.MainInfo))
+				{
+					<p class="text-faded"><strong>@attr.Label:</strong> @attr.DisplayValue</p>
+				}
 			</section>
 		</section>
 
 		<!-- Pricing & Order Section -->
 		<section class="order-info flex-column">
 			<h4 class="heading">Наличност и поръчка</h4>
-			<p><strong>Цена:</strong> @Model.Price лв. / @((Model.Price * LevToEurRate).ToString("F2")) €</p>
-			<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
+			<div class="flex-column">
+				<p class="price @(Model.Discount is not null ? "old-price" : "")"> @Model.Price € / @((Model.Price * EurToLevRate).ToString("F2")) лв.</p>
+				@if (Model.Discount is not null)
+				{
+					<p class="price discounted-price"> @Model.Discount.NewPrice.ToString("F2") € / @((Model.Discount.NewPrice * EurToLevRate).ToString("F2")) лв.</p>
+				}
+			</div>
+			
+			<div class="item-info-text flex-column">
+				<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
+			
+				@if(isQuantityLimited)
+				{
+					<p class="stock-warning">Остават само още <strong>@Model.Quantity</strong> налични броя!</p>
+				}
+			</div>
 
-			<input type="hidden" name="productId" value="@Model.Id" />
+			<input type="hidden" name="productId" value="@Model.Id"/>
 			<div class="quantity">
 				<label for="quantity">Количество:</label>
-				<input class="input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
+				<input class="input" type="number" id="quantity" name="quantity" 
+				       value="1" min="1" max="@Math.Min(Model.Quantity, MaxItemQuantityPerOrder)" />
 			</div>
-			<div class="order-btns flex-row">
-				<button type="button" id="like-button" data-product-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")">
+				<div class="order-btns flex-row">
+					<button type="button" id="like-button" data-product-id="@Model.Id" class="btn like @(Model.IsLiked ? "liked" : "")" aria-label="Харесай продукт">
 					<span class="fa-stack">
-						<i class="fa-regular fa-heart fa-stack-2x"></i>
+						<i class="fa-solid fa-heart fa-stack-2x"></i>
 						<i class="fa-solid fa-heart fa-stack-2x"></i>
 					</span>
-				</button>
-				<button data-role="add-to-cart" data-item-id="@Model.Id" type="button" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled")>
-					<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
-				</button>
-			</div>
+					</button>
+					<button data-role="add-to-cart" data-item-id="@Model.Id" type="button" class="btn order flex-row" @(Model.IsInStock ? "" : "disabled") aria-label="Добави в количката">
+						<i class="fa-solid fa-cart-plus"></i> Поръчай
+					</button>
+				</div>
 		</section>
 	</section>
 
-	<hr />
+	<hr/>
 
 	<!-- Details Section -->
 	<article class="details-info flex-column">
@@ -90,36 +162,37 @@
 		<section class="info-article flex-column">
 			<h5 class="subheading">Описание:</h5>
 			<div id="description-editor" class="form-input"></div>
-			<input type="hidden" asp-for="Description" id="descriptionInput" />
+			<input type="hidden" asp-for="Description" id="descriptionInput"/>
 		</section>
 	</article>
 
-	<hr />
+	<hr/>
 
 	<!-- Additional Attributes Section -->
-	@if (Model.Attributes.Any(a => a.Value != null))
+	@if (Model.Attributes.Any(a => a is { Value: not null, DisplayPosition: ProductAttributeDisplayPosition.AdditionalInfoTable }))
 	{
 		<section class="additional-info flex-column">
 			<h4 class="heading">Допълнителна информация</h4>
 
 			<table>
 				<tbody>
-				@foreach (ProductAttributeDetailsViewModel a in Model.Attributes.Where(a => a.Value != null))
+				@foreach (ProductAttributeDetailsViewModel a in Model.Attributes
+					.Where(a => a is { Value: not null, DisplayPosition: ProductAttributeDisplayPosition.AdditionalInfoTable }))
 				{
 					<tr>
 						<td>@a.Label</td>
-						<td>@a.Value</td>
+						<td>@a.DisplayValue</td>
 					</tr>
 				}
 				</tbody>
 			</table>
 		</section>
 
-		<hr />
+		<hr/>
 	}
 
 	<!-- Comments Section -->
-	<article class="comments-info flex-column">
+	<article class="comments-info flex-column" >
 		<h4 class="heading">Коментари</h4>
 
 		@if (Model.Comments.Any())
@@ -160,7 +233,7 @@
 				}
 			</section>
 
-			<hr class="comment-section-divider" />
+			<hr class="comment-section-divider"/>
 
 			<section id="comments" class="comments flex-column" data-is-rate-limited-for-replies="@Model.IsRateLimitedForReplies">
 				@await Html.PartialAsync("~/Views/ProductComment/_ProductComments.cshtml", Model.Comments)
@@ -168,8 +241,8 @@
 
 			if (Model.HasMoreComments)
 			{
-				<button id="more-comments-btn" data-product-id="@Model.Id" class="btn-none link">
-					<i class="fa-regular fa-circle-chevron-down"></i>
+				<button id="more-comments-btn" class="btn-none link">
+					<i class="fa-solid fa-circle-chevron-down"></i>
 					Още коментари
 				</button>
 			}

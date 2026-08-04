@@ -1,0 +1,50 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Order
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
+@model ICollection<MyOrderViewModel>
+
+@{
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+}
+
+@foreach (MyOrderViewModel order in Model)
+{
+	bool isBgn = order.Currency == "BGN";
+	string primarySymbol = isBgn ? "лв." : "€";
+	string secondarySymbol = isBgn ? "€" : "лв.";
+	decimal totalSecondary = isBgn ? order.Total * LevToEurRate : order.Total * EurToLevRate;
+	
+<div class="order-card flex-column">
+	<div class="order-info flex-row">
+		<div class="product-list flex-row">
+			@foreach (MyOrdersOrderProductViewModel product in order.Products)
+			{
+				<div class="product-image-box">
+					<img src="@product.ImageUrl" alt="" />
+					<div class="quantity-badge">@(product.Quantity)x</div>
+				</div>
+			}
+		</div>
+		<div class="order-actions">
+			<a asp-controller="Order" asp-action="OrderDetails" asp-route-orderId="@order.OrderId" class="btn link btn-details flex-row">
+				<i class="fa-solid fa-file-lines"></i>
+				Детайли
+			</a>
+		</div>
+	</div>
+	<hr/>
+	<article class="order-summary flex-row">
+		<p><strong>№</strong> @order.OrderId</p>
+		<p><strong>Брой артикули:</strong> @order.Products.Sum(p => p.Quantity)</p>
+		<p>
+			<strong>Дата:</strong>
+			<time to-local date-only datetime="@order.CreatedAt.ToString("O")">
+				@TimeZoneInfo.ConvertTimeFromUtc(order.CreatedAt, defaultZone)
+			</time>
+		</p>
+		<p><strong>Статус:</strong> @order.Status</p>
+		<p><strong>Общо:</strong> @order.Total.ToString("F2") @primarySymbol / @totalSecondary.ToString("F2") @secondarySymbol</p>
+	</article>
+</div>
+}

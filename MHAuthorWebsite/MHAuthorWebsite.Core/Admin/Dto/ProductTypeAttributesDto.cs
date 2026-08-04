@@ -10,7 +10,7 @@ public class ProductTypeAttributesDto
 
     public int DataType { get; set; }
 
-    public bool HasPredefinedValue { get; set; }
-
     public bool IsRequired { get; set; }
+
+    public ICollection<AttributeOptionDto> PredefinedValues { get; set; } = null!;
 }

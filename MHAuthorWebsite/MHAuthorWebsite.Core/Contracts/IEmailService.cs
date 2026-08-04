@@ -1,0 +1,10 @@
+﻿using MHAuthorWebsite.Core.Configuration.EmailConfiguration.Contracts;
+
+namespace MHAuthorWebsite.Core.Contracts;
+
+public interface IEmailService
+{
+    Task SendEmailAsync(IEmailUser from, string to, string subject, string body, bool isBodyHtml);
+
+    Task SendEmailsBulkAsync(IEmailUser from, ICollection<string> to, string subject, string body, bool isBodyHtml);
+}

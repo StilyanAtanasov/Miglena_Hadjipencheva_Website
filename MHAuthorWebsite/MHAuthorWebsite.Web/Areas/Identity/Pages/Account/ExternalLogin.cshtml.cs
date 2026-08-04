@@ -1,8 +1,8 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -99,14 +99,14 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
 
             if (remoteError != null)
             {
-                ErrorMessage = $"Error from external provider: {remoteError}";
+                ErrorMessage = $"Грешка от външния доставчик: {remoteError}";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
             ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Error loading external login information.";
+                ErrorMessage = "Грешка при зареждането на информацията за вход от външния доставчик.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
@@ -117,13 +117,36 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                 isPersistent: false,
                 bypassTwoFactor: false);
 
-            if (result.Succeeded) return LocalRedirect(returnUrl);
+            ApplicationUser appUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            if (result.Succeeded)
+            {
+                if (!(appUser?.IsBanned ?? false)) return LocalRedirect(returnUrl);
+
+                await _signInManager.SignOutAsync();
+                TempData["ErrorMessage"] = "Вашият акаунт е блокиран. Свържете се с администратора за повече информация.";
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+
+            }
             if (result.IsLockedOut) return RedirectToPage("./Lockout");
+            if (result.RequiresTwoFactor)
+                return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = false });
+            if (result.IsNotAllowed && appUser is { EmailConfirmed: false })
+            {
+                string resendUrl = Url.Page(
+                    "/Account/ResendEmailConfirmation",
+                    null,
+                    new { area = "Identity", email = appUser.Email },
+                    Request.Scheme);
+                TempData["ErrorMessage"] = "Моля потвърдете Вашия имейл адрес.";
+                TempData["ResendConfirmationEmailUrl"] = resendUrl;
+
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+            }
 
             // Extract email if available
             string email = info.Principal.FindFirstValue(ClaimTypes.Email);
 
-            // If OAuth DID NOT provide email → show default scaffold page (as now)
+            // If OAuth DID NOT provide email → show default scaffold page
             if (string.IsNullOrEmpty(email))
             {
                 ReturnUrl = returnUrl;
@@ -142,7 +165,7 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                     UserName = email,
                     Email = email,
                     Name = info.Principal.FindFirstValue(ClaimTypes.Name),
-                    RegisteredOn = DateTime.Now,
+                    RegisteredOn = DateTime.UtcNow,
                     NormalizedEmail = email.ToUpper(),
                     NormalizedUserName = email.ToUpper(),
                 };
@@ -167,7 +190,20 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            if (!user.EmailConfirmed)
+            {
+                string resendUrl2 = Url.Page(
+                    "/Account/ResendEmailConfirmation",
+                    null,
+                    new { area = "Identity", email = user!.Email },
+                    Request.Scheme);
+                TempData["ErrorMessage"] = "Моля потвърдете Вашия имейл адрес.";
+                TempData["ResendConfirmationEmailUrl"] = resendUrl2;
+
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
             return LocalRedirect(returnUrl);
         }
 
@@ -178,7 +214,7 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Error loading external login information during confirmation.";
+                ErrorMessage = "Грешка при зареждането на информацията за вход от външния доставчик по време на потвърждението.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 

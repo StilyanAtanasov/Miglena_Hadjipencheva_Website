@@ -77,14 +77,37 @@
   border-radius: 1rem;
 }
 
+#cart-body .product-price-info .old-price {
+  font-size: 1.3rem;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
+#cart-body .product-price-info .discounted-price {
+  color: var(--color-orange-dark);
+}
+
+.price-info-row {
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.price-value {
+  font-weight: 700;
+}
+
+.price-value.discount {
+  color: var(--color-success);
+}
+
 .grand-total {
   background-color: var(--color-secondary-lighter);
   padding: 1rem 2rem;
   margin-top: 2rem;
   border-radius: 1.5rem;
   font-size: 1.9rem;
-  width: calc(100% + 4rem);
-  transform: translateX(-2rem);
+  width: calc(100% + 2rem);
+  transform: translateX(-1rem);
 }
 
 #confirm-form {
@@ -108,44 +131,91 @@
   border: 0.1rem solid var(--color-secondary);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 960px) {
   .content {
     flex-direction: column;
     align-items: center;
-    margin-bottom: 0;
-    gap: 3rem;
+    margin-bottom: 5rem;
+    gap: 4rem;
   }
 
   .main-content {
-    width: 95%;
+    width: 100%;
+    max-width: 70rem;
     gap: 3rem;
   }
 
   .total-section {
-    position: sticky;
-    bottom: 2rem;
-    top: auto;
-    background-color: var(--color-primary);
-    width: 96%;
-    padding: 2.5rem 5rem;
-    gap: 0;
+    position: static;
+    width: 100%;
+    max-width: 70rem;
+    padding: 3rem;
   }
 
-  .total-section-content {
-    flex-direction: row;
-    justify-content: space-between;
+  .cart-table th,
+  .cart-table td {
+    padding: 1.2rem 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-content,
+  .total-section {
+    width: 100%;
+  }
+
+  .section {
+    padding: 2rem;
+  }
+
+  .cart-table thead {
+    display: none;
+  }
+
+  .cart-table tr {
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
   }
 
-  #confirm-form {
-    margin-top: 0;
+  .cart-table td {
+    border-bottom: none !important;
+    padding: 0.6rem 0;
+    width: 100%;
+  }
+
+  .cart-table td.flex-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+  }
+
+  .product-image-container {
+    height: 8rem;
+    margin: 0 auto;
+  }
+
+  .cart-table .product-name {
+    text-align: center;
+  }
+
+  .price-info-row {
+    font-size: 1.6rem;
   }
 
   .grand-total {
-    background-color: var(--color-secondary-lighter);
-    padding: 0.5rem 1rem;
-    margin-top: 0.5rem;
-    width: calc(100% + 2rem);
-    transform: translateX(-1rem);
+    font-size: 1.8rem;
+    padding: 1rem;
+    width: 100%;
+    transform: none;
+    text-align: center;
+  }
+
+  .econt-delivery #econt-frame {
+    padding: 1rem;
+    min-height: 50rem;
   }
 }
+

@@ -1,0 +1,25 @@
+﻿using MHAuthorWebsite.Core.Models;
+using System.Linq.Expressions;
+using static MHAuthorWebsite.GCommon.ApplicationRules.SortTypes;
+
+namespace MHAuthorWebsite.Web.Utils.Mappers;
+
+public static class SortValueMapper
+{
+    public static readonly Dictionary<string, (bool descending, Expression<Func<Product, object>>? expression)> SortMap =
+        new()
+        {
+            [Recommended] = (true, p => p.Orders.Sum(op => op.Quantity)),
+            [PriceDesc] = (true, p => p.Discounts
+                .Where(d => d.EndDate > DateTime.UtcNow)
+                .OrderBy(d => d.NewPrice)
+                .Select(d => (decimal?)d.NewPrice)
+                .FirstOrDefault() ?? p.Price),
+            [PriceAsc] = (false, p => p.Discounts
+                .Where(d => d.EndDate > DateTime.UtcNow)
+                .OrderBy(d => d.NewPrice)
+                .Select(d => (decimal?)d.NewPrice)
+                .FirstOrDefault() ?? p.Price),
+            [Likes] = (true, p => p.Likes.Count)
+        };
+}

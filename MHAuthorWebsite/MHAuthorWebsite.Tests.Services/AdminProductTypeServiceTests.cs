@@ -1,16 +1,15 @@
-﻿using MHAuthorWebsite.Core;
-using MHAuthorWebsite.Core.Admin;
+﻿using MHAuthorWebsite.Core.Admin;
 using MHAuthorWebsite.Core.Admin.Contracts;
 using MHAuthorWebsite.Core.Admin.Dto;
 using MHAuthorWebsite.Core.Common.Utils;
-using MHAuthorWebsite.Core.Contracts;
+using MHAuthorWebsite.Core.Dtos.Admin.ProductType;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
 using MHAuthorWebsite.Data;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
 using MHAuthorWebsite.Data.Shared;
-using MHAuthorWebsite.Web.ViewModels.ProductType;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace MHAuthorWebsite.Tests.Services;
@@ -20,18 +19,21 @@ public class AdminProductTypeServiceTests
 {
     private IAdminProductTypeService _adminProductTypeService = null!;
     private ApplicationDbContext _dbContext = null!;
+    private Mock<ILogger<AdminProductTypeService>> _loggerMock = null!;
 
     private ProductType _defaultProductType = null!;
 
     [SetUp]
     public async Task Setup()
     {
+        _loggerMock = new Mock<ILogger<AdminProductTypeService>>();
+
         DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase("ProductTypeTestDb")
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
-        _adminProductTypeService = new AdminProductTypeService(new ApplicationRepository(_dbContext));
+        _adminProductTypeService = new AdminProductTypeService(new ApplicationRepository(_dbContext), _loggerMock.Object);
 
         // Arrange
         _defaultProductType = await SeedProductTypeAsync();
@@ -82,11 +84,11 @@ public class AdminProductTypeServiceTests
     public async Task AddProductTypeAsync_ReturnsOk_WhenThereAreAdditionalProperties()
     {
         // Arrange
-        AddProductTypeForm newProductType = new()
+        AddProductTypeDto newProductType = new()
         {
             Name = "New Product Type",
             HasAdditionalProperties = true,
-            Attributes = new List<AttributeDefinitionForm>
+            Attributes = new List<AttributeDefinitionDto>
             {
                 new ()
                 {
@@ -94,7 +96,6 @@ public class AdminProductTypeServiceTests
                     Label = "New Label",
                     DataType = 1,
                     IsRequired = true,
-                    HasPredefinedValue = false
                 }
             }
         };
@@ -118,11 +119,11 @@ public class AdminProductTypeServiceTests
     public async Task AddProductTypeAsync_ReturnsOk_WhenThereAreNoneAdditionalProperties()
     {
         // Arrange
-        AddProductTypeForm newProductType = new()
+        AddProductTypeDto newProductType = new()
         {
             Name = "New Product Type",
             HasAdditionalProperties = false,
-            Attributes = new List<AttributeDefinitionForm>()
+            Attributes = new List<AttributeDefinitionDto>()
         };
 
         // Act
@@ -143,16 +144,16 @@ public class AdminProductTypeServiceTests
     public async Task AddProductTypeAsync_ReturnsFailure_OnError()
     {
         // Arrange
-        AddProductTypeForm newProductType = new()
+        AddProductTypeDto newProductType = new()
         {
             Name = "New Product Type",
             HasAdditionalProperties = false,
-            Attributes = new List<AttributeDefinitionForm>()
+            Attributes = new List<AttributeDefinitionDto>()
         };
 
         // Simulate an error by throwing an exception in the repository
         Mock<IApplicationRepository> repoMock = new();
-        AdminProductTypeService mockedRepoService = new(repoMock.Object);
+        AdminProductTypeService mockedRepoService = new(repoMock.Object, _loggerMock.Object);
 
         repoMock
             .Setup(r => r.AddAsync(It.IsAny<ProductType>()))
@@ -185,7 +186,6 @@ public class AdminProductTypeServiceTests
                     DataType = AttributeDataType.Text,
                     Key = "TestKey",
                     Label = "Test Label",
-                    HasPredefinedValue = false,
                     IsRequired = true,
                 }
             }

@@ -2,13 +2,21 @@
 
 import { pushNotification } from "./notification.js";
 import { formatBgNumber, parseBgNumber } from "./common.js";
+import { calcFreeDelivery } from "./elements/free-delivery.js";
 
 let productsCount;
-const levToEurRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.levToEurRate);
+const eurToLevRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.eurToLevRate);
+const freeShippingThresholdEur = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.freeShippingThresholdEur);
 
 document.addEventListener(`DOMContentLoaded`, function () {
-  const totalPriceElement = document.querySelector(`#price-sum`);
-  const totalPriceEurElement = document.querySelector(`#price-sum-eur`);
+  const grandTotalPriceElement = document.querySelector(`#grand-total`);
+  const grandTotalPriceBgnElement = document.querySelector(`#grand-total-bgn`);
+  const totalPriceElement = document.querySelector(`#total`);
+  const totalPriceBgnElement = document.querySelector(`#total-bgn`);
+  const discountElement = document.querySelector(`#discount-global`);
+  const discountBgnElement = document.querySelector(`#discount-global-bgn`);
+
+  window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(parseBgNumber(grandTotalPriceElement.textContent), freeShippingThresholdEur), 350));
 
   const quantityInputs = document.querySelectorAll(`[data-role="quantity-input"]`);
   productsCount = quantityInputs.length;
@@ -31,12 +39,12 @@ document.addEventListener(`DOMContentLoaded`, function () {
         const data = await response.json();
 
         document.querySelector(`#line-total-${itemId} .sum-price`).textContent = `${data.lineTotal}`;
-        document.querySelector(`#line-total-${itemId} .sum-price-eur`).textContent = `${formatBgNumber(parseBgNumber(data.lineTotal) * levToEurRate)}`;
+        document.querySelector(`#line-total-${itemId} .sum-price-bgn`).textContent = `${formatBgNumber(parseBgNumber(data.lineTotal) * eurToLevRate)}`;
 
-        totalPriceElement.textContent = `${data.cartTotal}`;
-        totalPriceEurElement.textContent = `${formatBgNumber(parseBgNumber(data.cartTotal) * levToEurRate)}`;
-      } else alert(`Грешка при обновяване на количеството.`);
-    })
+        updateCartSummary(data.cartTotal);
+      } else if (response.status === 400) pushNotification(Object.values(await response.json())[0], `warning`);
+      else alert(`Грешка при обновяване на количеството.`);
+    }),
   );
 
   document.querySelectorAll(`[data-role="is-selected-input"]`).forEach(i =>
@@ -53,15 +61,9 @@ document.addEventListener(`DOMContentLoaded`, function () {
         body: JSON.stringify({ itemId, isSelected }),
       });
 
-      if (response.ok) {
-        const selectedItems = [...document.querySelectorAll(`tbody tr`)].filter(i => i.querySelector(`[data-role="is-selected-input"]`).checked === true);
-
-        const newPriceLev = selectedItems.reduce((partialSum, i) => partialSum + parseFloat(i.querySelector(`.sum-price`).textContent), 0);
-
-        totalPriceElement.textContent = formatBgNumber(newPriceLev);
-        totalPriceEurElement.textContent = `${formatBgNumber(newPriceLev * levToEurRate)}`;
-      } else alert(`Грешка при обновяване на селектираните продукти!`);
-    })
+      if (response.ok) updateCartSummary();
+      else alert(`Грешка при обновяване на селектираните продукти!`);
+    }),
   );
 
   document.querySelectorAll(`[data-role="remove-item"]`).forEach(b =>
@@ -81,10 +83,6 @@ document.addEventListener(`DOMContentLoaded`, function () {
       if (response.ok) {
         let cartItemElement = b.closest(`tr`);
         if (cartItemElement != null) {
-          const itemsSumPrice = parseBgNumber(cartItemElement.querySelector(`.sum-price`).textContent);
-          totalPriceElement.textContent = formatBgNumber(parseBgNumber(totalPriceElement.textContent) - itemsSumPrice);
-          totalPriceEurElement.textContent = `${formatBgNumber(parseBgNumber(totalPriceElement.textContent) * levToEurRate)}`;
-
           if (--productsCount === 0) {
             document.getElementById(`valid-items-section`).remove();
             document.getElementById(`cart-summary`).remove();
@@ -94,8 +92,32 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
         cartItemElement.remove();
 
-        pushNotification("Продуктът е премахнат от количката!", "success");
-      } else pushNotification("Грешка при премахването на продукта!", "error");
-    })
+        updateCartSummary();
+
+        pushNotification(`Продуктът е премахнат от количката!`, `success`);
+      } else pushNotification(`Грешка при премахването на продукта!`, `error`);
+    }),
   );
+
+  function updateCartSummary(cartTotal) {
+    const selectedItems = [...document.querySelectorAll(`tbody tr`)].filter(i => i.querySelector(`[data-role="is-selected-input"]`).checked === true);
+
+    const newPriceEur = cartTotal == null ? selectedItems.reduce((partialSum, i) => partialSum + parseBgNumber(i.querySelector(`.sum-price`).textContent), 0) : parseBgNumber(cartTotal);
+    grandTotalPriceElement.textContent = formatBgNumber(newPriceEur);
+    grandTotalPriceBgnElement.textContent = `${formatBgNumber(newPriceEur * eurToLevRate)}`;
+
+    const oldPriceEur = selectedItems.reduce(
+      (partialSum, i) => partialSum + parseBgNumber(i.querySelector(`.unit-price:not(.discounted-price) .unit-price-value`).textContent) * i.querySelector(`.quantity-input .input`).value,
+      0,
+    );
+
+    totalPriceElement.textContent = formatBgNumber(oldPriceEur);
+    totalPriceBgnElement.textContent = `${formatBgNumber(oldPriceEur * eurToLevRate)}`;
+
+    const discount = oldPriceEur - newPriceEur;
+    discountElement.textContent = formatBgNumber(discount);
+    discountBgnElement.textContent = `${formatBgNumber(discount * eurToLevRate)}`;
+
+    calcFreeDelivery(newPriceEur, freeShippingThresholdEur);
+  }
 });

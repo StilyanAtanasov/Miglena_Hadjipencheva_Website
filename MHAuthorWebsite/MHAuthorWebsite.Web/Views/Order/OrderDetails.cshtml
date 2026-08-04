@@ -1,15 +1,19 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Order
 @using static MHAuthorWebsite.GCommon.ApplicationRules.Econt
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
 @using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
-@using MHAuthorWebsite.Data.Models.Enums
-@using MHAuthorWebsite.Data.Common.Extensions
 @using MHAuthorWebsite.Web.ViewModels.Shared
+@using MHAuthorWebsite.Core.Models.Enums
+@using MHAuthorWebsite.Core.Common.Extensions
 
 @model OrderDetailsViewModel
 
 @{
 	ViewData["Heading"] = $"Поръчка № {Model.OrderId}";
 	Layout = "/Areas/Identity/Pages/Account/Manage/_Layout.cshtml";
+	ViewData["RequireTimeZoneManager"] = true;
+
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
 }
 
 @section Styles {
@@ -20,6 +24,9 @@
 @section Heading
 {
 	<div class="section-heading flex-row">
+		<a class="back-btn" asp-controller="Order" asp-action="MyOrders">
+			<i class="fa-solid fa-arrow-left"></i> Назад към поръчките
+		</a>
 		<h3 class="title-small visible">@ViewData["Heading"]</h3>
 		<p class="status-message"><strong>@Model.Status</strong></p>
 	</div>
@@ -47,17 +54,26 @@
 	}
 
 	@{
+		bool isBgn = Model.Shipment.Currency == "BGN";
+		string primarySymbol = isBgn ? "лв." : "€";
+		string secondarySymbol = isBgn ? "€" : "лв.";
 		decimal totalSum = Model.Products.Sum(p => p.Quantity * p.UnitPrice) + Model.Shipment.ShippingPrice;
+		decimal totalSumSecondary = isBgn ? totalSum * LevToEurRate : totalSum * EurToLevRate;
 	}
 
 	<section class="info-section flex-row">
 		<article class="order-summary">
 			<h4 class="heading">Основна информация</h4>
 			<p class="flex-row"><strong>№</strong> @Model.OrderId</p>
-			<p class="flex-row"><strong>Дата на поръчка:</strong> @Model.OrderDate.ToString("dd MMM yyyy, HH:mm ч.")</p>
+			<p class="flex-row">
+				<strong>Дата на поръчка:</strong>
+				<time to-local datetime="@Model.OrderDate.ToString("O")">
+					@TimeZoneInfo.ConvertTimeFromUtc(Model.OrderDate, defaultZone)
+				</time>
+			</p>
 			<p class="flex-row">
 				<strong>Обща стойност:</strong>
-				@(totalSum.ToString("F2")) лв. / @((totalSum * LevToEurRate).ToString("F2")) €
+				@(totalSum.ToString("F2")) @primarySymbol / @((totalSumSecondary).ToString("F2")) @secondarySymbol
 			</p>
 			<p class="flex-row"><strong>Статус: </strong>@Model.Status</p>
 		</article>
@@ -71,7 +87,7 @@
 					<a class="shipment-tracker-link link active flex-row"
 					   href="@(EcontTrackerUrl)/@Model.Shipment.ShipmentNumber">
 						Проследи
-						<i class="fa-regular fa-arrow-right"></i>
+						<i class="fa-solid fa-arrow-right"></i>
 					</a>
 				</p>
 			}
@@ -83,7 +99,10 @@
 				<p class="flex-row"><strong>Адрес:</strong> @Model.Shipment.Address, @Model.Shipment.City, @Model.Shipment.PostCode</p>
 			}
 
-			<p class="flex-row"><strong>Цена на доставка:</strong> @Model.Shipment.ShippingPrice @Model.Shipment.Currency</p>
+			@{
+				decimal shippingSecondary = isBgn ? Model.Shipment.ShippingPrice * LevToEurRate : Model.Shipment.ShippingPrice * EurToLevRate;
+			}
+			<p class="flex-row"><strong>Цена на доставка:</strong> @Model.Shipment.ShippingPrice.ToString("F2") @primarySymbol / @shippingSecondary.ToString("F2") @secondarySymbol</p>
 
 			@if (Model.Shipment.ExpectedDeliveryDate.HasValue)
 			{
@@ -111,7 +130,11 @@
 					<li class="tracking-row flex-row">
 						<span class="tracking-dot"></span>
 						<p class="tracking-text">
-							<strong>@ev.Time.ToString("dd MMM yyyy, HH:mm ч."):</strong>
+							<strong>
+								<time to-local no-seconds month-long datetime="@ev.Time.ToString("O")">
+									@TimeZoneInfo.ConvertTimeFromUtc(ev.Time, defaultZone).ToString("dd MMM yyyy, HH:mm")
+								</time>
+							</strong>
 							@if (!string.IsNullOrWhiteSpace(ev.DestinationDetails))
 							{
 								<span> @ev.DestinationDetails</span>
@@ -147,11 +170,14 @@
 						<div class="quantity-badge">@(product.Quantity)x</div>
 					</div>
 					<p><strong>@product.ProductName</strong></p>
-					<p>Ед. цена: <br/> @product.UnitPrice.ToString("F2") лв. / @((product.UnitPrice * LevToEurRate).ToString("F2")) €</p>
+					@{
+						decimal unitPriceSecondary = isBgn ? product.UnitPrice * LevToEurRate : product.UnitPrice * EurToLevRate;
+					}
+					<p>Ед. цена: <br/> @product.UnitPrice.ToString("F2") @primarySymbol / @(unitPriceSecondary.ToString("F2")) @secondarySymbol</p>
 				</div>
 			}
 		</div>
 	</section>
 
-	<i class="fa-solid fa-memo-circle-info background-icon"></i>
+	<i class="fa-solid fa-file-lines background-icon"></i>
 </section>

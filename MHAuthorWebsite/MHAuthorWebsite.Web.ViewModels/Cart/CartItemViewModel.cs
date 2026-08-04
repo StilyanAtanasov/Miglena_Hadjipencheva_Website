@@ -18,11 +18,15 @@ public class CartItemViewModel
 
     public decimal UnitPrice { get; set; }
 
+    public decimal? UnitDiscountedPrice { get; set; }
+
     public int Quantity { get; set; }
+
+    public int MaxOrderQuantityForProduct { get; set; }
 
     public bool IsDiscontinued { get; set; }
 
     public bool IsAvailable { get; set; }
 
-    public decimal LineTotal => UnitPrice * Quantity;
+    public decimal LineTotal => (UnitDiscountedPrice ?? UnitPrice) * Quantity;
 }

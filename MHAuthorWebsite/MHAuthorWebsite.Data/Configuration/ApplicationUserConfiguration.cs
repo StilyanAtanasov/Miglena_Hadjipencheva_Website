@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Data.Models;
+﻿using MHAuthorWebsite.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,6 +10,18 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
     {
         builder
             .Property(u => u.IsDeleted)
+            .HasDefaultValue(false);
+
+        builder
+            .Property(u => u.IsBanned)
+            .HasDefaultValue(false);
+
+        builder
+            .Property(u => u.IsMarketingSubscribed)
+            .HasDefaultValue(false);
+
+        builder
+            .Property(u => u.HasAcceptedPrivacyPolicy)
             .HasDefaultValue(false);
     }
 }

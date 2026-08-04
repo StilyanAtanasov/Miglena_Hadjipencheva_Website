@@ -1,0 +1,105 @@
+﻿@using MHAuthorWebsite.Web.ViewModels.Admin.ContactRequests
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Application
+@model ICollection<ContactRequestCardViewModel>
+
+@{
+	ViewData["Title"] = "Запитвания";
+	ViewData["CurrentPage"] = Pages.Admin.ContactRequestsBoardPage;
+	ViewData["RequireTimeZoneManager"] = true;
+
+	TimeZoneInfo defaultZone = TimeZoneInfo.FindSystemTimeZoneById(DefaultTimeZoneId);
+
+	ICollection<ContactRequestCardViewModel> unanswered = Model
+		.Where(m => !m.IsAnswered)
+		.OrderByDescending(m => m.CreatedOn)
+		.ToArray();
+
+	ICollection<ContactRequestCardViewModel> answered = Model
+		.Where(m => m.IsAnswered)
+		.OrderByDescending(m => m.CreatedOn)
+		.ToArray();
+
+	bool hasAny = unanswered.Any() || answered.Any();
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/admin/contact-requests-board.css" />
+}
+
+<section class="page-wrapper flex-column">
+	<h1 class="title">@ViewData["Title"]</h1>
+	@if (!hasAny)
+	{
+		<p class="no-requests">Няма изпратени запитвания.</p>
+	}
+	else
+	{
+		<article class="flex-column">
+			<h2 class="heading">Нови запитвания</h2>
+			@if (!unanswered.Any())
+			{
+				<p class="no-requests-sub">Няма нови запитвания.</p>
+			}
+			else
+			{
+				<div class="cards-grid">
+					@foreach (ContactRequestCardViewModel item in unanswered)
+					{
+						<div class="request-card clickable flex-column" data-details-url="@Url.Action("ContactRequestDetails", "AdminContactRequests", new { requestId = item.Id })">
+							<h3 class="subheading">@item.Subject</h3>
+							<p>@item.Name <br/> @item.Email</p>
+							<p class="message">@item.MessagePreview</p>
+							<p class="date">
+								<time to-local no-seconds datetime="@item.CreatedOn.ToString("O")">
+									@TimeZoneInfo.ConvertTimeFromUtc(item.CreatedOn, defaultZone)
+								</time>
+							</p>
+							<a asp-controller="AdminContactRequests" asp-action="ContactRequestDetails"
+							   asp-route-requestId="@item.Id" class="btn btn-purple link flex-row">
+								<i class="fa-solid fa-eye"></i>
+								Преглед
+							</a>
+						</div>
+					}
+				</div>
+			}
+		</article>
+
+		<article class="answered flex-column">
+			<h2 class="heading">Отговорени</h2>
+			@if (!answered.Any())
+			{
+				<p class="no-requests-sub">Няма отговорени запитвания.</p>
+			}
+			else
+			{
+				<div class="cards-grid">
+					@foreach (ContactRequestCardViewModel item in answered)
+					{
+						<div class="request-card clickable flex-column" data-details-url="@Url.Action("ContactRequestDetails", "AdminContactRequests", new { requestId = item.Id })">
+							<h3 class="subheading">@item.Subject</h3>
+							<p>@item.Name  <br /> @item.Email</p>
+							<p class="message">@item.MessagePreview</p>
+							<p class="date">
+								<time to-local no-seconds datetime="@item.CreatedOn.ToString("O")">
+									@TimeZoneInfo.ConvertTimeFromUtc(item.CreatedOn, defaultZone)
+								</time>
+							</p>
+							<a asp-controller="AdminContactRequests" asp-action="ContactRequestDetails"
+							   asp-route-requestId="@item.Id" class="btn btn-purple link flex-row">
+								<i class="fa-solid fa-eye"></i>
+								Преглед
+							</a>
+						</div>
+					}
+				</div>
+			}
+		</article>
+	}
+</section>
+
+@section Scripts
+{
+	<script type="module" src="~/js/elements/loader.js" asp-append-version="true"></script>
+	<script src="~/js/click.js" asp-append-version="true"></script>
+}

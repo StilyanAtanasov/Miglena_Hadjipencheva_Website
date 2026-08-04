@@ -1,6 +1,6 @@
 "use strict";
 
-window.addEventListener("DOMContentLoaded", function () {
+window.addEventListener(`DOMContentLoaded`, function () {
   const filters = this.document.querySelectorAll(`.filter`);
   filters.forEach(f => {
     const filterForm = f.closest(`form`);

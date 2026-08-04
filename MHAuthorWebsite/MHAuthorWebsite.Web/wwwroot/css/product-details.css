@@ -1,13 +1,23 @@
 .page-wrapper {
-  padding: 8rem 30rem;
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 4rem 2rem 8rem 2rem;
+  width: 100%;
+}
+
+.page-wrapper > .back-btn {
+  margin-bottom: 2rem;
+  margin-left: 0;
+  margin-left: calc(50% - 40vw);
 }
 
 .hero-info {
   justify-content: start;
-  height: calc(100vh - 10rem);
+  min-height: 45rem;
+  height: auto;
   align-items: flex-start;
   gap: 5rem;
-  width: 70%;
+  width: 65%;
 }
 
 .hero-info section {
@@ -19,7 +29,7 @@
 }
 
 .product-main-info {
-  width: 45%;
+  width: 35%;
 }
 
 .product-main-info p {
@@ -29,14 +39,16 @@
 .main {
   align-items: flex-start;
   justify-content: space-between;
-  padding: 2rem 5rem;
+  padding: 2rem 0;
   gap: 5rem;
-  width: 95%;
+  width: 80vw;
+  margin-left: calc(50% - 40vw);
 }
 
 #slider {
   border: 0.15rem solid var(--color-secondary);
   border-radius: 1.5rem;
+  height: 65vh;
 }
 
 .heading {
@@ -53,27 +65,88 @@
 }
 
 .order-info {
-  width: 30%;
+  width: 35%;
   font-size: 1.8rem;
   padding: 3rem 4rem;
   border-radius: 1.5rem;
   border: none;
   background-color: var(--color-secondary-lighter);
   gap: 2rem;
+  box-shadow: 0.7rem 0.7rem 2.5rem var(--color-secondary-faded);
 }
 
-.price-text {
+.order-info .price {
+  font-size: 2.7rem;
+  font-weight: 800;
+}
+
+.order-info .price.old-price {
+  font-size: 1.7rem;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
+.order-info .price.discounted-price {
+  color: var(--color-secondary);
+  transform: translateY(-0.7rem);
+}
+
+.order-info .item-info-text {
+  gap: 0.5rem;
+}
+
+.order-info .price-text,
+.stock-warning {
   font-size: 2rem;
   font-weight: 500;
   color: var(--color-success);
 }
 
-.price-text.unavailable {
+.order-info .price-text.unavailable,
+.stock-warning {
   color: var(--color-error);
 }
 
-.quantity {
+.order-info .quantity {
   margin-bottom: 1rem;
+}
+
+.discount-clock {
+  font-size: 1.9rem;
+  padding: 1.5rem 7rem;
+  border-radius: 4rem;
+  border: none;
+  background-color: var(--color-secondary-lighter);
+  gap: 5rem;
+  width: fit-content;
+  margin: 0 auto 2rem auto;
+  box-shadow: -0.1rem -0.1rem 0.15rem var(--color-secondary);
+}
+
+.discount-clock .subheading {
+  font-size: 2.5rem;
+}
+
+.discount-clock .countdown-timer {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.discount-clock .countdown-timer .time-box {
+  text-align: center;
+  gap: 0;
+  padding: 0 0.8rem;
+}
+
+.discount-clock .countdown-timer .time-box .time-value {
+  font-weight: 900;
+  font-size: 2.3rem;
+}
+
+.discount-clock .countdown-timer .time-box .time-label {
+  font-size: 1.6rem;
+  font-weight: 600;
 }
 
 .details-info {
@@ -285,6 +358,7 @@ table tr:last-child td:last-child {
   object-fit: contain;
   height: 10rem;
   margin: 1rem 0;
+  overflow-x: auto;
 }
 
 .comments-info .comments .comment .images .comment-image {
@@ -294,6 +368,7 @@ table tr:last-child td:last-child {
 
 .comments-info .comments .comment .text {
   white-space: pre-line;
+  line-break: anywhere;
 }
 
 .comments-info .comments .comment .comment-divider {
@@ -420,25 +495,42 @@ table tr:last-child td:last-child {
 }
 
 /* --- Responsive design --- */
+@media (max-width: 1400px) {
+  .main {
+    flex-direction: column;
+  }
+
+  .main .hero-info {
+    width: 100%;
+  }
+
+  .main .order-info {
+    max-width: 100%;
+    margin: 0 auto;
+    width: 50%;
+    padding: 3rem 8rem;
+  }
+}
+
 @media (max-width: 1200px) {
   .title {
     font-size: 3rem;
   }
-
-  .page-wrapper {
-    padding: 8rem;
-  }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 960px) {
   .page-wrapper {
-    padding: 8rem 5rem;
+    padding: 3rem 2rem;
   }
 
   .details-info,
   .additional-info,
   .comments-info {
-    padding: 1.5rem 3rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .page-wrapper > .back-btn {
+    margin-left: 20vw;
   }
 
   .main,
@@ -448,46 +540,45 @@ table tr:last-child td:last-child {
     width: 100%;
     margin: 0;
     height: auto;
+    transform: none;
   }
 
   .title {
-    font-size: 3.5rem;
+    font-size: 3.2rem;
+    text-align: center;
   }
 
   .main {
-    gap: 15rem;
-    margin-bottom: 10rem;
+    gap: 4rem;
+    margin-bottom: 5rem;
+    padding: 0;
   }
 
-  .product-main-info,
-  .order-info,
-  .slider {
-    width: 90%;
+  .main .product-main-info,
+  .main .order-info,
+  .main .slider {
+    width: 100%;
+    max-width: 55rem;
+  }
+
+  .product-main-info {
+    align-items: center;
+    text-align: center;
   }
 
   .order-btns {
-    justify-content: flex-end;
+    justify-content: center;
   }
 
-  .product-main-info p {
-    font-size: 2.2rem;
-  }
-
-  .order-info {
-    font-size: 2.1rem;
-  }
-
-  .price-text {
-    font-size: 2.3rem;
-  }
-
-  .btn.like {
-    font-size: 1.6rem;
+  .table,
+  table {
+    width: 100%;
   }
 
   .comments-info .comments-overview {
     flex-direction: column;
     gap: 4rem;
+    align-items: center;
   }
 
   .comments-info .comments .comment {
@@ -496,5 +587,100 @@ table tr:last-child td:last-child {
 
   .comments-info .comments .comment.reply {
     margin-left: 5rem;
+  }
+
+  .comments-info .comments .comment {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  .comments-info .comments .comment .comment-divider {
+    display: none;
+  }
+
+  .comments-info .comments .comment .comment-info {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .comments-info .comments .comment .comment-info .dates {
+    margin-top: 0;
+  }
+
+  .comments-info .comments .comment .rating-box {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .comments-info .comments .comment .images {
+    height: auto;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 1rem;
+  }
+
+  .comments-info .comments .comment .images .comment-image {
+    height: 7.5rem;
+    flex-shrink: 0;
+  }
+
+  .comment .comment-main .comment-actions {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: space-between;
+  }
+
+  .comments-info .comments .comment.reply {
+    margin-left: 0;
+    border-left: 0.15rem solid var(--color-secondary);
+    padding: 0 2rem;
+  }
+
+  .comments-info .comments .comment.reply .role-badge {
+    flex-basis: 100%;
+    width: fit-content;
+    margin-right: 100%;
+  }
+
+  .comments .load-replies-btn {
+    margin: 1.2rem 0 0 0;
+    align-self: flex-start;
+  }
+
+  .comments-info .comments .comment.reply .reply-person hr {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .discount-clock {
+    width: 100%;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .page-wrapper > .back-btn {
+    margin-left: 2rem;
+  }
+
+  #slider,
+  #slider .slide {
+    padding: 1rem;
+  }
+
+  #slider {
+    gap: 0.5rem;
+  }
+
+  #slider .slider__btn {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.5rem;
   }
 }

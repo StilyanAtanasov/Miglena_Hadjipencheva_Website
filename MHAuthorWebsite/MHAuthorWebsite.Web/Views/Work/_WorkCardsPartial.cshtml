@@ -1,0 +1,55 @@
+﻿@using MHAuthorWebsite.Core.Dtos.Work
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination
+@model ICollection<WorkCardDto>
+
+@{
+	bool isAdmin = User.IsInRole("Admin");
+    
+	int worksCount = ViewBag.WorksCount ?? Model.Count;
+	int currentPage = int.TryParse(Context.Request.Query["page"].ToString(), out int page) ? page : 1;
+	int totalPages = (int)Math.Ceiling((double)worksCount / WorksPageSize);
+}
+
+<div class="works-grid" id="works-grid">
+    @foreach (var work in Model)
+    {
+        <div class="work-card @(!work.IsPublic ? "private-work" : "")">
+            <div class="work-card-image">
+                <img src="@work.CoverImageUrl" alt="@work.Title" loading="lazy">
+                @if (isAdmin)
+                {
+                    <div class="work-admin-overlay">
+                        <a asp-area="Admin" asp-controller="AdminWork" asp-action="Edit" asp-route-id="@work.Id" class="btn btn-sm btn-light" title="Редактирай">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                        <form asp-area="Admin" asp-controller="AdminWork" asp-action="Delete" asp-route-id="@work.Id" method="post" onsubmit="return confirm('Сигурни ли сте, че искате да изтриете тази творба?');">
+                            <button type="submit" class="btn btn-sm btn-danger" title="Изтрий">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                        <form asp-area="Admin" asp-controller="AdminWork" asp-action="TogglePublicity" asp-route-id="@work.Id" method="post">
+                            <button type="submit" class="btn btn-sm @(work.IsPublic ? "btn-warning" : "btn-success")" title="@(work.IsPublic ? "Скрий" : "Покажи")">
+                                <i class="fa-solid @(work.IsPublic ? "fa-eye-slash" : "fa-eye")"></i>
+                            </button>
+                        </form>
+                    </div>
+                }
+            </div>
+            <div class="work-card-content">
+                <h3 class="work-title">@work.Title</h3>
+                <a asp-controller="Work" asp-action="Details" asp-route-id="@work.Id" class="work-link">
+                    Виж повече <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+@await Html.PartialAsync("_Pagination", new PaginationViewModel
+{
+    CurrentPage = currentPage,
+    TotalPages = totalPages,
+    PageSize = WorksPageSize
+})

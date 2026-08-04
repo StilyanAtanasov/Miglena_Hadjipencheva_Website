@@ -1,0 +1,31 @@
+.unsubscribe-page {
+  min-height: 64vh;
+}
+
+.unsubscribe-card {
+  width: min(52rem, 94%);
+  border: 0.1rem solid var(--color-secondary-light);
+  border-radius: 1.8rem;
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-secondary-lighter) 100%);
+  padding: 2.6rem 2rem;
+  align-items: center;
+  text-align: center;
+  gap: 1.3rem;
+}
+
+.unsubscribe-card p {
+  font-size: 1.8rem;
+  color: var(--color-dark);
+}
+
+.unsubscribe-icon {
+  font-size: 4.2rem;
+}
+
+.unsubscribe-icon.success {
+  color: #1f8b4c;
+}
+
+.unsubscribe-icon.error {
+  color: #c53939;
+}

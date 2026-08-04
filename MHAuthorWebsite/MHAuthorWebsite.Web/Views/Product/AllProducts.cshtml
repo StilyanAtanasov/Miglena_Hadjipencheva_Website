@@ -1,22 +1,28 @@
 ﻿@using MHAuthorWebsite.Web.ViewModels.Product
-@using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination
-@using static MHAuthorWebsite.GCommon.ApplicationRules.CurrencyRates
 @using MHAuthorWebsite.GCommon
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using MHAuthorWebsite.Web.ViewModels.Shared.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.Extensions.Options.IOptions<MHAuthorWebsite.Core.Configuration.Security.RecaptchaSettings> RecaptchaOptions
 @model ICollection<ProductCardViewModel>
 
 @section Styles {
 	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.3/dist/sweetalert2.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/css/elements/notification.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true"/>
+	<link rel="stylesheet" href="~/css/elements/select.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/search-bar.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/pagination.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/loader.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/store.css" asp-append-version="true" />
 }
 
 @{
 	ViewData["Title"] = "Магазин";
-	int currentPage = int.TryParse(Context.Request.Query["page"].ToString(), out int page) ? page : 1;
+	ViewData["MetaDescription"] = "Разгледайте наличните книги на Миглена Хаджипенчева и поръчайте онлайн!";
+	ViewData["CurrentPage"] = ApplicationRules.Pages.MainNavigation.Store;
+
 	int productsCount = ViewBag.ProductsCount ?? Model.Count;
-	int totalPages = (int)Math.Ceiling((double)productsCount / PageSize);
 
 	string orderType = Context.Request.Query["orderType"].ToString();
 	SelectList selectItems = new(
@@ -25,102 +31,49 @@
 		"Value",
 		"Text",
 		orderType);
+
+	string? currentSearch = Context.Request.Query["search"];
+	string recaptchaV3SiteKey = RecaptchaOptions.Value.V3SiteKey;
+	string recaptchaV2SiteKey = RecaptchaOptions.Value.V2SiteKey;
 }
 
 <section class="page-wrapper flex-column">
 	<h1 class="title">Магазин</h1>
 
-	@if (productsCount > 0)
+	@if (productsCount > 0 || !string.IsNullOrEmpty(currentSearch))
 	{
 		<div class="shop-action-btns flex-row">
+
+			@await Html.PartialAsync("_SearchBar", new SearchBarViewModel
+			       {
+				       FormCustomId = "product-search-form",
+				       InputCustomId = "product-search-input",
+				       PlaceholderText = "Търсете продукти по име, категория или описание...",
+				       DefaultValue = currentSearch,
+				       Align = SearchBarAlignOptions.Left,
+				       EnableRecaptchaV3 = true,
+				       RecaptchaV3SiteKey = recaptchaV3SiteKey,
+				       RecaptchaV3Action = "product_search",
+				       RecaptchaV2SiteKey = recaptchaV2SiteKey
+			       })
+
 			<div class="shop-action-btn flex-row">
-				<label>Подреди по:</label>
+				<label for="order-by-select">Подреди по:</label>
 				<select id="order-by-select" class="select-main" autocomplete="off" name="orderType" asp-items="@selectItems"></select>
 			</div>
 		</div>
-	}
+		}
 
-	<section class="products">
-		@if (productsCount > 0)
-		{
-			@foreach (var product in Model)
-			{
-				<div class="product flex-column clickable" data-details-url="@Url.Action("Details", "Product", new { productId = product.Id })">
-					<div class="product-image-container flex-row">
-						<img class="product-image" src="@product.ImageUrl" alt="@(product.ImageAlt)" />
-					</div>
-					<div class="product-title-container">
-						<h4 class="product-title"><a data-trigger="load-unlimited" class="name" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h4>
-						<span class="text-faded">@product.ProductType</span>
-					</div>
-					<div class="price-box flex-column">
-						<p class="price">@product.Price.ToString("F2") лв. / @((product.Price * LevToEurRate).ToString("F2")) €</p>
-						<span class="price-text @(product.IsAvailable ? "available" : "unavailable")">@(product.IsAvailable ? "В наличност" : "Изчерпана наличност")</span>
-					</div>
-					<div class="action-btns flex-row">
-						<button data-role="remove-item" data-item-id="@product.Id" class="btn like @(product.IsLiked ? "liked" : "")">
-							<span class="fa-stack">
-								<i class="fa-regular fa-heart fa-stack-2x"></i>
-								<i class="fa-solid fa-heart fa-stack-2x"></i>
-							</span>
-						</button>
-						<input id="quantity" type="hidden" name="quantity" value="1" />
-						<button data-role="add-to-cart" data-item-id="@product.Id" class="btn order flex-row" @(product.IsAvailable ? "" : "disabled")>
-							<i class="fa-solid fa-cart-shopping-fast"></i> Поръчай
-						</button>
-					</div>
-				</div>
-			}
-		}
-		else
-		{
-			<p class="no-products-message flex-row"> <i class="fa-solid fa-shop-slash"></i> В момента не се предлагат никакви продукти.</p>
-		}
+	<section id="products-page">
+		@await Html.PartialAsync("_ProductCardsPartial", Model)
 	</section>
 
-	@if (totalPages > 1)
-	{
-		<div class="pagination-box flex-row">
-			<ul role="list" class="pagination-btns flex-row">
-				@{
-					int firstPage = Math.Max(1, currentPage - 1);
-					int lastPage = Math.Min(totalPages, firstPage + 2);
-
-					firstPage = Math.Max(1, lastPage - 2);
-				}
-				@if (currentPage != firstPage)
-				{
-					<li title="Предишна страница" class="pagination-btn">
-						<a asp-controller="Product" asp-action="AllProducts" asp-route-page="@(currentPage - 1)" class="link"><i class="fa-solid fa-arrow-left"></i></a>
-					</li>
-				}
-				@for (int i = firstPage; i <= lastPage; i++)
-				{
-					<li class="pagination-btn">
-
-						@{
-							var i1 = i;
-						}
-
-						<a asp-controller="Product" asp-action="AllProducts" asp-route-page="@i1" class="link @(i1 == currentPage ? "current" : "")">@i1</a>
-					</li>
-				}
-				@if (currentPage != totalPages)
-				{
-					<li title="Следваща страница" class="pagination-btn">
-						<a asp-controller="Product" asp-action="AllProducts" asp-route-page="@(currentPage + 1)" class="link"><i class="fa-solid fa-arrow-right"></i></a>
-					</li>
-				}
-			</ul>
-		</div>
-	}
-	
 	<form class="hidden">@Html.AntiForgeryToken()</form>
 </section>
 
 @section Scripts {
 	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
-	<script src="~/js/elements/select.js" asp-append-version="true"></script>
+	<script type="module"  src="~/js/elements/select.js" asp-append-version="true"></script>
 	<script src="~/js/click.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/notification.js" asp-append-version="true"></script>
 	<script type="module" src="~/js/store.js" asp-append-version="true"></script>

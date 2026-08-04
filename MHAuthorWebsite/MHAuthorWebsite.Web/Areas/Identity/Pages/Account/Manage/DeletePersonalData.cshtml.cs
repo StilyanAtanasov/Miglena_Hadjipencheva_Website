@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using MHAuthorWebsite.Data.Models;
+using MHAuthorWebsite.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -84,12 +84,10 @@ namespace MHAuthorWebsite.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            user.Email = $"deleted_{user.Id}@example.com";
-            user.NormalizedEmail = user.Email.ToUpper();
-
-            user.UserName = $"deleted_{user.Id}";
-            user.NormalizedUserName = user.UserName.ToUpper();
-
+            user.Email = null;
+            user.NormalizedEmail = null;
+            user.UserName = null;
+            user.NormalizedUserName = null;
             user.PhoneNumber = null;
             user.Name = null;
             user.TwoFactorEnabled = false;

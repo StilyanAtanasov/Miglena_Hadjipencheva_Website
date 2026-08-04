@@ -1,40 +1,48 @@
 ﻿using MHAuthorWebsite.Core.Admin.Dto;
+using MHAuthorWebsite.Core.Background_Services.Data_Services;
+using MHAuthorWebsite.Core.Common.Extensions;
 using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
-using MHAuthorWebsite.Core.Dto;
-using MHAuthorWebsite.Data.Models;
-using MHAuthorWebsite.Data.Models.Enums;
-using MHAuthorWebsite.Data.Shared;
-using Microsoft.EntityFrameworkCore;
+using MHAuthorWebsite.Core.Dtos.Order;
+using MHAuthorWebsite.Core.Models;
+using MHAuthorWebsite.Core.Models.Contracts;
+using MHAuthorWebsite.Core.Models.Enums;
+using MHAuthorWebsite.Core.NotificationTemplates.PayloadModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using static MHAuthorWebsite.GCommon.ApplicationRules.Econt;
 
 namespace MHAuthorWebsite.Core.Background_Services;
 
 public class ShipmentUpdateService : BackgroundService
 {
     private readonly IServiceProvider _services;
+    private readonly ILogger<ShipmentUpdateService> _logger;
 
-    public ShipmentUpdateService(IServiceProvider services) => _services = services;
+    public ShipmentUpdateService(IServiceProvider services, ILogger<ShipmentUpdateService> logger)
+    {
+        _services = services;
+        _logger = logger;
+    }
 
     private TimeSpan DelayInterval => TimeSpan.FromHours(2);
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        await Task.Delay(TimeSpan.FromSeconds(new Random().Next(1, 15)), cancellationToken);
+
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
                 using IServiceScope scope = _services.CreateScope();
                 IApplicationRepository repository = scope.ServiceProvider.GetRequiredService<IApplicationRepository>();
+                IShipmentUpdateDataService dataService = scope.ServiceProvider.GetRequiredService<IShipmentUpdateDataService>();
                 IEcontService econtService = scope.ServiceProvider.GetRequiredService<IEcontService>();
 
-                Order[] acceptedOrders = await repository
-                    .WhereReadonly<Order>(o => o.Status == OrderStatus.Shipped
-                                                 || o.Status == OrderStatus.Accepted)
-                    .Include(o => o.Shipment)
-                        .ThenInclude(s => s.Events)
-                    .ToArrayAsync(cancellationToken);
+                Order[] acceptedOrders = await dataService.GetOrdersOnTheWayReadonlyAsync(cancellationToken);
 
                 if (acceptedOrders.Length == 0)
                 {
@@ -58,21 +66,35 @@ public class ShipmentUpdateService : BackgroundService
                     {
                         repository.Attach(order.Shipment);
 
+                        TimeZoneInfo bgTimeZone = TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time");
+
                         ShipmentEvent[] newEvents = shipmentInfo.TrackingEvents
-                            .Where(te => !order.Shipment.Events
-                                .Any(se => se.Source == ShipmentEventSource.Econt
-                                           && se.Time == DateTime.Parse(te.Time!)
-                                           && se.DestinationType == te.DestinationType
-                                           && se.DestinationDetails == te.DestinationDetails
-                                           && se.CityName == te.CityName
-                                           && se.OfficeName == te.OfficeName))
-                            .Select(eventInfo => new ShipmentEvent
+                            .Select(eventInfo =>
                             {
-                                DestinationType = eventInfo.DestinationType,
-                                DestinationDetails = eventInfo.DestinationDetails,
-                                CityName = eventInfo.CityName,
-                                OfficeName = eventInfo.OfficeName,
-                                Time = DateTime.Parse(eventInfo.Time!),
+                                DateTime utcTime = TimeZoneInfo.ConvertTimeToUtc(
+                                    DateTime.SpecifyKind(
+                                        DateTime.Parse(eventInfo.Time!),
+                                        DateTimeKind.Unspecified
+                                    ),
+                                    bgTimeZone
+                                );
+
+                                return new { eventInfo, utcTime };
+                            })
+                            .Where(x => !order.Shipment.Events
+                                .Any(se => se.Source == ShipmentEventSource.Econt
+                                           && se.Time == DateTime.Parse(x.eventInfo.Time!)
+                                           && se.DestinationType == x.eventInfo.DestinationType
+                                           && se.DestinationDetails == x.eventInfo.DestinationDetails
+                                           && se.CityName == x.eventInfo.CityName
+                                           && se.OfficeName == x.eventInfo.OfficeName))
+                            .Select(x => new ShipmentEvent
+                            {
+                                DestinationType = x.eventInfo.DestinationType,
+                                DestinationDetails = x.eventInfo.DestinationDetails,
+                                CityName = x.eventInfo.CityName,
+                                OfficeName = x.eventInfo.OfficeName,
+                                Time = x.utcTime,
                                 Source = ShipmentEventSource.Econt,
                                 ShipmentId = order.Shipment.Id
                             })
@@ -86,15 +108,52 @@ public class ShipmentUpdateService : BackgroundService
                         if (shipmentInfo.SendTime != null) order.Status = OrderStatus.Shipped;
                         if (shipmentInfo.DeliveryTime != null) order.Status = OrderStatus.Delivered;
 
-                        await repository.SaveChangesAsync();
+                        if (newEvents.Length == 0 || order.User.Name is null) continue;
+
+                        ShipmentEvent latestEvent = newEvents.OrderByDescending(e => e.Time).First();
+
+                        OrderStatusUpdatePayloadModel notificationPayloadModel = new()
+                        {
+                            ShipmentNumber = order.Shipment.ShipmentNumber,
+                            OrderNumber = order.Shipment.OrderNumber,
+                            CustomerName = order.User.Name,
+                            EventTime = latestEvent.Time.ToString("dd/MM/yyyy HH:mm"),
+                            Location = latestEvent.CityName ?? latestEvent.OfficeName ?? "Локацията не е налична!",
+                            StatusUpdate = order.Status.GetDisplayName(),
+                            TrackingUrl = $"{EcontTrackerUrl}/{order.Shipment.ShipmentNumber}",
+                            LocationDetails = latestEvent.DestinationDetails,
+                            OrderId = order.Id
+                        };
+
+                        ScheduledNotification notification = new()
+                        {
+                            Subject = $"Актуализация на поръчка {order.Shipment.OrderNumber}",
+                            NotificationStatus = ScheduledNotificationStatus.Pending,
+                            NotificationTemplate = ScheduledNotificationTemplate.OrderStatusUpdate,
+                            NotificationType = ScheduledNotificationType.Email,
+                            RecipientId = order.UserId,
+                            ScheduledAt = DateTime.UtcNow,
+                            Payload = JsonSerializer.Serialize(notificationPayloadModel),
+                            TargetDeliveryDetails = order.Shipment.Email,
+                            ExpirationDate = DateTime.UtcNow.AddDays(7)
+                        };
+
+                        await repository.AddAsync(notification);
                     }
                 }
 
-                Console.WriteLine("Shipment status was updated successfully to all orders!");
+                await repository.SaveChangesAsync();
+
+                _logger.LogInformation("Shipment status was updated successfully to all orders!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
+                _logger.LogError(ex, "Error occurred in {ServiceName}.", nameof(ShipmentUpdateService));
+                await BackgroundServiceErrorReporter.ReportAsync(
+                    _services,
+                    ex,
+                    nameof(ShipmentUpdateService),
+                    _logger);
             }
 
             await Task.Delay(DelayInterval, cancellationToken);

@@ -1,0 +1,60 @@
+@using MHAuthorWebsite.Web.ViewModels.Admin.Announcements
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using static MHAuthorWebsite.GCommon.ApplicationRules.AnnouncementsBoard
+@model ICollection<AnnouncementListItemViewModel>
+
+@{
+	int announcementsCount = ViewBag.AnnouncementsCount ?? Model.Count;
+	int currentPage = int.TryParse(Context.Request.Query["page"].ToString(), out int page) ? page : 1;
+	int totalPages = (int)Math.Ceiling((double)announcementsCount / AnnouncementsPerPage);
+}
+
+@if (!Model.Any())
+{
+	<article class="announcements-empty flex-column center">
+		<i class="fa-solid fa-megaphone"></i>
+		<h2 class="subheading">Няма изпратени съобщения</h2>
+		<p>Създайте първото съобщение за вашите получатели.</p>
+	</article>
+}
+else
+{
+	<section class="announcements-grid">
+		@foreach (AnnouncementListItemViewModel item in Model.OrderByDescending(i => i.CreatedOn))
+		{
+			<article class="announcement-card clickable flex-column"
+			         data-details-url="@Url.Action("AnnouncementDetails", "AdminAnnouncements", new { id = item.Id })">
+				<div class="announcement-card-top flex-column">
+					<h2 class="subheading">@item.Subject</h2>
+					<span class="recipient-chip">@item.RecipientGroupLabel</span>
+				</div>
+
+				<p class="announcement-message">@item.MessagePreview</p>
+
+				<div class="announcement-card-meta flex-column">
+					<p class="meta-line">
+						<i class="fa-solid fa-users"></i>
+						<span>@item.RecipientCount получатели</span>
+					</p>
+					<p class="meta-line">
+						<i class="fa-solid fa-user-shield"></i>
+						<span>@item.AdminName</span>
+					</p>
+					<p class="meta-line">
+						<i class="fa-solid fa-clock"></i>
+						<time to-local no-seconds datetime="@item.CreatedOn.ToString("O")">@item.CreatedOn</time>
+					</p>
+				</div>
+
+				<i class="fa-solid fa-megaphone background-icon"></i>
+			</article>
+		}
+	</section>
+}
+
+@await Html.PartialAsync("_Pagination", new PaginationViewModel
+{
+	CurrentPage = currentPage,
+	TotalPages = totalPages,
+	PageSize = AnnouncementsPerPage
+})

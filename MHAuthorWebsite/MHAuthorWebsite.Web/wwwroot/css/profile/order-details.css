@@ -4,6 +4,8 @@
 
 .section-heading {
   gap: 3rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .warning {
@@ -46,6 +48,7 @@
 .order-summary p,
 .courier-info p {
   font-size: 2.1rem;
+  align-items: flex-start;
 }
 
 .shipment-tracker-link {
@@ -138,6 +141,7 @@
   position: relative;
   width: 2rem;
   height: 2rem;
+  flex-shrink: 0;
 }
 
 .tracking-events .tracking-row .tracking-dot::before {
@@ -161,7 +165,8 @@
   filter: blur(0.5rem);
 }
 
-@media (max-width: 600px) {
+/* --- Responsive --- */
+@media (max-width: 768px) {
   .section-heading,
   .info-section {
     flex-direction: column;
@@ -169,5 +174,33 @@
 
   .info-section article {
     width: 100%;
+  }
+
+  .order-summary,
+  .courier-info,
+  .tracking-events,
+  .ordered-products {
+    padding: 1.5rem 2rem;
+  }
+
+  .ordered-products {
+    overflow-x: auto;
+  }
+
+  .product-item {
+    width: 14rem;
+    flex-shrink: 0;
+  }
+
+  .product-image-box {
+    height: 14rem;
+  }
+
+  .background-icon {
+    display: none;
+  }
+
+  .tracking-list {
+    padding-left: 1rem;
   }
 }

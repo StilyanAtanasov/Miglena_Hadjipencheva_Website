@@ -1,21 +1,34 @@
-﻿@page
+@page
+@using MHAuthorWebsite.Web.Utils.Mappers
 @using Microsoft.AspNetCore.Authentication
-@using MHAuthorWebsite.Web.Utils
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model LoginModel
 
 @{
 	ViewData["Title"] = "Вход";
+	ViewData["MetaDescription"] = "Влез в своя профил!";
 }
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/toggle.css" asp-append-version="true" />
 }
 
 <div class="page-wrapper flex-column">
-	<section class="modal flex-column">
+	<section class="modal large flex-column">
 		<h1 class="title">@ViewData["Title"]</h1>
 		<form id="account" method="post" class="input-form flex-column">
-			<div asp-validation-summary="ModelOnly" role="alert" class="input-error"></div>
+			<div class="form-error" role="alert">
+				@foreach (ModelError error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+				{
+					<p>@error.ErrorMessage</p>
+				}
+				@if (!string.IsNullOrEmpty(Model.ResendConfirmationEmailUrl))
+				{
+					<p><a class="link active italic" href="@Model.ResendConfirmationEmailUrl">Потвърдете имейла си тук</a>.</p>
+				}
+			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.Email">Имейл адрес</label>
 				<input class="form-input" asp-for="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
@@ -23,15 +36,23 @@
 			</div>
 			<div class="form-input-box flex-column">
 				<label class="form-label" asp-for="Input.Password">Парола</label>
-				<input class="form-input" asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="password" />
+				<div class="password-input-wrapper">
+					<input class="form-input" asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="Парола..." />
+					<button type="button" class="password-toggle-btn" aria-label="Покажи/скрий парола">
+						<i class="fa-regular fa-eye"></i>
+					</button>
+				</div>
 				<span class="input-error" asp-validation-for="Input.Password"></span>
 			</div>
-			<div>
-				<label class="form-label" asp-for="Input.RememberMe">
+			
+			<div class="toggle-row" style="justify-content: center; margin-bottom: 2rem;">
+				<label class="switch">
 					<input asp-for="Input.RememberMe" />
-					Запомни ме?
+					<span class="toggle-slider round"></span>
 				</label>
+				<label class="toggle-label" asp-for="Input.RememberMe">Запомни ме?</label>
 			</div>
+
 			<button data-trigger="load-unlimited" id="login-submit" type="submit" class="btn submit-btn flex-row">
 				<i class="fa-solid fa-arrow-right-to-bracket"></i> Влез
 			</button>
@@ -58,7 +79,7 @@
 							? path
 							: "";
 
-							<button type="submit" class="btn submit-btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Влез в системата с @provider.DisplayName акаунт">
+							<button type="submit" class="btn @(string.IsNullOrEmpty(iconPath) ? "" : "btn-none") flex-row" name="provider" value="@provider.Name" title="Влез в системата с @provider.DisplayName акаунт">
 								@if (!string.IsNullOrEmpty(iconPath))
 								{
 									<img src="@Url.Content(iconPath)" alt="" class="icon" />
@@ -78,4 +99,5 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script src="~/js/account/password-toggle.js" asp-append-version="true"></script>
 }

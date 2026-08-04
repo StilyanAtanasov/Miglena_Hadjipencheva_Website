@@ -1,0 +1,55 @@
+@using MHAuthorWebsite.Web.ViewModels.Admin.Announcements
+@using MHAuthorWebsite.Web.ViewModels.Shared
+@using MHAuthorWebsite.Web.ViewModels.Shared.Enums
+@model ICollection<AnnouncementListItemViewModel>
+
+@{
+	ViewData["Title"] = "Съобщения";
+	ViewData["CurrentPage"] = Pages.Admin.AnnouncementsBoardPage;
+	ViewData["RequireTimeZoneManager"] = true;
+
+	int announcementsCount = ViewBag.AnnouncementsCount ?? Model.Count;
+	string? currentSearch = ViewBag.CurrentSearch;
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/elements/search-bar.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/elements/pagination.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/admin/announcements-board.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper announcements-page flex-column">
+	<header class="announcements-header flex-row">
+		<div class="announcements-title-wrap flex-column">
+			<h1 class="title">@ViewData["Title"]</h1>
+			<p class="announcements-subtitle">Управление на изпратените административни съобщения.</p>
+		</div>
+
+		<a asp-controller="AdminAnnouncements" asp-action="AddAnnouncement" class="btn btn-purple link flex-row add-announcement-btn">
+			<i class="fa-solid fa-plus"></i>
+			Ново съобщение
+		</a>
+	</header>
+
+	@if (announcementsCount > 0 || !string.IsNullOrWhiteSpace(currentSearch))
+	{
+		<div class="announcements-actions">
+			@await Html.PartialAsync("_SearchBar", new SearchBarViewModel
+			{
+				FormCustomId = "announcements-search-form",
+				InputCustomId = "announcements-search-input",
+				PlaceholderText = "Търсете по тема...",
+				DefaultValue = currentSearch,
+				Align = SearchBarAlignOptions.Left
+			})
+		</div>
+	}
+
+	<div id="announcements-content">
+		@await Html.PartialAsync("_AnnouncementsGridPartial", Model)
+	</div>
+</section>
+
+@section Scripts {
+	<script type="module" src="~/js/admin/announcements-board.js" asp-append-version="true"></script>
+}

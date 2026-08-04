@@ -1,0 +1,46 @@
+@{
+	ViewData["Title"] = "Често задавани въпроси";
+	ViewData["MetaDescription"] = "Често задавани въпроси за поръчки, доставка, плащане и връщане.";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/faq.css" asp-append-version="true" />
+}
+
+<section class="page-wrapper faq-page flex-column">
+	<a class="back-btn" asp-controller="Home" asp-action="Index">
+		<i class="fa-solid fa-arrow-left"></i> Назад към начало
+	</a>
+
+	<div class="faq-header flex-column">
+		<h1 class="title">Често задавани въпроси</h1>
+		<p>Събрахме най-честите въпроси за поръчките и услугите в сайта.</p>
+	</div>
+
+	<section class="faq-list flex-column">
+		<details class="faq-item" open>
+			<summary>Как мога да направя поръчка?</summary>
+			<p>Изберете продукт, добавете го в количката и следвайте стъпките за завършване на поръчката.</p>
+		</details>
+
+		<details class="faq-item">
+			<summary>Какви методи за плащане поддържате?</summary>
+			<p>Към момента поръчките се обработват с наложен платеж.</p>
+		</details>
+
+		<details class="faq-item">
+			<summary>За колко време пристига поръчката?</summary>
+			<p>Срокът зависи от населеното място и натовареността на куриера. След изпращане ще виждате статус на поръчката.</p>
+		</details>
+
+		<details class="faq-item">
+			<summary>Мога ли да върна продукт?</summary>
+			<p>Да, според законовия срок и условията за връщане. Свържете се с нас през страницата за контакти.</p>
+		</details>
+
+		<details class="faq-item">
+			<summary>Как мога да се свържа с вас?</summary>
+			<p>Използвайте формата в страницата „Контакти“ и ще получите отговор възможно най-скоро.</p>
+		</details>
+	</section>
+</section>

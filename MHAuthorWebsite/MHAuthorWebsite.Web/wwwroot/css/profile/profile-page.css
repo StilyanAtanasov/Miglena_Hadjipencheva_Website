@@ -100,18 +100,6 @@
   position: relative;
 }
 
-.page-content .warning {
-  color: var(--color-error);
-  gap: 0;
-}
-
-.page-content .warning-uppercase {
-  text-transform: uppercase;
-  text-decoration: underline double;
-  font-weight: 800;
-  font-size: 2.2rem;
-}
-
 .action-buttons .btn:hover {
   transform: scale(1.05);
 }
@@ -138,19 +126,23 @@
   letter-spacing: 0.2rem;
 }
 
-@media (max-width: 600px) {
-  html {
-    padding-top: 32rem;
-    font-size: 7px;
-  }
+.form-label,
+.input-form .btn {
+  font-size: 2rem;
+}
 
+@media (max-width: 960px) {
   .page-wrapper {
-    padding: 5rem;
+    padding: 3rem 4rem 8rem 4rem;
+    flex-direction: column;
+    align-items: center;
   }
 
   .page-content {
     width: 100%;
     margin-left: 0;
+    margin-right: 0;
+    margin-top: 2rem;
   }
 
   .content-body {
@@ -159,10 +151,19 @@
   }
 
   .profile-nav {
+    position: static;
+    width: 101vw;
+    transform: translateX(-4.1rem);
     height: auto;
-    position: fixed;
-    width: 100%;
-    transition: height 500ms linear;
+    margin-bottom: 2rem;
+    border-right: none;
+    border-bottom: 0.15rem solid var(--color-secondary);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+    font-size: 2rem;
+  }
+
+  .profile-nav .profile-nav-elements .side-nav-element .link {
+    padding: 1rem 3rem 1rem 4rem;
   }
 
   .inner-nav {
@@ -171,11 +172,13 @@
     position: static;
     padding: 0;
     transition: all 200ms linear;
+    font-size: 2rem;
+    box-shadow: none;
   }
 
   .side-nav-element:hover .inner-nav {
     height: auto;
-    padding: 2rem 0;
+    padding: 1.5rem 0;
   }
 
   .nav-arrow {
@@ -188,25 +191,20 @@
   }
 
   .input-form .form-input.short {
-    max-width: 80%;
+    max-width: 100%;
   }
 
   .background-icon {
-    position: absolute;
-    top: 45rem;
-    left: 50%;
-    transform: translateX(-50%);
+    display: none;
   }
 }
 
-@media (max-width: 450px) {
-  html {
-    font-size: 6px;
+@media (max-width: 800px) {
+  .form-label {
+    font-size: 2.2rem;
   }
-}
 
-@media (max-width: 350px) {
-  html {
-    font-size: 5px;
+  .form-input {
+    font-size: 1.8rem;
   }
 }

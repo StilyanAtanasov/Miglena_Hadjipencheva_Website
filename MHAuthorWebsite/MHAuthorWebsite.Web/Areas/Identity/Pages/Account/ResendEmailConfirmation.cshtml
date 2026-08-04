@@ -1,0 +1,38 @@
+﻿@page
+@model ResendEmailConfirmationModel
+
+@{
+	ViewData["Title"] = "Потвърждаване на имейл";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/input-form.css" asp-append-version="true" />
+}
+
+<div class="page-wrapper flex-column">
+	<section class="modal flex-column">
+		<h1 class="title">@ViewData["Title"]</h1>
+
+		<p class="info-message">
+			<i class="fa-solid fa-circle-info"></i>
+			За да завършите регистрацията си, трябва да потвърдите имейл адреса си. Въведете имейл адреса си по-долу и ще Ви изпратим ново съобщение за потвърждение.
+		</p>
+
+		<form method="post" class="input-form flex-column">
+			<div asp-validation-summary="All" role="alert" class="form-error"></div>
+			<div class="form-input-box flex-column">
+				<label class="form-label" asp-for="Input.Email">Имейл адрес</label>
+				<input class="form-input" asp-for="Input.Email" placeholder="name@example.com" value="@ViewContext.HttpContext.Request.Query["email"]" />
+				<span class="input-error" asp-validation-for="Input.Email"></span>
+			</div>
+
+			<button type="submit" class="btn submit-btn flex-row">
+				<i class="fa-solid fa-paper-plane"></i> Изпрати потвърждение
+			</button>
+		</form>
+	</section>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}
