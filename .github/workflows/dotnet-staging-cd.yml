@@ -30,10 +30,10 @@ jobs:
       - name: Set ASPNETCORE_ENVIRONMENT
         run: |
           xmlstarlet ed -L \
-            -s "/configuration/system.webServer/aspNetCore" -t elem -n environmentVariables -v "" \
-            -s "/configuration/system.webServer/aspNetCore/environmentVariables" -t elem -n environmentVariable -v "" \
-            -i "/configuration/system.webServer/aspNetCore/environmentVariables/environmentVariable" -t attr -n name -v ASPNETCORE_ENVIRONMENT \
-            -i "/configuration/system.webServer/aspNetCore/environmentVariables/environmentVariable" -t attr -n value -v Staging \
+            -s "//aspNetCore" -t elem -n environmentVariables -v "" \
+            -s "//aspNetCore/environmentVariables" -t elem -n environmentVariable -v "" \
+            -i "//aspNetCore/environmentVariables/environmentVariable" -t attr -n name -v "ASPNETCORE_ENVIRONMENT" \
+            -i "//aspNetCore/environmentVariables/environmentVariable" -t attr -n value -v "Staging" \
             ./publish/web.config
 
       - name: Create App Offline File
