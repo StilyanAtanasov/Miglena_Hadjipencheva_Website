@@ -2,38 +2,76 @@ name: .NET Core CD (Production)
 
 on:
   push:
-    branches: [ production ]
+    branches: [production]
 
 jobs:
   deploy:
-    name: Publish and Deploy
+    name: Publish and Deploy (Production)
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-    - name: Restore Dependencies
-      run: dotnet restore MHAuthorWebsite/MHAuthorWebsite.sln
-      
-    - name: Publish Web Project
-      run: dotnet publish MHAuthorWebsite/MHAuthorWebsite.Web/MHAuthorWebsite.Web.csproj --configuration Release --output ./publish
-      env:
-        ASPNETCORE_ENVIRONMENT: Production
+      - name: Restore Dependencies
+        run: dotnet restore MHAuthorWebsite/MHAuthorWebsite.sln
 
-    - name: Deploy via FTP (Production)
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: ${{ secrets.PROD_FTP_SERVER }}
-        username: ${{ secrets.PROD_FTP_USERNAME }}
-        password: ${{ secrets.PROD_FTP_PASSWORD }}
-        local-dir: ./publish/
-        server-dir: /
-        dangerous-clean-slate: false
-        exclude: |
-          **/app_offline.htm
+      - name: Publish Web Project
+        run: dotnet publish MHAuthorWebsite/MHAuthorWebsite.Web/MHAuthorWebsite.Web.csproj --configuration Release --output ./publish
+        env:
+          ASPNETCORE_ENVIRONMENT: Production
+
+      - name: Install xmlstarlet
+        run: sudo apt-get update && sudo apt-get install -y xmlstarlet
+
+      - name: Set ASPNETCORE_ENVIRONMENT
+        run: |
+          xmlstarlet ed -L \
+            -s "//aspNetCore" -t elem -n environmentVariables -v "" \
+            -s "//aspNetCore/environmentVariables" -t elem -n environmentVariable -v "" \
+            -i "//aspNetCore/environmentVariables/environmentVariable" -t attr -n name -v "ASPNETCORE_ENVIRONMENT" \
+            -i "//aspNetCore/environmentVariables/environmentVariable" -t attr -n value -v "Production" \
+            ./publish/web.config
+
+      - name: Create App Offline File
+        run: |
+          echo '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><h1>Обновяване на сайта</h1><p>Ще се върнем скоро.</p></body></html>' > ./publish/app_offline.htm
+
+      - name: Take App Offline
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.PROD_FTP_SERVER }}
+          username: ${{ secrets.PROD_FTP_USERNAME }}
+          password: ${{ secrets.PROD_FTP_PASSWORD }}
+          local-dir: ./publish/
+          server-dir: /
+          exclude: |
+            **
+            !app_offline.htm
+
+      - name: Wait for process to exit
+        run: sleep 10
+
+      - name: Deploy via FTP (Production)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.PROD_FTP_SERVER }}
+          username: ${{ secrets.PROD_FTP_USERNAME }}
+          password: ${{ secrets.PROD_FTP_PASSWORD }}
+          local-dir: ./publish/
+          server-dir: /
+          dangerous-clean-slate: false
+          exclude: |
+            **/app_offline.htm
+
+      - name: Bring App Online
+        run: |
+          curl -u "${{ secrets.PROD_FTP_USERNAME }}:${{ secrets.PROD_FTP_PASSWORD }}" \
+               "ftp://${{ secrets.PROD_FTP_SERVER }}/" \
+               -Q "DELE app_offline.htm"
+        continue-on-error: true
