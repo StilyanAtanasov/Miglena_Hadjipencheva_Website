@@ -1,14 +1,8 @@
 ﻿using MHAuthorWebsite.Core.Models.Enums;
 
-<<<<<<<< HEAD:MHAuthorWebsite/MHAuthorWebsite.Web.ViewModels/ProductComment/ProductCommentReplyViewModel.cs
-namespace MHAuthorWebsite.Web.ViewModels.ProductComment;
-
-public class ProductCommentReplyViewModel
-========
 namespace MHAuthorWebsite.Core.Dtos.ProductComment;
 
 public class ProductCommentReplyDto
->>>>>>>> origin/staging:MHAuthorWebsite/MHAuthorWebsite.Core/Dtos/ProductComment/ProductCommentReplyDto.cs
 {
     public Guid Id { get; set; }
 

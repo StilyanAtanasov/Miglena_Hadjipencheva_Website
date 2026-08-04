@@ -1,4 +1,4 @@
-﻿using MHAuthorWebsite.Core.Common.Utils;
+using MHAuthorWebsite.Core.Common.Utils;
 using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.ProductComment;
 using MHAuthorWebsite.Core.Models;

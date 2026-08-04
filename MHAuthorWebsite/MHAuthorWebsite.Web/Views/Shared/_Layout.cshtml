@@ -194,11 +194,6 @@
 		<script src="~/js/elements/popup-btn.js" asp-append-version="true"></script>
 	}
 
-	@if (Env.IsStaging())
-	{
-		<script src="~/js/elements/popup-btn.js" asp-append-version="true"></script>
-	}
-
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

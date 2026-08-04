@@ -3,7 +3,6 @@
 namespace MHAuthorWebsite.Web.ViewModels.ProductComment;
 
 public class ProductCommentReplyViewModel
-
 {
     public Guid Id { get; set; }
 

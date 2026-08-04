@@ -12,7 +12,6 @@ using System.Linq.Expressions;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheDefaultDurations;
 using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Pagination;
-using static MHAuthorWebsite.GCommon.ApplicationRules.ProductComment;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Roles;
 
 namespace MHAuthorWebsite.Core;

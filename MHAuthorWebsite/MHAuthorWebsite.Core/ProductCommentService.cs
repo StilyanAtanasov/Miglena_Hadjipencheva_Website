@@ -367,7 +367,6 @@ public class ProductCommentService : IProductCommentService
         comment.IsDeleted = true;
         foreach (ProductComment reply in comment.Replies) reply.IsDeleted = true;
 
-
         await _repository.SaveChangesAsync();
 
         await _cache.RemoveAsync(ProductDetailsUserDataKey(comment.ProductId, userId));

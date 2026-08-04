@@ -3,7 +3,6 @@ using MHAuthorWebsite.Core.Contracts;
 using MHAuthorWebsite.Core.Dtos.Images;
 using MHAuthorWebsite.Core.Models;
 using MHAuthorWebsite.Data;
-using MHAuthorWebsite.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Cloudinary;
 using static MHAuthorWebsite.GCommon.ApplicationRules.ProductCommentImages;
