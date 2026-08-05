@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Application;
+using static MHAuthorWebsite.GCommon.ApplicationRules.CacheKeys;
 using static MHAuthorWebsite.GCommon.ApplicationRules.Order;
 using static MHAuthorWebsite.GCommon.ApplicationRules.OrderSystemEventsMessages;
 
@@ -29,13 +30,14 @@ public class OrderService : IOrderService
     protected readonly IEmailUserProvider EmailUserProvider;
     protected readonly IAdminNotificationPreferencesService AdminNotificationPreferencesService;
     protected readonly IUrlProvider UrlProvider;
+    protected readonly IFastCacheService CacheService;
     private readonly ILogger<OrderService> _logger;
 
     public OrderService(IApplicationRepository repository, IOrderDataService orderDataService, UserManager<ApplicationUser> userManager,
         IEcontService econtService, IOptions<EcontApiSettings> econtApiSettings,
         IEmailService emailService, IEmailUserProvider emailUserProvider,
         IAdminNotificationPreferencesService adminNotificationPreferencesService, IUrlProvider urlProvider,
-        ILogger<OrderService> logger)
+        ILogger<OrderService> logger, IFastCacheService cacheService)
     {
         Repository = repository;
         UserManager = userManager;
@@ -46,6 +48,7 @@ public class OrderService : IOrderService
         EmailUserProvider = emailUserProvider;
         AdminNotificationPreferencesService = adminNotificationPreferencesService;
         UrlProvider = urlProvider;
+        CacheService = cacheService;
         _logger = logger;
     }
 
@@ -173,7 +176,15 @@ public class OrderService : IOrderService
 
         await Repository.AddAsync(order);
 
-        foreach (CartItem item in cartItems) item.Product.StockQuantity -= item.Quantity;
+        foreach (CartItem item in cartItems)
+        {
+            item.Product.StockQuantity -= item.Quantity;
+            if (item.Product.StockQuantity < MaxItemQuantityPerOrder)
+            {
+                await CacheService.RemoveAsync(ProductCardKey(item.ProductId));
+                await CacheService.RemoveAsync(ProductDetailsKey(item.ProductId));
+            }
+        }
 
         Repository.DeleteRange(cartItems);
         await Repository.SaveChangesAsync();
