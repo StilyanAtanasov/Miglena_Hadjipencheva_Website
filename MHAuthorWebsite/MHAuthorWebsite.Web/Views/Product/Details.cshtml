@@ -128,7 +128,7 @@
 			<div class="item-info-text flex-column">
 				<p class="price-text @(Model.IsInStock ? "available" : "unavailable")">@(Model.IsInStock ? "В наличност" : "Изчерпана наличност")</p>
 			
-				@if(isQuantityLimited)
+				@if(isQuantityLimited && Model.IsInStock)
 				{
 					<p class="stock-warning">Остават само още <strong>@Model.Quantity</strong> налични броя!</p>
 				}

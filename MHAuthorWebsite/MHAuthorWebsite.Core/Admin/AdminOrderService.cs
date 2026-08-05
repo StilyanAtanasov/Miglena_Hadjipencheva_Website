@@ -44,8 +44,9 @@ public class AdminOrderService : OrderService, IAdminOrderService
         IAdminNotificationPreferencesService adminNotificationPreferencesService,
         IUrlProvider urlProvider,
         ILogger<AdminOrderService> logger,
-        ILogger<OrderService> baseLogger)
-        : base(repository, orderDataService, userManager, econtService, econtSettings, emailService, emailUserProvider, adminNotificationPreferencesService, urlProvider, baseLogger)
+        ILogger<OrderService> baseLogger,
+        IFastCacheService cacheService)
+        : base(repository, orderDataService, userManager, econtService, econtSettings, emailService, emailUserProvider, adminNotificationPreferencesService, urlProvider, baseLogger, cacheService)
     {
         _adminEcontService = adminEcontService;
         _emailService = emailService;
