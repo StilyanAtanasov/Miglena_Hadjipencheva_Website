@@ -440,13 +440,6 @@ public class AdminProductController : AdminBaseController
         if (!result.Found) return NotFound();
         if (!result.Success) return StatusCode(500);
 
-        ICollection<Guid> productImageIds = await _productService.GetImageIdsByProductId(productId);
-        foreach (Guid id in productImageIds)
-        {
-            ServiceResult deleteImagesResult = await _imageService.DeleteProductImageByIdAsync(id, HttpContext.RequestAborted);
-            if (!deleteImagesResult.Success) return StatusCode(500);
-        }
-
         return RedirectToAction(nameof(ProductsList));
     }
 

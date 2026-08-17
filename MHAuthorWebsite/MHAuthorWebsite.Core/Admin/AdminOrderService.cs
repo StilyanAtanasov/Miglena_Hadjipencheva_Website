@@ -58,18 +58,7 @@ public class AdminOrderService : OrderService, IAdminOrderService
 
     public async Task<ICollection<AllOrdersListItemDto>> GetAllOrders(AllOrdersFilterCriteria filter)
     {
-        AllOrdersListItemDto[] result = await Repository
-            .AllReadonly(new AllOrdersFilter(filter))
-            .Select(o => new AllOrdersListItemDto
-            {
-                Id = o.Id,
-                CustomerName = o.Shipment.Face,
-                OrderDate = o.Date,
-                TotalAmount = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity),
-                Currency = o.Shipment.Currency,
-                Status = o.Status
-            })
-            .ToArrayAsync();
+        AllOrdersListItemDto[] result = await _adminOrderDataService.GetAllOrdersByFilterReadonlyAsync(filter);
 
         _logger.LogInformation("Successfully retrieved all orders from admin panel. Count: {Count}", result.Length);
 

@@ -2,6 +2,7 @@
 
 import { pushNotification } from "./notification.js";
 import { executeRecaptchaV3Async, getRecaptchaV2Response, renderRecaptchaV2Async, resetRecaptchaV2 } from "./recaptcha-v3.js";
+import { injectLoader } from "./elements/loader.js";
 
 const AUTOMATION_BLOCK_MESSAGE = "Вашата активност наподобява автоматизирано поведение. Моля, опитайте отново.";
 const MANUAL_CAPTCHA_MESSAGE = "Моля, потвърдете ръчно, че не сте робот.";
@@ -10,6 +11,7 @@ const ERROR_MESSAGE = "Възникна грешка. Опитайте отно�
 
 const contactForm = document.getElementById("contact-form");
 if (!contactForm) throw new Error("Contact form not found.");
+const submitButton = document.getElementById("sendBtn");
 
 const recaptchaV3TokenInput = document.getElementById("contact-recaptcha-v3-token");
 const recaptchaV2TokenInput = document.getElementById("contact-recaptcha-v2-token");
@@ -21,6 +23,7 @@ const recaptchaV2SiteKey = contactForm.dataset.recaptchaV2SiteKey || "";
 
 let requiresManualCaptcha = false;
 let manualCaptchaWidgetId = null;
+let isSubmitting = false;
 
 async function ensureManualCaptchaAsync() {
   requiresManualCaptcha = true;
@@ -91,5 +94,17 @@ async function submitContactFormAsync() {
 
 contactForm.addEventListener("submit", async event => {
   event.preventDefault();
-  await submitContactFormAsync();
+  if (isSubmitting) return;
+
+  isSubmitting = true;
+  submitButton.disabled = true;
+  const buttonLoader = injectLoader(submitButton, { size: `small` });
+
+  try {
+    await submitContactFormAsync();
+  } finally {
+    buttonLoader.close();
+    submitButton.disabled = false;
+    isSubmitting = false;
+  }
 });
