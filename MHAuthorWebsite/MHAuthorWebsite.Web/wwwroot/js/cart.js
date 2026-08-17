@@ -3,6 +3,7 @@
 import { pushNotification } from "./notification.js";
 import { formatBgNumber, parseBgNumber } from "./common.js";
 import { calcFreeDelivery } from "./elements/free-delivery.js";
+import { injectLoader } from "./elements/loader.js";
 
 let productsCount;
 const eurToLevRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.eurToLevRate);
@@ -70,9 +71,13 @@ document.addEventListener(`DOMContentLoaded`, function () {
     b.addEventListener(`click`, async function (e) {
       e.preventDefault();
       e.stopPropagation();
+      if (b.disabled) return;
 
       const itemId = b.dataset.itemId;
+      b.disabled = true;
+      const buttonLoader = injectLoader(b, { size: `small` });
 
+      try {
       const response = await fetch(`Cart/Remove/${itemId}`, {
         method: "POST",
         headers: {
@@ -96,6 +101,10 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
         pushNotification(`Продуктът е премахнат от количката!`, `success`);
       } else pushNotification(`Грешка при премахването на продукта!`, `error`);
+      } finally {
+        buttonLoader.close();
+        b.disabled = false;
+      }
     }),
   );
 

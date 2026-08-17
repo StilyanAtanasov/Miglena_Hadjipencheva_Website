@@ -67,6 +67,14 @@ public class CartService : ICartService
                         ["quantity"] = $"Надвишавате максималния лимит от {MaxItemQuantityPerOrder} продукта в количката Ви!"
                     });
 
+                if (existingCartItem.Quantity + quantity > product.StockQuantity)
+                    return ServiceResult.BadRequest(new()
+                    {
+                        ["quantity"] =
+                            $"Недостатъчно количество на продукта! Максимална поръчка от {product.StockQuantity} продукт"
+                            + (product.StockQuantity > 1 ? "a" : "") + "! " + (existingCartItem.Quantity > 0 ? $"В количката си вече имате {existingCartItem.Quantity} броя от този продукт!" : "")
+                    });
+
                 existingCartItem.Quantity += quantity;
                 existingCartItem.Price = product.Price;
                 existingCartItem.Currency = product.Currency;

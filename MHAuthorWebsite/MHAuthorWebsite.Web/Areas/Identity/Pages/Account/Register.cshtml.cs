@@ -85,7 +85,7 @@ public class RegisterModel : PageModel
         /// 
         [Required(ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "Required")]
         [Display(Name = "Име и фамилия")]
-        [RegularExpression(@"^\S+\s+\S+$", ErrorMessage = "Моля, въведете име и фамилия!")]
+        [RegularExpression(@"^\s*\S+\s{1}\S+\s*$", ErrorMessage = "Моля, въведете име и фамилия! Оставете само един интервал между имената!")]
         [StringLength(NameMaxLength, MinimumLength = NameMinLength, ErrorMessageResourceType = typeof(ValidationMessages), ErrorMessageResourceName = "StringLength")]
         public string Name { get; set; }
 
@@ -151,7 +151,7 @@ public class RegisterModel : PageModel
 
             ApplicationUser user = new()
             {
-                Name = Input.Name,
+                Name = Input.Name.Trim(),
                 Email = Input.Email,
                 NormalizedEmail = Input.Email.ToUpper(),
                 UserName = Input.Email,
