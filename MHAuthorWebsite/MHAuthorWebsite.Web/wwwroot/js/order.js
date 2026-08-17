@@ -3,6 +3,7 @@
 import { pushNotification } from "./notification.js";
 import { formatBgNumber, parseBgNumber } from "./common.js";
 import { calcFreeDelivery } from "./elements/free-delivery.js";
+import { injectLoader } from "./elements/loader.js";
 
 const form = document.getElementById(`confirm-form`);
 const currency = form.dataset.currency || `EUR`;
@@ -17,6 +18,8 @@ const grandBgnEl = document.getElementById(`grand-bgn`);
 const eurToLevRate = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.eurToLevRate);
 const freeShippingThresholdEur = parseBgNumber(document.querySelector(`.page-wrapper`).dataset.freeShippingThresholdEur);
 const shippingPricesEl = document.getElementById(`shipping-prices`);
+const placeOrderBtn = document.getElementById(`placeOrderBtn`);
+let isSubmitting = false;
 
 window.addEventListener(`DOMContentLoaded`, () => setTimeout(() => calcFreeDelivery(parseBgNumber(grandEl.textContent), freeShippingThresholdEur), 700));
 
@@ -101,11 +104,18 @@ window.addEventListener(
 form.addEventListener(`submit`, async function (e) {
   e.preventDefault();
 
+  if (isSubmitting) return;
+
   if (!econtDeliveryDetails) {
     pushNotification(`Моля попълнете формата за доставка.`, `warning`);
     return;
   }
 
+  isSubmitting = true;
+  placeOrderBtn.disabled = true;
+  const buttonLoader = injectLoader(placeOrderBtn, { size: `small` });
+
+  try {
   const payload = JSON.stringify(econtDeliveryDetails);
 
   const response = await fetch(form.action, {
@@ -122,6 +132,13 @@ form.addEventListener(`submit`, async function (e) {
     window.location = `/Order/OrderAccepted?orderId=${orderId}`;
   } else {
     pushNotification(`Грешка при създаването на поръчка!`, `error`);
+  }
+  } catch {
+    pushNotification(`Възникна грешка при създаването на поръчката!`, `error`);
+  } finally {
+    buttonLoader.close();
+    placeOrderBtn.disabled = false;
+    isSubmitting = false;
   }
 });
 

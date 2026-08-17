@@ -1,6 +1,7 @@
 "use strict";
 
 import { pushNotification } from "./notification.js";
+import { injectLoader } from "./elements/loader.js";
 
 let count;
 
@@ -10,8 +11,13 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
   likedProducts.forEach(b =>
     b.addEventListener(`click`, async function () {
-      const itemId = b.dataset.itemId;
+      if (b.disabled) return;
 
+      const itemId = b.dataset.itemId;
+      b.disabled = true;
+      const buttonLoader = injectLoader(b, { size: `small` });
+
+      try {
       const response = await fetch(`/Product/ToggleLike/${itemId}`, {
         method: "POST",
         headers: {
@@ -28,6 +34,10 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
         pushNotification("Продуктът е премахнат успешно!", "success");
       } else pushNotification("Грешка при премахването на продукта!", "error");
+      } finally {
+        buttonLoader.close();
+        b.disabled = false;
+      }
     })
   );
 });

@@ -3,6 +3,7 @@
 import { pushNotification } from "./notification.js";
 import { SearchBarHandler } from "./elements/search-bar.js";
 import { PaginationHandler } from "./elements/pagination-handler.js";
+import { injectLoader } from "./elements/loader.js";
 
 document.addEventListener(`DOMContentLoaded`, function () {
   const searchForm = document.querySelector("#product-search-form");
@@ -41,21 +42,30 @@ document.addEventListener(`DOMContentLoaded`, function () {
 
   document.querySelectorAll(`[data-role="like-item"]`).forEach(b =>
     b.addEventListener(`click`, async function () {
+      if (b.disabled) return;
+
       const itemId = b.dataset.itemId;
+      b.disabled = true;
+      const buttonLoader = injectLoader(b, { size: `small` });
 
-      const response = await fetch(`/Product/ToggleLike/${itemId}`, {
-        method: "POST",
-        headers: {
-          RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
-        },
-      });
+      try {
+        const response = await fetch(`/Product/ToggleLike/${itemId}`, {
+          method: "POST",
+          headers: {
+            RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
+          },
+        });
 
-      if (response.ok) {
-        const isAdded = b.classList.toggle(`liked`);
+        if (response.ok) {
+          const isAdded = b.classList.toggle(`liked`);
 
-        pushNotification(isAdded ? `Продуктът е харесан успешно!` : `Продуктът е премахнат от харесани!`, `success`);
-      } else if (response.status === 401) pushNotification(`Влезте в системата, за да харесате продукт!`, `warning`);
-      else pushNotification(`Възникна неочаквана грешка!`, `error`);
+          pushNotification(isAdded ? `Продуктът е харесан успешно!` : `Продуктът е премахнат от харесани!`, `success`);
+        } else if (response.status === 401) pushNotification(`Влезте в системата, за да харесате продукт!`, `warning`);
+        else pushNotification(`Възникна неочаквана грешка!`, `error`);
+      } finally {
+        buttonLoader.close();
+        b.disabled = false;
+      }
     }),
   );
 });

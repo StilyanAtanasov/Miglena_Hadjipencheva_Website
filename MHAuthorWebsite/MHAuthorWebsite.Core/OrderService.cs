@@ -196,27 +196,7 @@ public class OrderService : IOrderService
 
     public async Task<ICollection<MyOrderDto>> GetUserOrders(string userId, int page)
     {
-        var result = await Repository
-        .WhereReadonly<Order>(o => o.UserId == userId)
-        .OrderByDescending(o => o.Date)
-        .Skip((page - 1) * MyOrdersPageSize)
-        .Take(MyOrdersPageSize)
-            .Select(o => new MyOrderDto
-            {
-                OrderId = o.Id,
-                CreatedAt = o.Date,
-                Total = o.OrderedProducts.Sum(op => op.UnitPrice * op.Quantity) + o.Shipment.ShippingPrice,
-                Currency = o.Shipment.Currency,
-                Status = o.Status.GetDisplayName(),
-                Products = o.OrderedProducts
-                .Select(op => new MyOrdersOrderProductDto
-                {
-                    ImageUrl = op.Product.Thumbnail.Image.ImageUrl,
-                    Quantity = op.Quantity,
-                })
-                .ToArray()
-            })
-        .ToArrayAsync();
+        MyOrderDto[] result = await OrderDataService.GetUserOrdersPagedReadonlyAsync(userId, page);
 
         _logger.LogInformation("Successfully retrieved orders for User {UserId}, Page {Page}. Count: {Count}", userId, page, result.Length);
 

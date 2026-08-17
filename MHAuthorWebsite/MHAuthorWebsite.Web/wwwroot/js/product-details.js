@@ -6,6 +6,7 @@ import { calculateStarsFill } from "./elements/stars.js";
 import { openModal, replaceBody } from "./elements/modal.js";
 import { reactToComment } from "./react-to-product-comment.js";
 import { formatLocalDates } from "./time-zone-manager.js";
+import { injectLoader } from "./elements/loader.js";
 
 document.addEventListener(`DOMContentLoaded`, async function () {
   await initQuill(false, false);
@@ -88,7 +89,7 @@ document.addEventListener(`DOMContentLoaded`, async function () {
           title: `Изтриване на коментар`,
           text: `Коментарът не може да бъде възстановен!`,
           onConfirm: deleteCommentAsync,
-          onConfirmArgs: [deleteBtn.dataset.commentId, deleteBtn.dataset.productId, deleteBtn.closest(`.comment`)],
+          onConfirmArgs: [deleteBtn.dataset.commentId, deleteBtn.dataset.productId, deleteBtn.closest(`.comment`), deleteBtn],
           showCancelButton: true,
           allowOutsideClick: true,
         });
@@ -108,41 +109,51 @@ document.addEventListener(`DOMContentLoaded`, async function () {
       }
     }
 
-    async function deleteCommentAsync(commentId, productId, commentElement) {
-      const response = await fetch(`/ProductComment/Delete?commentId=${commentId}`, {
-        method: "POST",
-        headers: {
-          RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
-        },
-      });
+    async function deleteCommentAsync(commentId, productId, commentElement, deleteButton) {
+      if (deleteButton.disabled) return;
 
-      if (response.ok) {
-        if (!commentElement.classList.contains(`reply`)) {
-          const nextElement = commentElement.nextElementSibling;
-          if (nextElement && nextElement.tagName === `HR`) nextElement.remove();
+      deleteButton.disabled = true;
+      const buttonLoader = injectLoader(deleteButton, { size: `small` });
 
-          const newAverateRating = await (await fetch(`/ProductComment/GetAverageRating?productId=${productId}`)).json();
+      try {
+        const response = await fetch(`/ProductComment/Delete?commentId=${commentId}`, {
+          method: "POST",
+          headers: {
+            RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
+          },
+        });
 
-          document.getElementById(`average-rating-number`).textContent = newAverateRating.toFixed(1);
-          document.querySelector(`.ratings-count span`).textContent = +document.querySelector(`.ratings-count span`).textContent - 1;
+        if (response.ok) {
+          if (!commentElement.classList.contains(`reply`)) {
+            const nextElement = commentElement.nextElementSibling;
+            if (nextElement && nextElement.tagName === `HR`) nextElement.remove();
 
-          const rating = +commentElement.dataset.rating;
-          const bar = document.querySelector(`.rating-bar[data-rating="${rating}"]`);
-          const newCount = +bar.dataset.count - 1;
+            const newAverateRating = await (await fetch(`/ProductComment/GetAverageRating?productId=${productId}`)).json();
 
-          bar.querySelector(`.rating-count`).textContent = `(${newCount})`;
-          bar.dataset.count = newCount;
+            document.getElementById(`average-rating-number`).textContent = newAverateRating.toFixed(1);
+            document.querySelector(`.ratings-count span`).textContent = +document.querySelector(`.ratings-count span`).textContent - 1;
 
-          const ratingMaxValue = document.querySelector(`.quick-stats`).dataset.ratingMaxValue;
-          document.querySelector(`.quick-stats .stars`).dataset.percent = (newAverateRating / ratingMaxValue) * 100;
+            const rating = +commentElement.dataset.rating;
+            const bar = document.querySelector(`.rating-bar[data-rating="${rating}"]`);
+            const newCount = +bar.dataset.count - 1;
 
-          calculateStarsFill();
-          fillCommentStats();
-        }
+            bar.querySelector(`.rating-count`).textContent = `(${newCount})`;
+            bar.dataset.count = newCount;
 
-        commentElement.remove();
-        showPopupAsync({ title: `Коментарът е изтрит успешно!`, confirmButtonText: `OK` });
-      } else pushNotification(`Възникна грешка при изтриването на коментара!`, `error`);
+            const ratingMaxValue = document.querySelector(`.quick-stats`).dataset.ratingMaxValue;
+            document.querySelector(`.quick-stats .stars`).dataset.percent = (newAverateRating / ratingMaxValue) * 100;
+
+            calculateStarsFill();
+            fillCommentStats();
+          }
+
+          commentElement.remove();
+          showPopupAsync({ title: `Коментарът е изтрит успешно!`, confirmButtonText: `OK` });
+        } else pushNotification(`Възникна грешка при изтриването на коментара!`, `error`);
+      } finally {
+        buttonLoader.close();
+        deleteButton.disabled = false;
+      }
     }
 
     moreCommentsBtnEl && moreCommentsBtnEl.addEventListener(`click`, () => loadCommentsAsync(productId, currentCommentsPage + 1, currentRatingFilter));
@@ -219,20 +230,30 @@ document.addEventListener(`DOMContentLoaded`, async function () {
 
   // --- Like button ---
   document.getElementById(`like-button`).addEventListener(`click`, async function (e) {
+    const button = e.currentTarget;
+    if (button.disabled) return;
+
     const itemId = e.target.closest(`button`).dataset.productId;
+    button.disabled = true;
+    const buttonLoader = injectLoader(button, { size: `small` });
 
-    const response = await fetch(`/Product/ToggleLike/${itemId}`, {
-      method: "POST",
-      headers: {
-        RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
-      },
-    });
+    try {
+      const response = await fetch(`/Product/ToggleLike/${itemId}`, {
+        method: "POST",
+        headers: {
+          RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]').value,
+        },
+      });
 
-    if (response.ok) {
-      const isAdded = document.getElementById(`like-button`).classList.toggle(`liked`);
+      if (response.ok) {
+        const isAdded = document.getElementById(`like-button`).classList.toggle(`liked`);
 
-      pushNotification(isAdded ? `Продуктът е харесан успешно!` : `Продуктът е премахнат от харесани!`, `success`);
-    } else if (response.status === 401) pushNotification(`Взете в системата, за да харесате продукт!`, `warning`);
-    else pushNotification(`Възникна неочаквана грешка!`, `error`);
+        pushNotification(isAdded ? `Продуктът е харесан успешно!` : `Продуктът е премахнат от харесани!`, `success`);
+      } else if (response.status === 401) pushNotification(`Взете в системата, за да харесате продукт!`, `warning`);
+      else pushNotification(`Възникна неочаквана грешка!`, `error`);
+    } finally {
+      buttonLoader.close();
+      button.disabled = false;
+    }
   });
 });
