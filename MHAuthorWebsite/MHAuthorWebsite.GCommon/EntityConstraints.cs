@@ -115,7 +115,7 @@ public static class EntityConstraints
 
     public static class ProductImage
     {
-        public const byte UrlMaxLength = 255;
+        public const ushort UrlMaxLength = 2048;
         public const byte AltTextMaxLength = 150;
 
         public const byte ThumbnailWidth = 250;
